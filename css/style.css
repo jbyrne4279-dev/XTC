@@ -924,27 +924,27 @@ ul, ol { list-style: none; }
 }
 .fp-card::before {
   --circuit-a: 0deg;
-  animation: circuit-run 5s linear infinite;
+  animation: circuit-run 3.5s linear infinite;
   background: conic-gradient(from var(--circuit-a),
-    transparent 0%, transparent 70%,
-    rgba(179,102,255,0.5) 80%, rgba(220,170,255,1) 87%,
-    rgba(179,102,255,0.5) 94%, transparent 100%
+    transparent 0%, transparent 60%,
+    rgba(100,30,200,0.6) 72%, rgba(179,102,255,1) 80%, rgba(220,170,255,1) 85%,
+    rgba(179,102,255,0.8) 92%, transparent 100%
   );
   opacity: 1;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.4s ease;
 }
 .fp-card::after {
   --circuit-a: 0deg;
-  animation: circuit-run 0.6s linear infinite;
+  animation: circuit-run 0.8s linear infinite;
   background: conic-gradient(from var(--circuit-a),
-    transparent 0%, transparent 70%,
-    rgba(179,102,255,0.5) 80%, rgba(220,170,255,1) 87%,
-    rgba(179,102,255,0.5) 94%, transparent 100%
+    transparent 0%, transparent 50%,
+    rgba(100,30,200,0.7) 65%, rgba(179,102,255,1) 75%, rgba(230,190,255,1) 82%,
+    rgba(179,102,255,0.8) 90%, transparent 100%
   );
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.4s ease;
 }
-.fp-card:hover { border-color: rgba(179,102,255,0.15); }
+.fp-card:hover { border-color: rgba(179,102,255,0.2); }
 .fp-card:hover::before { opacity: 0; }
 .fp-card:hover::after  { opacity: 1; }
 
@@ -1754,22 +1754,23 @@ ul, ol { list-style: none; }
   0%   { background-position: 200% center; }
   100% { background-position: -200% center; }
 }
-.tagline-drop {
-  background: linear-gradient(90deg, rgba(140,60,220,0.85) 0%, rgba(210,160,255,1) 45%, rgba(140,60,220,0.85) 100%);
-  background-size: 200% auto;
+.tagline-drop,
+.tagline-never {
+  background: linear-gradient(90deg,
+    rgba(60,0,120,0.9) 0%,
+    rgba(130,60,200,1) 30%,
+    rgba(179,102,255,1) 50%,
+    rgba(130,60,200,1) 70%,
+    rgba(60,0,120,0.9) 100%
+  );
+  background-size: 250% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: tagline-shine 3s linear infinite;
+  animation: tagline-shine 4s linear infinite;
 }
 .tagline-never {
-  background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,0.4) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: tagline-shine 3s linear infinite;
-  animation-delay: 1.5s;
+  animation-delay: 2s;
 }
 
 .footer-links-grid {
