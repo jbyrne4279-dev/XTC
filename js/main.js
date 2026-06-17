@@ -203,6 +203,5 @@ function initHero() {
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   initNavDrawer();
-  initSearch();
   initHero();
 });
