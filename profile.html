@@ -1483,7 +1483,7 @@
     if (googleBtn) googleBtn.addEventListener('click', function () {
       sb.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.href }
+        options: { redirectTo: window.location.origin + '/profile.html' }
       });
     });
 
