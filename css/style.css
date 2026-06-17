@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    XTC CLOTHING — DESIGN SYSTEM v2
    Dark premium aesthetic
    ============================================ */
@@ -1969,60 +1969,6 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================
-   SEARCH OVERLAY
-   ============================================ */
-.search-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 150;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 80px;
-  opacity: 0;
-  visibility: hidden;
-  transition: all var(--dur) var(--ease);
-  backdrop-filter: blur(4px);
-}
-.search-overlay.open { opacity: 1; visibility: visible; }
-
-.search-box {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  width: 100%;
-  max-width: 520px;
-  padding: var(--sp-4) var(--sp-5);
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  margin: 0 var(--sp-6);
-}
-
-.search-box input {
-  flex: 1;
-  border: none;
-  background: none;
-  outline: none;
-  font-size: var(--fs-md);
-  color: var(--text-primary);
-  letter-spacing: 1.5px;
-}
-.search-box input::placeholder { color: var(--text-micro); letter-spacing: 1.5px; font-size: var(--fs-xs); }
-
-.search-box button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color var(--dur) var(--ease);
-}
-.search-box button:hover { color: var(--text-primary); }
-
-/* ============================================
    PAGE — 404
    ============================================ */
 .page-404 {
@@ -2468,7 +2414,6 @@ textarea {
   .form-select,
   .form-textarea,
   .cart-note textarea,
-  .search-box input,
   .footer-club__form input,
   .lb-comment-input {
     font-size: 16px;

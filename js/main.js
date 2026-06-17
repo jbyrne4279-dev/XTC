@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    XTC CLOTHING — main.js
    Cart, nav drawer, hero slideshow, search, toast
    ============================================ */
@@ -103,20 +103,6 @@ function initNavDrawer() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close_(); });
 }
 
-// ---- Search Overlay ----
-
-function initSearch() {
-  const toggle  = document.getElementById('searchToggle');
-  const overlay = document.getElementById('searchOverlay');
-  const closeBtn = document.getElementById('searchClose');
-  const input   = document.getElementById('searchInput');
-  if (!toggle || !overlay) return;
-
-  function open() {
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => input && input.focus(), 50);
-  }
   function close() {
     overlay.classList.remove('open');
     document.body.style.overflow = '';
