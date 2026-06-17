@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed — XTC</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .confirmed-wrap {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .confirmed-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 32px;
+    }
+    .confirmed-title {
+      font-size: 22px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .confirmed-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+      margin-bottom: 40px;
+    }
+    .confirmed-back {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.9);
+      border: 1px solid rgba(179,102,255,0.35);
+      padding: 14px 32px;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .confirmed-back:hover { border-color: rgba(179,102,255,0.8); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="sticky-top">
+    <div class="announcement-bar">Free UK delivery on all orders</div>
+    <header class="header">
+      <div class="header-inner">
+        <a href="index.html" class="header-logo">XTC</a>
+        <nav class="header-nav">
+          <a href="index.html">New Releases</a>
+          <a href="collections.html">Collections</a>
+          <a href="gallery.html">Gallery</a>
+        </nav>
+        <div class="header-actions">
+          <a href="cart.html" class="header-cart" aria-label="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <span class="header-cart__count" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <main>
+    <div class="confirmed-wrap">
+      <svg class="confirmed-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="26" cy="26" r="24" stroke="rgba(179,102,255,0.4)" stroke-width="1.5"/>
+        <path d="M15 26l8 8 14-14" stroke="#b366ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="confirmed-title">Order Confirmed</p>
+      <p class="confirmed-sub">Thank you. Your order is on its way.</p>
+      <a href="index.html" class="confirmed-back">Continue Shopping</a>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

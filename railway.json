@@ -5,7 +5,8 @@
     "buildCommand": "echo 'Static site'"
   },
   "deploy": {
-    "startCommand": "npx --yes serve . --listen $PORT",
+    "buildCommand": "npm install",
+    "startCommand": "node server.js",
     "restartPolicyType": "ON_FAILURE"
   }
 }

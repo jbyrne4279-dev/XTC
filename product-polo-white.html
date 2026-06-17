@@ -323,6 +323,22 @@
     }
     .pdp-buy-now:hover { border-color: #fff; color: #fff; }
 
+    /* Bundle Offers */
+    .pdp-bundles { margin-top: 20px; }
+    .pdp-bundles__heading { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 10px; }
+    .pdp-bundle-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px; margin-bottom: 8px; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .pdp-bundle-option:hover { border-color: rgba(179,102,255,0.5); }
+    .pdp-bundle-option--deal { border-color: rgba(179,102,255,0.25); }
+    .pdp-bundle-option--deal:hover { border-color: rgba(179,102,255,0.7); }
+    .pdp-bundle-qty { font-size: 12px; letter-spacing: 1.5px; color: rgba(255,255,255,0.8); text-transform: uppercase; }
+    .pdp-bundle-price { font-size: 13px; color: #fff; }
+    .pdp-bundle-price em { font-style: normal; font-size: 11px; color: rgba(179,102,255,0.9); margin-left: 8px; }
+
     /* Accordion */
     .pdp-accordion { border-top: 1px solid var(--border); }
     .pdp-acc-trigger {
@@ -557,6 +573,23 @@
         <button class="pdp-buy-now" onclick="buyNowFromPage('polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg')">
           Buy Now
         </button>
+
+        <!-- Bundle Offers -->
+        <div class="pdp-bundles">
+          <p class="pdp-bundles__heading">Bundle &amp; Save</p>
+          <div class="pdp-bundle-option" onclick="addBundleToCart(1)">
+            <span class="pdp-bundle-qty">1 Polo</span>
+            <span class="pdp-bundle-price">£60</span>
+          </div>
+          <div class="pdp-bundle-option pdp-bundle-option--deal" onclick="addBundleToCart(2)">
+            <span class="pdp-bundle-qty">2 Polos</span>
+            <span class="pdp-bundle-price">£110 <em>save £10</em></span>
+          </div>
+          <div class="pdp-bundle-option pdp-bundle-option--deal" onclick="addBundleToCart(3)">
+            <span class="pdp-bundle-qty">3 Polos</span>
+            <span class="pdp-bundle-price">£150 <em>save £30</em></span>
+          </div>
+        </div>
 
         <!-- Accordions -->
         <div class="pdp-accordion" style="margin-top:32px;">
@@ -822,16 +855,40 @@
       const fullName = name + ' — ' + selected.dataset.size;
       addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
     }
-    function buyNowFromPage(id, name, price, img) {
+    async function buyNowFromPage(id) {
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {
         document.getElementById('sizeError').classList.add('show');
         document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-      const fullName = name + ' — ' + selected.dataset.size;
-      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
-      window.location.href = 'checkout.html';
+      const btn = document.querySelector('.pdp-buy-now');
+      btn.textContent = 'Loading...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: id, size: selected.dataset.size, quantity: qty }),
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else throw new Error(data.error);
+      } catch (e) {
+        alert('Something went wrong. Please try again.');
+        btn.textContent = 'Buy Now';
+        btn.disabled = false;
+      }
+    }
+    function addBundleToCart(qty) {
+      const selected = document.querySelector('.pdp-size-btn.selected');
+      if (!selected) {
+        document.getElementById('sizeError').classList.add('show');
+        document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const size = selected.dataset.size;
+      addToCart('polo-white-' + size.toLowerCase(), 'POLO [WHITE] — ' + size, '£60.00', 'images/polo-white-flat.jpg', qty);
     }
   </script>
 </body>

@@ -52,7 +52,6 @@ function showBagConfirm(name, price, img) {
         <p class="bag-confirm__label">Added to Bag</p>
         <p class="bag-confirm__name" id="bagConfirmName"></p>
         <p class="bag-confirm__price" id="bagConfirmPrice"></p>
-        <a href="cart.html" class="bag-confirm__cta">View Order →</a>
       </div>`;
     document.body.appendChild(overlay);
     overlay.querySelector('.bag-confirm__backdrop').addEventListener('click', hideBagConfirm);

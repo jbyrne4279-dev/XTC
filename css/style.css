@@ -983,7 +983,6 @@ ul, ol { list-style: none; }
   left: 20px;
   font-size: 10px;
   letter-spacing: 2px;
-  text-transform: uppercase;
   color: var(--accent);
   border: 1px solid rgba(179,102,255,0.35);
   padding: 5px 12px;
