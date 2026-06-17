@@ -92,142 +92,14 @@
       display: block;
       flex-shrink: 0;
     }
-    .lb-panel {
-      width: 280px;
-      flex-shrink: 0;
-      background: #0d0d0d;
-      border-left: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .lb-panel__top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
     .lb-counter {
       font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
       color: rgba(255,255,255,0.2);
-      position: static; transform: none; bottom: auto; left: auto;
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
     }
-    .lb-like-btn {
-      background: none; border: none; cursor: pointer;
-      display: flex; align-items: center; gap: 6px;
-      color: rgba(255,255,255,0.4);
-      font-size: 12px; letter-spacing: 1px;
-      transition: color 0.2s;
-      padding: 0;
-    }
-    .lb-like-btn:hover { color: #fff; }
-    .lb-like-btn.liked { color: #e53e3e; }
-    .lb-like-btn.liked .lb-heart { fill: #e53e3e; stroke: #e53e3e; }
-    .lb-heart { width: 18px; height: 18px; transition: fill 0.2s, stroke 0.2s; }
-    .lb-comments {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .lb-comments::-webkit-scrollbar { width: 3px; }
-    .lb-comments::-webkit-scrollbar-track { background: transparent; }
-    .lb-comments::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .lb-no-comments {
-      font-size: 11px; letter-spacing: 1px;
-      color: rgba(255,255,255,0.2);
-      text-align: center;
-      margin: auto 0;
-    }
-    .lb-sign-in-prompt {
-      font-size: 11px;
-      color: rgba(255,255,255,0.25);
-      text-align: center;
-      margin: auto 0;
-      line-height: 1.6;
-    }
-    .lb-sign-in-prompt a {
-      color: rgba(179,102,255,0.9);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(179,102,255,0.3);
-    }
-    .lb-comment {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .lb-comment__line {
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.5;
-      word-break: break-word;
-    }
-    .lb-comment__user {
-      font-weight: 600;
-      color: #fff;
-      margin-right: 6px;
-      letter-spacing: 0;
-    }
-    .lb-comment__date {
-      font-size: 10px;
-      letter-spacing: 0.5px;
-      color: rgba(255,255,255,0.2);
-      margin-top: 1px;
-    }
-    .lb-likes-who {
-      font-size: 11px;
-      color: rgba(255,255,255,0.35);
-      padding: 0 16px 8px;
-      letter-spacing: 0.3px;
-    }
-    .lb-likes-who strong {
-      color: rgba(255,255,255,0.7);
-      font-weight: 600;
-    }
-    .lb-comment-form {
-      display: flex;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 10px 12px;
-      gap: 8px;
-      align-items: center;
-    }
-    .lb-comment-input {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 4px;
-      padding: 7px 10px;
-      font-size: 12px;
-      color: #fff;
-      outline: none;
-      font-family: inherit;
-      letter-spacing: 0.5px;
-      transition: border-color 0.2s;
-    }
-    .lb-comment-input:focus { border-color: rgba(130,60,220,0.6); }
-    .lb-comment-input::placeholder { color: rgba(255,255,255,0.2); }
-    .lb-comment-submit {
-      background: rgba(100,40,160,0.7);
-      border: 1px solid rgba(130,60,220,0.4);
-      border-radius: 4px;
-      color: rgba(255,255,255,0.85);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 7px 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .lb-comment-submit:hover { background: rgba(130,60,220,0.9); }
     @media (max-width: 860px) {
       .lb-content { flex-direction: column; max-height: 90vh; }
-      #lightbox img { max-width: 90vw; max-height: 55vh; }
-      .lb-panel { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); max-height: 35vh; }
+      #lightbox img { max-width: 90vw; max-height: 80vh; }
     }
     .lb-close {
       position: absolute;
@@ -492,21 +364,6 @@
     <button class="lb-prev" id="lbPrev">‹</button>
     <div class="lb-content">
       <img id="lbImg" src="" alt="" />
-      <div class="lb-panel">
-        <div class="lb-panel__top">
-          <span class="lb-counter" id="lbCounter"></span>
-          <button class="lb-like-btn" id="lbLike" aria-label="Like">
-            <svg class="lb-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            <span id="lbLikeCount">0</span>
-          </button>
-        </div>
-        <div class="lb-likes-who" id="lbLikesWho"></div>
-        <div class="lb-comments" id="lbComments"></div>
-        <form class="lb-comment-form" id="lbCommentForm">
-          <input class="lb-comment-input" id="lbCommentInput" type="text" placeholder="Add a comment…" maxlength="200" autocomplete="off" />
-          <button class="lb-comment-submit" type="submit">Post</button>
-        </form>
-      </div>
     </div>
     <button class="lb-next" id="lbNext">›</button>
   </div>
@@ -569,135 +426,17 @@
   <script src="js/stock.js"></script>
   <script src="js/main.js"></script>
   <script>
-  // Seed default likes & comments once
-  (function() {
-    if (localStorage.getItem('xtc-gallery-seeded')) return;
-    const likes = {
-      '0': 14, '0_likers': ['callum.r', 'tomwilson'],
-      '1': 9,  '1_likers': ['ryanjtc'],
-      '3': 22, '3_likers': ['liv_xtc', 'jake.m', 'ryanjtc'],
-      '5': 6,  '5_likers': ['callum.r'],
-      '7': 18, '7_likers': ['tomwilson', 'liv_xtc'],
-      '9': 11, '9_likers': ['jake.m'],
-      '11': 7, '11_likers': ['callum.r'],
-      '13': 31,'13_likers': ['ryanjtc', 'liv_xtc', 'tomwilson'],
-      '15': 4, '15_likers': [],
-      '18': 16,'18_likers': ['jake.m', 'callum.r'],
-      '21': 8, '21_likers': ['liv_xtc'],
-      '24': 13,'24_likers': ['tomwilson']
-    };
-    const comments = {
-      '0':  [{ user: 'callum.r',  text: 'this colourway is clean',    date: '2 Jun' },
-             { user: 'tomwilson', text: 'need this in my wardrobe',   date: '4 Jun' }],
-      '3':  [{ user: 'liv_xtc',   text: 'the fit on this is mad',     date: '28 May' },
-             { user: 'jake.m',    text: 'goated drop honestly',       date: '1 Jun' },
-             { user: 'ryanjtc',   text: 'already ordered mine',       date: '3 Jun' }],
-      '7':  [{ user: 'tomwilson', text: 'quality looks unreal here',  date: '30 May' }],
-      '13': [{ user: 'ryanjtc',   text: 'best one from the shoot',    date: '27 May' },
-             { user: 'liv_xtc',   text: 'agree, this is the one',     date: '29 May' }],
-      '18': [{ user: 'jake.m',    text: 'black polo goes with anything', date: '5 Jun' }],
-      '24': [{ user: 'callum.r',  text: 'white fits differently',     date: '6 Jun' }]
-    };
-    localStorage.setItem('xtc-gallery-likes', JSON.stringify(likes));
-    localStorage.setItem('xtc-gallery-comments', JSON.stringify(comments));
-    localStorage.setItem('xtc-gallery-seeded', '1');
-  })();
-  </script>
-  <script>
   (function() {
     const images = Array.from(document.querySelectorAll('.gallery-item img'));
     const lightbox = document.getElementById('lightbox');
     const lbImg    = document.getElementById('lbImg');
     const lbCounter = document.getElementById('lbCounter');
-    const lbLike      = document.getElementById('lbLike');
-    const lbLikeCount = document.getElementById('lbLikeCount');
-    const lbLikesWho  = document.getElementById('lbLikesWho');
-    const lbComments  = document.getElementById('lbComments');
-    const lbCommentForm  = document.getElementById('lbCommentForm');
-    const lbCommentInput = document.getElementById('lbCommentInput');
     let current = 0;
-
-    function getUser() {
-      try { return JSON.parse(localStorage.getItem('xtc-user')); } catch(e) { return null; }
-    }
-    function getUsername() {
-      const u = getUser();
-      if (!u) return null;
-      return u.name || u.email.split('@')[0];
-    }
-
-    function getLikes() { try { return JSON.parse(localStorage.getItem('xtc-gallery-likes') || '{}'); } catch(e) { return {}; } }
-    function getComments() { try { return JSON.parse(localStorage.getItem('xtc-gallery-comments') || '{}'); } catch(e) { return {}; } }
-    function saveLikes(d) { localStorage.setItem('xtc-gallery-likes', JSON.stringify(d)); }
-    function saveComments(d) { localStorage.setItem('xtc-gallery-comments', JSON.stringify(d)); }
-
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function renderPanel() {
-      const likes = getLikes();
-      const comments = getComments();
-      const key = String(current);
-      const count = likes[key] || 0;
-      const liked = !!likes[key + '_me'];
-      lbLikeCount.textContent = count;
-      lbLike.classList.toggle('liked', liked);
-
-      // Likes who text
-      if (count === 0) {
-        lbLikesWho.textContent = '';
-      } else {
-        const likers = likes[key + '_likers'] || [];
-        if (likers.length === 1) {
-          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong>`;
-        } else if (likers.length === 2) {
-          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong> and <strong>${escHtml(likers[1])}</strong>`;
-        } else if (likers.length > 2) {
-          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong> and <strong>${count - 1} others</strong>`;
-        } else {
-          lbLikesWho.innerHTML = `<strong>${count}</strong> ${count === 1 ? 'like' : 'likes'}`;
-        }
-      }
-
-      // Comments
-      const loggedIn = !!getUser();
-      const list = comments[key] || [];
-      if (list.length === 0) {
-        lbComments.innerHTML = '<p class="lb-no-comments">No comments yet. Be the first!</p>';
-      } else {
-        lbComments.innerHTML = list.map(c => `
-          <div class="lb-comment">
-            <p class="lb-comment__line">
-              <span class="lb-comment__user">${escHtml(c.user || 'anonymous')}</span>${escHtml(c.text)}
-            </p>
-            <span class="lb-comment__date">${c.date}</span>
-          </div>`).join('');
-      }
-      lbComments.scrollTop = lbComments.scrollHeight;
-
-      // Show/hide input based on login state
-      lbCommentForm.style.display = loggedIn ? 'flex' : 'none';
-      let signInEl = document.getElementById('lbSignIn');
-      if (!loggedIn) {
-        if (!signInEl) {
-          signInEl = document.createElement('p');
-          signInEl.id = 'lbSignIn';
-          signInEl.className = 'lb-sign-in-prompt';
-          signInEl.innerHTML = '<a href="profile.html">Sign in</a> to like &amp; comment';
-          lbCommentForm.parentNode.insertBefore(signInEl, lbCommentForm);
-        }
-        signInEl.style.display = 'block';
-      } else if (signInEl) {
-        signInEl.style.display = 'none';
-      }
-    }
 
     function open(idx) {
       current = idx;
       lbImg.src = images[current].src;
       lbCounter.textContent = (current + 1) + ' / ' + images.length;
-      renderPanel();
       lightbox.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -707,45 +446,6 @@
     }
     function prev() { open((current - 1 + images.length) % images.length); }
     function next() { open((current + 1) % images.length); }
-
-    lbLike.addEventListener('click', e => {
-      e.stopPropagation();
-      const username = getUsername();
-      if (!username) { window.location.href = 'profile.html'; return; }
-      const likes = getLikes();
-      const key = String(current);
-      const likers = likes[key + '_likers'] || [];
-      if (likes[key + '_me']) {
-        likes[key] = Math.max(0, (likes[key] || 1) - 1);
-        delete likes[key + '_me'];
-        const idx = likers.indexOf(username);
-        if (idx !== -1) likers.splice(idx, 1);
-      } else {
-        likes[key] = (likes[key] || 0) + 1;
-        likes[key + '_me'] = true;
-        if (!likers.includes(username)) likers.unshift(username);
-      }
-      likes[key + '_likers'] = likers;
-      saveLikes(likes);
-      renderPanel();
-    });
-
-    lbCommentForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const username = getUsername();
-      if (!username) return;
-      const text = lbCommentInput.value.trim();
-      if (!text) return;
-      const comments = getComments();
-      const key = String(current);
-      if (!comments[key]) comments[key] = [];
-      const now = new Date();
-      const date = now.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
-      comments[key].push({ user: username, text, date });
-      saveComments(comments);
-      lbCommentInput.value = '';
-      renderPanel();
-    });
 
     document.querySelectorAll('.gallery-item').forEach((item, i) => {
       item.addEventListener('click', () => open(i));
