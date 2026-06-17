@@ -1763,6 +1763,15 @@ ul, ol { list-style: none; }
   -webkit-text-fill-color: transparent;
   animation: tagline-shine 3s linear infinite;
 }
+.tagline-never {
+  background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,0.4) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: tagline-shine 3s linear infinite;
+  animation-delay: 1.5s;
+}
 
 .footer-links-grid {
   display: grid;
