@@ -2548,9 +2548,7 @@ textarea {
   .fp-card__sub { display: none; }
 }
 
-@media (min-width: 769px) {
-  .fp-eyebrow { display: none; }
-}
+.fp-eyebrow { display: none; }
 
 /* Very small phones */
 @media (max-width: 390px) {
