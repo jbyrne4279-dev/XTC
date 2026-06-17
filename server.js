@@ -44,9 +44,6 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`XTC server running on port ${PORT}`));
