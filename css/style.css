@@ -2422,6 +2422,9 @@ textarea {
 
   /* ── Section headers ── */
   .section-header { margin-bottom: var(--sp-8); }
+
+  /* ── Hide product sub-text on mobile ── */
+  .fp-card__sub { display: none; }
 }
 
 /* Very small phones */
