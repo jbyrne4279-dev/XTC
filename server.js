@@ -4,7 +4,7 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 const PRODUCTS = {
   'polo-black': { name: 'XTC Polo [Black]', amount: 6000 },
