@@ -312,6 +312,11 @@
       .cart-items-col { border-right: none; }
       .cart-summary-col { position: static; padding: 40px 28px; border-top: 1px solid var(--border); }
     }
+    @media (max-width: 600px) {
+      .cart-size-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .cart-size-pills { flex-wrap: wrap; gap: 6px; }
+      .cart-item__top { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
