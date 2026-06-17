@@ -75,11 +75,17 @@
         <path d="M15 26l8 8 14-14" stroke="#b366ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <p class="confirmed-title">Order Confirmed</p>
-      <p class="confirmed-sub">Thank you. Your order is on its way.</p>
+      <p class="confirmed-sub" id="confirmedSub">Thank you. Your order is being processed.</p>
+      <p id="confirmedId" style="font-size:11px;letter-spacing:2px;color:rgba(179,102,255,0.7);margin-bottom:32px;"></p>
       <a href="index.html" class="confirmed-back">Continue Shopping</a>
     </div>
   </main>
 
   <script src="js/main.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) document.getElementById('confirmedId').textContent = 'Order ' + id;
+  </script>
 </body>
 </html>

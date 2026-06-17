@@ -497,6 +497,7 @@
     const orderId = 'XTC' + Date.now().toString().slice(-6);
     orders[orderId] = {
       id: orderId,
+      number: orderId,
       email: document.getElementById('coEmail').value,
       items: cart,
       date: new Date().toISOString(),
@@ -520,9 +521,7 @@
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(buyerEmail, 'checkout');
     if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, buyerEmail, cart, totalValue);
 
-    document.getElementById('checkoutWrap').style.display = 'none';
-    const success = document.getElementById('successScreen');
-    success.style.display = 'flex';
+    setTimeout(() => { window.location.href = 'order-confirmed.html?id=' + orderId; }, 400);
   });
 
   // begin_checkout event on page load

@@ -398,11 +398,12 @@
     btn.disabled = true;
     btn.textContent = 'Searching…';
 
-    // Check localStorage orders first
-    const orders = JSON.parse(localStorage.getItem('xtc-orders') || '[]');
-    const local  = orders.find(o =>
-      o.number?.toLowerCase() === orderNum.toLowerCase() &&
-      o.email?.toLowerCase()  === email.toLowerCase()
+    // Check localStorage orders first (saved as object keyed by ID)
+    const ordersRaw = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
+    const ordersList = Array.isArray(ordersRaw) ? ordersRaw : Object.values(ordersRaw);
+    const local = ordersList.find(o =>
+      (o.id?.toLowerCase() === orderNum.toLowerCase() || o.number?.toLowerCase() === orderNum.toLowerCase()) &&
+      o.email?.toLowerCase() === email.toLowerCase()
     );
 
     // Try Track123 API
@@ -454,7 +455,7 @@
 
   function showLocalResult(order) {
     document.getElementById('resultStatus').textContent = order.status || 'Processing';
-    document.getElementById('resultOrder').textContent  = 'Order ' + order.number;
+    document.getElementById('resultOrder').textContent  = 'Order ' + (order.id || order.number || '');
     const stepsEl = document.getElementById('resultSteps');
     const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
     stepsEl.innerHTML = STEPS.map((s, i) => {
