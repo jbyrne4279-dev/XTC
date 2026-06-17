@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account — XTC Clothing</title>
+  <meta name="description" content="Sign in to your XTC Clothing account to view orders, manage your profile and loyalty points." />
+  <link rel="icon" href="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" />
+  <style>
+    /* ── Reset & Root ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --bg-2: #111;
+      --bg-3: #161616;
+      --border: rgba(255,255,255,0.06);
+      --border-2: rgba(255,255,255,0.1);
+      --accent: #b366ff;
+      --accent-dim: rgba(179,102,255,0.15);
+      --accent-hover: #c77fff;
+      --text: #fff;
+      --text-2: rgba(255,255,255,0.55);
+      --text-3: rgba(255,255,255,0.35);
+      --red: #ff4d4d;
+      --green: #4dff91;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: 0.18s ease;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font: inherit; border: none; background: none; }
+    input, textarea, select { font: inherit; }
+    ul { list-style: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Announcement Bar ── */
+    .announcement-bar {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      height: 36px;
+      display: flex;
+      align-items: center;
+    }
+    .announcement-bar__track {
+      display: flex;
+      animation: ticker 28s linear infinite;
+      white-space: nowrap;
+      color: var(--text-2);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .announcement-bar__track span { padding: 0 2rem; }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Sticky Header ── */
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header {
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .header-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .header-logo img { height: 32px; width: auto; }
+    .header-logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+    .header-nav { display: flex; gap: 28px; flex: 1; }
+    .header-nav a {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      transition: color var(--transition);
+    }
+    .header-nav a:hover, .header-nav a.active { color: var(--text); }
+    .header-actions { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+    .header-actions button,
+    .header-actions a {
+      color: var(--text-2);
+      transition: color var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .header-actions button:hover,
+    .header-actions a:hover,
+    .header-actions a.active { color: var(--text); }
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+    .header-menu-toggle { display: none; }
+    @media (max-width: 768px) {
+      .header-nav { display: none; }
+      .header-menu-toggle { display: flex; align-items: center; }
+    }
+
+    /* ── Nav Drawer ── */
+    .nav-drawer { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .nav-drawer.open { pointer-events: all; }
+    .nav-drawer__overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .nav-drawer.open .nav-drawer__overlay { opacity: 1; }
+    .nav-drawer__panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: min(320px, 85vw);
+      background: var(--bg-2);
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-drawer.open .nav-drawer__panel { transform: translateX(0); }
+    .nav-drawer__close {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-2);
+      font-size: 13px;
+      margin-bottom: 32px;
+      transition: color var(--transition);
+    }
+    .nav-drawer__close:hover { color: var(--text); }
+    .nav-drawer__links { display: flex; flex-direction: column; gap: 4px; }
+    .nav-drawer__links a {
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-2);
+      border-bottom: 1px solid var(--border);
+      transition: color var(--transition);
+    }
+    .nav-drawer__links a:hover { color: var(--text); }
+
+    /* ── Search Overlay ── */
+    .search-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 120px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .search-overlay.open { opacity: 1; pointer-events: all; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      width: min(600px, 90vw);
+    }
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 16px;
+    }
+    .search-box input::placeholder { color: var(--text-3); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 12px 24px;
+      font-size: 14px;
+      color: var(--text);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      white-space: nowrap;
+      max-width: 90vw;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Page Layout ── */
+    .page-main {
+      min-height: calc(100vh - 100px);
+      padding: 0 0 80px;
+    }
+
+    /* ── Auth Section ── */
+    #authSection {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 200px);
+      padding: 40px 16px;
+    }
+    .auth-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 440px;
+    }
+    @media (max-width: 480px) {
+      .auth-card { padding: 28px 20px; border-radius: 16px; }
+    }
+    .auth-wordmark {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .auth-wordmark span { color: var(--accent); }
+    .auth-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    /* Google Button */
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .btn-google:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+    .btn-google svg { flex-shrink: 0; }
+
+    /* Divider */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--text-3);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Tab Pills */
+    .auth-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: background var(--transition), color var(--transition);
+      text-align: center;
+    }
+    .auth-tab.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .auth-tab:not(.active):hover { color: var(--text); }
+
+    /* Form Fields */
+    .form-field {
+      margin-bottom: 14px;
+    }
+    .form-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+    .form-field input {
+      width: 100%;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .form-field input:focus { border-color: var(--accent); }
+    .form-field input::placeholder { color: var(--text-3); }
+    .form-field .field-error {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 5px;
+      display: none;
+    }
+    .form-field.has-error input { border-color: var(--red); }
+    .form-field.has-error .field-error { display: block; }
+
+    /* Buttons */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: background var(--transition), transform var(--transition);
+      margin-top: 4px;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 6px;
+      transition: color var(--transition);
+    }
+    .forgot-link:hover { color: var(--accent-hover); }
+
+    .auth-toggle {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-2);
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .auth-toggle button {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      margin-left: 4px;
+      transition: color var(--transition);
+    }
+    .auth-toggle button:hover { color: var(--accent-hover); }
+
+    /* Phone OTP */
+    .phone-step { display: none; }
+    .phone-step.active { display: block; }
+    .phone-sent-label {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .phone-sent-label strong { color: var(--text); }
+    .otp-inputs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .otp-inputs input {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      aspect-ratio: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition);
+      padding: 0;
+    }
+    .otp-inputs input:focus { border-color: var(--accent); }
+    .resend-link {
+      font-size: 12px;
+      color: var(--accent);
+      transition: color var(--transition);
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .resend-link button {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      transition: color var(--transition);
+    }
+    .resend-link button:hover { color: var(--accent-hover); }
+
+    /* ── Dashboard ── */
+    #dashSection {
+      display: none;
+      padding: 32px 24px 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Top bar */
+    .dash-topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 24px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .dash-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+    }
+    .dash-user-info { flex: 1; min-width: 0; }
+    .dash-user-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dash-user-email {
+      font-size: 13px;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-signout {
+      padding: 9px 18px;
+      background: transparent;
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .btn-signout:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+
+    /* Stats row */
+    .dash-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-2);
+      font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      .stat-value { font-size: 22px; }
+      .stat-card { padding: 16px 14px; }
+    }
+
+    /* Two-col layout */
+    .dash-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .dash-cols { grid-template-columns: 1fr; }
+    }
+
+    .dash-panel {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .dash-panel-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-2);
+    }
+    .dash-panel-body { padding: 20px 22px; }
+
+    /* Order history */
+    .orders-empty {
+      text-align: center;
+      padding: 32px 0;
+    }
+    .orders-empty svg { margin: 0 auto 12px; opacity: 0.3; }
+    .orders-empty p { font-size: 14px; color: var(--text-2); }
+    .orders-empty a { color: var(--accent); }
+
+    .order-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .order-item-id {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .order-item-date {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+    .order-item-total {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .order-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--green);
+    }
+    .order-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Account details form */
+    .detail-form .form-field { margin-bottom: 14px; }
+    .detail-form .form-field:last-of-type { margin-bottom: 0; }
+
+    /* Loyalty card */
+    .loyalty-card {
+      background: linear-gradient(135deg, rgba(179,102,255,0.2) 0%, rgba(179,102,255,0.05) 100%);
+      border: 1px solid rgba(179,102,255,0.3);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-top: 16px;
+    }
+    .loyalty-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .loyalty-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+    .loyalty-points {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .loyalty-points span { font-size: 18px; font-weight: 600; color: var(--text-2); }
+    .loyalty-note {
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .loyalty-bar-wrap {
+      margin-top: 14px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .loyalty-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+    .loyalty-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+
+    /* Delete account */
+    .delete-account-wrap {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .delete-account-btn {
+      font-size: 12px;
+      color: var(--text-3);
+      transition: color var(--transition);
+    }
+    .delete-account-btn:hover { color: var(--red); }
+
+    /* Confirm Dialog */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .dialog-overlay.open { opacity: 1; pointer-events: all; }
+    .dialog-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+    .dialog-overlay.open .dialog-box { transform: scale(1); }
+    .dialog-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .dialog-box p { font-size: 14px; color: var(--text-2); margin-bottom: 24px; }
+    .dialog-actions { display: flex; gap: 10px; }
+    .dialog-actions button { flex: 1; padding: 11px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; }
+    .btn-cancel { background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2); transition: color var(--transition); }
+    .btn-cancel:hover { color: var(--text); }
+    .btn-delete { background: var(--red); color: #fff; }
+    .btn-delete:hover { background: #ff6b6b; }
+
+    /* Save row */
+    .save-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+    .btn-save {
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: background var(--transition);
+    }
+    .btn-save:hover { background: var(--accent-hover); }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 0;
+      margin-top: 80px;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 768px) {
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+    }
+    .footer-brand__logo img { height: 28px; margin-bottom: 16px; }
+    .footer-brand__tagline { font-size: 14px; color: var(--text-2); line-height: 1.7; margin-bottom: 20px; }
+    .footer-socials { display: flex; gap: 12px; }
+    .footer-social-link {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .footer-social-link:hover { border-color: var(--accent); color: var(--accent); }
+    .footer-social-link svg { width: 16px; height: 16px; fill: currentColor; }
+    .footer-links-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    @media (max-width: 480px) {
+      .footer-links-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .footer-links__heading {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-2);
+      margin-bottom: 16px;
+    }
+    .footer-links ul { display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { font-size: 14px; color: var(--text-2); transition: color var(--transition); }
+    .footer-links a:hover { color: var(--text); }
+    .footer-bottom { padding: 20px 0; }
+    .footer-copyright { font-size: 12px; color: var(--text-3); }
+  </style>
+</head>
+<body>
+
+  <!-- ── STICKY HEADER ── -->
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+      <nav class="header-nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button id="searchToggle" aria-label="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+        <a href="profile.html" aria-label="Account" class="active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+        <a href="cart.html" aria-label="Cart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-count" id="cartCount">0</span></a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle"><svg width="22" height="16" viewBox="0 0 22 16" fill="none"><line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/><line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/><line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/></svg></button>
+      </div>
+    </div>
+  </header></div>
+
+  <!-- ── NAV DRAWER ── -->
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Close</button>
+      <nav class="nav-drawer__links">
+        <a href="index.html">Home</a><a href="collections.html">New Releases</a><a href="track-order.html">Track Order</a><a href="gallery.html">Gallery</a><a href="contact.html">Contact</a><a href="profile.html">Account</a><a href="cart.html">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ── SEARCH OVERLAY ── -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search products…" id="searchInput" />
+      <button id="searchClose" aria-label="Close search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="page-main">
+
+    <!-- AUTH CARD -->
+    <section id="authSection">
+      <div class="auth-card">
+        <div class="auth-wordmark">XTC<span>.</span></div>
+        <h1 class="auth-heading" id="authHeading">Welcome back</h1>
+
+        <!-- Google -->
+        <button class="btn-google" id="googleBtn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="auth-divider">or</div>
+
+        <!-- Tab Pills -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabEmail" type="button">Email</button>
+          <button class="auth-tab" id="tabPhone" type="button">Phone Number</button>
+        </div>
+
+        <!-- EMAIL FORM -->
+        <div id="emailForm">
+          <!-- Sign In fields -->
+          <div id="emailSignInFields">
+            <div class="form-field" id="fieldSignInEmail">
+              <label for="siEmail">Email</label>
+              <input type="email" id="siEmail" placeholder="you@example.com" autocomplete="email" />
+              <span class="field-error" id="siEmailErr">Please enter a valid email.</span>
+            </div>
+            <div class="form-field" id="fieldSignInPass">
+              <label for="siPass">Password</label>
+              <input type="password" id="siPass" placeholder="••••••••" autocomplete="current-password" />
+              <span class="field-error" id="siPassErr">Password is required.</span>
+            </div>
+            <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+            <button class="btn-primary" id="signInBtn" type="button">Sign In</button>
+          </div>
+          <!-- Create Account fields -->
+          <div id="emailCreateFields" style="display:none">
+            <div class="form-field" id="fieldCreateName">
+              <label for="caName">Full Name</label>
+              <input type="text" id="caName" placeholder="Your name" autocomplete="name" />
+              <span class="field-error" id="caNameErr">Name is required.</span>
+            </div>
+            <div class="form-field" id="fieldCreateEmail">
+              <label for="caEmail">Email</label>
+              <input type="email" id="caEmail" placeholder="you@example.com" autocomplete="email" />
+              <span class="field-error" id="caEmailErr">Please enter a valid email.</span>
+            </div>
+            <div class="form-field" id="fieldCreatePass">
+              <label for="caPass">Password</label>
+              <input type="password" id="caPass" placeholder="Min. 8 characters" autocomplete="new-password" />
+              <span class="field-error" id="caPassErr">Password must be at least 8 characters.</span>
+            </div>
+            <button class="btn-primary" id="createAccountBtn" type="button">Create Account</button>
+          </div>
+        </div>
+
+        <!-- PHONE FORM -->
+        <div id="phoneForm" style="display:none">
+          <!-- Step 1: enter number -->
+          <div class="phone-step active" id="phoneStep1">
+            <div class="form-field" id="fieldPhone">
+              <label for="phoneInput">Phone Number</label>
+              <input type="tel" id="phoneInput" placeholder="+44 7700 900000" autocomplete="tel" />
+              <span class="field-error" id="phoneInputErr">Please enter a valid phone number.</span>
+            </div>
+            <button class="btn-primary" id="sendCodeBtn" type="button">Send Code</button>
+          </div>
+          <!-- Step 2: OTP -->
+          <div class="phone-step" id="phoneStep2">
+            <p class="phone-sent-label">Code sent to <strong id="phoneSentTo"></strong></p>
+            <div class="otp-inputs" id="otpInputs">
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="0" />
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="1" />
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="2" />
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="3" />
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="4" />
+              <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-index="5" />
+            </div>
+            <button class="btn-primary" id="verifyOtpBtn" type="button">Verify</button>
+            <span class="resend-link"><button type="button" id="resendCodeBtn">Resend code</button></span>
+          </div>
+        </div>
+
+        <!-- Toggle sign in / create -->
+        <div class="auth-toggle" id="authToggleRow">
+          <span id="authToggleText">Don't have an account?</span>
+          <button type="button" id="authToggleBtn">Create account</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashSection">
+      <!-- Top bar -->
+      <div class="dash-topbar">
+        <div class="dash-avatar" id="dashAvatar">JD</div>
+        <div class="dash-user-info">
+          <div class="dash-user-name" id="dashName">Jane Doe</div>
+          <div class="dash-user-email" id="dashEmail">jane@example.com</div>
+        </div>
+        <button class="btn-signout" id="signOutBtn" type="button">Sign Out</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="dash-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="statOrders">0</div>
+          <div class="stat-label">Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statPoints">0</div>
+          <div class="stat-label">Points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statSince">—</div>
+          <div class="stat-label">Member Since</div>
+        </div>
+      </div>
+
+      <!-- Two col -->
+      <div class="dash-cols">
+        <!-- Order History -->
+        <div class="dash-panel">
+          <div class="dash-panel-head">Order History</div>
+          <div class="dash-panel-body" id="orderHistoryBody">
+            <div class="orders-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <p>No orders yet.<br /><a href="collections.html">Start shopping</a></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Details -->
+        <div>
+          <div class="dash-panel">
+            <div class="dash-panel-head">Account Details</div>
+            <div class="dash-panel-body">
+              <form class="detail-form" id="detailForm" onsubmit="return false">
+                <div class="form-field">
+                  <label for="detailName">Full Name</label>
+                  <input type="text" id="detailName" placeholder="Your name" />
+                </div>
+                <div class="form-field">
+                  <label for="detailEmail">Email</label>
+                  <input type="email" id="detailEmail" placeholder="you@example.com" />
+                </div>
+                <div class="form-field">
+                  <label for="detailPhone">Phone</label>
+                  <input type="tel" id="detailPhone" placeholder="+44 7700 900000" />
+                </div>
+                <div class="save-row">
+                  <button class="btn-save" type="submit" id="saveDetailsBtn">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Loyalty Card -->
+          <div class="loyalty-card">
+            <div class="loyalty-card-head">
+              <span class="loyalty-label">XTC Loyalty</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b366ff" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="loyalty-points"><span id="loyaltyPoints">0</span> <span>pts</span></div>
+            <div class="loyalty-note">100 pts = £1 off your next order</div>
+            <div class="loyalty-bar-wrap">
+              <div class="loyalty-bar" id="loyaltyBar" style="width:0%"></div>
+            </div>
+            <div class="loyalty-bar-labels">
+              <span>0</span>
+              <span id="loyaltyNextReward">Next reward at 100 pts</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          <!-- Delete Account -->
+          <div class="delete-account-wrap">
+            <button class="delete-account-btn" type="button" id="deleteAccountBtn">Delete account</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand__logo"><img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" /></div>
+          <p class="footer-brand__tagline">Premium heavyweight polos.<br>Limited drops. Never restocked.</p>
+          <div class="footer-socials">
+            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg></a>
+          </div>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-links"><h3 class="footer-links__heading">Shop</h3><ul><li><a href="index.html">Home</a></li><li><a href="collections.html">New Releases</a></li><li><a href="product-polo-black.html">Polo [Black]</a></li><li><a href="product-polo-white.html">Polo [White]</a></li></ul></div>
+          <div class="footer-links"><h3 class="footer-links__heading">Account</h3><ul><li><a href="profile.html">My Profile</a></li><li><a href="track-order.html">Track Order</a></li><li><a href="cart.html">Cart</a></li></ul></div>
+          <div class="footer-links"><h3 class="footer-links__heading">Help</h3><ul><li><a href="contact.html">Contact Us</a></li><li><a href="shipping.html">Shipping</a></li><li><a href="returns.html">Returns</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
+        </div>
+      </div>
+      <div class="footer-bottom"><p class="footer-copyright">© 2026 XTC. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <!-- ── TOAST ── -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── DELETE CONFIRM DIALOG ── -->
+  <div class="dialog-overlay" id="deleteDialog">
+    <div class="dialog-box">
+      <h3>Delete Account</h3>
+      <p>This will permanently remove your account, order history and loyalty points. This action cannot be undone.</p>
+      <div class="dialog-actions">
+        <button class="btn-cancel" type="button" id="deleteCancelBtn">Cancel</button>
+        <button class="btn-delete" type="button" id="deleteConfirmBtn">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCRIPTS ── -->
+  <script src="js/stock.js"></script>
+  <script src="js/omnisend-config.js"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ─── Supabase client ─── */
+    var sb = supabase.createClient(
+      'https://mugifniadilfwfgrsvie.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11Z2lmbmlhZGlsZndmZ3JzdmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTgxNzMsImV4cCI6MjA5NzI3NDE3M30.95VqWUKCcMeCCQON13Fy_USoGccoyCwVBRtKbp-aB60'
+    );
+
+    /* ─── Helpers ─── */
+    function toast(msg, duration) {
+      if (typeof window.showToast === 'function') { window.showToast(msg); return; }
+      var el = document.getElementById('toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._tid);
+      el._tid = setTimeout(function () { el.classList.remove('show'); }, duration || 3500);
+    }
+
+    function initials(name) {
+      if (!name) return '?';
+      var parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+    function isValidPhone(p) { return /^\+?[\d\s\-().]{7,}$/.test(p.trim()); }
+
+    /* mirror Supabase user into xtc-user for rest of site (cart, gallery, etc.) */
+    function syncLocalUser(supaUser, extraMeta) {
+      if (!supaUser) { localStorage.removeItem('xtc-user'); return; }
+      var meta = Object.assign({}, supaUser.user_metadata, extraMeta || {});
+      var existing = {};
+      try { existing = JSON.parse(localStorage.getItem('xtc-user') || '{}'); } catch(e) {}
+      var merged = Object.assign({
+        points: 0,
+        since: new Date().getFullYear(),
+        orders: []
+      }, existing, {
+        id: supaUser.id,
+        email: supaUser.email || '',
+        phone: supaUser.phone || '',
+        name: meta.full_name || meta.name || existing.name || (supaUser.email ? supaUser.email.split('@')[0] : ''),
+        provider: (supaUser.app_metadata && supaUser.app_metadata.provider) || 'email'
+      });
+      localStorage.setItem('xtc-user', JSON.stringify(merged));
+      return merged;
+    }
+
+    function getLocalUser() {
+      try { return JSON.parse(localStorage.getItem('xtc-user') || 'null'); } catch(e) { return null; }
+
+    /* ─── Nav Drawer & Search ─── */
+    var drawer = document.getElementById('navDrawer');
+    var menuToggle = document.getElementById('menuToggle');
+    var drawerClose = document.getElementById('drawerClose');
+    var drawerOverlay = document.getElementById('drawerOverlay');
+    var searchOverlay = document.getElementById('searchOverlay');
+    var searchToggle = document.getElementById('searchToggle');
+    var searchClose = document.getElementById('searchClose');
+
+    if (menuToggle) menuToggle.addEventListener('click', function () { drawer && drawer.classList.add('open'); });
+    if (drawerClose) drawerClose.addEventListener('click', function () { drawer && drawer.classList.remove('open'); });
+    if (drawerOverlay) drawerOverlay.addEventListener('click', function () { drawer && drawer.classList.remove('open'); });
+    if (searchToggle) searchToggle.addEventListener('click', function () {
+      searchOverlay && searchOverlay.classList.add('open');
+      var si = document.getElementById('searchInput');
+      if (si) si.focus();
+    });
+    if (searchClose) searchClose.addEventListener('click', function () { searchOverlay && searchOverlay.classList.remove('open'); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        drawer && drawer.classList.remove('open');
+        searchOverlay && searchOverlay.classList.remove('open');
+      }
+    });
+
+    /* ─── Auth State ─── */
+    var isSignIn = true;
+    var activeTab = 'email';
+    var otpCode = '';
+    var pendingPhone = '';
+
+    var authSection = document.getElementById('authSection');
+    var dashSection = document.getElementById('dashSection');
+
+    function showDashboard(user) {
+      authSection.style.display = 'none';
+      dashSection.style.display = 'block';
+      populateDashboard(user);
+    }
+
+    function showAuth() {
+      authSection.style.display = 'flex';
+      dashSection.style.display = 'none';
+    }
+
+    /* ─── Dashboard Population ─── */
+    function populateDashboard(user) {
+      var av = document.getElementById('dashAvatar');
+      if (av) av.textContent = initials(user.name || user.email || user.phone || '?');
+
+      var dn = document.getElementById('dashName');
+      if (dn) dn.textContent = user.name || user.phone || 'Account';
+
+      var de = document.getElementById('dashEmail');
+      if (de) de.textContent = user.email || user.phone || '';
+
+      // Merge orders from user object and xtc-orders key
+      var orders = (user.orders || []).slice();
+      try {
+        var stored = JSON.parse(localStorage.getItem('xtc-orders') || '[]');
+        stored.forEach(function(o) {
+          if (!orders.find(function(x){ return x.id === o.id; })) orders.push(o);
+        });
+      } catch(e) {}
+
+      var so = document.getElementById('statOrders');
+      if (so) so.textContent = orders.length;
+
+      var sp = document.getElementById('statPoints');
+      if (sp) sp.textContent = (user.points || 0);
+
+      var ss = document.getElementById('statSince');
+      if (ss) ss.textContent = user.since || new Date().getFullYear();
+
+      // Order list
+      var body = document.getElementById('orderHistoryBody');
+      if (body) {
+        if (!orders.length) {
+          body.innerHTML = '<div class="orders-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><p>No orders yet.<br /><a href="collections.html">Start shopping</a></p></div>';
+        } else {
+          var html = '';
+          orders.slice().reverse().forEach(function(o) {
+            var id = o.id || o.orderId || '#—';
+            var date = o.date ? new Date(o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+            var total = o.total ? '£' + parseFloat(o.total).toFixed(2) : '—';
+            var status = o.status || 'Processing';
+            html += '<div class="order-item">' +
+              '<div class="order-item-top">' +
+                '<div><div class="order-item-id">' + id + '</div><div class="order-item-date">' + date + '</div></div>' +
+                '<div class="order-item-total">' + total + '</div>' +
+              '</div>' +
+              '<span class="order-status">' + status + '</span>' +
+            '</div>';
+          });
+          body.innerHTML = html;
+        }
+      }
+
+      // Detail form pre-fill
+      var df = document.getElementById('detailName');
+      if (df) df.value = user.name || '';
+      var dfe = document.getElementById('detailEmail');
+      if (dfe) dfe.value = user.email || '';
+      var dfp = document.getElementById('detailPhone');
+      if (dfp) dfp.value = user.phone || '';
+
+      // Loyalty
+      var pts = user.points || 0;
+      var lp = document.getElementById('loyaltyPoints');
+      if (lp) lp.textContent = pts;
+      var lb = document.getElementById('loyaltyBar');
+      if (lb) {
+        var pct = pts > 0 ? Math.min(100, pts % 100 === 0 ? 100 : pts % 100) : 0;
+        lb.style.width = pct + '%';
+      }
+      var ln = document.getElementById('loyaltyNextReward');
+      if (ln) {
+        var mod = pts % 100;
+        var remaining = mod === 0 && pts > 0 ? 0 : 100 - mod;
+        ln.textContent = remaining > 0 ? remaining + ' pts to next reward' : 'Reward available!';
+      }
+
+      // Cart count
+      try {
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        } else {
+          var cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+          var count = cart.reduce(function(s, i) { return s + (i.qty || 1); }, 0);
+          var cc = document.getElementById('cartCount');
+          if (cc) cc.textContent = count;
+          var dc = document.getElementById('drawerCartCount');
+          if (dc) dc.textContent = count;
+        }
+      } catch(e) {}
+    }
+
+    /* ─── Auth UI helpers ─── */
+    function setSignInMode(si) {
+      isSignIn = si;
+      var h = document.getElementById('authHeading');
+      var toggleText = document.getElementById('authToggleText');
+      var toggleBtn = document.getElementById('authToggleBtn');
+      var siFields = document.getElementById('emailSignInFields');
+      var caFields = document.getElementById('emailCreateFields');
+
+      if (si) {
+        if (h) h.textContent = 'Welcome back';
+        if (toggleText) toggleText.textContent = "Don't have an account?";
+        if (toggleBtn) toggleBtn.textContent = 'Create account';
+        if (siFields) siFields.style.display = 'block';
+        if (caFields) caFields.style.display = 'none';
+      } else {
+        if (h) h.textContent = 'Create your account';
+        if (toggleText) toggleText.textContent = 'Already have an account?';
+        if (toggleBtn) toggleBtn.textContent = 'Sign in';
+        if (siFields) siFields.style.display = 'none';
+        if (caFields) caFields.style.display = 'block';
+      }
+    }
+
+    function setActiveTab(tab) {
+      activeTab = tab;
+      var emailTab = document.getElementById('tabEmail');
+      var phoneTab = document.getElementById('tabPhone');
+      var emailForm = document.getElementById('emailForm');
+      var phoneForm = document.getElementById('phoneForm');
+      var authToggleRow = document.getElementById('authToggleRow');
+
+      if (tab === 'email') {
+        if (emailTab) emailTab.classList.add('active');
+        if (phoneTab) phoneTab.classList.remove('active');
+        if (emailForm) emailForm.style.display = 'block';
+        if (phoneForm) phoneForm.style.display = 'none';
+        if (authToggleRow) authToggleRow.style.display = 'block';
+      } else {
+        if (emailTab) emailTab.classList.remove('active');
+        if (phoneTab) phoneTab.classList.add('active');
+        if (emailForm) emailForm.style.display = 'none';
+        if (phoneForm) phoneForm.style.display = 'block';
+        if (authToggleRow) authToggleRow.style.display = 'none';
+        resetPhoneSteps();
+      }
+    }
+
+    function resetPhoneSteps() {
+      var s1 = document.getElementById('phoneStep1');
+      var s2 = document.getElementById('phoneStep2');
+      if (s1) s1.classList.add('active');
+      if (s2) s2.classList.remove('active');
+      otpCode = '';
+      pendingPhone = '';
+      document.querySelectorAll('.otp-box').forEach(function(b) { b.value = ''; });
+    }
+
+    /* ─── Field error helpers ─── */
+    function setError(fieldId, show) {
+      var el = document.getElementById(fieldId);
+      if (!el) return;
+      if (show) el.classList.add('has-error');
+      else el.classList.remove('has-error');
+    }
+    function clearErrors(ids) {
+      ids.forEach(function(id) { setError(id, false); });
+    }
+
+    /* ─── Tab events ─── */
+    var tabEmail = document.getElementById('tabEmail');
+    var tabPhone = document.getElementById('tabPhone');
+    if (tabEmail) tabEmail.addEventListener('click', function () { setActiveTab('email'); });
+    if (tabPhone) tabPhone.addEventListener('click', function () { setActiveTab('phone'); });
+
+    /* ─── Auth toggle ─── */
+    var authToggleBtn = document.getElementById('authToggleBtn');
+    if (authToggleBtn) authToggleBtn.addEventListener('click', function () { setSignInMode(!isSignIn); });
+
+    /* ─── Forgot password ─── */
+    var forgotLink = document.getElementById('forgotLink');
+    if (forgotLink) forgotLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      toast('Check your inbox for a reset link.');
+    });
+
+    /* ─── Sign In (email) ─── */
+    var signInBtn = document.getElementById('signInBtn');
+    if (signInBtn) signInBtn.addEventListener('click', function () {
+      clearErrors(['fieldSignInEmail', 'fieldSignInPass']);
+      var email = document.getElementById('siEmail').value.trim();
+      var pass = document.getElementById('siPass').value;
+      if (!isValidEmail(email)) { setError('fieldSignInEmail', true); return; }
+      if (!pass) { setError('fieldSignInPass', true); return; }
+
+      signInBtn.disabled = true;
+      signInBtn.textContent = 'Signing in…';
+      sb.auth.signInWithPassword({ email: email, password: pass }).then(function(res) {
+        signInBtn.disabled = false;
+        signInBtn.textContent = 'Sign In';
+        if (res.error) {
+          document.getElementById('siPassErr').textContent = res.error.message;
+          setError('fieldSignInPass', true);
+        } else {
+          var local = syncLocalUser(res.data.user);
+          toast('Welcome back, ' + (local.name || 'there') + '!');
+          showDashboard(local);
+        }
+      });
+    });
+
+    var siPass = document.getElementById('siPass');
+    if (siPass) siPass.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { var btn = document.getElementById('signInBtn'); if (btn) btn.click(); }
+    });
+
+    /* ─── Create Account (email) ─── */
+    var createAccountBtn = document.getElementById('createAccountBtn');
+    if (createAccountBtn) createAccountBtn.addEventListener('click', function () {
+      clearErrors(['fieldCreateName', 'fieldCreateEmail', 'fieldCreatePass']);
+      var name = document.getElementById('caName').value.trim();
+      var email = document.getElementById('caEmail').value.trim();
+      var pass = document.getElementById('caPass').value;
+
+      if (!name) { setError('fieldCreateName', true); return; }
+      if (!isValidEmail(email)) { setError('fieldCreateEmail', true); return; }
+      if (pass.length < 8) { setError('fieldCreatePass', true); return; }
+
+      createAccountBtn.disabled = true;
+      createAccountBtn.textContent = 'Creating…';
+      sb.auth.signUp({
+        email: email,
+        password: pass,
+        options: { data: { full_name: name } }
+      }).then(function(res) {
+        createAccountBtn.disabled = false;
+        createAccountBtn.textContent = 'Create Account';
+        if (res.error) {
+          document.getElementById('caEmailErr').textContent = res.error.message;
+          setError('fieldCreateEmail', true);
+        } else {
+          var local = syncLocalUser(res.data.user, { full_name: name });
+          toast('Welcome to XTC, ' + name + '! Check your email to confirm your account.');
+          showDashboard(local);
+        }
+      });
+    });
+
+    /* ─── Google Sign-In ─── */
+    var googleBtn = document.getElementById('googleBtn');
+    if (googleBtn) googleBtn.addEventListener('click', function () {
+      sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
+      });
+    });
+
+    /* ─── Forgot Password ─── */
+    var forgotLink = document.getElementById('forgotLink');
+    if (forgotLink) forgotLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      var email = document.getElementById('siEmail').value.trim();
+      if (!isValidEmail(email)) { toast('Enter your email above first.'); return; }
+      sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.href }).then(function(res) {
+        if (res.error) toast('Error: ' + res.error.message);
+        else toast('Password reset link sent to ' + email);
+      });
+    });
+
+    /* ─── Phone / OTP ─── */
+    var sendCodeBtn = document.getElementById('sendCodeBtn');
+    var verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    var resendCodeBtn = document.getElementById('resendCodeBtn');
+
+    function sendCode(phone) {
+      pendingPhone = phone;
+      sendCodeBtn && (sendCodeBtn.disabled = true, sendCodeBtn.textContent = 'Sending…');
+      sb.auth.signInWithOtp({ phone: phone }).then(function(res) {
+        sendCodeBtn && (sendCodeBtn.disabled = false, sendCodeBtn.textContent = 'Send Code');
+        if (res.error) { toast('Error: ' + res.error.message); return; }
+        var step1 = document.getElementById('phoneStep1');
+        var step2 = document.getElementById('phoneStep2');
+        if (step1) step1.classList.remove('active');
+        if (step2) step2.classList.add('active');
+        var sentTo = document.getElementById('phoneSentTo');
+        if (sentTo) sentTo.textContent = phone;
+        document.querySelectorAll('.otp-box').forEach(function(b) { b.value = ''; });
+        var firstBox = document.querySelector('.otp-box[data-index="0"]');
+        if (firstBox) firstBox.focus();
+        toast('Code sent to ' + phone);
+      });
+    }
+
+    if (sendCodeBtn) sendCodeBtn.addEventListener('click', function () {
+      clearErrors(['fieldPhone']);
+      var phone = document.getElementById('phoneInput').value.trim();
+      if (!isValidPhone(phone)) { setError('fieldPhone', true); return; }
+      sendCode(phone);
+    });
+
+    if (resendCodeBtn) resendCodeBtn.addEventListener('click', function () {
+      if (pendingPhone) sendCode(pendingPhone);
+    });
+
+    document.addEventListener('input', function (e) {
+      if (!e.target.classList.contains('otp-box')) return;
+      var idx = parseInt(e.target.dataset.index, 10);
+      var val = e.target.value.replace(/\D/g, '');
+      e.target.value = val.slice(-1);
+      if (val && idx < 5) {
+        var next = document.querySelector('.otp-box[data-index="' + (idx + 1) + '"]');
+        if (next) next.focus();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!e.target.classList.contains('otp-box')) return;
+      var idx = parseInt(e.target.dataset.index, 10);
+      if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+        var prev = document.querySelector('.otp-box[data-index="' + (idx - 1) + '"]');
+        if (prev) { prev.value = ''; prev.focus(); }
+      }
+    });
+
+    if (verifyOtpBtn) verifyOtpBtn.addEventListener('click', function () {
+      var boxes = document.querySelectorAll('.otp-box');
+      var entered = '';
+      boxes.forEach(function(b) { entered += b.value; });
+      if (entered.length < 6) { toast('Enter the full 6-digit code.'); return; }
+      verifyOtpBtn.disabled = true;
+      verifyOtpBtn.textContent = 'Verifying…';
+      sb.auth.verifyOtp({ phone: pendingPhone, token: entered, type: 'sms' }).then(function(res) {
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.textContent = 'Verify';
+        if (res.error) { toast('Incorrect code. Try again.'); return; }
+        var local = syncLocalUser(res.data.user);
+        toast('Phone verified! Welcome.');
+        showDashboard(local);
+      });
+    });
+
+    /* ─── Sign Out ─── */
+    var signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) signOutBtn.addEventListener('click', function () {
+      sb.auth.signOut().then(function() {
+        localStorage.removeItem('xtc-user');
+        setSignInMode(true);
+        setActiveTab('email');
+        showAuth();
+        toast('You have been signed out.');
+      });
+    });
+
+    /* ─── Save Details ─── */
+    var detailForm = document.getElementById('detailForm');
+    if (detailForm) detailForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = document.getElementById('detailName').value.trim();
+      var phone = document.getElementById('detailPhone').value.trim();
+      sb.auth.updateUser({ data: { full_name: name, phone: phone } }).then(function(res) {
+        var local = getLocalUser() || {};
+        local.name = name;
+        local.phone = phone;
+        localStorage.setItem('xtc-user', JSON.stringify(local));
+        var av = document.getElementById('dashAvatar');
+        if (av) av.textContent = initials(name || local.email || '?');
+        var dn = document.getElementById('dashName');
+        if (dn) dn.textContent = name || local.phone || 'Account';
+        toast('Details saved.');
+      });
+    });
+
+    /* ─── Delete Account ─── */
+    var deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    var deleteDialog = document.getElementById('deleteDialog');
+    var deleteCancelBtn = document.getElementById('deleteCancelBtn');
+    var deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+
+    if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', function () {
+      if (deleteDialog) deleteDialog.classList.add('open');
+    });
+    if (deleteCancelBtn) deleteCancelBtn.addEventListener('click', function () {
+      if (deleteDialog) deleteDialog.classList.remove('open');
+    });
+    if (deleteConfirmBtn) deleteConfirmBtn.addEventListener('click', function () {
+      sb.auth.signOut().then(function() {
+        localStorage.removeItem('xtc-user');
+        localStorage.removeItem('xtc-orders');
+        if (deleteDialog) deleteDialog.classList.remove('open');
+        setSignInMode(true);
+        setActiveTab('email');
+        showAuth();
+        toast('Your account has been deleted.');
+      });
+    });
+    if (deleteDialog) deleteDialog.addEventListener('click', function (e) {
+      if (e.target === deleteDialog) deleteDialog.classList.remove('open');
+    });
+
+    /* ─── Init — check Supabase session ─── */
+    (function init() {
+      sb.auth.getSession().then(function(res) {
+        var session = res.data && res.data.session;
+        if (session && session.user) {
+          var local = syncLocalUser(session.user);
+          showDashboard(local);
+        } else {
+          showAuth();
+          setSignInMode(true);
+          setActiveTab('email');
+        }
+      });
+
+      /* Listen for OAuth redirect callback (Google) */
+      sb.auth.onAuthStateChange(function(event, session) {
+        if ((event === 'SIGNED_IN') && session && session.user) {
+          var local = syncLocalUser(session.user);
+          showDashboard(local);
+        }
+      });
+
+      try {
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        } else {
+          var cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+          var count = cart.reduce(function(s, i) { return s + (i.qty || 1); }, 0);
+          var cc = document.getElementById('cartCount');
+          if (cc) cc.textContent = count;
+          var dc = document.getElementById('drawerCartCount');
+          if (dc) dc.textContent = count;
+        }
+      } catch(e) {}
+    }());
+
+  }());
+  </script>
+</body>
+</html>

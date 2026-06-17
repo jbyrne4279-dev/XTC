@@ -1,0 +1,132 @@
+<style>
+.cf-wrap{background:#0a0a0a;padding:{{ section.settings.padding_top }}px 24px {{ section.settings.padding_bottom }}px;font-family:'Helvetica Neue',sans-serif;color:#fff}
+.cf-inner{max-width:560px;margin:0 auto}
+.cf-header{border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);padding:28px 0;margin-bottom:44px;text-align:center}
+.cf-header p{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px}
+.cf-header h2{font-size:18px;letter-spacing:6px;font-weight:700;text-transform:uppercase;background:linear-gradient(90deg,rgba(255,255,255,0.3),rgba(255,255,255,0.7),#b366ff,rgba(255,255,255,0.7),rgba(255,255,255,0.3));background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:cf-shine 15s ease-in-out infinite}
+@keyframes cf-shine{0%{background-position:0% center}50%{background-position:100% center}100%{background-position:0% center}}
+.cf-row{margin-bottom:20px}
+.cf-row label{display:block;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px}
+.cf-row input,.cf-row textarea,.cf-row select{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:14px 18px;font-size:11px;letter-spacing:3px;color:#fff;outline:none;transition:border-color 0.3s ease;font-family:'Helvetica Neue',sans-serif;resize:none}
+.cf-row input::placeholder,.cf-row textarea::placeholder{color:rgba(255,255,255,0.15);font-size:10px}
+.cf-row input:focus,.cf-row textarea:focus,.cf-row select:focus{border-color:rgba(179,102,255,0.4);background:rgba(255,255,255,0.05)}
+.cf-row select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.3)' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.cf-row select option{background:#111;color:#fff}
+.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:480px){.cf-grid{grid-template-columns:1fr}}
+.cf-btn{width:100%;margin-top:28px;padding:16px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(255,255,255,0.6);font-size:9px;letter-spacing:6px;text-transform:uppercase;cursor:pointer;font-family:'Helvetica Neue',sans-serif;transition:all 0.4s ease;min-height:52px;display:flex;align-items:center;justify-content:center}
+.cf-btn:hover{border-color:rgba(179,102,255,0.5);color:#fff;background:rgba(179,102,255,0.06)}
+.cf-btn.done{border-color:rgba(179,102,255,0.7);background:rgba(179,102,255,0.08);box-shadow:0 0 24px 2px rgba(179,102,255,0.18);pointer-events:none;color:rgba(179,102,255,1)}
+.cf-note{margin-top:20px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.12);text-align:center}
+@keyframes cf-fadein{from{opacity:0}to{opacity:1}}
+</style>
+
+<div class="cf-wrap">
+  <div class="cf-inner">
+    <div class="cf-header">
+      <p>XTC</p>
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+    <div class="cf-grid">
+      <div class="cf-row">
+        <label>First name</label>
+        <input type="text" id="cf-first" placeholder="First name" />
+      </div>
+      <div class="cf-row">
+        <label>Last name</label>
+        <input type="text" id="cf-last" placeholder="Last name" />
+      </div>
+    </div>
+    <div class="cf-row">
+      <label>Email address</label>
+      <input type="email" id="cf-email" placeholder="your@email.com" />
+    </div>
+    <div class="cf-row">
+      <label>Subject</label>
+      <select id="cf-subject">
+        <option value="">Select a subject</option>
+        <option>Order enquiry</option>
+        <option>Sizing & fit</option>
+        <option>Returns & exchanges</option>
+        <option>Wholesale</option>
+        <option>Press & media</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="cf-row">
+      <label>Message</label>
+      <textarea id="cf-message" rows="5" placeholder="Your message..."></textarea>
+    </div>
+    <button class="cf-btn" id="cf-btn" onclick="cfSubmit()">
+      <span id="cf-label">{{ section.settings.button_label }}</span>
+    </button>
+    <div class="cf-note">{{ section.settings.note }}</div>
+  </div>
+</div>
+
+<script>
+function cfSubmit(){
+  var email=document.getElementById('cf-email');
+  var btn=document.getElementById('cf-btn');
+  var label=document.getElementById('cf-label');
+  if(!email.value.trim()){
+    email.style.borderColor='rgba(255,80,80,0.5)';
+    setTimeout(function(){email.style.borderColor=''},1500);
+    return;
+  }
+  btn.classList.add('done');
+  label.innerHTML='<span style="animation:cf-fadein 0.5s ease forwards;display:inline-block;color:rgba(179,102,255,1);letter-spacing:6px">Message sent</span>';
+}
+</script>
+
+{% schema %}
+{
+  "name": "XTC Contact Form",
+  "blocks": [],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Get in touch"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Send Message"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Note",
+      "default": "We typically respond within 24 hours"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "XTC Contact Form"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,766 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery — XTC Clothing</title>
+  <meta name="description" content="XTC Original Members — the campaign." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .gallery-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 64px 56px 48px;
+    }
+    .gallery-header__right {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      padding-bottom: 6px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      padding: 0 56px 80px;
+    }
+
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #0f0f0f;
+      cursor: pointer;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease, filter 0.5s ease;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.06);
+      filter: brightness(0.7);
+    }
+    .gallery-item__overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .gallery-item:hover .gallery-item__overlay { opacity: 0; }
+    .gallery-item__label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #lightbox.active { opacity: 1; pointer-events: all; }
+    .lb-content {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      max-width: min(95vw, 1100px);
+      max-height: 90vh;
+    }
+    #lightbox img {
+      max-width: min(65vw, 720px);
+      max-height: 90vh;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+    }
+    .lb-panel {
+      width: 280px;
+      flex-shrink: 0;
+      background: #0d0d0d;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .lb-panel__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .lb-counter {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      position: static; transform: none; bottom: auto; left: auto;
+    }
+    .lb-like-btn {
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,0.4);
+      font-size: 12px; letter-spacing: 1px;
+      transition: color 0.2s;
+      padding: 0;
+    }
+    .lb-like-btn:hover { color: #fff; }
+    .lb-like-btn.liked { color: #e53e3e; }
+    .lb-like-btn.liked .lb-heart { fill: #e53e3e; stroke: #e53e3e; }
+    .lb-heart { width: 18px; height: 18px; transition: fill 0.2s, stroke 0.2s; }
+    .lb-comments {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .lb-comments::-webkit-scrollbar { width: 3px; }
+    .lb-comments::-webkit-scrollbar-track { background: transparent; }
+    .lb-comments::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    .lb-no-comments {
+      font-size: 11px; letter-spacing: 1px;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+      margin: auto 0;
+    }
+    .lb-sign-in-prompt {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      text-align: center;
+      margin: auto 0;
+      line-height: 1.6;
+    }
+    .lb-sign-in-prompt a {
+      color: rgba(179,102,255,0.9);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(179,102,255,0.3);
+    }
+    .lb-comment {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .lb-comment__line {
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .lb-comment__user {
+      font-weight: 600;
+      color: #fff;
+      margin-right: 6px;
+      letter-spacing: 0;
+    }
+    .lb-comment__date {
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 1px;
+    }
+    .lb-likes-who {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      padding: 0 16px 8px;
+      letter-spacing: 0.3px;
+    }
+    .lb-likes-who strong {
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+    }
+    .lb-comment-form {
+      display: flex;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 10px 12px;
+      gap: 8px;
+      align-items: center;
+    }
+    .lb-comment-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: #fff;
+      outline: none;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      transition: border-color 0.2s;
+    }
+    .lb-comment-input:focus { border-color: rgba(130,60,220,0.6); }
+    .lb-comment-input::placeholder { color: rgba(255,255,255,0.2); }
+    .lb-comment-submit {
+      background: rgba(100,40,160,0.7);
+      border: 1px solid rgba(130,60,220,0.4);
+      border-radius: 4px;
+      color: rgba(255,255,255,0.85);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .lb-comment-submit:hover { background: rgba(130,60,220,0.9); }
+    @media (max-width: 860px) {
+      .lb-content { flex-direction: column; max-height: 90vh; }
+      #lightbox img { max-width: 90vw; max-height: 55vh; }
+      .lb-panel { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); max-height: 35vh; }
+    }
+    .lb-close {
+      position: absolute;
+      top: 28px; right: 32px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.4);
+      font-size: 28px; line-height: 1;
+      transition: color 0.2s;
+    }
+    .lb-close:hover { color: #fff; }
+    .lb-prev, .lb-next {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      font-size: 32px; line-height: 1; padding: 16px;
+      transition: color 0.2s;
+    }
+    .lb-prev:hover, .lb-next:hover { color: #fff; }
+    .lb-prev { left: 20px; }
+    .lb-next { right: 20px; }
+    .lb-counter {
+      position: absolute;
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    @media (max-width: 900px) {
+      .gallery-header { padding: 48px 24px 36px; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 0 60px; }
+    }
+    @media (max-width: 540px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+      <nav class="header-nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button id="searchToggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+        <a href="profile.html" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a href="cart.html" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header></div>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Close
+      </button>
+      <nav class="nav-drawer__links">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="gallery.html" class="active">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="profile.html">Account</a>
+        <a href="cart.html">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Search products…" id="searchInput" />
+      <button id="searchClose" aria-label="Close search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <main>
+    <div class="gallery-header">
+      <div>
+        <p class="fp-eyebrow">XTC Clothing</p>
+        <h1 class="fp-title">Original Members</h1>
+      </div>
+      <p class="gallery-header__right">Original Members Drop</p>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid">
+
+      <div class="gallery-item" data-index="0">
+        <img src="images/hero-1.jpg" alt="XTC Campaign" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">XTC</span></div>
+      </div>
+      <div class="gallery-item" data-index="1">
+        <img src="images/hero-2.jpg" alt="XTC Campaign" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">XTC</span></div>
+      </div>
+      <div class="gallery-item" data-index="2">
+        <img src="images/hero-3.jpg" alt="XTC Campaign" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">XTC</span></div>
+      </div>
+      <div class="gallery-item" data-index="3">
+        <img src="images/hero-4.jpg" alt="XTC Campaign" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">XTC</span></div>
+      </div>
+
+      <div class="gallery-item" data-index="4">
+        <img src="images/editorial-1.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+      <div class="gallery-item" data-index="5">
+        <img src="images/editorial-2.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+      <div class="gallery-item" data-index="6">
+        <img src="images/editorial-3.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+      <div class="gallery-item" data-index="7">
+        <img src="images/editorial-4.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+      <div class="gallery-item" data-index="8">
+        <img src="images/editorial-5.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+      <div class="gallery-item" data-index="9">
+        <img src="images/editorial-6.jpg" alt="XTC Editorial" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Editorial</span></div>
+      </div>
+
+      <div class="gallery-item" data-index="10">
+        <img src="images/polo-black-model-1.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="11">
+        <img src="images/polo-black-model-2.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="12">
+        <img src="images/polo-black-model-3.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="13">
+        <img src="images/polo-black-model-4.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="14">
+        <img src="images/polo-black-model-5.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="15">
+        <img src="images/polo-black-model-6.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="16">
+        <img src="images/polo-black-model-7.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="17">
+        <img src="images/polo-black-model-8.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="18">
+        <img src="images/polo-black-model-9.jpg" alt="Polo Black" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [Black]</span></div>
+      </div>
+      <div class="gallery-item" data-index="19">
+        <img src="images/polo-white-model-1.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="20">
+        <img src="images/polo-white-model-2.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="21">
+        <img src="images/polo-white-model-3.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="22">
+        <img src="images/polo-white-model-4.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="23">
+        <img src="images/polo-white-model-5.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="24">
+        <img src="images/polo-white-model-6.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="25">
+        <img src="images/polo-white-model-7.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+      <div class="gallery-item" data-index="26">
+        <img src="images/polo-white-model-8.jpg" alt="Polo White" loading="lazy" />
+        <div class="gallery-item__overlay"><span class="gallery-item__label">Polo [White]</span></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox">
+    <button class="lb-close" id="lbClose">×</button>
+    <button class="lb-prev" id="lbPrev">‹</button>
+    <div class="lb-content">
+      <img id="lbImg" src="" alt="" />
+      <div class="lb-panel">
+        <div class="lb-panel__top">
+          <span class="lb-counter" id="lbCounter"></span>
+          <button class="lb-like-btn" id="lbLike" aria-label="Like">
+            <svg class="lb-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span id="lbLikeCount">0</span>
+          </button>
+        </div>
+        <div class="lb-likes-who" id="lbLikesWho"></div>
+        <div class="lb-comments" id="lbComments"></div>
+        <form class="lb-comment-form" id="lbCommentForm">
+          <input class="lb-comment-input" id="lbCommentInput" type="text" placeholder="Add a comment…" maxlength="200" autocomplete="off" />
+          <button class="lb-comment-submit" type="submit">Post</button>
+        </form>
+      </div>
+    </div>
+    <button class="lb-next" id="lbNext">›</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand__logo">
+            <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" />
+          </div>
+          <p class="footer-brand__tagline">Premium heavyweight polos.<br>Limited drops. Never restocked.</p>
+          <div class="footer-socials">
+            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok">
+              <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Shop</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">New Releases</a></li>
+              <li><a href="product-polo-black.html">Polo [Black]</a></li>
+              <li><a href="product-polo-white.html">Polo [White]</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Account</h3>
+            <ul>
+              <li><a href="profile.html">My Profile</a></li>
+              <li><a href="track-order.html">Track Order</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Help</h3>
+            <ul>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="shipping.html">Shipping</a></li>
+              <li><a href="returns.html">Returns</a></li>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/stock.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  // Seed default likes & comments once
+  (function() {
+    if (localStorage.getItem('xtc-gallery-seeded')) return;
+    const likes = {
+      '0': 14, '0_likers': ['callum.r', 'tomwilson'],
+      '1': 9,  '1_likers': ['ryanjtc'],
+      '3': 22, '3_likers': ['liv_xtc', 'jake.m', 'ryanjtc'],
+      '5': 6,  '5_likers': ['callum.r'],
+      '7': 18, '7_likers': ['tomwilson', 'liv_xtc'],
+      '9': 11, '9_likers': ['jake.m'],
+      '11': 7, '11_likers': ['callum.r'],
+      '13': 31,'13_likers': ['ryanjtc', 'liv_xtc', 'tomwilson'],
+      '15': 4, '15_likers': [],
+      '18': 16,'18_likers': ['jake.m', 'callum.r'],
+      '21': 8, '21_likers': ['liv_xtc'],
+      '24': 13,'24_likers': ['tomwilson']
+    };
+    const comments = {
+      '0':  [{ user: 'callum.r',  text: 'this colourway is clean',    date: '2 Jun' },
+             { user: 'tomwilson', text: 'need this in my wardrobe',   date: '4 Jun' }],
+      '3':  [{ user: 'liv_xtc',   text: 'the fit on this is mad',     date: '28 May' },
+             { user: 'jake.m',    text: 'goated drop honestly',       date: '1 Jun' },
+             { user: 'ryanjtc',   text: 'already ordered mine',       date: '3 Jun' }],
+      '7':  [{ user: 'tomwilson', text: 'quality looks unreal here',  date: '30 May' }],
+      '13': [{ user: 'ryanjtc',   text: 'best one from the shoot',    date: '27 May' },
+             { user: 'liv_xtc',   text: 'agree, this is the one',     date: '29 May' }],
+      '18': [{ user: 'jake.m',    text: 'black polo goes with anything', date: '5 Jun' }],
+      '24': [{ user: 'callum.r',  text: 'white fits differently',     date: '6 Jun' }]
+    };
+    localStorage.setItem('xtc-gallery-likes', JSON.stringify(likes));
+    localStorage.setItem('xtc-gallery-comments', JSON.stringify(comments));
+    localStorage.setItem('xtc-gallery-seeded', '1');
+  })();
+  </script>
+  <script>
+  (function() {
+    const images = Array.from(document.querySelectorAll('.gallery-item img'));
+    const lightbox = document.getElementById('lightbox');
+    const lbImg    = document.getElementById('lbImg');
+    const lbCounter = document.getElementById('lbCounter');
+    const lbLike      = document.getElementById('lbLike');
+    const lbLikeCount = document.getElementById('lbLikeCount');
+    const lbLikesWho  = document.getElementById('lbLikesWho');
+    const lbComments  = document.getElementById('lbComments');
+    const lbCommentForm  = document.getElementById('lbCommentForm');
+    const lbCommentInput = document.getElementById('lbCommentInput');
+    let current = 0;
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('xtc-user')); } catch(e) { return null; }
+    }
+    function getUsername() {
+      const u = getUser();
+      if (!u) return null;
+      return u.name || u.email.split('@')[0];
+    }
+
+    function getLikes() { try { return JSON.parse(localStorage.getItem('xtc-gallery-likes') || '{}'); } catch(e) { return {}; } }
+    function getComments() { try { return JSON.parse(localStorage.getItem('xtc-gallery-comments') || '{}'); } catch(e) { return {}; } }
+    function saveLikes(d) { localStorage.setItem('xtc-gallery-likes', JSON.stringify(d)); }
+    function saveComments(d) { localStorage.setItem('xtc-gallery-comments', JSON.stringify(d)); }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderPanel() {
+      const likes = getLikes();
+      const comments = getComments();
+      const key = String(current);
+      const count = likes[key] || 0;
+      const liked = !!likes[key + '_me'];
+      lbLikeCount.textContent = count;
+      lbLike.classList.toggle('liked', liked);
+
+      // Likes who text
+      if (count === 0) {
+        lbLikesWho.textContent = '';
+      } else {
+        const likers = likes[key + '_likers'] || [];
+        if (likers.length === 1) {
+          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong>`;
+        } else if (likers.length === 2) {
+          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong> and <strong>${escHtml(likers[1])}</strong>`;
+        } else if (likers.length > 2) {
+          lbLikesWho.innerHTML = `Liked by <strong>${escHtml(likers[0])}</strong> and <strong>${count - 1} others</strong>`;
+        } else {
+          lbLikesWho.innerHTML = `<strong>${count}</strong> ${count === 1 ? 'like' : 'likes'}`;
+        }
+      }
+
+      // Comments
+      const loggedIn = !!getUser();
+      const list = comments[key] || [];
+      if (list.length === 0) {
+        lbComments.innerHTML = '<p class="lb-no-comments">No comments yet. Be the first!</p>';
+      } else {
+        lbComments.innerHTML = list.map(c => `
+          <div class="lb-comment">
+            <p class="lb-comment__line">
+              <span class="lb-comment__user">${escHtml(c.user || 'anonymous')}</span>${escHtml(c.text)}
+            </p>
+            <span class="lb-comment__date">${c.date}</span>
+          </div>`).join('');
+      }
+      lbComments.scrollTop = lbComments.scrollHeight;
+
+      // Show/hide input based on login state
+      lbCommentForm.style.display = loggedIn ? 'flex' : 'none';
+      let signInEl = document.getElementById('lbSignIn');
+      if (!loggedIn) {
+        if (!signInEl) {
+          signInEl = document.createElement('p');
+          signInEl.id = 'lbSignIn';
+          signInEl.className = 'lb-sign-in-prompt';
+          signInEl.innerHTML = '<a href="profile.html">Sign in</a> to like &amp; comment';
+          lbCommentForm.parentNode.insertBefore(signInEl, lbCommentForm);
+        }
+        signInEl.style.display = 'block';
+      } else if (signInEl) {
+        signInEl.style.display = 'none';
+      }
+    }
+
+    function open(idx) {
+      current = idx;
+      lbImg.src = images[current].src;
+      lbCounter.textContent = (current + 1) + ' / ' + images.length;
+      renderPanel();
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    function prev() { open((current - 1 + images.length) % images.length); }
+    function next() { open((current + 1) % images.length); }
+
+    lbLike.addEventListener('click', e => {
+      e.stopPropagation();
+      const username = getUsername();
+      if (!username) { window.location.href = 'profile.html'; return; }
+      const likes = getLikes();
+      const key = String(current);
+      const likers = likes[key + '_likers'] || [];
+      if (likes[key + '_me']) {
+        likes[key] = Math.max(0, (likes[key] || 1) - 1);
+        delete likes[key + '_me'];
+        const idx = likers.indexOf(username);
+        if (idx !== -1) likers.splice(idx, 1);
+      } else {
+        likes[key] = (likes[key] || 0) + 1;
+        likes[key + '_me'] = true;
+        if (!likers.includes(username)) likers.unshift(username);
+      }
+      likes[key + '_likers'] = likers;
+      saveLikes(likes);
+      renderPanel();
+    });
+
+    lbCommentForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const username = getUsername();
+      if (!username) return;
+      const text = lbCommentInput.value.trim();
+      if (!text) return;
+      const comments = getComments();
+      const key = String(current);
+      if (!comments[key]) comments[key] = [];
+      const now = new Date();
+      const date = now.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+      comments[key].push({ user: username, text, date });
+      saveComments(comments);
+      lbCommentInput.value = '';
+      renderPanel();
+    });
+
+    document.querySelectorAll('.gallery-item').forEach((item, i) => {
+      item.addEventListener('click', () => open(i));
+    });
+    document.getElementById('lbClose').addEventListener('click', close);
+    document.getElementById('lbPrev').addEventListener('click', prev);
+    document.getElementById('lbNext').addEventListener('click', next);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) close(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft')  prev();
+      if (e.key === 'ArrowRight') next();
+    });
+  })();
+  </script>
+</body>
+</html>

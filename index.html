@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XTC Clothing</title>
+  <meta name="description" content="Premium heavyweight polos. Limited drops. Never restocked." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Size picker popup */
+    .fp-size-picker {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      background: #111;
+      border: 1px solid rgba(179,102,255,0.25);
+      padding: 16px;
+      z-index: 50;
+      display: none;
+      min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+    }
+    .fp-size-picker.open { display: block; }
+    .fp-size-picker__label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+    .fp-size-picker__sizes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .fp-sp-btn {
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .fp-sp-btn:hover:not(:disabled) {
+      border-color: rgba(179,102,255,0.6);
+      color: #fff;
+      background: rgba(179,102,255,0.08);
+    }
+    .fp-sp-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .fp-card__info-right { position: relative; }
+  </style>
+</head>
+<body>
+
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png"
+             alt="XTC Clothing"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+
+      <nav class="header-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="searchToggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+        <a href="profile.html" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <a href="cart.html" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header></div>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Close
+      </button>
+      <nav class="nav-drawer__links">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="profile.html">Account</a>
+        <a href="cart.html">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Search products…" id="searchInput" />
+      <button id="searchClose" aria-label="Close search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" aria-label="Featured collection">
+
+    <!-- Full-bleed slides -->
+    <div class="hero-slide active" id="slide-0"><img class="hero-slide__bg" src="images/hero-1.jpg" alt="XTC" loading="eager"/></div>
+    <div class="hero-slide" id="slide-1"><img class="hero-slide__bg" src="images/polo-white-model-1.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-2"><img class="hero-slide__bg" src="images/hero-2.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-3"><img class="hero-slide__bg" src="images/polo-white-model-2.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-4"><img class="hero-slide__bg" src="images/hero-3.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-5"><img class="hero-slide__bg" src="images/polo-white-model-3.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-6"><img class="hero-slide__bg" src="images/hero-4.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-7"><img class="hero-slide__bg" src="images/polo-white-model-4.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-8"><img class="hero-slide__bg" src="images/polo-black-model-1.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-9"><img class="hero-slide__bg" src="images/polo-white-model-5.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-10"><img class="hero-slide__bg" src="images/polo-black-model-2.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-11"><img class="hero-slide__bg" src="images/polo-white-model-6.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-12"><img class="hero-slide__bg" src="images/polo-black-model-3.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-13"><img class="hero-slide__bg" src="images/polo-white-model-7.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-14"><img class="hero-slide__bg" src="images/polo-black-model-4.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-15"><img class="hero-slide__bg" src="images/polo-white-model-8.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-16"><img class="hero-slide__bg" src="images/polo-black-model-5.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-17"><img class="hero-slide__bg" src="images/editorial-1.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-18"><img class="hero-slide__bg" src="images/polo-black-model-6.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-19"><img class="hero-slide__bg" src="images/editorial-2.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-20"><img class="hero-slide__bg" src="images/polo-black-model-7.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-21"><img class="hero-slide__bg" src="images/editorial-3.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-22"><img class="hero-slide__bg" src="images/polo-black-model-8.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-23"><img class="hero-slide__bg" src="images/editorial-4.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-24"><img class="hero-slide__bg" src="images/polo-black-model-9.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-25"><img class="hero-slide__bg" src="images/editorial-5.jpg" alt="XTC" loading="lazy"/></div>
+    <div class="hero-slide" id="slide-26"><img class="hero-slide__bg" src="images/editorial-6.jpg" alt="XTC" loading="lazy"/></div>
+
+    <!-- Gradient -->
+    <div class="hero-grad"></div>
+
+    <!-- Bottom bar -->
+    <div class="hero-bar">
+      <div class="hero-bar__left">
+        <p class="hero-bar__eyebrow" id="heroEyebrow">Original Members</p>
+        <h1 class="hero-bar__title" id="heroTitle">[Black]</h1>
+      </div>
+      <div class="hero-bar__right">
+        <div class="hero-bar__controls">
+          <a class="hero-bar__cta" id="heroCta" href="collections.html">Shop Now</a>
+          <button class="hero-arr" id="heroPrev" aria-label="Previous">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <span class="hero-bar__count"><span id="heroCountCurrent">01</span><span class="hero-bar__sep"> / </span>27</span>
+          <button class="hero-arr" id="heroNext" aria-label="Next">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress line -->
+    <div class="hero-prog"><div class="hero-prog__bar" id="heroProgressBar"></div></div>
+
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-products">
+    <canvas id="smokeCanvas" aria-hidden="true"></canvas>
+    <div class="fp-header">
+      <div>
+        <p class="fp-eyebrow">Exclusive Drop</p>
+        <h2 class="fp-title">Original Members</h2>
+      </div>
+      <p class="fp-note"><span class="no-restock-shine">50 Units Released.</span> Never restocked.</p>
+    </div>
+
+    <div class="fp-grid">
+
+      <!-- Product: POLO [BLACK] -->
+      <article class="fp-card">
+        <a href="product-polo-black.html" class="fp-card__media">
+          <img
+            src="images/product-black-1.jpg"
+            alt="XTC Original Members Polo Black — front"
+            loading="lazy"
+          />
+          <img
+            class="fp-card__alt"
+            src="images/product-black-2.jpg"
+            alt="XTC Original Members Polo Black — alt"
+            loading="lazy"
+          />
+          <span class="fp-card__badge">Limited Edition</span>
+        </a>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="product-polo-black.html" class="fp-card__name">Polo [Black]</a>
+            <p class="fp-card__sub">Slim Fit · 100% Cotton · Stainless Steel</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£60</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-black','POLO [BLACK]','£60.00','images/polo-black-model-1.jpg')">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-black">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-black-sizes"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product: POLO [WHITE] -->
+      <article class="fp-card">
+        <a href="product-polo-white.html" class="fp-card__media">
+          <img
+            src="images/product-white-1.jpg"
+            alt="XTC Original Members Polo White — front"
+            loading="lazy"
+          />
+          <img
+            class="fp-card__alt"
+            src="images/product-white-2.jpg"
+            alt="XTC Original Members Polo White — alt"
+            loading="lazy"
+          />
+          <span class="fp-card__badge">Limited Edition</span>
+        </a>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="product-polo-white.html" class="fp-card__name">Polo [White]</a>
+            <p class="fp-card__sub">Slim Fit · 100% Cotton · Stainless Steel</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£60</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-white','POLO [WHITE]','£60.00','images/polo-white-model-1.jpg')">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-white">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-white-sizes"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Gallery snippet -->
+  <section class="home-gallery-strip">
+    <div class="hgs-header">
+      <div>
+        <p class="fp-eyebrow">Original Members</p>
+        <h2 class="fp-title" style="font-size:clamp(22px,3vw,32px);">Gallery</h2>
+      </div>
+      <a href="gallery.html" class="hgs-cta">View All →</a>
+    </div>
+    <div class="hgs-carousel">
+      <div class="hgs-track">
+        <!-- set 1 -->
+        <a href="gallery.html" class="hgs-img"><img src="images/editorial-1.jpg" alt="XTC Editorial" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/polo-black-model-3.jpg" alt="Polo Black" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/editorial-3.jpg" alt="XTC Editorial" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/polo-white-model-2.jpg" alt="Polo White" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/polo-black-model-7.jpg" alt="Polo Black" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/editorial-5.jpg" alt="XTC Editorial" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/polo-white-model-5.jpg" alt="Polo White" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img"><img src="images/polo-black-model-1.jpg" alt="Polo Black" loading="lazy" /></a>
+        <!-- set 2 — duplicate for seamless loop -->
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/editorial-1.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/polo-black-model-3.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/editorial-3.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/polo-white-model-2.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/polo-black-model-7.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/editorial-5.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/polo-white-model-5.jpg" alt="" loading="lazy" /></a>
+        <a href="gallery.html" class="hgs-img" aria-hidden="true"><img src="images/polo-black-model-1.jpg" alt="" loading="lazy" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand__logo">
+            <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" />
+          </div>
+          <p class="footer-brand__tagline">Premium heavyweight polos.<br>Limited drops. Never restocked.</p>
+          <div class="footer-socials">
+            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok">
+              <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Shop</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">New Releases</a></li>
+              <li><a href="product-polo-black.html">Polo [Black]</a></li>
+              <li><a href="product-polo-white.html">Polo [White]</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Account</h3>
+            <ul>
+              <li><a href="profile.html">My Profile</a></li>
+              <li><a href="track-order.html">Track Order</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Help</h3>
+            <ul>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="shipping.html">Shipping</a></li>
+              <li><a href="returns.html">Returns</a></li>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <script>
+  function handleLoyaltySignup(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type=email]').value;
+    const msg = document.getElementById('loyaltyMsg');
+    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
+    msg.style.display = 'block';
+    e.target.reset();
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
+    if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'loyalty_form' });
+  }
+  </script>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="js/stock.js"></script>
+  <script src="js/omnisend-config.js"></script>
+  <script>
+  (function(){
+    var id = localStorage.getItem('xtc-ga4-id');
+    if(id){ var s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.appendChild(s); window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);}; gtag('js',new Date()); gtag('config',id); }
+  })();
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
+  <script>
+  window.addEventListener('load', function() {
+    const canvas = document.getElementById('smokeCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const section = canvas.closest('.featured-products');
+
+    function resize() {
+      canvas.width  = section.offsetWidth;
+      canvas.height = section.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', function() { resize(); });
+
+    // Smoke particle
+    function Particle() {
+      this.reset();
+    }
+    Particle.prototype.reset = function() {
+      const w = canvas.width, h = canvas.height;
+      // Spawn along bottom or mid-section, biased toward card area
+      this.x = w * 0.1 + Math.random() * w * 0.8;
+      this.y = h * 0.6 + Math.random() * h * 0.4;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = -(0.3 + Math.random() * 0.5);
+      this.r  = 60 + Math.random() * 120;
+      this.alpha = 0;
+      this.targetAlpha = 0.04 + Math.random() * 0.06;
+      this.life = 0;
+      this.maxLife = 220 + Math.random() * 180;
+      // Colour: deep purple or near-white
+      const hue = Math.random() < 0.6 ? `${260 + Math.random() * 30}` : '280';
+      const sat = Math.random() < 0.6 ? `${30 + Math.random() * 40}%` : '0%';
+      this.color = `hsl(${hue}, ${sat}, 70%)`;
+    };
+    Particle.prototype.update = function() {
+      this.life++;
+      this.x += this.vx + Math.sin(this.life * 0.02) * 0.3;
+      this.y += this.vy;
+      this.r  += 0.35;
+      const progress = this.life / this.maxLife;
+      if (progress < 0.2) {
+        this.alpha = (progress / 0.2) * this.targetAlpha;
+      } else {
+        this.alpha = (1 - (progress - 0.2) / 0.8) * this.targetAlpha;
+      }
+      if (this.life >= this.maxLife) this.reset();
+    };
+    Particle.prototype.draw = function() {
+      const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+      grad.addColorStop(0, `${this.color.replace('hsl','hsla').replace(')',`, ${this.alpha})`)}`);
+      grad.addColorStop(1, `hsla(0,0%,0%,0)`);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    };
+
+    const COUNT = 28;
+    const particles = [];
+    for (let i = 0; i < COUNT; i++) {
+      const p = new Particle();
+      p.life = Math.floor(Math.random() * p.maxLife); // stagger starts
+      particles.push(p);
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(loop);
+    }
+    loop();
+  });
+  </script>
+  <script>
+  // ---- Home page size picker ----
+  const SIZES = ['S','M','L','XL','XXL'];
+
+  function openSizePicker(btn, productId, name, price, img) {
+    // Close any open picker first
+    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+
+    const picker = document.getElementById('picker-' + productId);
+    const sizesEl = document.getElementById('picker-' + productId + '-sizes');
+    if (!picker || !sizesEl) return;
+
+    // Build size buttons using live stock
+    const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
+    sizesEl.innerHTML = SIZES.map(s => {
+      const qty = stock[s] || 0;
+      const oos = qty === 0;
+      return `<button class="fp-sp-btn" ${oos ? 'disabled' : ''}
+        onclick="pickSize('${productId}','${name}','${price}','${img}','${s}')"
+        title="${oos ? 'Out of stock' : s}">${s}</button>`;
+    }).join('');
+
+    picker.classList.add('open');
+
+    // Close when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', closePicker, { once: true });
+    }, 0);
+  }
+
+  function closePicker() {
+    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+  }
+
+  function pickSize(productId, name, price, img, size) {
+    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+    addToCart(
+      productId + '-' + size.toLowerCase(),
+      name + ' — ' + size,
+      price,
+      img,
+      1
+    );
+  }
+  </script>
+</body>
+</html>

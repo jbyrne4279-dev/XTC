@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "xtc-store",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "3001", "."],
+      "port": 3001
+    },
+    {
+      "name": "xtc-nextjs",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "-p", "3002"],
+      "port": 3002
+    }
+  ]
+}

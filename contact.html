@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — XTC Clothing</title>
+  <meta name="description" content="Get in touch with XTC Clothing." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Contact page — aligned with home page language ── */
+    .ct-hero-banner {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+    .ct-hero-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.6);
+      display: block;
+    }
+    .ct-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 56px 48px;
+      padding-top: 64px;
+    }
+    .ct-header__left {}
+    .ct-header__reply {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      text-align: right;
+      padding-bottom: 6px;
+    }
+
+    /* Two-column grid matching fp-grid */
+    .ct-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 16px;
+      padding: 0 56px 80px;
+    }
+
+    /* Form card — styled like fp-card */
+    .ct-form-card {
+      background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 40px 52px;
+    }
+    .ct-form-card__label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 36px;
+    }
+
+    /* Info card */
+    .ct-info-card {
+      background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 40px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ct-info-card__label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 20px;
+    }
+    .ct-info-card__body {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.9;
+      margin-bottom: 48px;
+      max-width: 340px;
+    }
+    .ct-links { display: flex; flex-direction: column; }
+    .ct-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-decoration: none;
+      color: #fff;
+      transition: color 0.2s;
+    }
+    .ct-link:last-child { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .ct-link:hover { color: var(--accent); }
+    .ct-link__left { display: flex; flex-direction: column; gap: 4px; }
+    .ct-link__title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: inherit;
+    }
+    .ct-link__sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.5px;
+    }
+    .ct-link:hover .ct-link__sub { color: rgba(179,102,255,0.4); }
+    .ct-link__arrow {
+      font-size: 16px;
+      color: rgba(255,255,255,0.15);
+      transition: transform 0.25s, color 0.2s;
+    }
+    .ct-link:hover .ct-link__arrow { color: var(--accent); transform: translateX(4px); }
+    .ct-info-card__foot {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .ct-info-card__foot-label {
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+      margin-bottom: 6px;
+    }
+    .ct-info-card__foot-value {
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.5px;
+    }
+
+    /* Form fields */
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+    .cf-group { margin-bottom: 28px; }
+    .cf-label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+    .cf-input, .cf-select, .cf-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      padding: 12px 0;
+      outline: none;
+      transition: border-color 0.25s;
+      box-sizing: border-box;
+      appearance: none;
+    }
+    .cf-input::placeholder, .cf-textarea::placeholder { color: rgba(255,255,255,0.12); }
+    .cf-input:focus, .cf-select:focus, .cf-textarea:focus { border-color: var(--accent); }
+    .cf-select { cursor: pointer; }
+    .cf-select option { background: #111; color: #fff; }
+    .cf-textarea { resize: none; min-height: 80px; line-height: 1.6; }
+    .cf-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 18px 0;
+      background: transparent;
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: border-color 0.25s, color 0.25s;
+    }
+    .cf-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cf-btn__arrow {
+      width: 30px; height: 30px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .cf-btn:hover .cf-btn__arrow { transform: translateX(4px); }
+    .cf-success {
+      display: none; margin-top: 20px; font-size: 10px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(80,220,140,0.8);
+      padding-left: 12px; border-left: 2px solid rgba(80,220,140,0.3);
+    }
+    .cf-success.show { display: block; }
+    .cf-error {
+      display: none; margin-top: 20px; font-size: 10px; letter-spacing: 1px;
+      color: rgba(255,100,100,0.8); padding-left: 12px;
+      border-left: 2px solid rgba(255,100,100,0.3);
+    }
+    .cf-error.show { display: block; }
+
+    @media (max-width: 900px) {
+      .ct-header { padding: 48px 24px 36px; flex-direction: column; align-items: flex-start; gap: 16px; }
+      .ct-header__reply { text-align: left; }
+      .ct-grid { grid-template-columns: 1fr; padding: 0 24px 60px; gap: 16px; }
+      .cf-row { grid-template-columns: 1fr; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+      <nav class="header-nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button id="searchToggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="profile.html" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a href="cart.html" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header></div>
+
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Close
+      </button>
+      <nav class="nav-drawer__links">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="profile.html">Account</a>
+        <a href="cart.html">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search products…" id="searchInput" />
+      <button id="searchClose" aria-label="Close search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Full-width hero banner -->
+    <div class="ct-hero-banner">
+      <img src="images/hero-2.jpg" alt="" aria-hidden="true" />
+    </div>
+
+    <!-- Header — matches fp-header style -->
+    <div class="ct-header">
+      <div class="ct-header__left">
+        <p class="fp-eyebrow">XTC Clothing</p>
+        <h1 class="fp-title">Get In Touch</h1>
+      </div>
+      <p class="ct-header__reply">We reply within 24 hours<br>Monday — Friday</p>
+    </div>
+
+    <!-- Two-column grid — matches fp-grid -->
+    <div class="ct-grid">
+
+      <!-- Form card -->
+      <div class="ct-form-card">
+        <p class="ct-form-card__label">Send a Message</p>
+        <form id="contactForm" novalidate>
+          <div class="cf-row">
+            <div class="cf-group">
+              <label class="cf-label" for="firstName">First Name</label>
+              <input class="cf-input" type="text" id="firstName" placeholder="John" required />
+            </div>
+            <div class="cf-group">
+              <label class="cf-label" for="lastName">Last Name</label>
+              <input class="cf-input" type="text" id="lastName" placeholder="Smith" required />
+            </div>
+          </div>
+          <div class="cf-group">
+            <label class="cf-label" for="email">Email Address</label>
+            <input class="cf-input" type="email" id="email" placeholder="you@example.com" required />
+          </div>
+          <div class="cf-group">
+            <label class="cf-label" for="subject">Topic</label>
+            <select class="cf-select" id="subject" required>
+              <option value="" disabled selected>Select a topic…</option>
+              <option value="order">Order Enquiry</option>
+              <option value="sizing">Sizing &amp; Fit</option>
+              <option value="returns">Returns &amp; Exchanges</option>
+              <option value="wholesale">Wholesale</option>
+              <option value="press">Press &amp; Media</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="cf-group">
+            <label class="cf-label" for="message">Message</label>
+            <textarea class="cf-textarea" id="message" placeholder="Tell us how we can help…" required></textarea>
+          </div>
+          <button type="submit" class="cf-btn">
+            <span>Send Message</span>
+            <span class="cf-btn__arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </button>
+          <div class="cf-success" id="formSuccess">✓ Message sent — we'll reply within 24 hours.</div>
+          <div class="cf-error" id="formError">Please fill in all required fields.</div>
+        </form>
+      </div>
+
+      <!-- Info card -->
+      <div class="ct-info-card">
+        <div>
+          <p class="ct-info-card__label">How Can We Help</p>
+          <p class="ct-info-card__body">Whether it's an order question, sizing advice, a return, or something else — we're here and we reply fast.</p>
+          <div class="ct-links">
+            <a href="track-order.html" class="ct-link">
+              <div class="ct-link__left">
+                <span class="ct-link__title">Track Your Order</span>
+                <span class="ct-link__sub">Check your delivery status</span>
+              </div>
+              <span class="ct-link__arrow">→</span>
+            </a>
+            <a href="#" class="ct-link">
+              <div class="ct-link__left">
+                <span class="ct-link__title">Returns &amp; Refunds</span>
+                <span class="ct-link__sub">View our returns policy</span>
+              </div>
+              <span class="ct-link__arrow">→</span>
+            </a>
+            <a href="#" class="ct-link">
+              <div class="ct-link__left">
+                <span class="ct-link__title">Shipping Info</span>
+                <span class="ct-link__sub">Delivery times and costs</span>
+              </div>
+              <span class="ct-link__arrow">→</span>
+            </a>
+          </div>
+        </div>
+        <div class="ct-info-card__foot">
+          <p class="ct-info-card__foot-label">Average Response Time</p>
+          <p class="ct-info-card__foot-value">Under 24 hours</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand__logo">
+            <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" />
+          </div>
+          <p class="footer-brand__tagline">Premium heavyweight polos.<br>Limited drops. Never restocked.</p>
+          <div class="footer-socials">
+            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok">
+              <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Shop</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">New Releases</a></li>
+              <li><a href="product-polo-black.html">Polo [Black]</a></li>
+              <li><a href="product-polo-white.html">Polo [White]</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Account</h3>
+            <ul>
+              <li><a href="profile.html">My Profile</a></li>
+              <li><a href="track-order.html">Track Order</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Help</h3>
+            <ul>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="shipping.html">Shipping</a></li>
+              <li><a href="returns.html">Returns</a></li>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <script>
+  function handleLoyaltySignup(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type=email]').value;
+    const msg = document.getElementById('loyaltyMsg');
+    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
+    msg.style.display = 'block';
+    e.target.reset();
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
+    if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'loyalty_form' });
+  }
+  </script>
+
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+  <script src="js/stock.js"></script>
+  <script src="js/omnisend-config.js"></script>
+  <script>
+  (function(){
+    var id = localStorage.getItem('xtc-ga4-id');
+    if(id){ var s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.appendChild(s); window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);}; gtag('js',new Date()); gtag('config',id); }
+  })();
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fields = ['firstName','lastName','email','subject','message'];
+      const allFilled = fields.every(id => document.getElementById(id).value.trim() !== '');
+      const success = document.getElementById('formSuccess');
+      const error = document.getElementById('formError');
+      if (!allFilled) {
+        error.classList.add('show');
+        success.classList.remove('show');
+        return;
+      }
+      error.classList.remove('show');
+      success.classList.add('show');
+      const email = document.getElementById('email').value;
+      if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'contact-form');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

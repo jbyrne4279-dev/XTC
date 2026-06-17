@@ -1,0 +1,838 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POLO [BLACK] — XTC Clothing</title>
+  <meta name="description" content="Premium heavyweight XTC Original Members Polo in Black. Slim fit. 100% cotton. Stainless steel. 50 units only — never restocked." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Breadcrumb */
+    .pdp-crumb {
+      padding: 16px 64px;
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pdp-crumb a { color: rgba(255,255,255,0.2); transition: color 0.2s; }
+    .pdp-crumb a:hover { color: rgba(255,255,255,0.5); }
+    .pdp-crumb span { color: rgba(255,255,255,0.05); }
+    .pdp-crumb__current { color: rgba(255,255,255,0.5); }
+
+    /* Layout */
+    .pdp {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      min-height: 85vh;
+    }
+
+    /* Gallery */
+    .pdp-gallery {
+      position: sticky;
+      top: 64px;
+      align-self: start;
+      border-right: 1px solid var(--border);
+    }
+    .pdp-gallery__main {
+      position: relative;
+      overflow: hidden;
+      background: #050505;
+      aspect-ratio: 3/4;
+    }
+    .pdp-gallery__main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    .pdp-gallery__thumbs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      border-top: 1px solid var(--border);
+      scrollbar-width: none;
+    }
+    .pdp-gallery__thumbs::-webkit-scrollbar { display: none; }
+    .pdp-gallery__thumb {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border: none;
+      border-right: 1px solid var(--border);
+      background: #050505;
+      cursor: pointer;
+      padding: 0;
+      overflow: hidden;
+      opacity: 0.45;
+      transition: opacity 0.2s;
+    }
+    .pdp-gallery__thumb:last-child { border-right: none; }
+    .pdp-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pdp-gallery__thumb.active,
+    .pdp-gallery__thumb:hover { opacity: 1; }
+
+    /* Info panel */
+    .pdp-info {
+      padding: 56px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .pdp-info__brand {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .pdp-info__title {
+      font-size: clamp(28px, 3vw, 44px);
+      font-weight: 200;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .pdp-info__price-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .pdp-info__price {
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .pdp-info__currency {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+    }
+    .pdp-info__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.7);
+      border: 1px solid rgba(179,102,255,0.2);
+      padding: 4px 10px;
+    }
+
+    .pdp-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* Size selector */
+    .pdp-section-label {
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pdp-size-guide {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      padding: 0 0 1px;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+    .pdp-size-guide:hover { color: var(--accent); border-color: var(--accent); }
+    .pdp-sizes {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .pdp-size-btn {
+      width: 52px;
+      height: 52px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.45);
+      font-family: inherit;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pdp-size-btn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+    .pdp-size-error {
+      display: none;
+      font-size: 11px;
+      color: rgba(255,100,100,0.7);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .pdp-size-error.show { display: block; }
+
+    /* Quantity */
+    .pdp-qty {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      width: fit-content;
+      margin-bottom: 0;
+    }
+    .pdp-qty__btn {
+      width: 44px; height: 44px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .pdp-qty__btn:hover { color: #fff; }
+    .pdp-qty__val {
+      width: 48px;
+      text-align: center;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 1px;
+      border-left: 1px solid rgba(255,255,255,0.1);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      line-height: 44px;
+    }
+
+    /* ATC button */
+    .pdp-atc {
+      width: 100%;
+      padding: 18px 24px;
+      background: rgba(179,102,255,1);
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: opacity 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .pdp-atc:hover { opacity: 0.85; }
+    .pdp-size-guide-section .pdp-acc-trigger { pointer-events: none; }
+    #sizeContent table td { color: var(--accent); }
+    .pdp-size-finder {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .pdp-size-finder__label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 14px;
+    }
+    .pdp-size-finder__inputs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pdp-size-finder__field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pdp-size-finder__field label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+    .pdp-size-finder__field input {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .pdp-size-finder__field input:focus { border-color: var(--accent); }
+    .pdp-size-finder__field input::placeholder { color: rgba(255,255,255,0.15); }
+    .pdp-size-finder__btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pdp-size-finder__btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pdp-size-finder__result {
+      margin-top: 14px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      min-height: 18px;
+    }
+    .pdp-buy-now {
+      width: 100%;
+      padding: 16px 24px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pdp-buy-now:hover { border-color: #fff; color: #fff; }
+
+    /* Accordion */
+    .pdp-accordion { border-top: 1px solid var(--border); }
+    .pdp-acc-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 20px 0;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: rgba(255,255,255,0.45);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: left;
+      transition: color 0.2s;
+    }
+    .pdp-acc-trigger:hover { color: #fff; }
+    .pdp-acc-trigger svg { flex-shrink: 0; transition: transform 0.25s; }
+    .pdp-acc-trigger.open svg { transform: rotate(180deg); }
+    .pdp-acc-content {
+      display: none;
+      padding: 20px 0 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pdp-acc-content.open { display: block; }
+    .pdp-acc-content p,
+    .pdp-acc-content li {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.8;
+      letter-spacing: 0.3px;
+    }
+    .pdp-acc-content ul { padding-left: 16px; list-style: disc; }
+    .pdp-acc-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .pdp-acc-content th, .pdp-acc-content td {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.4);
+    }
+    .pdp-acc-content th {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* Trust strip */
+    .pdp-trust {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 32px;
+      padding-top: 28px;
+    }
+    .pdp-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.25);
+    }
+    .pdp-trust-item svg { opacity: 0.3; flex-shrink: 0; }
+
+    @media (max-width: 960px) {
+      .pdp { grid-template-columns: 1fr; }
+      .pdp-gallery { position: static; border-right: none; border-bottom: 1px solid var(--border); }
+      .pdp-info { padding: 40px 28px; }
+      .pdp-crumb { padding: 14px 28px; }
+    }
+    .pdp-gallery__main { user-select: none; }
+    .pdp-gallery__main img { pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+      <nav class="header-nav">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button id="searchToggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="profile.html" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a href="cart.html" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header></div>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Close
+      </button>
+      <nav class="nav-drawer__links">
+        <a href="index.html">Home</a>
+        <a href="collections.html">New Releases</a>
+        <a href="track-order.html">Track Order</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="profile.html">Account</a>
+        <a href="cart.html">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search products…" id="searchInput" />
+      <button id="searchClose" aria-label="Close search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Breadcrumb -->
+  <div class="pdp-crumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="collections.html">New Releases</a>
+    <span>/</span>
+    <span class="pdp-crumb__current">Polo [Black]</span>
+  </div>
+
+  <main>
+    <div class="pdp">
+      <!-- Gallery -->
+      <div class="pdp-gallery">
+        <div class="pdp-gallery__main">
+          <img id="mainImage" src="images/polo-black-model-1.jpg" alt="XTC Original Members Polo Black" />
+        </div>
+        <div class="pdp-gallery__thumbs">
+          <button class="pdp-gallery__thumb active" data-src="images/polo-black-model-1.jpg"><img src="images/polo-black-model-1.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-2.jpg"><img src="images/polo-black-model-2.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-3.jpg"><img src="images/polo-black-model-3.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-4.jpg"><img src="images/polo-black-model-4.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-5.jpg"><img src="images/polo-black-model-5.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-6.jpg"><img src="images/polo-black-model-6.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-7.jpg"><img src="images/polo-black-model-7.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-8.jpg"><img src="images/polo-black-model-8.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/polo-black-model-9.jpg"><img src="images/polo-black-model-9.jpg" alt="" loading="lazy"/></button>
+          <button class="pdp-gallery__thumb" data-src="images/product-black-1.jpg"><img src="images/product-black-1.jpg" alt="" loading="lazy"/></button>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="pdp-info">
+        <p class="pdp-info__brand">XTC — Original Members</p>
+        <h1 class="pdp-info__title">Polo [Black]</h1>
+        <div class="pdp-info__price-row">
+          <span class="pdp-info__price">£60</span>
+          <span class="pdp-info__badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            50 Units Only
+          </span>
+        </div>
+
+        <div class="pdp-divider"></div>
+
+        <!-- Size -->
+        <div>
+          <p class="pdp-section-label">Size</p>
+          <div class="pdp-sizes" id="sizeButtons">
+            <button class="pdp-size-btn" data-size="S">S</button>
+            <button class="pdp-size-btn" data-size="M">M</button>
+            <button class="pdp-size-btn" data-size="L">L</button>
+          </div>
+          <p class="pdp-size-error" id="sizeError">Please select a size.</p>
+        </div>
+
+        <!-- ATC -->
+        <button class="pdp-atc" id="addToCartBtn" onclick="addToCartFromPage('polo-black','POLO [BLACK]','£60.00','images/polo-black-model-1.jpg')">
+          Add to Bag
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="pdp-buy-now" onclick="buyNowFromPage('polo-black','POLO [BLACK]','£60.00','images/polo-black-model-1.jpg')">
+          Buy Now
+        </button>
+
+        <!-- Accordions -->
+        <div class="pdp-accordion" style="margin-top:32px;">
+          <div class="pdp-size-guide-section">
+            <p class="pdp-acc-trigger open" style="cursor:default;">Size Guide</p>
+            <div class="pdp-acc-content open" id="sizeContent">
+              <p style="margin-bottom:12px;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:1px;">All measurements in centimetres (cm).</p>
+              <table>
+                <thead><tr><th>Size</th><th>Length</th><th>Chest</th><th>Sleeve</th></tr></thead>
+                <tbody>
+                  <tr><td>S</td><td>68.6</td><td>50.8</td><td>20.0</td></tr>
+                  <tr><td>M</td><td>71.1</td><td>53.3</td><td>20.6</td></tr>
+                  <tr><td>L</td><td>73.7</td><td>55.9</td><td>21.3</td></tr>
+                </tbody>
+              </table>
+              <div class="pdp-size-finder">
+                <p class="pdp-size-finder__label">Find Your Size</p>
+                <div class="pdp-size-finder__inputs">
+                  <div class="pdp-size-finder__field">
+                    <label>Height (cm)</label>
+                    <input type="number" id="sfHeight" placeholder="e.g. 178" min="140" max="220" />
+                  </div>
+                  <div class="pdp-size-finder__field">
+                    <label>Chest (cm)</label>
+                    <input type="number" id="sfChest" placeholder="e.g. 96" min="60" max="140" />
+                  </div>
+                </div>
+                <button class="pdp-size-finder__btn" onclick="recommendSize()">Get Recommendation</button>
+                <p class="pdp-size-finder__result" id="sfResult"></p>
+              </div>
+            </div>
+          </div>
+
+          <button class="pdp-acc-trigger" data-target="descContent">
+            Description
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+          <div class="pdp-acc-content" id="descContent">
+            <p>Premium heavyweight XTC Original Members Polo. Crafted for those who value quality above all.</p>
+            <ul style="margin-top:12px;">
+              <li>Exclusive drop — 50 units only, never restocked</li>
+              <li>Heavyweight 100% cotton construction</li>
+              <li>Slim fit silhouette</li>
+              <li>Stainless steel hardware</li>
+              <li>XTC Original Members branding</li>
+            </ul>
+          </div>
+
+          <button class="pdp-acc-trigger" data-target="shipContent">
+            Shipping &amp; Returns
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+          <div class="pdp-acc-content" id="shipContent">
+            <ul>
+              <li>Free UK shipping on orders over £80</li>
+              <li>Standard UK delivery: 3–5 working days</li>
+              <li>International shipping available at checkout</li>
+              <li>Returns accepted within 14 days of delivery</li>
+            </ul>
+          </div>
+
+          <button class="pdp-acc-trigger" data-target="careContent">
+            Care Instructions
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+          <div class="pdp-acc-content" id="careContent">
+            <ul>
+              <li>Machine wash cold</li>
+              <li>Do not bleach</li>
+              <li>Tumble dry low</li>
+              <li>Iron on low heat</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand__logo">
+            <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" />
+          </div>
+          <p class="footer-brand__tagline">Premium heavyweight polos.<br>Limited drops. Never restocked.</p>
+          <div class="footer-socials">
+            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok">
+              <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Shop</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">New Releases</a></li>
+              <li><a href="product-polo-black.html">Polo [Black]</a></li>
+              <li><a href="product-polo-white.html">Polo [White]</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Account</h3>
+            <ul>
+              <li><a href="profile.html">My Profile</a></li>
+              <li><a href="track-order.html">Track Order</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3 class="footer-links__heading">Help</h3>
+            <ul>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="shipping.html">Shipping</a></li>
+              <li><a href="returns.html">Returns</a></li>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <script>
+  function handleLoyaltySignup(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type=email]').value;
+    const msg = document.getElementById('loyaltyMsg');
+    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
+    msg.style.display = 'block';
+    e.target.reset();
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
+    if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'loyalty_form' });
+  }
+  </script>
+
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+  <script src="js/stock.js"></script>
+  <script src="js/omnisend-config.js"></script>
+  <script>
+  (function(){
+    var id = localStorage.getItem('xtc-ga4-id');
+    if(id){ var s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.appendChild(s); window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);}; gtag('js',new Date()); gtag('config',id); }
+  })();
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof applyStockToBadges === 'function') applyStockToBadges('polo-black');
+    });
+    // Accordion
+    document.querySelectorAll('.pdp-acc-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const id = trigger.dataset.target;
+        const content = document.getElementById(id);
+        const isOpen = trigger.classList.contains('open');
+        trigger.classList.toggle('open', !isOpen);
+        content.classList.toggle('open', !isOpen);
+      });
+    });
+
+
+    // Size selection
+    document.getElementById('sizeButtons').addEventListener('click', e => {
+      const btn = e.target.closest('.pdp-size-btn');
+      if (!btn || btn.classList.contains('size-btn--oos') || btn.disabled) return;
+      document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('sizeError').classList.remove('show');
+    });
+
+    const qty = 1;
+
+    // Gallery — thumbnails, drag-to-swipe, 5s auto-rotate
+    const thumbs = Array.from(document.querySelectorAll('.pdp-gallery__thumb'));
+    const mainImg = document.getElementById('mainImage');
+    let currentIdx = 0;
+
+    function goToSlide(idx, userTriggered) {
+      currentIdx = (idx + thumbs.length) % thumbs.length;
+      thumbs.forEach(t => t.classList.remove('active'));
+      thumbs[currentIdx].classList.add('active');
+      mainImg.src = thumbs[currentIdx].dataset.src;
+      if (userTriggered) {
+        thumbs[currentIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      }
+    }
+
+    thumbs.forEach((thumb, i) => {
+      thumb.addEventListener('click', () => { goToSlide(i, true); resetTimer(); });
+    });
+
+    // Auto-rotate every 5s
+    let autoTimer = setInterval(() => goToSlide(currentIdx + 1, false), 5000);
+    function resetTimer() { clearInterval(autoTimer); autoTimer = setInterval(() => goToSlide(currentIdx + 1, false), 5000); }
+
+    // Drag / swipe on main image
+    const galleryMain = document.querySelector('.pdp-gallery__main');
+    let dragStartX = 0, isDragging = false;
+
+    galleryMain.addEventListener('mousedown', e => { isDragging = true; dragStartX = e.clientX; galleryMain.style.cursor = 'grabbing'; });
+    galleryMain.addEventListener('mousemove', e => { if (!isDragging) return; });
+    galleryMain.addEventListener('mouseup', e => {
+      if (!isDragging) return;
+      isDragging = false;
+      galleryMain.style.cursor = 'grab';
+      const diff = e.clientX - dragStartX;
+      if (Math.abs(diff) > 40) { goToSlide(diff < 0 ? currentIdx + 1 : currentIdx - 1, true); resetTimer(); }
+    });
+    galleryMain.addEventListener('mouseleave', () => { isDragging = false; galleryMain.style.cursor = 'grab'; });
+
+    // Touch swipe
+    galleryMain.addEventListener('touchstart', e => { dragStartX = e.touches[0].clientX; }, { passive: true });
+    galleryMain.addEventListener('touchend', e => {
+      const diff = e.changedTouches[0].clientX - dragStartX;
+      if (Math.abs(diff) > 40) { goToSlide(diff < 0 ? currentIdx + 1 : currentIdx - 1, true); resetTimer(); }
+    });
+
+    galleryMain.style.cursor = 'grab';
+
+    function recommendSize() {
+      const height = parseFloat(document.getElementById('sfHeight').value);
+      const chest = parseFloat(document.getElementById('sfChest').value);
+      const result = document.getElementById('sfResult');
+      if (!height && !chest) { result.textContent = 'Please enter your height or chest measurement.'; result.style.color = 'rgba(255,255,255,0.3)'; return; }
+      // Size chart: chest is primary, height secondary
+      // S: chest ≤52, M: chest ≤55, L: chest ≤58
+      let rec = null;
+      if (chest) {
+        if (chest <= 52) rec = 'S';
+        else if (chest <= 55) rec = 'M';
+        else rec = 'L';
+      } else {
+        if (height <= 170) rec = 'S';
+        else if (height <= 180) rec = 'M';
+        else rec = 'L';
+      }
+      result.style.color = 'var(--accent)';
+      result.textContent = 'We recommend size ' + rec + ' for you.';
+      // Highlight that size button
+      document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
+      const btn = document.querySelector('.pdp-size-btn[data-size="' + rec + '"]');
+      if (btn && !btn.classList.contains('size-btn--oos')) btn.classList.add('selected');
+    }
+
+    function addToCartFromPage(id, name, price, img) {
+      const selected = document.querySelector('.pdp-size-btn.selected');
+      if (!selected) {
+        document.getElementById('sizeError').classList.add('show');
+        document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const fullName = name + ' — ' + selected.dataset.size;
+      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+    }
+    function buyNowFromPage(id, name, price, img) {
+      const selected = document.querySelector('.pdp-size-btn.selected');
+      if (!selected) {
+        document.getElementById('sizeError').classList.add('show');
+        document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const fullName = name + ' — ' + selected.dataset.size;
+      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+      window.location.href = 'checkout.html';
+    }
+  </script>
+</body>
+</html>

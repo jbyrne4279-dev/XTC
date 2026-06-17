@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — XTC Clothing</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--bg); color: var(--text-primary); }
+
+    .co-wrap {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+    }
+
+    /* ── Left: form ── */
+    .co-form-col {
+      padding: 80px 64px 80px 80px;
+      border-right: 1px solid var(--border);
+    }
+    .co-logo {
+      display: inline-block;
+      margin-bottom: 48px;
+    }
+    .co-logo img { height: 26px; width: auto; opacity: 0.85; }
+    .co-logo-text { font-size: 18px; letter-spacing: 5px; text-transform: uppercase; font-weight: 300; color: #fff; }
+
+    .co-step-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .co-section-title {
+      font-size: 22px;
+      font-weight: 200;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .co-fieldset {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .co-fieldset--full { grid-template-columns: 1fr; }
+    .co-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .co-field--span2 { grid-column: span 2; }
+    .co-field label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .co-field input, .co-field select {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .co-field input:focus, .co-field select:focus { border-color: var(--accent); }
+    .co-field input::placeholder { color: rgba(255,255,255,0.2); }
+
+    /* Stripe card element container */
+    #card-element {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
+    }
+    #card-element.StripeElement--focus { border-color: var(--accent); }
+    #card-element.StripeElement--invalid { border-color: #e05; }
+
+    #card-errors {
+      font-size: 12px;
+      color: #e05;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    .co-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    .co-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 18px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      border-radius: 2px;
+      margin-top: 8px;
+    }
+    .co-submit:hover { opacity: 0.8; }
+    .co-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .co-secure {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    .co-secure svg { opacity: 0.3; }
+
+    /* ── Right: order summary ── */
+    .co-summary-col {
+      background: rgba(255,255,255,0.02);
+      padding: 80px 48px 80px 48px;
+    }
+    .co-summary-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 32px;
+    }
+    .co-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .co-item__img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .co-item__img-placeholder {
+      width: 64px;
+      height: 64px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .co-item__info { flex: 1; }
+    .co-item__name {
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .co-item__meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.5px;
+    }
+    .co-item__price {
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .co-totals {
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+      padding-top: 24px;
+    }
+    .co-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .co-total-row--grand {
+      font-size: 16px;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Success screen ── */
+    .co-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 80px 32px;
+      gap: 24px;
+    }
+    .co-success__icon {
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .co-success__title {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 200;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .co-success__sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      max-width: 400px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 900px) {
+      .co-wrap { grid-template-columns: 1fr; }
+      .co-summary-col { order: -1; padding: 40px 24px; }
+      .co-form-col { padding: 40px 24px; border-right: none; }
+      .co-fieldset { grid-template-columns: 1fr; }
+      .co-field--span2 { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="co-success" id="successScreen">
+  <div class="co-success__icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
+  <p class="co-step-label">Order Confirmed</p>
+  <h1 class="co-success__title">Thank You</h1>
+  <p class="co-success__sub">Your order has been placed. You'll receive a confirmation email shortly.</p>
+  <a href="index.html" class="btn btn--primary" style="margin-top:8px;">Continue Shopping</a>
+</div>
+
+<div class="co-wrap" id="checkoutWrap">
+
+  <!-- Form -->
+  <div class="co-form-col">
+    <a href="cart.html" class="co-logo">
+      <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png"
+           alt="XTC Clothing"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" />
+      <span class="co-logo-text" style="display:none">XTC</span>
+    </a>
+
+    <form id="checkoutForm">
+      <p class="co-step-label">Step 1 of 2</p>
+      <h2 class="co-section-title">Contact & Delivery</h2>
+
+      <div class="co-fieldset">
+        <div class="co-field">
+          <label for="coEmail">Email</label>
+          <input type="email" id="coEmail" placeholder="your@email.com" required />
+        </div>
+        <div class="co-field">
+          <label for="coPhone">Phone (optional)</label>
+          <input type="tel" id="coPhone" placeholder="+44 7700 900000" />
+        </div>
+        <div class="co-field">
+          <label for="coFirstName">First Name</label>
+          <input type="text" id="coFirstName" placeholder="James" required />
+        </div>
+        <div class="co-field">
+          <label for="coLastName">Last Name</label>
+          <input type="text" id="coLastName" placeholder="Byrne" required />
+        </div>
+        <div class="co-field co-field--span2">
+          <label for="coAddress">Address</label>
+          <input type="text" id="coAddress" placeholder="123 Main Street" required />
+        </div>
+        <div class="co-field">
+          <label for="coCity">City</label>
+          <input type="text" id="coCity" placeholder="London" required />
+        </div>
+        <div class="co-field">
+          <label for="coPostcode">Postcode</label>
+          <input type="text" id="coPostcode" placeholder="EC1A 1BB" required />
+        </div>
+      </div>
+
+      <hr class="co-divider" />
+
+      <p class="co-step-label">Step 2 of 2</p>
+      <h2 class="co-section-title">Payment</h2>
+
+      <div class="co-field" style="margin-bottom:8px;">
+        <label>Card Details</label>
+        <div id="card-element"></div>
+        <div id="card-errors"></div>
+      </div>
+
+      <button type="submit" class="co-submit" id="submitBtn">
+        Place Order
+      </button>
+
+      <p class="co-secure">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor">
+          <path d="M6 0L0 3v4c0 3.5 2.5 6.5 6 7.5C9.5 13.5 12 10.5 12 7V3L6 0zm0 6.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+        </svg>
+        Secured by Stripe
+      </p>
+    </form>
+  </div>
+
+  <!-- Summary -->
+  <div class="co-summary-col">
+    <p class="co-summary-title">Order Summary</p>
+    <div id="coItems"></div>
+    <div class="co-totals">
+      <div class="co-total-row">
+        <span>Subtotal</span>
+        <span id="coSubtotal">—</span>
+      </div>
+      <div class="co-total-row">
+        <span>Shipping</span>
+        <span id="coShipping">Calculated at next step</span>
+      </div>
+      <div class="co-total-row co-total-row--grand">
+        <span>Total</span>
+        <span id="coTotal">—</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/stock.js"></script>
+<script src="js/omnisend-config.js"></script>
+<script>
+(function(){
+  var id = localStorage.getItem('xtc-ga4-id');
+  if(id){ var s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.appendChild(s); window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);}; gtag('js',new Date()); gtag('config',id); }
+})();
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="js/main.js"></script>
+<script src="js/analytics.js"></script>
+<script>
+(function() {
+  const PUBLISHABLE_KEY = 'pk_test_51Tj2geQ7OLAqpBCHghSLYpQzTKxgaVKgMxuQQOImvEJ0X5891YwPXyabegt7w1wrEv9sRBYi9UNC3SeXkZ8cmAgD0006MRr2ZK';
+
+  // Render order summary from localStorage
+  function renderSummary() {
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    if (!cart.length) {
+      window.location.href = 'cart.html';
+      return;
+    }
+
+    const itemsEl = document.getElementById('coItems');
+    let subtotal = 0;
+
+    itemsEl.innerHTML = cart.map(item => {
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+      subtotal += price * item.qty;
+      const img = item.img
+        ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" />`
+        : `<div class="co-item__img-placeholder"></div>`;
+      return `
+        <div class="co-item">
+          ${img}
+          <div class="co-item__info">
+            <p class="co-item__name">${item.name}</p>
+            <p class="co-item__meta">Qty ${item.qty}</p>
+          </div>
+          <p class="co-item__price">£${(price * item.qty).toFixed(2)}</p>
+        </div>`;
+    }).join('');
+
+    document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
+    document.getElementById('coShipping').textContent = subtotal >= 80 ? 'Free' : '£4.99';
+    const shipping = subtotal >= 80 ? 0 : 4.99;
+    document.getElementById('coTotal').textContent = '£' + (subtotal + shipping).toFixed(2);
+  }
+
+  // Init Stripe
+  const stripe = Stripe(PUBLISHABLE_KEY);
+  const elements = stripe.elements({
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: 'rgb(179,102,255)',
+        colorBackground: 'rgba(255,255,255,0.03)',
+        colorText: '#ffffff',
+        colorDanger: '#ee0055',
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        borderRadius: '2px',
+      }
+    }
+  });
+  const card = elements.create('card', {
+    style: {
+      base: {
+        color: '#fff',
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        fontSize: '14px',
+        letterSpacing: '0.5px',
+        '::placeholder': { color: 'rgba(255,255,255,0.2)' }
+      },
+      invalid: { color: '#ee0055' }
+    }
+  });
+  card.mount('#card-element');
+  card.on('change', function(e) {
+    document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+  });
+
+  // Handle submit — tokenise only (no server call needed for sandbox demo)
+  document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+
+    const { token, error } = await stripe.createToken(card, {
+      name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
+      address_line1: document.getElementById('coAddress').value,
+      address_city: document.getElementById('coCity').value,
+      address_zip: document.getElementById('coPostcode').value,
+      address_country: 'GB',
+    });
+
+    if (error) {
+      document.getElementById('card-errors').textContent = error.message;
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+      return;
+    }
+
+    // Token created — in production you would POST token.id to your server
+    // to create a Charge or PaymentIntent. Here we simulate success.
+    console.log('Stripe token:', token.id);
+
+    // Save order to localStorage for track-order page
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    const orders = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
+    const orderId = 'XTC' + Date.now().toString().slice(-6);
+    orders[orderId] = {
+      id: orderId,
+      email: document.getElementById('coEmail').value,
+      items: cart,
+      date: new Date().toISOString(),
+      status: 'Processing',
+    };
+    localStorage.setItem('xtc-orders', JSON.stringify(orders));
+    // Decrement stock for purchased items
+    if (typeof decrementStock === 'function') {
+      cart.forEach(item => {
+        const parts = item.id.split('-');
+        const size = parts[parts.length - 1].toUpperCase();
+        const productId = parts.slice(0, -1).join('-');
+        decrementStock(productId, size, item.qty);
+      });
+    }
+    localStorage.setItem('xtc-cart', '[]');
+    // Analytics: purchase event
+    const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
+    const buyerEmail = document.getElementById('coEmail').value;
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(buyerEmail, 'checkout');
+    if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, buyerEmail, cart, totalValue);
+
+    document.getElementById('checkoutWrap').style.display = 'none';
+    const success = document.getElementById('successScreen');
+    success.style.display = 'flex';
+  });
+
+  // begin_checkout event on page load
+  if (typeof xtcEvent === 'function') {
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    const value = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    xtcEvent('begin_checkout', { currency: 'GBP', value });
+  }
+
+  renderSummary();
+})();
+</script>
+
+</body>
+</html>
