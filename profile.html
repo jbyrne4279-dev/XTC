@@ -1431,7 +1431,12 @@
         signInBtn.disabled = false;
         signInBtn.textContent = 'Sign In';
         if (res.error) {
-          document.getElementById('siPassErr').textContent = res.error.message;
+          var errMsg = res.error.message || '';
+          if (errMsg.toLowerCase().includes('email not confirmed')) {
+            document.getElementById('siPassErr').textContent = 'Please confirm your email first — check your inbox.';
+          } else {
+            document.getElementById('siPassErr').textContent = errMsg;
+          }
           setError('fieldSignInPass', true);
         } else {
           var local = syncLocalUser(res.data.user);
@@ -1470,11 +1475,21 @@
         if (res.error) {
           document.getElementById('caEmailErr').textContent = res.error.message;
           setError('fieldCreateEmail', true);
-        } else {
-          var local = syncLocalUser(res.data.user, { full_name: name });
-          toast('Welcome to XTC, ' + name + '! Check your email to confirm your account.');
-          showDashboard(local);
+          return;
         }
+        /* Session exists = email confirmation is off, log them straight in */
+        if (res.data.session && res.data.user) {
+          var local = syncLocalUser(res.data.user, { full_name: name });
+          toast('Welcome to XTC, ' + name + '!');
+          showDashboard(local);
+          return;
+        }
+        /* No session = confirmation email sent */
+        toast('Account created! Check your email to confirm then sign in.', 5000);
+        /* Switch to sign-in tab so they can log in after confirming */
+        setSignInMode(true);
+        var siEmailEl = document.getElementById('siEmail');
+        if (siEmailEl) siEmailEl.value = email;
       });
     });
 
@@ -1509,7 +1524,15 @@
       sendCodeBtn && (sendCodeBtn.disabled = true, sendCodeBtn.textContent = 'Sending…');
       sb.auth.signInWithOtp({ phone: phone }).then(function(res) {
         sendCodeBtn && (sendCodeBtn.disabled = false, sendCodeBtn.textContent = 'Send Code');
-        if (res.error) { toast('Error: ' + res.error.message); return; }
+        if (res.error) {
+          var msg = res.error.message || '';
+          if (msg.toLowerCase().includes('provider') || msg.toLowerCase().includes('sms')) {
+            toast('Phone sign-in is not yet enabled. Please use email instead.', 5000);
+          } else {
+            toast(msg, 5000);
+          }
+          return;
+        }
         var step1 = document.getElementById('phoneStep1');
         var step2 = document.getElementById('phoneStep2');
         if (step1) step1.classList.remove('active');
