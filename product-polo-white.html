@@ -405,6 +405,18 @@
       .pdp-info { padding: 40px 28px; }
       .pdp-crumb { padding: 14px 28px; }
     }
+    @media (max-width: 680px) {
+      .pdp-crumb { padding: 12px 16px; font-size: 9px; }
+      .pdp-gallery__main { aspect-ratio: 4/5; }
+      .pdp-info { padding: 28px 16px; }
+      .pdp-info__title { font-size: clamp(22px, 6vw, 32px); }
+      .pdp-sizes { flex-wrap: wrap; gap: 8px; }
+      .pdp-size-btn { width: 48px; height: 48px; }
+      .pdp-atc-row { flex-direction: column; gap: 10px; }
+      .pdp-atc { width: 100%; }
+      .pdp-trust { grid-template-columns: 1fr 1fr; }
+      .pdp-accordion { padding: 0; }
+    }
     .pdp-gallery__main { user-select: none; }
     .pdp-gallery__main img { pointer-events: none; }
   </style>
