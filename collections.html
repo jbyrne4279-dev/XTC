@@ -169,6 +169,90 @@
     </div>
   </main>
 
+  <!-- Coming Soon -->
+  <section class="coming-soon-section">
+    <div class="container">
+      <div class="coming-soon-header">
+        <p class="coming-soon-header__eyebrow">Next Drop</p>
+        <h2 class="coming-soon-header__title">Coming Soon</h2>
+        <p class="coming-soon-header__sub">Dropping soon — register your interest below to get early access.</p>
+      </div>
+
+      <div class="product-grid product-grid--2 coming-soon-grid">
+
+        <!-- Placeholder 1 -->
+        <article class="product-card coming-soon-card">
+          <div class="product-card__media coming-soon-card__media">
+            <div class="coming-soon-card__blur"></div>
+            <div class="coming-soon-card__overlay-text">
+              <span class="coming-soon-card__lock">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <span class="coming-soon-card__tag">Drop 02</span>
+            </div>
+          </div>
+          <div class="product-card__info">
+            <span class="product-card__name">Unrevealed Item</span>
+            <p class="product-card__price">— GBP</p>
+            <div class="product-card__actions">
+              <button class="btn btn--primary btn--sm coming-soon-notify-btn" onclick="notifyMe(this)">Notify Me</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Placeholder 2 -->
+        <article class="product-card coming-soon-card">
+          <div class="product-card__media coming-soon-card__media">
+            <div class="coming-soon-card__blur"></div>
+            <div class="coming-soon-card__overlay-text">
+              <span class="coming-soon-card__lock">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <span class="coming-soon-card__tag">Drop 02</span>
+            </div>
+          </div>
+          <div class="product-card__info">
+            <span class="product-card__name">Unrevealed Item</span>
+            <p class="product-card__price">— GBP</p>
+            <div class="product-card__actions">
+              <button class="btn btn--primary btn--sm coming-soon-notify-btn" onclick="notifyMe(this)">Notify Me</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Placeholder 3 -->
+        <article class="product-card coming-soon-card">
+          <div class="product-card__media coming-soon-card__media">
+            <div class="coming-soon-card__blur"></div>
+            <div class="coming-soon-card__overlay-text">
+              <span class="coming-soon-card__lock">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <span class="coming-soon-card__tag">Drop 02</span>
+            </div>
+          </div>
+          <div class="product-card__info">
+            <span class="product-card__name">Unrevealed Item</span>
+            <p class="product-card__price">— GBP</p>
+            <div class="product-card__actions">
+              <button class="btn btn--primary btn--sm coming-soon-notify-btn" onclick="notifyMe(this)">Notify Me</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function notifyMe(btn) {
+      btn.textContent = 'Registered';
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'default';
+    }
+  </script>
+
   <!-- Footer -->
   <footer class="site-footer">
 

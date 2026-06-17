@@ -2287,6 +2287,109 @@ ul, ol { list-style: none; }
 .header-nav a.active { color: var(--accent); }
 
 /* ============================================
+   COMING SOON SECTION
+   ============================================ */
+.coming-soon-section {
+  padding: 80px 0 100px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+}
+
+.coming-soon-header {
+  text-align: center;
+  margin-bottom: var(--sp-10);
+}
+
+.coming-soon-header__eyebrow {
+  font-size: var(--fs-micro);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--sp-3);
+}
+
+.coming-soon-header__title {
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+}
+
+.coming-soon-header__sub {
+  font-size: var(--fs-xs);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.coming-soon-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.coming-soon-card { opacity: 0.75; }
+.coming-soon-card:hover { opacity: 1; border-color: rgba(179,102,255,0.2); }
+
+.coming-soon-card__media {
+  position: relative;
+  aspect-ratio: 1/1;
+  background: #0d0d0d;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coming-soon-card__blur {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.015) 0px,
+    rgba(255,255,255,0.015) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+}
+
+.coming-soon-card__overlay-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  z-index: 1;
+}
+
+.coming-soon-card__lock {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(179,102,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(179,102,255,0.5);
+}
+
+.coming-soon-card__tag {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+}
+
+@media (max-width: 768px) {
+  .coming-soon-grid { grid-template-columns: 1fr; }
+  .coming-soon-section { padding: 56px 0 72px; }
+}
+@media (min-width: 769px) and (max-width: 900px) {
+  .coming-soon-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================
    MOBILE SAFARI OPTIMISATIONS
    ============================================ */
 
