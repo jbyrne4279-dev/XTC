@@ -8,7 +8,7 @@ const OMNISEND_BRAND_ID  = '686857c87d5d9b4678a0bf26';
   omnisend.push(['accountID', OMNISEND_BRAND_ID]);
   var s = document.createElement('script');
   s.type = 'text/javascript'; s.async = true;
-  s.src = 'https://omnisnd.com/widget.js';
+  s.src = 'https://omnisend.com/widget.js';
   document.head.appendChild(s);
   // Persist so admin panel shows as connected
   localStorage.setItem('xtc-omnisend-id', OMNISEND_BRAND_ID);
