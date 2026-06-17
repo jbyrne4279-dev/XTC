@@ -2400,7 +2400,7 @@ ul, ol { list-style: none; }
 }
 
 @media (max-width: 768px) {
-  .coming-soon-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .coming-soon-grid { grid-template-columns: 1fr; gap: 12px; }
   .coming-soon-section { padding: 56px 0 72px; }
 }
 @media (min-width: 769px) and (max-width: 900px) {
