@@ -432,19 +432,56 @@
     document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
   });
 
-  // Handle submit — tokenise only (no server call needed for sandbox demo)
+  // Fetch PaymentIntent client secret on page load
+  let clientSecret = null;
+  async function initPaymentIntent() {
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    if (!cart.length) return;
+    const subtotal = cart.reduce((s, i) => s + parseFloat((i.price || '0').replace(/[^0-9.]/g, '')) * i.qty, 0);
+    const shipping = subtotal >= 80 ? 0 : 4.99;
+    const totalPence = Math.round((subtotal + shipping) * 100);
+    try {
+      const res = await fetch('/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: totalPence }),
+      });
+      const data = await res.json();
+      clientSecret = data.clientSecret;
+    } catch (e) {
+      console.error('Failed to init payment:', e);
+    }
+  }
+  initPaymentIntent();
+
+  // Handle submit
   document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Processing…';
 
-    const { token, error } = await stripe.createToken(card, {
-      name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
-      address_line1: document.getElementById('coAddress').value,
-      address_city: document.getElementById('coCity').value,
-      address_zip: document.getElementById('coPostcode').value,
-      address_country: 'GB',
+    if (!clientSecret) {
+      document.getElementById('card-errors').textContent = 'Payment not ready. Please refresh and try again.';
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+      return;
+    }
+
+    const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card,
+        billing_details: {
+          name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
+          email: document.getElementById('coEmail').value,
+          address: {
+            line1: document.getElementById('coAddress').value,
+            city: document.getElementById('coCity').value,
+            postal_code: document.getElementById('coPostcode').value,
+            country: 'GB',
+          },
+        },
+      },
     });
 
     if (error) {
@@ -453,10 +490,6 @@
       btn.textContent = 'Place Order';
       return;
     }
-
-    // Token created — in production you would POST token.id to your server
-    // to create a Charge or PaymentIntent. Here we simulate success.
-    console.log('Stripe token:', token.id);
 
     // Save order to localStorage for track-order page
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');

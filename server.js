@@ -13,6 +13,22 @@ const PRODUCTS = {
 
 const BASE_URL = process.env.BASE_URL || 'https://xtc-production.up.railway.app';
 
+app.post('/create-payment-intent', async (req, res) => {
+  const { amount } = req.body; // amount in pence
+  if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
+  try {
+    const intent = await stripe.paymentIntents.create({
+      amount: Math.round(amount),
+      currency: 'gbp',
+      automatic_payment_methods: { enabled: true },
+    });
+    res.json({ clientSecret: intent.client_secret });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/create-checkout-session', async (req, res) => {
   const { productId, size, quantity = 1 } = req.body;
   const product = PRODUCTS[productId];
