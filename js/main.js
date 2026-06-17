@@ -49,15 +49,20 @@ function showBagConfirm(name, price, img) {
             <path class="bag-confirm__check-path" d="M15 26l8 8 14-14" stroke="#b366ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <p class="bag-confirm__label">Added to Bag</p>
-        <p class="bag-confirm__name" id="bagConfirmName"></p>
+        <p class="bag-confirm__label">Added to Cart</p>
+        <div class="bag-confirm__meta">
+          <p class="bag-confirm__name" id="bagConfirmName"></p>
+          <p class="bag-confirm__size" id="bagConfirmSize"></p>
+        </div>
         <p class="bag-confirm__price" id="bagConfirmPrice"></p>
       </div>`;
     document.body.appendChild(overlay);
     overlay.querySelector('.bag-confirm__backdrop').addEventListener('click', hideBagConfirm);
   }
   overlay.classList.remove('active');
-  document.getElementById('bagConfirmName').textContent = name;
+  const parts = name.split(' — ');
+  document.getElementById('bagConfirmName').textContent = parts[0];
+  document.getElementById('bagConfirmSize').textContent = parts[1] ? 'Size ' + parts[1] : '';
   document.getElementById('bagConfirmPrice').textContent = price;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     overlay.classList.add('active');
