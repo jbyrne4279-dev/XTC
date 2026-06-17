@@ -2427,6 +2427,10 @@ textarea {
   .fp-card__sub { display: none; }
 }
 
+@media (min-width: 769px) {
+  .fp-eyebrow { display: none; }
+}
+
 /* Very small phones */
 @media (max-width: 390px) {
   .hero-bar__title { font-size: clamp(24px, 9vw, 40px); }
