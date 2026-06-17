@@ -859,30 +859,16 @@
       const fullName = name + ' — ' + selected.dataset.size;
       addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
     }
-    async function buyNowFromPage(id) {
+    function buyNowFromPage(id, name, price, img) {
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {
         document.getElementById('sizeError').classList.add('show');
         document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-      const btn = document.querySelector('.pdp-buy-now');
-      btn.textContent = 'Loading...';
-      btn.disabled = true;
-      try {
-        const res = await fetch('/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: id, size: selected.dataset.size, quantity: qty }),
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else throw new Error(data.error);
-      } catch (e) {
-        alert('Something went wrong. Please try again.');
-        btn.textContent = 'Buy Now';
-        btn.disabled = false;
-      }
+      const fullName = name + ' — ' + selected.dataset.size;
+      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+      window.location.href = 'checkout.html';
     }
     function addBundleToCart(qty) {
       const selected = document.querySelector('.pdp-size-btn.selected');
