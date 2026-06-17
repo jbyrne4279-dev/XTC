@@ -69,8 +69,8 @@ body {
   background: var(--bg);
   color: var(--text-primary);
   line-height: 1.6;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
 }
@@ -2285,3 +2285,165 @@ ul, ol { list-style: none; }
 
 /* Nav active state */
 .header-nav a.active { color: var(--accent); }
+
+/* ============================================
+   MOBILE SAFARI OPTIMISATIONS
+   ============================================ */
+
+/* Remove tap flash on all interactive elements */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Performance: tell GPU which elements will animate */
+.announcement-bar__track,
+.hgs-track,
+.marquee-track {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Smooth momentum scroll inside drawers / panels */
+.nav-drawer__panel,
+.lb-panel,
+.lb-comments {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Prevent rubber-band from bleeding past overlay panels */
+.nav-drawer__panel,
+.search-overlay {
+  overscroll-behavior: contain;
+}
+
+/* Safe-area insets — notch / Dynamic Island / home-bar */
+.sticky-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.toast {
+  bottom: calc(var(--sp-8) + env(safe-area-inset-bottom));
+}
+
+.site-footer {
+  padding-bottom: calc(var(--sp-8) + env(safe-area-inset-bottom));
+}
+
+/* -webkit-appearance reset (removes iOS default button/input chrome) */
+button,
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  /* ── Prevent iOS auto-zoom on input focus (needs font-size ≥ 16px) ── */
+  .form-input,
+  .form-select,
+  .form-textarea,
+  .cart-note textarea,
+  .search-box input,
+  .footer-club__form input,
+  .lb-comment-input {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Minimum 44 × 44 pt tap targets (Apple HIG) ── */
+  .header-actions button,
+  .header-actions a {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .hero-arr {
+    width: 44px;
+    height: 44px;
+  }
+
+  .qty-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .accordion-trigger {
+    padding: 14px 0;
+    min-height: 44px;
+  }
+
+  .nav-drawer__links a {
+    padding-bottom: var(--sp-5);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ── Hero — tighten on small screens ── */
+  .hero-bar {
+    padding: 0 20px 28px;
+    gap: 16px;
+  }
+
+  .hero-bar__cta {
+    padding: 14px 28px;
+    font-size: 11px;
+  }
+
+  /* ── Featured products — single column, comfortable padding ── */
+  .fp-header { padding: 0 20px 28px; }
+  .fp-grid   { padding: 0 20px; gap: 2px 0; }
+  .fp-card__info { padding: 16px 18px; gap: 10px; }
+  .fp-card__name { font-size: 13px; }
+  .fp-card__price { font-size: 17px; }
+  .fp-card__atc  { padding: 10px 16px; font-size: 10px; }
+
+  /* ── Gallery strip ── */
+  .hgs-header { padding: 0 20px 20px; }
+  .hgs-img    { width: 72vw; }
+
+  /* ── Cart items ── */
+  .cart-item { grid-template-columns: 72px 1fr; gap: var(--sp-4); }
+
+  /* ── Footer club ── */
+  .footer-club { padding: 48px 0; }
+  .footer-club__inner { padding: 0 var(--sp-5); }
+
+  /* ── Brand statement ── */
+  .brand-statement__title { letter-spacing: 0.1em; }
+
+  /* ── Feature strip — 2-up on mobile, full-width below 400px ── */
+  .feature-item { padding: var(--sp-8) var(--sp-4); }
+
+  /* ── Section headers ── */
+  .section-header { margin-bottom: var(--sp-8); }
+}
+
+/* Very small phones */
+@media (max-width: 390px) {
+  .hero-bar__title { font-size: clamp(24px, 9vw, 40px); }
+  .fp-card__info { flex-direction: column; align-items: flex-start; }
+  .fp-card__info-right { flex-direction: row; align-items: center; gap: 12px; }
+  .footer-club__inner { gap: 28px; }
+}
+
+/* Fix position:fixed safari keyboard-push bug — use dvh where supported */
+@supports (height: 100dvh) {
+  .nav-drawer { height: 100dvh; }
+}
+
+/* Disable hover-only effects on touch devices to prevent sticky hover state */
+@media (hover: none) {
+  .product-card:hover { border-color: var(--border); }
+  .product-card:hover .product-card__media img { transform: none; }
+  .product-card:hover .product-card__media-alt { opacity: 0; }
+  .fp-card:hover::before { opacity: 1; }
+  .fp-card:hover::after  { opacity: 0; }
+  .fp-card:hover .fp-card__overlay { opacity: 0; }
+  .hgs-track { animation-play-state: running !important; }
+}
