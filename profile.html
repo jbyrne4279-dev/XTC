@@ -1228,8 +1228,9 @@
     var dashSection = document.getElementById('dashSection');
 
     function showDashboard(user) {
-      authSection.style.display = 'none';
-      dashSection.style.display = 'block';
+      if (!user) { showAuth(); return; }
+      if (authSection) authSection.style.display = 'none';
+      if (dashSection) dashSection.style.display = 'block';
       populateDashboard(user);
     }
 
@@ -1473,23 +1474,37 @@
         createAccountBtn.disabled = false;
         createAccountBtn.textContent = 'Create Account';
         if (res.error) {
-          document.getElementById('caEmailErr').textContent = res.error.message;
+          var errEl = document.getElementById('caEmailErr');
+          if (errEl) errEl.textContent = res.error.message;
           setError('fieldCreateEmail', true);
           return;
         }
+        var user = res.data && res.data.user;
+        var session = res.data && res.data.session;
         /* Session exists = email confirmation is off, log them straight in */
-        if (res.data.session && res.data.user) {
-          var local = syncLocalUser(res.data.user, { full_name: name });
+        if (session && user) {
+          var local = syncLocalUser(user, { full_name: name });
+          if (!local) { toast('Something went wrong. Please try signing in.'); return; }
           toast('Welcome to XTC, ' + name + '!');
           showDashboard(local);
           return;
         }
-        /* No session = confirmation email sent */
-        toast('Account created! Check your email to confirm then sign in.', 5000);
-        /* Switch to sign-in tab so they can log in after confirming */
-        setSignInMode(true);
-        var siEmailEl = document.getElementById('siEmail');
-        if (siEmailEl) siEmailEl.value = email;
+        /* No session = user created, awaiting confirmation or auto-confirmed */
+        if (user) {
+          toast('Account created! Please sign in.', 5000);
+          setSignInMode(true);
+          var siEmailEl = document.getElementById('siEmail');
+          if (siEmailEl) siEmailEl.value = email;
+          return;
+        }
+        /* Fallback — email likely already registered */
+        var errEl2 = document.getElementById('caEmailErr');
+        if (errEl2) errEl2.textContent = 'An account with this email may already exist. Try signing in.';
+        setError('fieldCreateEmail', true);
+      }).catch(function(err) {
+        createAccountBtn.disabled = false;
+        createAccountBtn.textContent = 'Create Account';
+        toast('Error: ' + (err.message || 'Something went wrong. Please try again.'), 5000);
       });
     });
 
