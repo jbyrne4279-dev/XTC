@@ -102,27 +102,6 @@ function initNavDrawer() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close_(); });
 }
 
-  function close() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', open);
-  closeBtn && closeBtn.addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-
-  input && input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const q = input.value.trim();
-      if (q) {
-        close();
-        // Simple client-side search redirect to collections with query
-        window.location.href = 'collections.html?q=' + encodeURIComponent(q);
-      }
-    }
-  });
-}
 
 // ---- Hero Slideshow (premium editorial) ----
 
