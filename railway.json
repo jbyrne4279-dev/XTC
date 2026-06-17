@@ -5,7 +5,7 @@
     "buildCommand": "echo 'Static site'"
   },
   "deploy": {
-    "startCommand": "npx --yes serve . --listen $PORT --single",
+    "startCommand": "npx --yes serve . --listen $PORT",
     "restartPolicyType": "ON_FAILURE"
   }
 }
