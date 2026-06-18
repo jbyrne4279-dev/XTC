@@ -615,7 +615,7 @@
     document.getElementById('payment-element').innerHTML = '';
     document.getElementById('express-checkout-element').innerHTML = '';
 
-    _elements = stripe.elements({ clientSecret, appearance: APPEARANCE });
+    _elements = stripe.elements({ clientSecret, appearance: APPEARANCE, loader: 'auto', paymentMethodOrder: ['card'] });
 
     const expressCheckout = _elements.create('expressCheckout', {
       buttonType: { applePay: 'buy', googlePay: 'buy' },
@@ -644,6 +644,7 @@
     const paymentElement = _elements.create('payment', {
       fields: { billingDetails: { phone: 'auto' } },
       layout: 'tabs',
+      wallets: { applePay: 'never', googlePay: 'never' },
     });
     paymentElement.mount('#payment-element');
 
