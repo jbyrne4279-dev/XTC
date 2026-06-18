@@ -1050,8 +1050,18 @@
         document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-      const fullName = name + ' — ' + selected.dataset.size;
-      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+      const size = selected.dataset.size;
+      const fullId = id + '-' + size.toLowerCase();
+      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0) {
+        document.getElementById('sizeError').textContent = 'This size is out of stock.';
+        document.getElementById('sizeError').classList.add('show');
+        return;
+      }
+      const fullName = name + ' — ' + size;
+      const cart = getCart();
+      const existing = cart.find(item => item.id === fullId);
+      if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price, img, qty: 1 }); }
+      saveCart(cart);
       window.location.href = 'checkout.html';
     }
     function toggleBundle(id) {
