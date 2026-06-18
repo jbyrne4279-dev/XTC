@@ -292,11 +292,6 @@
     }
     .co-promo-msg--ok  { color: rgba(34,197,94,0.9); }
     .co-promo-msg--err { color: rgba(220,38,38,0.9); }
-    .co-promo--mobile { display: none; }
-    @media (max-width: 600px) {
-      .co-promo--desktop { display: none; }
-      .co-promo--mobile  { display: flex; }
-    }
 
     /* ── Success screen ── */
     .co-success {
@@ -422,13 +417,6 @@
         Place Order
       </button>
 
-      <!-- Promo code — mobile only (shown below Place Order) -->
-      <div class="co-promo co-promo--mobile" style="margin-top:16px;">
-        <input type="text" id="promoInputMobile" placeholder="Discount code" maxlength="20" />
-        <button type="button" id="promoBtnMobile" onclick="applyPromoMobile()">Apply</button>
-      </div>
-      <p class="co-promo-msg" id="promoMsgMobile"></p>
-
       <p class="co-secure">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor">
           <path d="M6 0L0 3v4c0 3.5 2.5 6.5 6 7.5C9.5 13.5 12 10.5 12 7V3L6 0zm0 6.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
@@ -444,7 +432,7 @@
     <div id="coItems"></div>
 
     <!-- Promo code -->
-    <div class="co-promo co-promo--desktop">
+    <div class="co-promo">
       <input type="text" id="promoInput" placeholder="Discount code" maxlength="20" />
       <button type="button" id="promoBtn" onclick="applyPromo()">Apply</button>
     </div>
