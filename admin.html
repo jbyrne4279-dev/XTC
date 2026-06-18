@@ -858,30 +858,34 @@ async function renderOrders() {
         ? '<button class="btn-sm btn-sm--danger" onclick="doRefund(\'' + o.id + '\')">Refund</button>'
         : '';
 
-      // Shipping address from Stripe (populated via /update-payment-intent)
+      // Use shipping if set, fall back to billing_details from the charge
       const stripeShip = o.shipping;
-      const shipName = (stripeShip && stripeShip.name) || (o.metadata && o.metadata.name) || '—';
-      const shipAddr = stripeShip && stripeShip.address
-        ? [stripeShip.address.line1, stripeShip.address.city, stripeShip.address.postal_code].filter(Boolean).join(', ')
+      const bill = o.billing;
+      const shipName = (stripeShip && stripeShip.name) || (bill && bill.name) || (o.metadata && o.metadata.name) || '—';
+      const addrObj = (stripeShip && stripeShip.address) || (bill && bill.address);
+      const shipAddr = addrObj
+        ? [addrObj.line1, addrObj.city, addrObj.postal_code].filter(Boolean).join(', ')
         : '—';
-      const shipPhone = (stripeShip && stripeShip.phone) || '—';
+      const shipPhone = (stripeShip && stripeShip.phone) || (bill && bill.phone) || '—';
+      const shipEmail = o.receipt_email || (bill && bill.email) || '—';
       const cartSummary = (o.metadata && o.metadata.cartSummary) || items;
       const rowId = 'detail-' + o.id;
 
-      return '<tr style="cursor:pointer;" onclick="toggleOrderDetail(\'' + rowId + '\')">' +
+      const expandBtn = '<button class="btn-sm" onclick="toggleOrderDetail(\'' + rowId + '\')" title="View details">&#8964;</button>';
+      return '<tr>' +
         '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + shortId + '</td>' +
         '<td style="white-space:nowrap;">' + date + '</td>' +
-        '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
+        '<td style="color:var(--muted);font-size:12px;">' + (shipName !== '—' ? shipName + '<br><span style="font-size:11px;">' + shipEmail + '</span>' : shipEmail) + '</td>' +
         '<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + cartSummary + '</td>' +
         '<td style="white-space:nowrap;">' + amount + '</td>' +
         '<td>' + payBadge + '</td>' +
         '<td>' + shipBadge + '</td>' +
-        '<td style="white-space:nowrap;" onclick="event.stopPropagation()">' + shipBtn + ' ' + refundBtn + '</td>' +
+        '<td style="white-space:nowrap;">' + expandBtn + ' ' + shipBtn + ' ' + refundBtn + '</td>' +
         '</tr>' +
         '<tr id="' + rowId + '" style="display:none;">' +
         '<td colspan="8" style="background:rgba(255,255,255,0.03);padding:16px 24px;border-bottom:1px solid var(--border);">' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + shipName + '</div><div style="font-size:12px;color:var(--muted);">' + email + '</div><div style="font-size:12px;color:var(--muted);">' + shipPhone + '</div></div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + shipName + '</div><div style="font-size:12px;color:var(--muted);">' + shipEmail + '</div><div style="font-size:12px;color:var(--muted);">' + shipPhone + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + shipAddr + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
         (ship ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + ship.carrier + ' — ' + ship.trackingNumber + '</div></div>' : '') +

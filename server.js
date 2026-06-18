@@ -178,17 +178,29 @@ function requireAdmin(req, res, next) {
 // ── Admin: Orders ────────────────────────────────────────────────────────────
 app.get('/admin/orders', requireAdmin, async (req, res) => {
   try {
-    const intents = await stripe.paymentIntents.list({ limit: 100 });
-    const orders = intents.data.map(pi => ({
-      id: pi.id,
-      amount: pi.amount,
-      currency: pi.currency,
-      status: pi.status,
-      created: pi.created,
-      receipt_email: pi.receipt_email,
-      metadata: pi.metadata,
-      description: pi.description,
-    }));
+    const intents = await stripe.paymentIntents.list({ limit: 100, expand: ['data.charges'] });
+    const orders = intents.data.map(pi => {
+      const charge = pi.charges && pi.charges.data && pi.charges.data[0];
+      const billing = charge && charge.billing_details;
+      return {
+        id: pi.id,
+        amount: pi.amount,
+        currency: pi.currency,
+        status: pi.status,
+        created: pi.created,
+        receipt_email: pi.receipt_email || (billing && billing.email) || '',
+        metadata: pi.metadata,
+        description: pi.description,
+        shipping: pi.shipping,
+        // Fall back to billing_details from charge if no shipping set
+        billing: billing ? {
+          name: billing.name,
+          email: billing.email,
+          phone: billing.phone,
+          address: billing.address,
+        } : null,
+      };
+    });
     res.json({ orders });
   } catch (err) {
     console.error(err);
