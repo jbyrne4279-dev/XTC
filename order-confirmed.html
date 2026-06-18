@@ -323,22 +323,32 @@
 
         canvas.toBlob(async (blob) => {
           const file = new File([blob], 'xtc-order.png', { type: 'image/png' });
-          // Web Share API — on mobile Instagram picks this up for Stories
-          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                files: [file],
-                title: 'My XTC Order',
-                text: 'Just copped from @xtcclothing 🖤',
-              });
-            } catch(e) {
-              if (e.name !== 'AbortError') downloadCanvas(canvas);
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+          if (isMobile) {
+            // Step 1: save image to camera roll via share API (silent — no UI if possible)
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+              try { await navigator.share({ files: [file], title: 'XTC Order' }); } catch(e) { /* user cancelled or shared */ }
+            } else {
+              downloadCanvas(canvas);
             }
+            // Step 2: deep-link straight into Instagram Stories camera
+            // instagram://story-camera opens the Stories camera; image is ready in the recents strip
+            setTimeout(() => {
+              window.location.href = 'instagram://story-camera';
+              // Fallback: if app not installed, open instagram.com after a tick
+              setTimeout(() => {
+                if (document.visibilityState !== 'hidden') {
+                  window.open('https://www.instagram.com/', '_blank');
+                }
+              }, 1500);
+            }, 400);
           } else {
-            // Desktop fallback: download image + open Instagram
+            // Desktop: download image + open Instagram web
             downloadCanvas(canvas);
             setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 600);
           }
+
           btn.disabled = false;
           btn.innerHTML = IGBtnHTML;
           msg.style.display = 'none';
