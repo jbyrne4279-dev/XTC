@@ -482,10 +482,12 @@ ul, ol { list-style: none; }
   font-weight: 500;
   letter-spacing: 2px;
   text-transform: uppercase;
-  transition: background 0.25s ease, color 0.25s ease;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  transition: background 0.25s ease, color 0.25s ease, outline-color 0.25s ease;
   white-space: nowrap;
 }
-.hero-bar__cta:hover { background: var(--accent); color: #fff; }
+.hero-bar__cta:hover { background: var(--accent); color: #fff; outline-color: transparent; }
 
 .hero-bar__controls {
   display: flex;
