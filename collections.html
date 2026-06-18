@@ -359,8 +359,8 @@
       document.getElementById('sizeModalName').textContent = name;
       document.querySelectorAll('.sm-size-btn').forEach(function(b) {
         b.classList.remove('sm-selected');
-        b.style.borderColor = 'rgba(255,255,255,0.15)';
-        b.style.color = 'rgba(255,255,255,0.6)';
+        b.style.borderColor = '';
+        b.style.color = '';
       });
       document.getElementById('sizeModalError').style.display = 'none';
       var modal = document.getElementById('sizeModal');
@@ -391,12 +391,10 @@
       if (!btn) return;
       document.querySelectorAll('.sm-size-btn').forEach(function(b) {
         b.classList.remove('sm-selected');
-        b.style.borderColor = 'rgba(255,255,255,0.15)';
-        b.style.color = 'rgba(255,255,255,0.6)';
+        b.style.borderColor = '';
+        b.style.color = '';
       });
       btn.classList.add('sm-selected');
-      btn.style.borderColor = '#fff';
-      btn.style.color = '#fff';
       document.getElementById('sizeModalError').style.display = 'none';
     });
   </script>
