@@ -2357,16 +2357,16 @@ ul, ol { list-style: none; }
 }
 
 .coming-soon-grid {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
-.coming-soon-card { opacity: 0.75; }
-.coming-soon-card:hover { opacity: 1; border-color: rgba(179,102,255,0.2); }
+.coming-soon-card { opacity: 1; }
+.coming-soon-card:hover { border-color: rgba(179,102,255,0.2); }
 
 .coming-soon-card__media {
   position: relative;
   aspect-ratio: 1/1;
-  background: #0d0d0d;
+  background: rgba(255,255,255,0.02);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -2413,12 +2413,9 @@ ul, ol { list-style: none; }
   padding: 4px 10px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .coming-soon-grid { grid-template-columns: 1fr; gap: 12px; }
   .coming-soon-section { padding: 56px 0 72px; }
-}
-@media (min-width: 769px) and (max-width: 900px) {
-  .coming-soon-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ============================================
