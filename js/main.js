@@ -133,8 +133,8 @@ function initHero() {
   const cta      = document.getElementById('heroCta');
   if (!slides.length) return;
 
-  const B = { eyebrow: 'Original Members', title: '[Black]', href: 'product-polo-black.html' };
-  const W = { eyebrow: 'Original Members', title: '[White]', href: 'product-polo-white.html' };
+  const B = { eyebrow: 'Original Members', title: '[Black]', href: '/product-polo-black' };
+  const W = { eyebrow: 'Original Members', title: '[White]', href: '/product-polo-white' };
   // Order matches index.html slides 0-26:
   // 0:hero-1(B) 1:white-m1(W) 2:hero-2(B) 3:white-m2(W) 4:hero-3(B) 5:white-m3(W)
   // 6:hero-4(W) 7:white-m4(W) 8:black-m1(B) 9:white-m5(W) 10:black-m2(B) 11:white-m6(W)

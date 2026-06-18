@@ -273,14 +273,14 @@
   <p class="co-step-label">Order Confirmed</p>
   <h1 class="co-success__title">Thank You</h1>
   <p class="co-success__sub">Your order has been placed. You'll receive a confirmation email shortly.</p>
-  <a href="index.html" class="btn btn--primary" style="margin-top:8px;">Continue Shopping</a>
+  <a href="/" class="btn btn--primary" style="margin-top:8px;">Continue Shopping</a>
 </div>
 
 <div class="co-wrap" id="checkoutWrap">
 
   <!-- Form -->
   <div class="co-form-col">
-    <a href="cart.html" class="co-logo">
+    <a href="/cart" class="co-logo">
       <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png"
            alt="XTC Clothing"
            onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" />
@@ -403,7 +403,7 @@
 
   function renderSummary() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    if (!cart.length) { window.location.href = 'cart.html'; return; }
+    if (!cart.length) { window.location.href = '/cart'; return; }
     const itemsEl = document.getElementById('coItems');
     let subtotal = 0;
     itemsEl.innerHTML = cart.map(item => {
@@ -437,7 +437,7 @@
     if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'checkout');
     if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, email, cart, totalValue);
-    setTimeout(() => { window.location.href = 'order-confirmed.html?id=' + orderId; }, 400);
+    setTimeout(() => { window.location.href = '/order-confirmed?id=' + orderId; }, 400);
   }
 
   async function init() {
@@ -496,7 +496,7 @@
       const email = event.billingDetails?.email || document.getElementById('coEmail').value || '';
       const { error } = await stripe.confirmPayment({
         elements,
-        confirmParams: { return_url: window.location.origin + '/checkout.html' },
+        confirmParams: { return_url: window.location.origin + '/checkout' },
         redirect: 'if_required',
       });
       if (error) {
@@ -523,7 +523,7 @@
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: window.location.origin + '/checkout.html',
+          return_url: window.location.origin + '/checkout',
           payment_method_data: {
             billing_details: {
               name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,

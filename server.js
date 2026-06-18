@@ -48,8 +48,8 @@ app.post('/create-checkout-session', async (req, res) => {
         },
         quantity,
       }],
-      success_url: `${BASE_URL}/order-confirmed.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${BASE_URL}/cart.html`,
+      success_url: `${BASE_URL}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${BASE_URL}/cart`,
       shipping_address_collection: { allowed_countries: ['GB', 'US', 'CA', 'AU', 'IE'] },
     });
 
