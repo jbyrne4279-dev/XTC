@@ -2361,8 +2361,8 @@ ul, ol { list-style: none; }
   color: var(--text-muted);
 }
 
-.coming-soon-grid {
-  grid-template-columns: repeat(3, 1fr);
+.fp-grid--3 {
+  grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .coming-soon-card { opacity: 1; }
@@ -2419,7 +2419,7 @@ ul, ol { list-style: none; }
 }
 
 @media (max-width: 600px) {
-  .coming-soon-grid { grid-template-columns: 1fr; gap: 12px; }
+  .fp-grid--3 { grid-template-columns: 1fr !important; gap: 12px; }
   .coming-soon-section { padding: 56px 0 72px; }
 }
 
