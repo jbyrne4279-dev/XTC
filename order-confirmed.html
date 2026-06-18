@@ -6,86 +6,347 @@
   <title>Order Confirmed — XTC</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .confirmed-wrap {
-      min-height: 60vh;
+    body { background: #0a0a0a; }
+
+    .oc-wrap {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 60px 20px 80px;
+    }
+
+    /* ── Shareable card ── */
+    .oc-card {
+      width: 100%;
+      max-width: 420px;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 40px 32px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      padding: 80px 24px;
     }
-    .confirmed-icon {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 32px;
+
+    .oc-logo {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #fff;
+      margin-bottom: 28px;
+      text-transform: uppercase;
     }
-    .confirmed-title {
-      font-size: 22px;
-      letter-spacing: 3px;
+    .oc-logo span { color: #b366ff; }
+
+    .oc-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 20px;
+    }
+
+    .oc-title {
+      font-size: 18px;
+      letter-spacing: 4px;
       text-transform: uppercase;
       color: #fff;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
-    .confirmed-sub {
-      font-size: 13px;
-      color: rgba(255,255,255,0.4);
+
+    .oc-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
       letter-spacing: 1px;
-      margin-bottom: 40px;
+      margin-bottom: 8px;
     }
-    .confirmed-back {
-      display: inline-block;
+
+    .oc-order-id {
       font-size: 11px;
       letter-spacing: 2px;
+      color: rgba(179,102,255,0.7);
+      margin-bottom: 28px;
+    }
+
+    /* ── Items ── */
+    .oc-items {
+      width: 100%;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .oc-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      text-align: left;
+    }
+    .oc-item:last-child { border-bottom: none; }
+
+    .oc-item-img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+
+    .oc-item-info { flex: 1; min-width: 0; }
+    .oc-item-name {
+      font-size: 12px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: rgba(179,102,255,0.9);
-      border: 1px solid rgba(179,102,255,0.35);
-      padding: 14px 32px;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .oc-item-meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1px;
+    }
+    .oc-item-price {
+      font-size: 13px;
+      color: #b366ff;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .oc-total-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .oc-total-row span:last-child { color: #b366ff; font-weight: 700; }
+
+    .oc-date {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 18px;
+      text-transform: uppercase;
+    }
+
+    /* ── Buttons (outside card, not in screenshot) ── */
+    .oc-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .oc-btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      background: #b366ff;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .oc-btn-save:hover { background: #c77fff; }
+    .oc-btn-save:active { background: #9a3ff7; }
+
+    .oc-btn-shop {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px 20px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.1);
       text-decoration: none;
       transition: border-color 0.2s, color 0.2s;
     }
-    .confirmed-back:hover { border-color: rgba(179,102,255,0.8); color: #fff; }
+    .oc-btn-shop:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+
+    .oc-saving-msg {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+      text-align: center;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="sticky-top">
-    <div class="announcement-bar">Free UK delivery on all orders</div>
-    <header class="header">
-      <div class="header-inner">
-        <a href="/" class="header-logo">XTC</a>
-        <nav class="header-nav">
-          <a href="/">New Releases</a>
-          <a href="/collections">Collections</a>
-          <a href="/gallery">Gallery</a>
-        </nav>
-        <div class="header-actions">
-          <a href="/cart" class="header-cart" aria-label="Cart">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-            <span class="header-cart__count" id="cartCount">0</span>
-          </a>
-        </div>
-      </div>
-    </header>
-  </div>
 
-  <main>
-    <div class="confirmed-wrap">
-      <svg class="confirmed-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <main class="oc-wrap">
+
+    <!-- Shareable card — this gets screenshotted -->
+    <div class="oc-card" id="ocCard">
+      <div class="oc-logo">XTC<span>.</span></div>
+
+      <svg class="oc-icon" viewBox="0 0 52 52" fill="none">
         <circle cx="26" cy="26" r="24" stroke="rgba(179,102,255,0.4)" stroke-width="1.5"/>
         <path d="M15 26l8 8 14-14" stroke="#b366ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <p class="confirmed-title">Order Confirmed</p>
-      <p class="confirmed-sub" id="confirmedSub">Thank you. Your order is being processed.</p>
-      <p id="confirmedId" style="font-size:11px;letter-spacing:2px;color:rgba(179,102,255,0.7);margin-bottom:32px;"></p>
-      <a href="/" class="confirmed-back">Continue Shopping</a>
+
+      <p class="oc-title">Order Confirmed</p>
+      <p class="oc-sub">Thank you. Your order is being processed.</p>
+      <p class="oc-order-id" id="ocOrderId"></p>
+
+      <div class="oc-items" id="ocItems"></div>
+
+      <div class="oc-total-row">
+        <span>Total</span>
+        <span id="ocTotal">—</span>
+      </div>
+
+      <p class="oc-date" id="ocDate"></p>
     </div>
+
+    <!-- Actions — outside the card so they don't appear in screenshot -->
+    <div class="oc-actions" id="ocActions">
+      <button class="oc-btn-save" id="saveBtn" onclick="saveImage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save to Camera Roll
+      </button>
+      <p class="oc-saving-msg" id="savingMsg">Generating image…</p>
+      <a href="/" class="oc-btn-shop">Continue Shopping</a>
+    </div>
+
   </main>
 
+  <!-- html2canvas for screenshot -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="js/main.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (id) document.getElementById('confirmedId').textContent = 'Order ' + id;
+    const orderId = params.get('id') || ('XTC' + Date.now().toString().slice(-6));
+
+    // Product images map
+    const PRODUCT_IMAGES = {
+      'polo-black': 'https://cdn.shopify.com/s/files/1/0968/4471/0227/files/blackpolo.jpg',
+      'polo-white': 'https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitepolo.jpg',
+    };
+
+    function getProductImage(item) {
+      const id = (item.id || '').toLowerCase();
+      if (id.includes('black')) return PRODUCT_IMAGES['polo-black'];
+      if (id.includes('white')) return PRODUCT_IMAGES['polo-white'];
+      return null;
+    }
+
+    function renderOrder() {
+      document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
+      document.getElementById('ocDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      const cart = JSON.parse(localStorage.getItem('xtc-last-order') || localStorage.getItem('xtc-cart') || '[]');
+      const itemsEl = document.getElementById('ocItems');
+
+      if (!cart.length) {
+        itemsEl.innerHTML = '<p style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:8px 0;">Your order details</p>';
+        document.getElementById('ocTotal').textContent = '—';
+        return;
+      }
+
+      let total = 0;
+      itemsEl.innerHTML = cart.map(item => {
+        const price = parseFloat((item.price || '0').replace(/[^0-9.]/g, ''));
+        const lineTotal = price * (item.qty || 1);
+        total += lineTotal;
+        const img = getProductImage(item);
+        const imgHtml = img
+          ? `<img class="oc-item-img" src="${img}" alt="${item.name}" crossorigin="anonymous" />`
+          : `<div class="oc-item-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">👕</div>`;
+        return `<div class="oc-item">
+          ${imgHtml}
+          <div class="oc-item-info">
+            <div class="oc-item-name">${item.name || 'XTC Polo'}</div>
+            <div class="oc-item-meta">Size: ${item.size || '—'} &nbsp;·&nbsp; Qty: ${item.qty || 1}</div>
+          </div>
+          <div class="oc-item-price">£${lineTotal.toFixed(2)}</div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('ocTotal').textContent = '£' + total.toFixed(2);
+    }
+
+    async function saveImage() {
+      const btn = document.getElementById('saveBtn');
+      const msg = document.getElementById('savingMsg');
+      const actions = document.getElementById('ocActions');
+
+      btn.disabled = true;
+      btn.textContent = 'Generating…';
+      msg.style.display = 'block';
+      actions.style.display = 'none'; // hide buttons during capture
+
+      try {
+        const card = document.getElementById('ocCard');
+        const canvas = await html2canvas(card, {
+          backgroundColor: '#111111',
+          scale: 3,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+        });
+
+        actions.style.display = 'flex';
+
+        // Try native share (mobile) first
+        canvas.toBlob(async (blob) => {
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'xtc-order.png', { type: 'image/png' })] })) {
+            try {
+              await navigator.share({
+                files: [new File([blob], 'xtc-order.png', { type: 'image/png' })],
+                title: 'My XTC Order',
+              });
+            } catch(e) {
+              // User cancelled share — fall through to download
+              downloadCanvas(canvas);
+            }
+          } else {
+            downloadCanvas(canvas);
+          }
+          btn.disabled = false;
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save to Camera Roll';
+          msg.style.display = 'none';
+        }, 'image/png');
+      } catch(e) {
+        actions.style.display = 'flex';
+        btn.disabled = false;
+        btn.textContent = 'Save to Camera Roll';
+        msg.style.display = 'none';
+        alert('Could not save image. Try taking a screenshot manually.');
+      }
+    }
+
+    function downloadCanvas(canvas) {
+      const link = document.createElement('a');
+      link.download = 'xtc-order-' + orderId + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    renderOrder();
+    // Save cart as last order before it might get cleared
+    const cartNow = localStorage.getItem('xtc-cart');
+    if (cartNow && JSON.parse(cartNow).length) {
+      localStorage.setItem('xtc-last-order', cartNow);
+    }
   </script>
 </body>
 </html>

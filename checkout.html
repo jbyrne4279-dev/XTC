@@ -669,6 +669,8 @@
       });
       decrementStockServer(stockItems);
     }
+    // Save cart before clearing so order-confirmed page can show items
+    localStorage.setItem('xtc-last-order', JSON.stringify(cart));
     localStorage.setItem('xtc-cart', '[]');
     const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
     if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
