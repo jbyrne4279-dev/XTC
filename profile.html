@@ -1191,6 +1191,7 @@
 
     function getLocalUser() {
       try { return JSON.parse(localStorage.getItem('xtc-user') || 'null'); } catch(e) { return null; }
+    }
 
     /* ─── Nav Drawer & Search ─── */
     var drawer = document.getElementById('navDrawer');
@@ -1408,13 +1409,6 @@
     /* ─── Auth toggle ─── */
     var authToggleBtn = document.getElementById('authToggleBtn');
     if (authToggleBtn) authToggleBtn.addEventListener('click', function () { setSignInMode(!isSignIn); });
-
-    /* ─── Forgot password ─── */
-    var forgotLink = document.getElementById('forgotLink');
-    if (forgotLink) forgotLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      toast('Check your inbox for a reset link.');
-    });
 
     /* ─── Sign In (email) ─── */
     var signInBtn = document.getElementById('signInBtn');
