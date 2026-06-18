@@ -2319,6 +2319,33 @@ ul, ol { list-style: none; }
 .header-nav a.active { color: var(--accent); }
 
 /* ============================================
+   YOU MAY ALSO LIKE — RECOMMENDATIONS
+   ============================================ */
+.recs-section {
+  padding: 72px 0 96px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.recs-eyebrow {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+}
+.recs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-6);
+}
+@media (max-width: 900px) {
+  .recs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .recs-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================
    COMING SOON SECTION
    ============================================ */
 .coming-soon-section {
