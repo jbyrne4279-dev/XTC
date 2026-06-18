@@ -11,7 +11,7 @@ const PRODUCTS = {
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
 };
 
-const BASE_URL = process.env.BASE_URL || 'https://xtc-production.up.railway.app';
+const BASE_URL = process.env.BASE_URL || 'https://xtcclothing.com';
 
 app.post('/create-payment-intent', async (req, res) => {
   const { amount } = req.body; // amount in pence
