@@ -374,10 +374,10 @@ ul, ol { list-style: none; }
    ============================================ */
 .hero {
   position: relative;
-  height: 72vh;
-  height: 72dvh;
+  height: 100vh;
+  height: 100dvh;
   min-height: 440px;
-  max-height: 800px;
+  max-height: 1080px;
   overflow: hidden;
   background: #000;
   cursor: pointer;
