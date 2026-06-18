@@ -75,22 +75,39 @@
     .co-field input:focus, .co-field select:focus { border-color: var(--accent); }
     .co-field input::placeholder { color: rgba(255,255,255,0.2); }
 
-    /* Stripe card element container */
-    #card-element {
+    /* Stripe Payment Element container */
+    #payment-element {
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
       border-radius: 2px;
       padding: 14px 16px;
       transition: border-color 0.2s;
     }
-    #card-element.StripeElement--focus { border-color: var(--accent); }
-    #card-element.StripeElement--invalid { border-color: #e05; }
 
-    #card-errors {
+    #payment-errors {
       font-size: 12px;
       color: #e05;
       margin-top: 8px;
       min-height: 18px;
+    }
+
+    /* Express checkout (Apple Pay / Google Pay) */
+    #expressCheckoutWrap { margin-bottom: 20px; }
+    .co-or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 4px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    .co-or-divider::before, .co-or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
     .co-divider {
@@ -310,10 +327,16 @@
       <p class="co-step-label">Step 2 of 2</p>
       <h2 class="co-section-title">Payment</h2>
 
+      <!-- Apple Pay / Google Pay -->
+      <div id="expressCheckoutWrap" style="display:none;">
+        <div id="express-checkout-element"></div>
+        <div class="co-or-divider"><span>or pay by card</span></div>
+      </div>
+
       <div class="co-field" style="margin-bottom:8px;">
-        <label>Card Details</label>
-        <div id="card-element"></div>
-        <div id="card-errors"></div>
+        <label>Payment</label>
+        <div id="payment-element"></div>
+        <div id="payment-errors"></div>
       </div>
 
       <button type="submit" class="co-submit" id="submitBtn">
@@ -366,172 +389,168 @@
 (function() {
   const PUBLISHABLE_KEY = 'pk_test_51Tj2geQ7OLAqpBCHghSLYpQzTKxgaVKgMxuQQOImvEJ0X5891YwPXyabegt7w1wrEv9sRBYi9UNC3SeXkZ8cmAgD0006MRr2ZK';
 
-  // Render order summary from localStorage
+  const APPEARANCE = {
+    theme: 'night',
+    variables: {
+      colorPrimary: 'rgb(179,102,255)',
+      colorBackground: '#111111',
+      colorText: '#ffffff',
+      colorDanger: '#ee0055',
+      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+      borderRadius: '2px',
+    }
+  };
+
   function renderSummary() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    if (!cart.length) {
-      window.location.href = 'cart.html';
-      return;
-    }
-
+    if (!cart.length) { window.location.href = 'cart.html'; return; }
     const itemsEl = document.getElementById('coItems');
     let subtotal = 0;
-
     itemsEl.innerHTML = cart.map(item => {
       const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       subtotal += price * item.qty;
       const img = item.img
         ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" />`
         : `<div class="co-item__img-placeholder"></div>`;
-      return `
-        <div class="co-item">
-          ${img}
-          <div class="co-item__info">
-            <p class="co-item__name">${item.name}</p>
-            <p class="co-item__meta">Qty ${item.qty}</p>
-          </div>
-          <p class="co-item__price">£${(price * item.qty).toFixed(2)}</p>
-        </div>`;
+      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${item.name}</p><p class="co-item__meta">Qty ${item.qty}</p></div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
-
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
     document.getElementById('coShipping').textContent = subtotal >= 80 ? 'Free' : '£4.99';
-    const shipping = subtotal >= 80 ? 0 : 4.99;
-    document.getElementById('coTotal').textContent = '£' + (subtotal + shipping).toFixed(2);
+    document.getElementById('coTotal').textContent = '£' + (subtotal + (subtotal >= 80 ? 0 : 4.99)).toFixed(2);
   }
 
-  // Init Stripe
-  const stripe = Stripe(PUBLISHABLE_KEY);
-  const elements = stripe.elements({
-    appearance: {
-      theme: 'night',
-      variables: {
-        colorPrimary: 'rgb(179,102,255)',
-        colorBackground: 'rgba(255,255,255,0.03)',
-        colorText: '#ffffff',
-        colorDanger: '#ee0055',
-        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        borderRadius: '2px',
-      }
+  function completeOrder(emailOverride) {
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    const orders = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
+    const orderId = 'XTC' + Date.now().toString().slice(-6);
+    const email = emailOverride || document.getElementById('coEmail').value || '';
+    orders[orderId] = { id: orderId, number: orderId, email, items: cart, date: new Date().toISOString(), status: 'Processing' };
+    localStorage.setItem('xtc-orders', JSON.stringify(orders));
+    if (typeof decrementStock === 'function') {
+      cart.forEach(item => {
+        const parts = item.id.split('-');
+        decrementStock(parts.slice(0, -1).join('-'), parts[parts.length - 1].toUpperCase(), item.qty);
+      });
     }
-  });
-  const card = elements.create('card', {
-    style: {
-      base: {
-        color: '#fff',
-        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        fontSize: '14px',
-        letterSpacing: '0.5px',
-        '::placeholder': { color: 'rgba(255,255,255,0.2)' }
-      },
-      invalid: { color: '#ee0055' }
-    }
-  });
-  card.mount('#card-element');
-  card.on('change', function(e) {
-    document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
-  });
+    localStorage.setItem('xtc-cart', '[]');
+    const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'checkout');
+    if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, email, cart, totalValue);
+    setTimeout(() => { window.location.href = 'order-confirmed.html?id=' + orderId; }, 400);
+  }
 
-  // Fetch PaymentIntent client secret on page load
-  let clientSecret = null;
-  async function initPaymentIntent() {
+  async function init() {
+    // Handle 3DS redirect return
+    const urlParams = new URLSearchParams(window.location.search);
+    const piSecret = urlParams.get('payment_intent_client_secret');
+    if (piSecret) {
+      const stripe = Stripe(PUBLISHABLE_KEY);
+      const { paymentIntent } = await stripe.retrievePaymentIntent(piSecret);
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        completeOrder();
+      } else {
+        document.getElementById('payment-errors').textContent = 'Payment could not be completed. Please try again.';
+        document.getElementById('checkoutWrap').style.display = 'grid';
+      }
+      return;
+    }
+
+    renderSummary();
+
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     if (!cart.length) return;
-    const subtotal = cart.reduce((s, i) => s + parseFloat((i.price || '0').replace(/[^0-9.]/g, '')) * i.qty, 0);
-    const shipping = subtotal >= 80 ? 0 : 4.99;
-    const totalPence = Math.round((subtotal + shipping) * 100);
+    const subtotal = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    const totalPence = Math.round((subtotal + (subtotal >= 80 ? 0 : 4.99)) * 100);
+
+    if (typeof xtcEvent === 'function') xtcEvent('begin_checkout', { currency: 'GBP', value: subtotal });
+
+    let clientSecret;
     try {
       const res = await fetch('/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: totalPence }),
       });
-      const data = await res.json();
-      clientSecret = data.clientSecret;
+      clientSecret = (await res.json()).clientSecret;
     } catch (e) {
-      console.error('Failed to init payment:', e);
-    }
-  }
-  initPaymentIntent();
-
-  // Handle submit
-  document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Processing…';
-
-    if (!clientSecret) {
-      document.getElementById('card-errors').textContent = 'Payment not ready. Please refresh and try again.';
-      btn.disabled = false;
-      btn.textContent = 'Place Order';
+      document.getElementById('payment-errors').textContent = 'Failed to initialise payment. Please refresh.';
       return;
     }
 
-    const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card,
-        billing_details: {
-          name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
-          email: document.getElementById('coEmail').value,
-          address: {
-            line1: document.getElementById('coAddress').value,
-            city: document.getElementById('coCity').value,
-            postal_code: document.getElementById('coPostcode').value,
-            country: 'GB',
-          },
-        },
-      },
+    const stripe = Stripe(PUBLISHABLE_KEY);
+    const elements = stripe.elements({ clientSecret, appearance: APPEARANCE });
+
+    // ── Express Checkout (Apple Pay / Google Pay) ──
+    const expressCheckout = elements.create('expressCheckout', {
+      buttonType: { applePay: 'buy', googlePay: 'buy' },
+      buttonTheme: { applePay: 'white', googlePay: 'white' },
+    });
+    expressCheckout.mount('#express-checkout-element');
+    expressCheckout.on('ready', ({ availablePaymentMethods }) => {
+      if (availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean)) {
+        document.getElementById('expressCheckoutWrap').style.display = 'block';
+      }
+    });
+    expressCheckout.on('confirm', async (event) => {
+      const email = event.billingDetails?.email || document.getElementById('coEmail').value || '';
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: { return_url: window.location.origin + '/checkout.html' },
+        redirect: 'if_required',
+      });
+      if (error) {
+        document.getElementById('payment-errors').textContent = error.message;
+      } else {
+        completeOrder(email);
+      }
     });
 
-    if (error) {
-      document.getElementById('card-errors').textContent = error.message;
-      btn.disabled = false;
-      btn.textContent = 'Place Order';
-      return;
-    }
+    // ── Payment Element (card + all other methods) ──
+    const paymentElement = elements.create('payment', {
+      fields: { billingDetails: 'never' },
+      layout: 'tabs',
+    });
+    paymentElement.mount('#payment-element');
 
-    // Save order to localStorage for track-order page
-    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    const orders = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
-    const orderId = 'XTC' + Date.now().toString().slice(-6);
-    orders[orderId] = {
-      id: orderId,
-      number: orderId,
-      email: document.getElementById('coEmail').value,
-      items: cart,
-      date: new Date().toISOString(),
-      status: 'Processing',
-    };
-    localStorage.setItem('xtc-orders', JSON.stringify(orders));
-    // Decrement stock for purchased items
-    if (typeof decrementStock === 'function') {
-      cart.forEach(item => {
-        const parts = item.id.split('-');
-        const size = parts[parts.length - 1].toUpperCase();
-        const productId = parts.slice(0, -1).join('-');
-        decrementStock(productId, size, item.qty);
+    // ── Form submit ──
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing…';
+
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.origin + '/checkout.html',
+          payment_method_data: {
+            billing_details: {
+              name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
+              email: document.getElementById('coEmail').value,
+              address: {
+                line1: document.getElementById('coAddress').value,
+                city: document.getElementById('coCity').value,
+                postal_code: document.getElementById('coPostcode').value,
+                country: 'GB',
+              },
+            },
+          },
+        },
+        redirect: 'if_required',
       });
-    }
-    localStorage.setItem('xtc-cart', '[]');
-    // Analytics: purchase event
-    const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
-    if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
-    const buyerEmail = document.getElementById('coEmail').value;
-    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(buyerEmail, 'checkout');
-    if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, buyerEmail, cart, totalValue);
 
-    setTimeout(() => { window.location.href = 'order-confirmed.html?id=' + orderId; }, 400);
-  });
-
-  // begin_checkout event on page load
-  if (typeof xtcEvent === 'function') {
-    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    const value = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
-    xtcEvent('begin_checkout', { currency: 'GBP', value });
+      if (error) {
+        document.getElementById('payment-errors').textContent = error.message;
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      } else {
+        completeOrder();
+      }
+    });
   }
 
-  renderSummary();
+  init();
 })();
 </script>
 
