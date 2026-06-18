@@ -92,6 +92,92 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+// ── In-memory shipping records ───────────────────────────────────────────────
+const shippingRecords = new Map();
+
+// ── Admin auth middleware ────────────────────────────────────────────────────
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'xtcadmin2026';
+
+function requireAdmin(req, res, next) {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (token !== ADMIN_TOKEN) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+// ── Admin: Orders ────────────────────────────────────────────────────────────
+app.get('/admin/orders', requireAdmin, async (req, res) => {
+  try {
+    const intents = await stripe.paymentIntents.list({ limit: 100 });
+    const orders = intents.data.map(pi => ({
+      id: pi.id,
+      amount: pi.amount,
+      currency: pi.currency,
+      status: pi.status,
+      created: pi.created,
+      receipt_email: pi.receipt_email,
+      metadata: pi.metadata,
+      description: pi.description,
+    }));
+    res.json({ orders });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Admin: Promo codes (read-only) ───────────────────────────────────────────
+app.get('/admin/promo-codes', requireAdmin, (req, res) => {
+  const codes = Object.entries(PROMO_CODES).map(([code, data]) => ({
+    code,
+    ...data,
+  }));
+  res.json({ codes });
+});
+
+// ── Admin: Shipping ──────────────────────────────────────────────────────────
+app.post('/admin/shipping', requireAdmin, (req, res) => {
+  const { paymentIntentId, carrier, trackingNumber, status } = req.body;
+  if (!paymentIntentId || !carrier || !trackingNumber) {
+    return res.status(400).json({ error: 'paymentIntentId, carrier, trackingNumber required' });
+  }
+  const record = {
+    paymentIntentId,
+    carrier,
+    trackingNumber,
+    status: status || 'Shipped',
+    shippedAt: new Date().toISOString(),
+  };
+  shippingRecords.set(paymentIntentId, record);
+  res.json({ ok: true, record });
+});
+
+app.get('/admin/shipping', requireAdmin, (req, res) => {
+  res.json({ shipping: Array.from(shippingRecords.values()) });
+});
+
+app.patch('/admin/shipping/:paymentIntentId', requireAdmin, (req, res) => {
+  const { paymentIntentId } = req.params;
+  const record = shippingRecords.get(paymentIntentId);
+  if (!record) return res.status(404).json({ error: 'Shipping record not found' });
+  const updated = { ...record, ...req.body, paymentIntentId };
+  shippingRecords.set(paymentIntentId, updated);
+  res.json({ ok: true, record: updated });
+});
+
+// ── Admin: Refund ────────────────────────────────────────────────────────────
+app.post('/admin/refund', requireAdmin, async (req, res) => {
+  const { paymentIntentId } = req.body;
+  if (!paymentIntentId) return res.status(400).json({ error: 'paymentIntentId required' });
+  try {
+    const refund = await stripe.refunds.create({ payment_intent: paymentIntentId });
+    res.json({ ok: true, refund });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`XTC server running on port ${PORT}`));
