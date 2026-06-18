@@ -1122,22 +1122,14 @@
 
   <!-- ── SCRIPTS ── -->
   <script src="js/stock.js"></script>
-  <script src="js/omnisend-config.js"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
   <script src="js/main.js"></script>
   <script src="js/analytics.js"></script>
-
-  <!-- Supabase -->
+  <!-- Supabase must load before the auth script below -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/omnisend-config.js"></script>
 
   <script>
+  document.addEventListener('DOMContentLoaded', function () {
   (function () {
     'use strict';
 
@@ -1697,6 +1689,7 @@
     }());
 
   }());
+  }); // DOMContentLoaded
   </script>
 </body>
 </html>
