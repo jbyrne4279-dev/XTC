@@ -1185,6 +1185,38 @@
       try { return JSON.parse(localStorage.getItem('xtc-user') || 'null'); } catch(e) { return null; }
     }
 
+    /* ─── Supabase profiles table helpers ─── */
+    async function fetchProfile(userId) {
+      var res = await sb.from('profiles').select('*').eq('id', userId).single();
+      return res.data || null;
+    }
+
+    async function upsertProfile(userId, data) {
+      await sb.from('profiles').upsert(Object.assign({ id: userId }, data), { onConflict: 'id' });
+    }
+
+    /* Load profile from Supabase and merge with auth user, then show dashboard */
+    async function loadAndShowDashboard(supaUser) {
+      var profile = await fetchProfile(supaUser.id);
+      var meta = supaUser.user_metadata || {};
+      var merged = {
+        id: supaUser.id,
+        email: supaUser.email || '',
+        phone: supaUser.phone || profile && profile.phone || '',
+        name: (profile && profile.name) || meta.full_name || meta.name || (supaUser.email ? supaUser.email.split('@')[0] : ''),
+        points: (profile && profile.points) || 0,
+        since: (profile && profile.since) || new Date().getFullYear(),
+        orders: [],
+        provider: (supaUser.app_metadata && supaUser.app_metadata.provider) || 'email',
+      };
+      // Upsert to ensure row exists for new users
+      if (!profile) {
+        await upsertProfile(supaUser.id, { name: merged.name, phone: merged.phone, points: 0, since: merged.since });
+      }
+      localStorage.setItem('xtc-user', JSON.stringify(merged));
+      showDashboard(merged);
+    }
+
     /* ─── Nav Drawer & Search ─── */
     var drawer = document.getElementById('navDrawer');
     var menuToggle = document.getElementById('menuToggle');
@@ -1425,9 +1457,8 @@
           }
           setError('fieldSignInPass', true);
         } else {
-          var local = syncLocalUser(res.data.user);
-          toast('Welcome back, ' + (local.name || 'there') + '!');
-          showDashboard(local);
+          toast('Welcome back!');
+          loadAndShowDashboard(res.data.user);
         }
       });
     });
@@ -1468,10 +1499,8 @@
         var session = res.data && res.data.session;
         /* Session exists = email confirmation is off, log them straight in */
         if (session && user) {
-          var local = syncLocalUser(user, { full_name: name });
-          if (!local) { toast('Something went wrong. Please try signing in.'); return; }
           toast('Welcome to XTC, ' + name + '!');
-          showDashboard(local);
+          loadAndShowDashboard(user);
           return;
         }
         /* No session = user created, awaiting confirmation or auto-confirmed */
@@ -1608,21 +1637,23 @@
 
     /* ─── Save Details ─── */
     var detailForm = document.getElementById('detailForm');
-    if (detailForm) detailForm.addEventListener('submit', function (e) {
+    if (detailForm) detailForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       var name = document.getElementById('detailName').value.trim();
       var phone = document.getElementById('detailPhone').value.trim();
-      sb.auth.updateUser({ data: { full_name: name, phone: phone } }).then(function(res) {
-        var local = getLocalUser() || {};
-        local.name = name;
-        local.phone = phone;
-        localStorage.setItem('xtc-user', JSON.stringify(local));
-        var av = document.getElementById('dashAvatar');
-        if (av) av.textContent = initials(name || local.email || '?');
-        var dn = document.getElementById('dashName');
-        if (dn) dn.textContent = name || local.phone || 'Account';
-        toast('Details saved.');
-      });
+      var local = getLocalUser() || {};
+      // Save to Supabase profiles table
+      await upsertProfile(local.id, { name: name, phone: phone });
+      // Also update Supabase auth metadata
+      await sb.auth.updateUser({ data: { full_name: name } });
+      local.name = name;
+      local.phone = phone;
+      localStorage.setItem('xtc-user', JSON.stringify(local));
+      var av = document.getElementById('dashAvatar');
+      if (av) av.textContent = initials(name || local.email || '?');
+      var dn = document.getElementById('dashName');
+      if (dn) dn.textContent = name || local.phone || 'Account';
+      toast('Details saved.');
     });
 
     /* ─── Delete Account ─── */
@@ -1657,8 +1688,7 @@
       sb.auth.getSession().then(function(res) {
         var session = res.data && res.data.session;
         if (session && session.user) {
-          var local = syncLocalUser(session.user);
-          showDashboard(local);
+          loadAndShowDashboard(session.user);
         } else {
           showAuth();
           setSignInMode(true);
@@ -1669,8 +1699,7 @@
       /* Listen for OAuth redirect callback (Google) */
       sb.auth.onAuthStateChange(function(event, session) {
         if ((event === 'SIGNED_IN') && session && session.user) {
-          var local = syncLocalUser(session.user);
-          showDashboard(local);
+          loadAndShowDashboard(session.user);
         }
       });
 
