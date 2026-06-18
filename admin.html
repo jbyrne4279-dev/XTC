@@ -66,19 +66,23 @@
     /* Sidebar */
     .sidebar {
       background: var(--bg2); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 24px 0;
+      display: flex; flex-direction: column; padding: 24px 0; overflow-y: auto;
     }
     .nav-item {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 20px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
       color: var(--muted); cursor: pointer; transition: color 0.15s, background 0.15s; border: none;
-      background: none; font-family: var(--font); width: 100%; text-align: left;
+      background: none; font-family: var(--font); width: 100%; text-align: left; position: relative;
     }
     .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
     .nav-item.active { color: var(--accent); background: rgba(179,102,255,0.06); }
     .nav-item svg { opacity: 0.6; flex-shrink: 0; }
     .nav-item.active svg { opacity: 1; }
     .nav-divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+    .nav-badge {
+      margin-left: auto; background: var(--danger); color: #fff; font-size: 9px;
+      padding: 2px 6px; border-radius: 9px; letter-spacing: 0; min-width: 18px; text-align: center;
+    }
 
     /* Main */
     .main { padding: 32px 40px; overflow-y: auto; }
@@ -111,7 +115,7 @@
     .table-box { background: var(--bg2); border: 1px solid var(--border); margin-bottom: 24px; }
     .table-box__header {
       padding: 16px 24px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     }
     .table-box__title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
     table { width: 100%; border-collapse: collapse; }
@@ -142,6 +146,7 @@
     .badge--oos     { background: rgba(239,68,68,0.12);  color: var(--danger); }
     .badge--purple  { background: rgba(179,102,255,0.12); color: var(--accent); }
     .badge--grey    { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge--blue    { background: rgba(59,130,246,0.12); color: #60a5fa; }
 
     /* Buttons */
     .btn-sm {
@@ -154,12 +159,21 @@
     .btn-sm--accent:hover { opacity: 0.8; color: #fff; }
     .btn-sm--danger { border-color: rgba(239,68,68,0.4); color: var(--danger); }
     .btn-sm--danger:hover { background: rgba(239,68,68,0.1); }
+    .btn-sm--success { border-color: rgba(34,197,94,0.4); color: var(--success); }
+    .btn-sm--success:hover { background: rgba(34,197,94,0.1); }
+
+    /* Filter tabs */
+    .filter-tabs { display: flex; gap: 4px; }
+    .filter-tab {
+      padding: 6px 16px; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+      font-family: var(--font); cursor: pointer; border: 1px solid var(--border);
+      background: none; color: var(--muted); transition: all 0.15s;
+    }
+    .filter-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+    .filter-tab.active { background: rgba(179,102,255,0.1); border-color: var(--accent); color: var(--accent); }
 
     /* Section divider */
     .section-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
-
-    /* Order rows */
-    .order-items { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
     /* Alert banner */
     .alert { padding: 12px 20px; border-left: 3px solid; margin-bottom: 16px; font-size: 12px; }
@@ -201,6 +215,29 @@
     }
     .settings-row input:focus { border-color: var(--accent); }
     .settings-save { display: flex; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--border); }
+
+    /* Info note */
+    .info-note { background: rgba(179,102,255,0.06); border: 1px solid rgba(179,102,255,0.15); padding: 12px 16px; font-size: 11px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000;
+      align-items: center; justify-content: center; display: none;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg2); border: 1px solid var(--border); padding: 32px; width: 420px; max-width: 95vw;
+    }
+    .modal-title { font-size: 14px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+    .modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .modal-field label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .modal-field input, .modal-field select {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text);
+      font-family: var(--font); font-size: 13px; padding: 10px 12px; outline: none; transition: border-color 0.2s;
+    }
+    .modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
+    .modal-field select option { background: var(--bg3); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
   </style>
 </head>
 <body>
@@ -220,7 +257,7 @@
 </div>
 
 <!-- ── APP ── -->
-<div id="appShell" style="display:none; display:grid;">
+<div id="appShell" style="display:none;">
 
   <!-- Top bar -->
   <div class="topbar">
@@ -233,29 +270,42 @@
 
   <!-- Sidebar -->
   <nav class="sidebar">
-    <button class="nav-item active" onclick="showPage('dashboard',this)">
+    <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </button>
-    <button class="nav-item" onclick="showPage('stock',this)">
+    <button class="nav-item" id="nav-orders" onclick="showPage('orders',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Orders
+      <span class="nav-badge" id="needsShippingBadge" style="display:none;"></span>
+    </button>
+    <button class="nav-item" id="nav-shipping" onclick="showPage('shipping',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Shipping
+    </button>
+    <button class="nav-item" id="nav-stock" onclick="showPage('stock',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
       Stock
     </button>
-    <button class="nav-item" onclick="showPage('orders',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-      Orders
+    <button class="nav-item" id="nav-promo" onclick="showPage('promo',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Promo Codes
+    </button>
+    <button class="nav-item" id="nav-customers" onclick="showPage('customers',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Customers
     </button>
     <hr class="nav-divider" />
-    <button class="nav-item" onclick="showPage('campaigns',this)">
+    <button class="nav-item" id="nav-campaigns" onclick="showPage('campaigns',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.78 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
       Campaigns
     </button>
-    <button class="nav-item" onclick="showPage('analytics',this)">
+    <button class="nav-item" id="nav-analytics" onclick="showPage('analytics',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Analytics
     </button>
     <hr class="nav-divider" />
-    <button class="nav-item" onclick="showPage('settings',this)">
+    <button class="nav-item" id="nav-settings" onclick="showPage('settings',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 4.93"/></svg>
       Settings
     </button>
@@ -289,11 +339,50 @@
       <div class="table-box">
         <div class="table-box__header">
           <span class="table-box__title">Recent Orders</span>
-          <button class="btn-sm" onclick="showPage('orders', document.querySelector('[onclick*=\"orders\"]'))">View All</button>
+          <button class="btn-sm" onclick="showPage('orders', document.getElementById('nav-orders'))">View All</button>
         </div>
-        <table id="recentOrdersTable">
-          <thead><tr><th>Order ID</th><th>Date</th><th>Items</th><th>Status</th></tr></thead>
+        <table>
+          <thead><tr><th>Order ID</th><th>Date</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead>
           <tbody id="recentOrdersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ── -->
+    <div class="page" id="page-orders">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <h1 class="page-title">Orders</h1>
+          <p class="page-sub" id="orderCount">Loading…</p>
+        </div>
+        <button class="btn-sm btn-sm--accent" onclick="exportOrders()">Export CSV</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="setOrderFilter('all',this)">All</button>
+          <button class="filter-tab" onclick="setOrderFilter('paid',this)">Paid</button>
+          <button class="filter-tab" onclick="setOrderFilter('needs-shipping',this)">Needs Shipping</button>
+          <button class="filter-tab" onclick="setOrderFilter('refunded',this)">Refunded</button>
+        </div>
+      </div>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Shipping</th><th>Actions</th></tr></thead>
+          <tbody id="ordersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SHIPPING ── -->
+    <div class="page" id="page-shipping">
+      <div class="page-header">
+        <h1 class="page-title">Shipping</h1>
+        <p class="page-sub">Tracking all dispatched orders</p>
+      </div>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Carrier</th><th>Tracking</th><th>Shipped Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="shippingTbody"></tbody>
         </table>
       </div>
     </div>
@@ -333,19 +422,36 @@
       </div>
     </div>
 
-    <!-- ── ORDERS ── -->
-    <div class="page" id="page-orders">
-      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div>
-          <h1 class="page-title">Orders</h1>
-          <p class="page-sub" id="orderCount">Loading…</p>
-        </div>
-        <button class="btn-sm btn-sm--accent" onclick="exportOrders()">Export CSV</button>
+    <!-- ── PROMO CODES ── -->
+    <div class="page" id="page-promo">
+      <div class="page-header">
+        <h1 class="page-title">Promo Codes</h1>
+        <p class="page-sub">Active discount codes</p>
+      </div>
+      <div class="info-note">
+        Promo codes are defined server-side in <code style="color:var(--accent);font-family:monospace;">PROMO_CODES</code> in <strong style="color:var(--text);">server.js</strong>. To add or modify codes, update that object and redeploy.
       </div>
       <div class="table-box">
         <table>
-          <thead><tr><th>Order ID</th><th>Date</th><th>Email</th><th>Items</th><th>Value</th><th>Status</th></tr></thead>
-          <tbody id="ordersTbody"></tbody>
+          <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Description</th><th>Status</th><th>Usage</th><th>Action</th></tr></thead>
+          <tbody id="promoTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS ── -->
+    <div class="page" id="page-customers">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <h1 class="page-title">Customers</h1>
+          <p class="page-sub" id="customerCount">Loading…</p>
+        </div>
+        <button class="btn-sm btn-sm--accent" onclick="exportCustomers()">Export CSV</button>
+      </div>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Email</th><th>Orders</th><th>Total Spent</th><th>Last Order</th></tr></thead>
+          <tbody id="customersTbody"></tbody>
         </table>
       </div>
     </div>
@@ -354,7 +460,7 @@
     <div class="page" id="page-campaigns">
       <div class="page-header">
         <h1 class="page-title">Campaigns</h1>
-        <p class="page-sub">Email & SMS — powered by Omnisend</p>
+        <p class="page-sub">Email &amp; SMS — powered by Omnisend</p>
       </div>
 
       <div id="omnisendStatus" class="alert alert--info" style="display:none;margin-bottom:24px;">
@@ -396,7 +502,7 @@
           <input type="text" id="omnisendBrandId" placeholder="e.g. 64a1b2c3d4e5f6a7b8c9d0e1" />
         </div>
         <div style="display:flex;gap:12px;margin-top:8px;">
-          <button class="btn-sm btn-sm--accent" onclick="saveOmnisend()">Save & Connect</button>
+          <button class="btn-sm btn-sm--accent" onclick="saveOmnisend()">Save &amp; Connect</button>
           <a href="https://app.omnisend.com" target="_blank" class="btn-sm">Open Omnisend ↗</a>
         </div>
         <hr class="section-divider" />
@@ -405,7 +511,7 @@
           <li>Log in to <strong style="color:#fff;">app.omnisend.com</strong></li>
           <li>Go to <strong style="color:#fff;">Store Settings → Brand Settings</strong></li>
           <li>Copy your <strong style="color:#fff;">Brand ID</strong> and paste it above</li>
-          <li>Hit <strong style="color:#fff;">Save & Connect</strong> — signups will sync automatically</li>
+          <li>Hit <strong style="color:#fff;">Save &amp; Connect</strong> — signups will sync automatically</li>
         </ol>
       </div>
     </div>
@@ -439,7 +545,7 @@
     <div class="page" id="page-settings">
       <div class="page-header">
         <h1 class="page-title">Settings</h1>
-        <p class="page-sub">Admin & site configuration</p>
+        <p class="page-sub">Admin &amp; site configuration</p>
       </div>
       <div class="settings-group">
         <div class="settings-group__head">Admin Security</div>
@@ -449,6 +555,13 @@
             <p class="settings-row__sub">Change the password used to access this dashboard</p>
           </div>
           <input type="password" id="newPassword" placeholder="New password" />
+        </div>
+        <div class="settings-row">
+          <div>
+            <p class="settings-row__label">Admin Token</p>
+            <p class="settings-row__sub">Bearer token for /admin/* API routes — must match ADMIN_TOKEN env var on server</p>
+          </div>
+          <input type="text" id="adminTokenDisplay" placeholder="xtcadmin2026" readonly style="color:var(--muted);" />
         </div>
         <div class="settings-save">
           <button class="btn-sm btn-sm--accent" onclick="savePassword()">Save Password</button>
@@ -464,7 +577,7 @@
           <input type="text" id="ga4Id" placeholder="G-XXXXXXXXXX" />
         </div>
         <div class="settings-save">
-          <button class="btn-sm btn-sm--accent" onclick="saveGa4()">Save & Enable GA4</button>
+          <button class="btn-sm btn-sm--accent" onclick="saveGa4()">Save &amp; Enable GA4</button>
         </div>
       </div>
       <div class="settings-group">
@@ -492,7 +605,7 @@
         <div class="settings-row">
           <div>
             <p class="settings-row__label">Clear All Orders</p>
-            <p class="settings-row__sub">Permanently delete all order records from this device</p>
+            <p class="settings-row__sub">Permanently delete all local order records from this device</p>
           </div>
           <button class="btn-sm btn-sm--danger" onclick="clearOrders()">Clear Orders</button>
         </div>
@@ -507,6 +620,38 @@
     </div>
 
   </main>
+</div>
+
+<!-- ── SHIPPING MODAL ── -->
+<div class="modal-overlay" id="shippingModal">
+  <div class="modal-box">
+    <p class="modal-title">Mark as Shipped</p>
+    <p id="shippingModalOrderId" style="font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:20px;"></p>
+    <div class="modal-field">
+      <label>Carrier</label>
+      <select id="shippingCarrier">
+        <option value="Royal Mail">Royal Mail</option>
+        <option value="DHL">DHL</option>
+        <option value="Evri">Evri</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Tracking Number</label>
+      <input type="text" id="shippingTrackingNumber" placeholder="e.g. JD000000000000000000" />
+    </div>
+    <div class="modal-field">
+      <label>Status</label>
+      <select id="shippingStatus">
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeShippingModal()">Cancel</button>
+      <button class="btn-sm btn-sm--accent" onclick="submitShipping()">Save Shipping</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -555,6 +700,9 @@ function showPage(name, triggerEl) {
   if (triggerEl) triggerEl.classList.add('active');
   if (name === 'stock')     renderStock();
   if (name === 'orders')    renderOrders();
+  if (name === 'shipping')  renderShippingPage();
+  if (name === 'promo')     renderPromo();
+  if (name === 'customers') renderCustomers();
   if (name === 'analytics') renderAnalytics();
   if (name === 'campaigns') loadOmnisendField();
   if (name === 'settings')  loadSettings();
@@ -564,6 +712,413 @@ function showPage(name, triggerEl) {
 function initApp() {
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
   renderDashboard();
+  updateNeedsShippingBadge();
+}
+
+/* ─────────── API HELPERS ─────────── */
+async function adminFetch(path, opts) {
+  opts = opts || {};
+  const token = getAdminPass();
+  const res = await fetch(path, Object.assign({}, opts, {
+    headers: Object.assign({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, opts.headers || {}),
+  }));
+  if (!res.ok) {
+    let err;
+    try { err = await res.json(); } catch(e) { err = { error: res.statusText }; }
+    throw new Error(err.error || res.statusText);
+  }
+  return res.json();
+}
+
+/* ─────────── STRIPE ORDERS CACHE ─────────── */
+let _stripeOrders = null;
+let _shippingData = null;
+
+async function getStripeOrders() {
+  if (_stripeOrders) return _stripeOrders;
+  try {
+    const data = await adminFetch('/admin/orders');
+    _stripeOrders = data.orders || [];
+  } catch(e) {
+    _stripeOrders = [];
+  }
+  return _stripeOrders;
+}
+
+async function getShippingData() {
+  try {
+    const data = await adminFetch('/admin/shipping');
+    _shippingData = data.shipping || [];
+  } catch(e) {
+    _shippingData = [];
+  }
+  return _shippingData;
+}
+
+function invalidateOrdersCache() { _stripeOrders = null; _shippingData = null; }
+
+/* ─────────── TRACKING URL ─────────── */
+function trackingUrl(carrier, trackingNumber) {
+  const t = encodeURIComponent(trackingNumber);
+  if (carrier === 'Royal Mail') return 'https://www.royalmail.com/track-your-item#/tracking-results/' + t;
+  if (carrier === 'DHL') return 'https://www.dhl.com/gb-en/home/tracking.html?tracking-id=' + t;
+  if (carrier === 'Evri') return 'https://www.evri.com/track-a-parcel#/tracking/' + t;
+  return '#';
+}
+
+/* ─────────── NEEDS SHIPPING BADGE ─────────── */
+async function updateNeedsShippingBadge() {
+  try {
+    const [orders, shipping] = await Promise.all([getStripeOrders(), getShippingData()]);
+    const shippedIds = new Set(shipping.map(s => s.paymentIntentId));
+    const count = orders.filter(o => o.status === 'succeeded' && !shippedIds.has(o.id)).length;
+    const badge = document.getElementById('needsShippingBadge');
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+  } catch(e) { /* silent */ }
+}
+
+/* ─────────── ORDERS PAGE ─────────── */
+let _orderFilter = 'all';
+
+function setOrderFilter(filter, el) {
+  _orderFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders();
+}
+
+async function renderOrders() {
+  const tbody = document.getElementById('ordersTbody');
+  const countEl = document.getElementById('orderCount');
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Loading orders from Stripe…</td></tr>';
+
+  try {
+    const [stripeOrders, shippingArr] = await Promise.all([getStripeOrders(), getShippingData()]);
+    const shippingMap = {};
+    shippingArr.forEach(s => { shippingMap[s.paymentIntentId] = s; });
+
+    // Local orders for item name merging
+    const localOrders = getLocalOrders();
+    const localByAmount = {};
+    localOrders.forEach(o => {
+      const val = (o.items || []).reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,''))*i.qty, 0);
+      localByAmount[Math.round(val * 100)] = o;
+    });
+
+    let filtered = stripeOrders;
+    if (_orderFilter === 'paid') filtered = stripeOrders.filter(o => o.status === 'succeeded');
+    if (_orderFilter === 'needs-shipping') filtered = stripeOrders.filter(o => o.status === 'succeeded' && !shippingMap[o.id]);
+    if (_orderFilter === 'refunded') filtered = stripeOrders.filter(o => o.status === 'canceled');
+
+    if (countEl) countEl.textContent = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">No orders found</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(function(o) {
+      const date = new Date(o.created * 1000).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const amount = '£' + (o.amount / 100).toFixed(2);
+      const email = o.receipt_email || (o.metadata && o.metadata.email) || '—';
+      const shortId = o.id.slice(0, 16) + '…';
+
+      const localMatch = localByAmount[o.amount];
+      const items = localMatch
+        ? (localMatch.items || []).map(i => i.name + ' ×' + i.qty).join(', ')
+        : (o.metadata && o.metadata.items) || o.description || '—';
+
+      const payBadge = o.status === 'succeeded'
+        ? '<span class="badge badge--ok">Paid</span>'
+        : o.status === 'processing'
+        ? '<span class="badge badge--warn">Processing</span>'
+        : o.status === 'requires_payment_method'
+        ? '<span class="badge badge--oos">Failed</span>'
+        : '<span class="badge badge--grey">' + o.status + '</span>';
+
+      const ship = shippingMap[o.id];
+      const shipBadge = ship
+        ? (ship.status === 'Delivered'
+            ? '<span class="badge badge--ok">Delivered</span>'
+            : '<span class="badge badge--blue">Shipped</span>')
+        : (o.status === 'succeeded'
+            ? '<span class="badge badge--warn">Unshipped</span>'
+            : '<span class="badge badge--grey">—</span>');
+
+      const safeEmail = email.replace(/'/g, "\\'");
+      const shipBtn = !ship && o.status === 'succeeded'
+        ? '<button class="btn-sm" onclick="openShippingModal(\'' + o.id + '\',\'' + safeEmail + '\')">Ship</button>'
+        : '';
+      const refundBtn = o.status === 'succeeded'
+        ? '<button class="btn-sm btn-sm--danger" onclick="doRefund(\'' + o.id + '\')">Refund</button>'
+        : '';
+
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + shortId + '</td>' +
+        '<td style="white-space:nowrap;">' + date + '</td>' +
+        '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
+        '<td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + items + '</td>' +
+        '<td style="white-space:nowrap;">' + amount + '</td>' +
+        '<td>' + payBadge + '</td>' +
+        '<td>' + shipBadge + '</td>' +
+        '<td style="white-space:nowrap;">' + shipBtn + ' ' + refundBtn + '</td>' +
+        '</tr>';
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+  }
+}
+
+function exportOrders() {
+  const orders = _stripeOrders || [];
+  const shippingMap = {};
+  (_shippingData || []).forEach(s => { shippingMap[s.paymentIntentId] = s; });
+
+  const rows = [['Order ID','Date','Customer','Amount (GBP)','Payment Status','Shipping Status','Carrier','Tracking']];
+  orders.forEach(function(o) {
+    const ship = shippingMap[o.id] || {};
+    rows.push([
+      o.id,
+      new Date(o.created * 1000).toLocaleDateString('en-GB'),
+      o.receipt_email || '',
+      (o.amount / 100).toFixed(2),
+      o.status,
+      ship.status || (o.status === 'succeeded' ? 'Unshipped' : '—'),
+      ship.carrier || '',
+      ship.trackingNumber || '',
+    ]);
+  });
+
+  const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'xtc-orders-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+/* ─────────── SHIPPING MODAL ─────────── */
+let _shippingTargetId = '';
+
+function openShippingModal(orderId, email) {
+  _shippingTargetId = orderId;
+  document.getElementById('shippingModalOrderId').textContent = orderId;
+  document.getElementById('shippingTrackingNumber').value = '';
+  document.getElementById('shippingCarrier').value = 'Royal Mail';
+  document.getElementById('shippingStatus').value = 'Shipped';
+  document.getElementById('shippingModal').classList.add('open');
+}
+
+function closeShippingModal() {
+  document.getElementById('shippingModal').classList.remove('open');
+}
+
+async function submitShipping() {
+  const carrier = document.getElementById('shippingCarrier').value;
+  const trackingNumber = document.getElementById('shippingTrackingNumber').value.trim();
+  const status = document.getElementById('shippingStatus').value;
+
+  if (!trackingNumber) { showToast('Enter a tracking number'); return; }
+
+  try {
+    await adminFetch('/admin/shipping', {
+      method: 'POST',
+      body: JSON.stringify({ paymentIntentId: _shippingTargetId, carrier: carrier, trackingNumber: trackingNumber, status: status }),
+    });
+    invalidateOrdersCache();
+    closeShippingModal();
+    showToast('Shipping saved');
+    renderOrders();
+    updateNeedsShippingBadge();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+/* ─────────── SHIPPING PAGE ─────────── */
+async function renderShippingPage() {
+  const tbody = document.getElementById('shippingTbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Loading…</td></tr>';
+
+  try {
+    const [shippingArr, stripeOrders] = await Promise.all([getShippingData(), getStripeOrders()]);
+    const orderMap = {};
+    stripeOrders.forEach(o => { orderMap[o.id] = o; });
+
+    if (!shippingArr.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">No shipped orders yet</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = shippingArr.map(function(s) {
+      const order = orderMap[s.paymentIntentId] || {};
+      const email = order.receipt_email || '—';
+      const shortId = s.paymentIntentId.slice(0,16) + '…';
+      const shippedDate = new Date(s.shippedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const url = trackingUrl(s.carrier, s.trackingNumber);
+      const statusBadge = s.status === 'Delivered'
+        ? '<span class="badge badge--ok">Delivered</span>'
+        : '<span class="badge badge--blue">Shipped</span>';
+      const updateBtn = s.status !== 'Delivered'
+        ? '<button class="btn-sm btn-sm--success" onclick="markDelivered(\'' + s.paymentIntentId + '\')">Mark Delivered</button>'
+        : '<span style="color:var(--muted);font-size:11px;">Done</span>';
+
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:11px;" title="' + s.paymentIntentId + '">' + shortId + '</td>' +
+        '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
+        '<td>' + s.carrier + '</td>' +
+        '<td><a href="' + url + '" target="_blank" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px;">' + s.trackingNumber + '</a></td>' +
+        '<td>' + shippedDate + '</td>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td>' + updateBtn + '</td>' +
+        '</tr>';
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+  }
+}
+
+async function markDelivered(paymentIntentId) {
+  try {
+    await adminFetch('/admin/shipping/' + paymentIntentId, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'Delivered' }),
+    });
+    invalidateOrdersCache();
+    showToast('Marked as Delivered');
+    renderShippingPage();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+/* ─────────── REFUND ─────────── */
+async function doRefund(paymentIntentId) {
+  if (!confirm('Refund order ' + paymentIntentId.slice(0,20) + '…? This cannot be undone.')) return;
+  try {
+    await adminFetch('/admin/refund', {
+      method: 'POST',
+      body: JSON.stringify({ paymentIntentId: paymentIntentId }),
+    });
+    invalidateOrdersCache();
+    showToast('Refund issued');
+    renderOrders();
+  } catch(e) {
+    showToast('Refund failed: ' + e.message);
+  }
+}
+
+/* ─────────── PROMO CODES ─────────── */
+async function renderPromo() {
+  const tbody = document.getElementById('promoTbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Loading…</td></tr>';
+
+  try {
+    const data = await adminFetch('/admin/promo-codes');
+    const codes = data.codes || [];
+    let usage = {};
+    try { usage = JSON.parse(localStorage.getItem('xtc-promo-usage') || '{}'); } catch(e) {}
+
+    if (!codes.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">No promo codes found</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = codes.map(function(c) {
+      const valueStr = c.type === 'percent' ? c.value + '%' : '£' + (c.value/100).toFixed(2);
+      const statusBadge = c.active ? '<span class="badge badge--ok">Active</span>' : '<span class="badge badge--grey">Inactive</span>';
+      const useCount = usage[c.code] || 0;
+      return '<tr>' +
+        '<td style="font-family:monospace;letter-spacing:2px;font-size:12px;">' + c.code + '</td>' +
+        '<td style="text-transform:capitalize;color:var(--muted);">' + c.type + '</td>' +
+        '<td>' + valueStr + '</td>' +
+        '<td style="color:var(--muted);">' + c.description + '</td>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td style="color:var(--muted);">' + useCount + ' use' + (useCount !== 1 ? 's' : '') + '</td>' +
+        '<td><button class="btn-sm" onclick="copyCode(\'' + c.code + '\')">Copy</button></td>' +
+        '</tr>';
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+  }
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code)
+    .then(function() { showToast('Copied: ' + code); })
+    .catch(function() { showToast('Copy failed'); });
+}
+
+/* ─────────── CUSTOMERS ─────────── */
+function getLocalOrders() {
+  try { return Object.values(JSON.parse(localStorage.getItem('xtc-orders') || '{}')); }
+  catch(e) { return []; }
+}
+
+function renderCustomers() {
+  const orders = getLocalOrders();
+  const tbody = document.getElementById('customersTbody');
+  const countEl = document.getElementById('customerCount');
+
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No customer data in local storage yet</td></tr>';
+    if (countEl) countEl.textContent = '0 customers';
+    return;
+  }
+
+  const customerMap = {};
+  orders.forEach(function(o) {
+    const email = o.email || 'unknown';
+    if (!customerMap[email]) customerMap[email] = { email: email, orders: 0, totalSpent: 0, lastOrder: null };
+    const c = customerMap[email];
+    c.orders++;
+    const value = (o.items || []).reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    c.totalSpent += value;
+    const d = new Date(o.date);
+    if (!c.lastOrder || d > new Date(c.lastOrder)) c.lastOrder = o.date;
+  });
+
+  const customers = Object.values(customerMap).sort((a, b) => b.totalSpent - a.totalSpent);
+  if (countEl) countEl.textContent = customers.length + ' unique customer' + (customers.length !== 1 ? 's' : '');
+
+  tbody.innerHTML = customers.map(function(c) {
+    const lastDate = c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+    return '<tr>' +
+      '<td>' + c.email + '</td>' +
+      '<td>' + c.orders + '</td>' +
+      '<td>£' + c.totalSpent.toFixed(2) + '</td>' +
+      '<td style="color:var(--muted);">' + lastDate + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function exportCustomers() {
+  const orders = getLocalOrders();
+  const customerMap = {};
+  orders.forEach(function(o) {
+    const email = o.email || '';
+    if (!customerMap[email]) customerMap[email] = { email: email, orders: 0, totalSpent: 0, lastOrder: null };
+    const c = customerMap[email];
+    c.orders++;
+    const value = (o.items || []).reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
+    c.totalSpent += value;
+    const d = new Date(o.date);
+    if (!c.lastOrder || d > new Date(c.lastOrder)) c.lastOrder = o.date;
+  });
+
+  const rows = [['Email','Orders','Total Spent (GBP)','Last Order']];
+  Object.values(customerMap).forEach(function(c) {
+    rows.push([c.email, c.orders, c.totalSpent.toFixed(2), c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-GB') : '']);
+  });
+  const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'xtc-customers-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
 }
 
 /* ─────────── STOCK ─────────── */
@@ -586,12 +1141,12 @@ function renderStockTable(productId, tbodyId, totalId) {
     const badge = qty === 0 ? '<span class="badge badge--oos">Out of Stock</span>'
                 : qty <= threshold ? '<span class="badge badge--warn">Low Stock</span>'
                 : '<span class="badge badge--ok">In Stock</span>';
-    return `<tr>
-      <td style="font-size:11px;letter-spacing:2px;text-transform:uppercase;">${size}</td>
-      <td>${qty}</td>
-      <td>${badge}</td>
-      <td><input class="stock-input" type="number" min="0" max="999" value="${qty}" data-product="${productId}" data-size="${size}" /></td>
-    </tr>`;
+    return '<tr>' +
+      '<td style="font-size:11px;letter-spacing:2px;text-transform:uppercase;">' + size + '</td>' +
+      '<td>' + qty + '</td>' +
+      '<td>' + badge + '</td>' +
+      '<td><input class="stock-input" type="number" min="0" max="999" value="' + qty + '" data-product="' + productId + '" data-size="' + size + '" /></td>' +
+      '</tr>';
   }).join('');
   document.getElementById(totalId).textContent = total + ' units total';
 }
@@ -604,13 +1159,14 @@ function renderStock() {
 
 function saveStock(productId) {
   const stock = getStock();
-  const inputs = document.querySelectorAll(`input[data-product="${productId}"]`);
+  const inputs = document.querySelectorAll('input[data-product="' + productId + '"]');
   inputs.forEach(inp => {
     stock[productId][inp.dataset.size] = Math.max(0, parseInt(inp.value) || 0);
   });
   saveStockData(stock);
-  renderStockTable(productId, productId === 'polo-black' ? 'blackStockTbody' : 'whiteStockTbody',
-                                productId === 'polo-black' ? 'blackTotal' : 'whiteTotal');
+  renderStockTable(productId,
+    productId === 'polo-black' ? 'blackStockTbody' : 'whiteStockTbody',
+    productId === 'polo-black' ? 'blackTotal' : 'whiteTotal');
   renderStockAlerts();
   showToast('Stock saved successfully');
 }
@@ -622,60 +1178,13 @@ function renderStockAlerts() {
   ['polo-black','polo-white'].forEach(pid => {
     SIZES.forEach(size => {
       const qty = (stock[pid] || {})[size] || 0;
-      if (qty === 0) alerts.push(`<strong>${pid === 'polo-black' ? 'Black' : 'White'} / ${size}</strong> is <span style="color:var(--danger)">out of stock</span>`);
-      else if (qty <= threshold) alerts.push(`<strong>${pid === 'polo-black' ? 'Black' : 'White'} / ${size}</strong> is low — only ${qty} left`);
+      const label = pid === 'polo-black' ? 'Black' : 'White';
+      if (qty === 0) alerts.push('<strong>' + label + ' / ' + size + '</strong> is <span style="color:var(--danger)">out of stock</span>');
+      else if (qty <= threshold) alerts.push('<strong>' + label + ' / ' + size + '</strong> is low — only ' + qty + ' left');
     });
   });
   const el = document.getElementById('stockAlerts');
-  if (el) el.innerHTML = alerts.length ? `<div class="alert alert--warn" style="margin-bottom:20px;">⚠️ ${alerts.join(' &nbsp;·&nbsp; ')}</div>` : '';
-}
-
-/* ─────────── ORDERS ─────────── */
-function getOrders() {
-  try { return Object.values(JSON.parse(localStorage.getItem('xtc-orders') || '{}')); }
-  catch(e) { return []; }
-}
-
-function renderOrders() {
-  const orders = getOrders().sort((a, b) => new Date(b.date) - new Date(a.date));
-  const tbody = document.getElementById('ordersTbody');
-  const countEl = document.getElementById('orderCount');
-  if (!orders.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">No orders yet</td></tr>';
-    if (countEl) countEl.textContent = '0 orders';
-    return;
-  }
-  if (countEl) countEl.textContent = orders.length + ' order' + (orders.length !== 1 ? 's' : '');
-  tbody.innerHTML = orders.map(o => {
-    const d = new Date(o.date);
-    const dateStr = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-    const items = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
-    const value = (o.items || []).reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
-    return `<tr>
-      <td style="font-family:monospace;letter-spacing:1px;">${o.id}</td>
-      <td>${dateStr}</td>
-      <td style="color:var(--muted);">${o.email || '—'}</td>
-      <td style="font-size:12px;">${items || '—'}</td>
-      <td>£${value.toFixed(2)}</td>
-      <td><span class="badge badge--purple">${o.status || 'Processing'}</span></td>
-    </tr>`;
-  }).join('');
-}
-
-function exportOrders() {
-  const orders = getOrders();
-  const rows = [['Order ID','Date','Email','Items','Value','Status']];
-  orders.forEach(o => {
-    const items = (o.items || []).map(i => `${i.name} x${i.qty}`).join(' | ');
-    const value = (o.items || []).reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
-    rows.push([o.id, new Date(o.date).toLocaleDateString('en-GB'), o.email || '', items, value.toFixed(2), o.status || 'Processing']);
-  });
-  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `xtc-orders-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
+  if (el) el.innerHTML = alerts.length ? '<div class="alert alert--warn" style="margin-bottom:20px;">&#9888; ' + alerts.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '';
 }
 
 /* ─────────── ANALYTICS ─────────── */
@@ -697,27 +1206,17 @@ function renderAnalytics() {
   }, { pageviews:0, addToCart:0, checkouts:0, purchases:0, revenue:0 });
 
   const convRate = totals.pageviews ? ((totals.purchases / totals.pageviews) * 100).toFixed(1) : '0.0';
-  document.getElementById('analyticsStats').innerHTML = `
-    <div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">${totals.pageviews.toLocaleString()}</p><p class="stat-card__delta">Last 30 days</p></div>
-    <div class="stat-card"><p class="stat-card__label">Add to Cart</p><p class="stat-card__value">${totals.addToCart.toLocaleString()}</p><p class="stat-card__delta">Last 30 days</p></div>
-    <div class="stat-card"><p class="stat-card__label">Purchases</p><p class="stat-card__value">${totals.purchases.toLocaleString()}</p><p class="stat-card__delta">Last 30 days</p></div>
-    <div class="stat-card"><p class="stat-card__label">Conv. Rate</p><p class="stat-card__value">${convRate}%</p><p class="stat-card__delta">Visits → Orders</p></div>
-  `;
+  document.getElementById('analyticsStats').innerHTML =
+    '<div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">' + totals.pageviews.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Add to Cart</p><p class="stat-card__value">' + totals.addToCart.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Purchases</p><p class="stat-card__value">' + totals.purchases.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Conv. Rate</p><p class="stat-card__value">' + convRate + '%</p><p class="stat-card__delta">Visits → Orders</p></div>';
 
-  // Table
   const tbody = document.getElementById('analyticsTableBody');
   tbody.innerHTML = [...keys].reverse().map(k => {
     const d = data[k];
     const cr = d.pageviews ? ((d.purchases/d.pageviews)*100).toFixed(1) : '0.0';
-    return `<tr>
-      <td>${k}</td>
-      <td>${d.pageviews||0}</td>
-      <td>${d.addToCart||0}</td>
-      <td>${d.checkouts||0}</td>
-      <td>${d.purchases||0}</td>
-      <td>£${(d.revenue||0).toFixed(2)}</td>
-      <td>${cr}%</td>
-    </tr>`;
+    return '<tr><td>' + k + '</td><td>' + (d.pageviews||0) + '</td><td>' + (d.addToCart||0) + '</td><td>' + (d.checkouts||0) + '</td><td>' + (d.purchases||0) + '</td><td>£' + (d.revenue||0).toFixed(2) + '</td><td>' + cr + '%</td></tr>';
   }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">No analytics data yet — visit the site to start tracking</td></tr>';
 
   drawBarChart('analyticsChart', keys.map(k => k.slice(5)), keys.map(k => data[k].pageviews || 0), '#b366ff');
@@ -725,53 +1224,59 @@ function renderAnalytics() {
 
 /* ─────────── DASHBOARD ─────────── */
 function renderDashboard() {
-  const orders = getOrders();
+  const orders = getLocalOrders();
   const data   = getAnalytics();
   const last7  = Object.keys(data).sort().slice(-7);
 
   const revenue = orders.reduce((s, o) => s + (o.items||[]).reduce((a,i) => a + parseFloat((i.price||'0').replace(/[^0-9.]/g,''))*i.qty, 0), 0);
-  const totPV   = last7.reduce((s, k) => s + (data[k]?.pageviews||0), 0);
-  const totATC  = last7.reduce((s, k) => s + (data[k]?.addToCart||0), 0);
+  const totPV   = last7.reduce((s, k) => s + ((data[k] && data[k].pageviews)||0), 0);
   const stock   = getStock();
   const totalUnits = Object.values(stock).reduce((s, sz) => s + Object.values(sz).reduce((a,b)=>a+b,0), 0);
 
-  document.getElementById('statGrid').innerHTML = `
-    <div class="stat-card"><p class="stat-card__label">Total Revenue</p><p class="stat-card__value">£${revenue.toFixed(2)}</p><p class="stat-card__delta">All time</p></div>
-    <div class="stat-card"><p class="stat-card__label">Total Orders</p><p class="stat-card__value">${orders.length}</p><p class="stat-card__delta">All time</p></div>
-    <div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">${totPV}</p><p class="stat-card__delta">Last 7 days</p></div>
-    <div class="stat-card"><p class="stat-card__label">Units in Stock</p><p class="stat-card__value">${totalUnits}</p><p class="stat-card__delta ${totalUnits < 10 ? 'warn' : ''}">Across all products</p></div>
-  `;
+  document.getElementById('statGrid').innerHTML =
+    '<div class="stat-card"><p class="stat-card__label">Total Revenue</p><p class="stat-card__value">£' + revenue.toFixed(2) + '</p><p class="stat-card__delta">From local orders</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Total Orders</p><p class="stat-card__value">' + orders.length + '</p><p class="stat-card__delta">Local records</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">' + totPV + '</p><p class="stat-card__delta">Last 7 days</p></div>' +
+    '<div class="stat-card"><p class="stat-card__label">Units in Stock</p><p class="stat-card__value">' + totalUnits + '</p><p class="stat-card__delta' + (totalUnits < 10 ? ' warn' : '') + '">Across all products</p></div>';
 
-  // Low stock alert
   const threshold = getLowThreshold();
   const lowItems = [];
   ['polo-black','polo-white'].forEach(pid => {
     SIZES.forEach(sz => {
       const q = (stock[pid]||{})[sz]||0;
-      if (q <= threshold) lowItems.push(`${pid === 'polo-black' ? 'Black' : 'White'}/${sz} (${q})`);
+      if (q <= threshold) lowItems.push((pid === 'polo-black' ? 'Black' : 'White') + '/' + sz + ' (' + q + ')');
     });
   });
   const alertEl = document.getElementById('lowStockAlert');
   if (alertEl && lowItems.length) {
-    alertEl.innerHTML = `<div class="alert alert--warn" style="margin-bottom:20px;">⚠️ Low/out of stock: ${lowItems.join(', ')}</div>`;
+    alertEl.innerHTML = '<div class="alert alert--warn" style="margin-bottom:20px;">&#9888; Low/out of stock: ' + lowItems.join(', ') + '</div>';
   }
 
-  // Recent orders
-  const recent = orders.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5);
-  const tbody = document.getElementById('recentOrdersTbody');
-  tbody.innerHTML = recent.length ? recent.map(o => {
-    const items = (o.items||[]).map(i => `${i.name}×${i.qty}`).join(', ');
-    return `<tr>
-      <td style="font-family:monospace;">${o.id}</td>
-      <td>${new Date(o.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</td>
-      <td style="font-size:12px;">${items||'—'}</td>
-      <td><span class="badge badge--purple">${o.status||'Processing'}</span></td>
-    </tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">No orders yet</td></tr>';
+  // Load Stripe orders for recent orders table
+  getStripeOrders().then(function(stripeOrders) {
+    const recent = stripeOrders.slice(0, 5);
+    const tbody = document.getElementById('recentOrdersTbody');
+    if (recent.length) {
+      tbody.innerHTML = recent.map(function(o) {
+        const date = new Date(o.created * 1000).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+        const amount = '£' + (o.amount / 100).toFixed(2);
+        const badge = o.status === 'succeeded'
+          ? '<span class="badge badge--ok">Paid</span>'
+          : '<span class="badge badge--grey">' + o.status + '</span>';
+        return '<tr><td style="font-family:monospace;font-size:11px;">' + o.id.slice(0,18) + '…</td><td>' + date + '</td><td style="color:var(--muted);">—</td><td>' + amount + '</td><td>' + badge + '</td></tr>';
+      }).join('');
+    } else {
+      const recent2 = orders.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5);
+      tbody.innerHTML = recent2.length ? recent2.map(function(o) {
+        const items = (o.items||[]).map(i => i.name + 'x' + i.qty).join(', ');
+        const value = (o.items||[]).reduce((s,i)=>s+parseFloat((i.price||'0').replace(/[^0-9.]/g,''))*i.qty,0);
+        return '<tr><td style="font-family:monospace;">' + o.id + '</td><td>' + new Date(o.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + '</td><td style="font-size:12px;">' + (items||'—') + '</td><td>£' + value.toFixed(2) + '</td><td><span class="badge badge--purple">' + (o.status||'Processing') + '</span></td></tr>';
+      }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">No orders yet</td></tr>';
+    }
+  });
 
-  // Charts
   const last14 = Object.keys(data).sort().slice(-14);
-  drawBarChart('pvChart', last14.map(k=>k.slice(5)), last14.map(k=>data[k]?.pageviews||0), '#b366ff');
+  drawBarChart('pvChart', last14.map(k=>k.slice(5)), last14.map(k=>(data[k]&&data[k].pageviews)||0), '#b366ff');
   drawDoughnut('revChart', ['Polo Black','Polo White'],
     [orders.filter(o=>(o.items||[]).some(i=>i.id&&i.id.includes('black'))).length,
      orders.filter(o=>(o.items||[]).some(i=>i.id&&i.id.includes('white'))).length],
@@ -787,27 +1292,25 @@ function drawBarChart(id, labels, values, color) {
   const H = parseInt(canvas.getAttribute('height')) || 160;
   canvas.width = W; canvas.height = H;
   ctx.clearRect(0,0,W,H);
-  const max = Math.max(...values, 1);
+  const max = Math.max.apply(null, values.concat([1]));
   const pad = { top:10, right:10, bottom:28, left:36 };
   const bw = (W - pad.left - pad.right) / (labels.length || 1);
   const bGap = bw * 0.25;
 
-  // Grid lines
   ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
-  [0.25,0.5,0.75,1].forEach(t => {
+  [0.25,0.5,0.75,1].forEach(function(t) {
     const y = pad.top + (H - pad.top - pad.bottom) * (1-t);
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W-pad.right, y); ctx.stroke();
     ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.font='9px Helvetica Neue'; ctx.textAlign='right';
     ctx.fillText(Math.round(max*t), pad.left-4, y+3);
   });
 
-  values.forEach((v, i) => {
+  values.forEach(function(v, i) {
     const barH = ((v / max) * (H - pad.top - pad.bottom)) || 0;
     const x = pad.left + i * bw + bGap/2;
     const y = H - pad.bottom - barH;
     ctx.fillStyle = color;
     ctx.fillRect(x, y, bw - bGap, barH);
-    // Label
     if (labels[i]) {
       ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font='9px Helvetica Neue'; ctx.textAlign='center';
       ctx.fillText(labels[i], x + (bw-bGap)/2, H - pad.bottom + 12);
@@ -826,7 +1329,7 @@ function drawDoughnut(id, labels, values, colors) {
   const total = values.reduce((a,b)=>a+b,0) || 1;
   const cx = W/2, cy = H/2 - 10, r = Math.min(cx, cy) - 20, ir = r*0.6;
   let angle = -Math.PI/2;
-  values.forEach((v,i) => {
+  values.forEach(function(v,i) {
     const slice = (v/total)*Math.PI*2;
     ctx.beginPath(); ctx.moveTo(cx,cy);
     ctx.arc(cx,cy,r,angle,angle+slice);
@@ -834,11 +1337,10 @@ function drawDoughnut(id, labels, values, colors) {
     angle += slice;
   });
   ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2); ctx.fillStyle='#0e0e0e'; ctx.fill();
-  // Legend
-  labels.forEach((l,i) => {
+  labels.forEach(function(l,i) {
     ctx.fillStyle=colors[i]; ctx.fillRect(12, H-28+i*14-labels.length*7, 8, 8);
     ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px Helvetica Neue'; ctx.textAlign='left';
-    ctx.fillText(`${l} (${values[i]})`, 26, H-21+i*14-labels.length*7);
+    ctx.fillText(l + ' (' + values[i] + ')', 26, H-21+i*14-labels.length*7);
   });
 }
 
@@ -864,6 +1366,7 @@ function loadSettings() {
   const ga4 = localStorage.getItem('xtc-ga4-id');
   if (ga4) document.getElementById('ga4Id').value = ga4;
   document.getElementById('lowStockThreshold').value = localStorage.getItem('xtc-low-threshold') || '3';
+  document.getElementById('adminTokenDisplay').value = getAdminPass();
 }
 
 function savePassword() {
@@ -871,6 +1374,7 @@ function savePassword() {
   if (p.length < 6) { showToast('Password must be at least 6 characters'); return; }
   localStorage.setItem('xtc-admin-pass', p);
   document.getElementById('newPassword').value = '';
+  document.getElementById('adminTokenDisplay').value = p;
   showToast('Password updated');
 }
 
@@ -894,7 +1398,7 @@ function resetStock() {
 }
 
 function clearOrders() {
-  if (!confirm('Delete all orders? This cannot be undone.')) return;
+  if (!confirm('Delete all local orders? This cannot be undone.')) return;
   localStorage.removeItem('xtc-orders');
   showToast('Orders cleared');
 }
@@ -917,8 +1421,13 @@ function showToast(msg) {
   }
   t.textContent = msg; t.style.opacity = '1';
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => t.style.opacity = '0', 2500);
+  _toastTimer = setTimeout(function() { t.style.opacity = '0'; }, 2500);
 }
+
+/* ─────────── MODAL: close on overlay click ─────────── */
+document.getElementById('shippingModal').addEventListener('click', function(e) {
+  if (e.target === this) closeShippingModal();
+});
 </script>
 
 </body>
