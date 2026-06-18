@@ -2,6 +2,7 @@ const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
+const ws = require('ws');
 
 const app = express();
 app.use(express.json());
@@ -15,7 +16,8 @@ const PRODUCTS = {
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
   'https://mugifniadilfwfgrsvie.supabase.co',
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_KEY,
+  { realtime: { transport: ws } }
 );
 
 // ── Stock helpers ─────────────────────────────────────────────────────────────
