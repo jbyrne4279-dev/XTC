@@ -13,16 +13,47 @@ const PRODUCTS = {
 
 const BASE_URL = process.env.BASE_URL || 'https://xtcclothing.com';
 
+// ── Promo codes ──────────────────────────────────────────────────────────────
+// Add new codes here. type: 'percent' or 'fixed' (pence). active: false to disable.
+const PROMO_CODES = {
+  'WELCOME10':  { type: 'percent', value: 10,   active: true,  description: '10% off' },
+  'XTC15':      { type: 'percent', value: 15,   active: true,  description: '15% off' },
+  'FREESHIP':   { type: 'fixed',   value: 499,  active: true,  description: 'Free shipping' },
+};
+
+app.post('/validate-promo', (req, res) => {
+  const code = (req.body.code || '').trim().toUpperCase();
+  const promo = PROMO_CODES[code];
+  if (!promo || !promo.active) return res.status(400).json({ error: 'Invalid or expired code' });
+  res.json({ valid: true, type: promo.type, value: promo.value, description: promo.description });
+});
+
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount } = req.body; // amount in pence
+  const { amount, promoCode } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
+
+  let finalAmount = Math.round(amount);
+
+  // Apply promo discount server-side so it can't be tampered with client-side
+  if (promoCode) {
+    const promo = PROMO_CODES[(promoCode || '').trim().toUpperCase()];
+    if (promo && promo.active) {
+      if (promo.type === 'percent') {
+        finalAmount = Math.round(finalAmount * (1 - promo.value / 100));
+      } else if (promo.type === 'fixed') {
+        finalAmount = Math.max(30, finalAmount - promo.value);
+      }
+    }
+  }
+
   try {
     const intent = await stripe.paymentIntents.create({
-      amount: Math.round(amount),
+      amount: finalAmount,
       currency: 'gbp',
       automatic_payment_methods: { enabled: true },
+      metadata: { promoCode: promoCode || '' },
     });
-    res.json({ clientSecret: intent.client_secret });
+    res.json({ clientSecret: intent.client_secret, finalAmount });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
