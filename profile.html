@@ -1617,9 +1617,8 @@
         verifyOtpBtn.disabled = false;
         verifyOtpBtn.textContent = 'Verify';
         if (res.error) { toast('Incorrect code. Try again.'); return; }
-        var local = syncLocalUser(res.data.user);
         toast('Phone verified! Welcome.');
-        showDashboard(local);
+        loadAndShowDashboard(res.data.user);
       });
     });
 
@@ -1696,10 +1695,18 @@
         }
       });
 
-      /* Listen for OAuth redirect callback (Google) */
+      /* Listen for OAuth redirect callback (Google) — only on explicit sign-in, not session restore */
       sb.auth.onAuthStateChange(function(event, session) {
-        if ((event === 'SIGNED_IN') && session && session.user) {
-          loadAndShowDashboard(session.user);
+        if (event === 'SIGNED_IN' && session && session.user) {
+          // Only handle if we're currently showing the auth screen (e.g. Google OAuth redirect)
+          var authVisible = authSection && authSection.style.display !== 'none';
+          if (authVisible) {
+            loadAndShowDashboard(session.user);
+          }
+        }
+        if (event === 'SIGNED_OUT') {
+          localStorage.removeItem('xtc-user');
+          showAuth();
         }
       });
 
