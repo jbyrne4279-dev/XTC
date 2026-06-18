@@ -1,6 +1,7 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 app.use(express.json());
@@ -11,48 +12,70 @@ const PRODUCTS = {
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
 };
 
-// ── Server-side stock ─────────────────────────────────────────────────────────
-let serverStock = {
-  'polo-black': { S: 0, M: 0, L: 6, XL: 0, XXL: 0 },
-  'polo-white': { S: 0, M: 2, L: 8, XL: 0, XXL: 0 },
-};
+// ── Supabase client (service role for server-side writes) ─────────────────────
+const sb = createClient(
+  'https://mugifniadilfwfgrsvie.supabase.co',
+  process.env.SUPABASE_SERVICE_KEY
+);
 
-// Public: read all stock (used by storefront to display availability)
-app.get('/stock', (req, res) => {
-  res.json({ stock: serverStock });
+// ── Stock helpers ─────────────────────────────────────────────────────────────
+async function getStock() {
+  const { data, error } = await sb.from('stock').select('product_id, sizes');
+  if (error || !data || !data.length) return null;
+  const stock = {};
+  data.forEach(row => { stock[row.product_id] = row.sizes; });
+  return stock;
+}
+
+async function setStockSize(productId, sizeKey, qty) {
+  // Read current row, patch the size, write back
+  const { data } = await sb.from('stock').select('sizes').eq('product_id', productId).single();
+  const sizes = (data && data.sizes) || {};
+  sizes[sizeKey] = Math.max(0, qty);
+  await sb.from('stock').upsert({ product_id: productId, sizes, updated_at: new Date().toISOString() }, { onConflict: 'product_id' });
+}
+
+// Public: read all stock
+app.get('/stock', async (req, res) => {
+  const stock = await getStock();
+  res.json({ stock });
 });
 
 // Called after successful payment to decrement stock
-app.post('/stock/decrement', (req, res) => {
-  const { items } = req.body; // [{ productId, size, qty }]
+app.post('/stock/decrement', async (req, res) => {
+  const { items } = req.body;
   if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+  const stock = await getStock();
+  if (!stock) return res.status(500).json({ error: 'Could not load stock' });
   const errors = [];
-  items.forEach(({ productId, size, qty = 1 }) => {
+  for (const { productId, size, qty = 1 } of items) {
     const sizeKey = (size || '').toUpperCase();
-    if (!serverStock[productId] || serverStock[productId][sizeKey] === undefined) {
+    if (!stock[productId] || stock[productId][sizeKey] === undefined) {
       errors.push(`Unknown product/size: ${productId}/${sizeKey}`);
-      return;
+      continue;
     }
-    serverStock[productId][sizeKey] = Math.max(0, serverStock[productId][sizeKey] - qty);
-  });
-  res.json({ ok: true, stock: serverStock, errors });
+    const newQty = Math.max(0, (stock[productId][sizeKey] || 0) - qty);
+    await setStockSize(productId, sizeKey, newQty);
+    stock[productId][sizeKey] = newQty;
+  }
+  res.json({ ok: true, stock, errors });
 });
 
-// Admin: update stock levels
-app.put('/admin/stock', requireAdmin, (req, res) => {
+// Admin: update a single size
+app.put('/admin/stock', requireAdmin, async (req, res) => {
   const { productId, size, qty } = req.body;
   if (!productId || !size || qty === undefined) {
     return res.status(400).json({ error: 'productId, size, qty required' });
   }
-  const sizeKey = size.toUpperCase();
-  if (!serverStock[productId]) serverStock[productId] = {};
-  serverStock[productId][sizeKey] = Math.max(0, parseInt(qty) || 0);
-  res.json({ ok: true, stock: serverStock });
+  await setStockSize(productId, size.toUpperCase(), parseInt(qty) || 0);
+  const stock = await getStock();
+  res.json({ ok: true, stock });
 });
 
 // Admin: get full stock
-app.get('/admin/stock', requireAdmin, (req, res) => {
-  res.json({ stock: serverStock });
+app.get('/admin/stock', requireAdmin, async (req, res) => {
+  const stock = await getStock();
+  res.json({ stock });
 });
 
 const BASE_URL = process.env.BASE_URL || 'https://xtcclothing.com';
