@@ -708,6 +708,10 @@
           document.getElementById('payment-errors').textContent = error.message;
           btn.disabled = false;
           btn.textContent = 'Place Order';
+          // Reinit payment element so fields stay usable after a failure
+          if (error.type !== 'validation_error') {
+            await reinitPayment();
+          }
         } else {
           completeOrder();
         }
