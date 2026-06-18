@@ -1104,6 +1104,50 @@ ul, ol { list-style: none; }
   border-color: rgba(179,102,255,0.7);
 }
 
+/* Pre-Order button — matches ATC style + rotating shine */
+@property --cta-a {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes cta-spin { to { --cta-a: 360deg; } }
+
+.fp-card__cta {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(179,102,255,0.4);
+  padding: 11px 22px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  position: relative;
+}
+.fp-card__cta::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(from var(--cta-a),
+    transparent 0%, transparent 55%,
+    rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+    rgba(179,102,255,0.8) 91%, transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: cta-spin 3s linear infinite;
+  pointer-events: none;
+}
+.fp-card__cta:hover {
+  background: rgba(179,102,255,0.12);
+  border-color: rgba(179,102,255,0.7);
+}
+
 @media (max-width: 768px) {
   .fp-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 0 24px 36px; }
   .fp-grid { grid-template-columns: 1fr; padding: 0 24px; }
