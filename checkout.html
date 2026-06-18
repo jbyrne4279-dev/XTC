@@ -690,6 +690,7 @@
 
   const stripe = Stripe(PUBLISHABLE_KEY);
   let _elements = null;
+  let _intentId = null;
   let _formListenerAttached = false;
 
   function calcTotalPence() {
@@ -754,18 +755,36 @@
         btn.textContent = 'Processing…';
         document.getElementById('payment-errors').textContent = '';
 
+        const _name = (document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value).trim();
+        const _email = document.getElementById('coEmail').value;
+        const _phone = document.getElementById('coPhone').value;
+        const _address = document.getElementById('coAddress').value;
+        const _city = document.getElementById('coCity').value;
+        const _postcode = document.getElementById('coPostcode').value;
+        const _cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+        const _cartSummary = _cart.map(i => i.qty + 'x ' + i.name).join(', ');
+
+        // Save shipping details to payment intent so they appear in Stripe dashboard
+        if (_intentId) {
+          await fetch('/update-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ intentId: _intentId, name: _name, email: _email, phone: _phone, address: _address, city: _city, postcode: _postcode, cartSummary: _cartSummary }),
+          });
+        }
+
         const { error } = await stripe.confirmPayment({
           elements: _elements,
           confirmParams: {
             return_url: window.location.origin + '/checkout',
             payment_method_data: {
               billing_details: {
-                name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
-                email: document.getElementById('coEmail').value,
+                name: _name,
+                email: _email,
                 address: {
-                  line1: document.getElementById('coAddress').value,
-                  city: document.getElementById('coCity').value,
-                  postal_code: document.getElementById('coPostcode').value,
+                  line1: _address,
+                  city: _city,
+                  postal_code: _postcode,
                   country: 'GB',
                 },
               },
@@ -797,7 +816,9 @@
       body: JSON.stringify({ amount: totalPence }),
     });
     if (!res.ok) throw new Error('Failed to create payment intent');
-    return (await res.json()).clientSecret;
+    const data = await res.json();
+    _intentId = data.intentId || null;
+    return data.clientSecret;
   }
 
   async function reinitPayment() {

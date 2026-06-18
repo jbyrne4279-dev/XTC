@@ -98,7 +98,33 @@ app.post('/create-payment-intent', async (req, res) => {
       automatic_payment_methods: { enabled: true },
       metadata: { promoCode: promoCode || '' },
     });
-    res.json({ clientSecret: intent.client_secret, finalAmount });
+    res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Attach shipping/customer details to payment intent before confirmation
+app.post('/update-payment-intent', async (req, res) => {
+  const { intentId, name, email, phone, address, city, postcode, cartSummary } = req.body;
+  if (!intentId) return res.status(400).json({ error: 'intentId required' });
+  try {
+    await stripe.paymentIntents.update(intentId, {
+      receipt_email: email || undefined,
+      shipping: {
+        name: name || '',
+        phone: phone || '',
+        address: {
+          line1: address || '',
+          city: city || '',
+          postal_code: postcode || '',
+          country: 'GB',
+        },
+      },
+      metadata: { name: name || '', email: email || '', cartSummary: cartSummary || '' },
+    });
+    res.json({ ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

@@ -128,10 +128,20 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: rgba(255,255,255,0.02); }
 
-    /* Stock qty input */
+    /* Stock */
+    .stock-product__head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .stock-product__name { font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--text); }
+    .stock-size-grid { display:flex; gap:12px; flex-wrap:wrap; }
+    .stock-size-card {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      background:rgba(255,255,255,0.04); border:1px solid var(--border);
+      padding:16px 20px; min-width:80px;
+    }
+    .stock-size-card__label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+    .stock-size-card__badge { font-size:8px; letter-spacing:1px; }
     .stock-input {
-      width: 70px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      color: var(--text); font-family: var(--font); font-size: 13px; padding: 6px 10px;
+      width: 56px; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font); font-size: 16px; padding: 6px 8px;
       text-align: center; outline: none; transition: border-color 0.2s;
     }
     .stock-input:focus { border-color: var(--accent); }
@@ -390,35 +400,27 @@
     <!-- ── STOCK ── -->
     <div class="page" id="page-stock">
       <div class="page-header">
-        <h1 class="page-title">Stock Management</h1>
-        <p class="page-sub">Edit quantities and save — changes reflect live on the site</p>
+        <h1 class="page-title">Stock</h1>
+        <p class="page-sub">Edit quantities and save — updates live on site instantly</p>
       </div>
       <div id="stockAlerts"></div>
-      <div class="table-box" style="margin-bottom:24px;">
-        <div class="table-box__header">
-          <span class="table-box__title">Polo [Black] — Stock by Size</span>
+
+      <div class="stock-product" style="margin-bottom:32px;">
+        <div class="stock-product__head">
+          <span class="stock-product__name">Polo — Black</span>
           <span class="badge badge--grey" id="blackTotal">—</span>
         </div>
-        <table>
-          <thead><tr><th>Size</th><th>In Stock</th><th>Status</th><th>Update</th></tr></thead>
-          <tbody id="blackStockTbody"></tbody>
-        </table>
-        <div style="padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
-          <button class="btn-sm btn-sm--accent" onclick="saveStock('polo-black')">Save Black</button>
-        </div>
+        <div class="stock-size-grid" id="blackStockGrid"></div>
+        <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('polo-black')">Save</button>
       </div>
-      <div class="table-box">
-        <div class="table-box__header">
-          <span class="table-box__title">Polo [White] — Stock by Size</span>
+
+      <div class="stock-product">
+        <div class="stock-product__head">
+          <span class="stock-product__name">Polo — White</span>
           <span class="badge badge--grey" id="whiteTotal">—</span>
         </div>
-        <table>
-          <thead><tr><th>Size</th><th>In Stock</th><th>Status</th><th>Update</th></tr></thead>
-          <tbody id="whiteStockTbody"></tbody>
-        </table>
-        <div style="padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
-          <button class="btn-sm btn-sm--accent" onclick="saveStock('polo-white')">Save White</button>
-        </div>
+        <div class="stock-size-grid" id="whiteStockGrid"></div>
+        <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('polo-white')">Save</button>
       </div>
     </div>
 
@@ -856,20 +858,43 @@ async function renderOrders() {
         ? '<button class="btn-sm btn-sm--danger" onclick="doRefund(\'' + o.id + '\')">Refund</button>'
         : '';
 
-      return '<tr>' +
+      // Shipping address from Stripe (populated via /update-payment-intent)
+      const stripeShip = o.shipping;
+      const shipName = (stripeShip && stripeShip.name) || (o.metadata && o.metadata.name) || '—';
+      const shipAddr = stripeShip && stripeShip.address
+        ? [stripeShip.address.line1, stripeShip.address.city, stripeShip.address.postal_code].filter(Boolean).join(', ')
+        : '—';
+      const shipPhone = (stripeShip && stripeShip.phone) || '—';
+      const cartSummary = (o.metadata && o.metadata.cartSummary) || items;
+      const rowId = 'detail-' + o.id;
+
+      return '<tr style="cursor:pointer;" onclick="toggleOrderDetail(\'' + rowId + '\')">' +
         '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + shortId + '</td>' +
         '<td style="white-space:nowrap;">' + date + '</td>' +
         '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
-        '<td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + items + '</td>' +
+        '<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + cartSummary + '</td>' +
         '<td style="white-space:nowrap;">' + amount + '</td>' +
         '<td>' + payBadge + '</td>' +
         '<td>' + shipBadge + '</td>' +
-        '<td style="white-space:nowrap;">' + shipBtn + ' ' + refundBtn + '</td>' +
-        '</tr>';
+        '<td style="white-space:nowrap;" onclick="event.stopPropagation()">' + shipBtn + ' ' + refundBtn + '</td>' +
+        '</tr>' +
+        '<tr id="' + rowId + '" style="display:none;">' +
+        '<td colspan="8" style="background:rgba(255,255,255,0.03);padding:16px 24px;border-bottom:1px solid var(--border);">' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + shipName + '</div><div style="font-size:12px;color:var(--muted);">' + email + '</div><div style="font-size:12px;color:var(--muted);">' + shipPhone + '</div></div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + shipAddr + '</div></div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
+        (ship ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + ship.carrier + ' — ' + ship.trackingNumber + '</div></div>' : '') +
+        '</div></td></tr>';
     }).join('');
   } catch(e) {
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
   }
+}
+
+function toggleOrderDetail(rowId) {
+  const row = document.getElementById(rowId);
+  if (row) row.style.display = row.style.display === 'none' ? '' : 'none';
 }
 
 function exportOrders() {
@@ -1136,32 +1161,30 @@ async function fetchAdminStock() {
 function getStock() { return _adminStock || DEFAULT_STOCK; }
 function getLowThreshold() { return parseInt(localStorage.getItem('xtc-low-threshold') || '3'); }
 
-function renderStockTable(productId, tbodyId, totalId) {
+function renderStockGrid(productId, gridId, totalId) {
   const stock = getStock();
   const sizes = stock[productId] || {};
   const threshold = getLowThreshold();
   let total = 0;
-  const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = SIZES.map(size => {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = SIZES.map(size => {
     const qty = sizes[size] || 0;
     total += qty;
-    const badge = qty === 0 ? '<span class="badge badge--oos">Out of Stock</span>'
-                : qty <= threshold ? '<span class="badge badge--warn">Low Stock</span>'
-                : '<span class="badge badge--ok">In Stock</span>';
-    return '<tr>' +
-      '<td style="font-size:11px;letter-spacing:2px;text-transform:uppercase;">' + size + '</td>' +
-      '<td>' + qty + '</td>' +
-      '<td>' + badge + '</td>' +
-      '<td><input class="stock-input" type="number" min="0" max="999" value="' + qty + '" data-product="' + productId + '" data-size="' + size + '" /></td>' +
-      '</tr>';
+    const badgeCls = qty === 0 ? 'badge--oos' : qty <= threshold ? 'badge--warn' : 'badge--ok';
+    const badgeTxt = qty === 0 ? 'Out of stock' : qty <= threshold ? 'Low' : 'OK';
+    return '<div class="stock-size-card">' +
+      '<span class="stock-size-card__label">' + size + '</span>' +
+      '<input class="stock-input" type="number" min="0" max="999" value="' + qty + '" data-product="' + productId + '" data-size="' + size + '" />' +
+      '<span class="badge ' + badgeCls + ' stock-size-card__badge">' + badgeTxt + '</span>' +
+      '</div>';
   }).join('');
-  document.getElementById(totalId).textContent = total + ' units total';
+  document.getElementById(totalId).textContent = total + ' units';
 }
 
 async function renderStock() {
   await fetchAdminStock();
-  renderStockTable('polo-black', 'blackStockTbody', 'blackTotal');
-  renderStockTable('polo-white', 'whiteStockTbody', 'whiteTotal');
+  renderStockGrid('polo-black', 'blackStockGrid', 'blackTotal');
+  renderStockGrid('polo-white', 'whiteStockGrid', 'whiteTotal');
   renderStockAlerts();
 }
 
@@ -1177,11 +1200,11 @@ async function saveStock(productId) {
   ));
   await Promise.all(updates);
   await fetchAdminStock();
-  renderStockTable(productId,
-    productId === 'polo-black' ? 'blackStockTbody' : 'whiteStockTbody',
+  renderStockGrid(productId,
+    productId === 'polo-black' ? 'blackStockGrid' : 'whiteStockGrid',
     productId === 'polo-black' ? 'blackTotal' : 'whiteTotal');
   renderStockAlerts();
-  showToast('Stock saved successfully');
+  showToast('Stock saved');
 }
 
 function renderStockAlerts() {
