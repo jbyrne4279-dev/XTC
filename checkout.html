@@ -724,7 +724,7 @@
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: totalPence, promoCode: _promo ? _promo.code : null }),
+      body: JSON.stringify({ amount: totalPence }),
     });
     if (!res.ok) throw new Error('Failed to create payment intent');
     return (await res.json()).clientSecret;
