@@ -611,7 +611,12 @@ ${hasSizes ? `<div class="cart-size-row">
 
     function updateCartQty(index, delta) {
       const cart = getCart();
-      cart[index].qty = Math.max(1, Math.min(10, cart[index].qty + delta));
+      const newQty = cart[index].qty + delta;
+      if (newQty <= 0) {
+        cart.splice(index, 1);
+      } else {
+        cart[index].qty = Math.min(10, newQty);
+      }
       saveCart(cart);
       renderCartPage();
       updateCartCount();
