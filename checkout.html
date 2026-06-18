@@ -292,6 +292,11 @@
     }
     .co-promo-msg--ok  { color: rgba(34,197,94,0.9); }
     .co-promo-msg--err { color: rgba(220,38,38,0.9); }
+    .co-promo--mobile { display: none; }
+    @media (max-width: 600px) {
+      .co-promo--desktop { display: none; }
+      .co-promo--mobile  { display: flex; }
+    }
 
     /* ── Success screen ── */
     .co-success {
@@ -417,6 +422,13 @@
         Place Order
       </button>
 
+      <!-- Promo code — mobile only (shown below Place Order) -->
+      <div class="co-promo co-promo--mobile" style="margin-top:16px;">
+        <input type="text" id="promoInputMobile" placeholder="Discount code" maxlength="20" />
+        <button type="button" id="promoBtnMobile" onclick="applyPromoMobile()">Apply</button>
+      </div>
+      <p class="co-promo-msg" id="promoMsgMobile"></p>
+
       <p class="co-secure">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor">
           <path d="M6 0L0 3v4c0 3.5 2.5 6.5 6 7.5C9.5 13.5 12 10.5 12 7V3L6 0zm0 6.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
@@ -432,7 +444,7 @@
     <div id="coItems"></div>
 
     <!-- Promo code -->
-    <div class="co-promo">
+    <div class="co-promo co-promo--desktop">
       <input type="text" id="promoInput" placeholder="Discount code" maxlength="20" />
       <button type="button" id="promoBtn" onclick="applyPromo()">Apply</button>
     </div>
@@ -596,6 +608,64 @@
     reinitPayment();
   };
 
+  window.applyPromoMobile = async function() {
+    const mobileInput = document.getElementById('promoInputMobile');
+    const desktopInput = document.getElementById('promoInput');
+    const code = mobileInput.value.trim();
+    const msgEl = document.getElementById('promoMsgMobile');
+    const btn = document.getElementById('promoBtnMobile');
+    if (!code) { msgEl.textContent = 'Enter a discount code.'; msgEl.className = 'co-promo-msg co-promo-msg--err'; return; }
+
+    btn.disabled = true;
+    btn.textContent = '...';
+    msgEl.textContent = '';
+
+    try {
+      const res = await fetch('/validate-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        _promo = null;
+        msgEl.textContent = data.error || 'Invalid code.';
+        msgEl.className = 'co-promo-msg co-promo-msg--err';
+      } else {
+        _promo = { ...data, code: code.toUpperCase() };
+        msgEl.textContent = '✓ ' + data.description + ' applied!';
+        msgEl.className = 'co-promo-msg co-promo-msg--ok';
+        mobileInput.disabled = true;
+        if (desktopInput) { desktopInput.value = code; desktopInput.disabled = true; }
+        btn.textContent = 'Remove';
+        btn.onclick = removePromoMobile;
+        updateTotals();
+        await reinitPayment();
+      }
+    } catch {
+      msgEl.textContent = 'Could not validate code. Try again.';
+      msgEl.className = 'co-promo-msg co-promo-msg--err';
+    }
+    btn.disabled = false;
+    if (!_promo) btn.textContent = 'Apply';
+  };
+
+  window.removePromoMobile = function() {
+    _promo = null;
+    const msgEl = document.getElementById('promoMsgMobile');
+    msgEl.textContent = '';
+    const mobileInput = document.getElementById('promoInputMobile');
+    mobileInput.value = '';
+    mobileInput.disabled = false;
+    const btn = document.getElementById('promoBtnMobile');
+    btn.textContent = 'Apply';
+    btn.onclick = applyPromoMobile;
+    const desktopInput = document.getElementById('promoInput');
+    if (desktopInput) { desktopInput.value = ''; desktopInput.disabled = false; }
+    updateTotals();
+    reinitPayment();
+  };
+
   function completeOrder(emailOverride) {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     const orders = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
@@ -613,7 +683,6 @@
     const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
     if (typeof xtcEvent === 'function') xtcEvent('purchase', { transaction_id: orderId, value: totalValue, currency: 'GBP' });
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'checkout');
-    if (typeof omnisendTrackPurchase === 'function') omnisendTrackPurchase(orderId, email, cart, totalValue);
     setTimeout(() => { window.location.href = '/order-confirmed?id=' + orderId; }, 400);
   }
 
