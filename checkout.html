@@ -116,6 +116,13 @@
       margin: 36px 0;
     }
 
+    @property --co-btn-a {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes co-btn-spin { to { --co-btn-a: 360deg; } }
+
     .co-submit {
       width: 100%;
       background: var(--accent);
@@ -130,8 +137,27 @@
       transition: opacity 0.2s;
       border-radius: 2px;
       margin-top: 8px;
+      position: relative;
     }
-    .co-submit:hover { opacity: 0.8; }
+    .co-submit::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 3px;
+      padding: 2px;
+      background: conic-gradient(from var(--co-btn-a),
+        transparent 0%, transparent 55%,
+        rgba(100,30,200,0.7) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+        rgba(179,102,255,0.8) 91%, transparent 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: co-btn-spin 3s linear infinite;
+      pointer-events: none;
+    }
+    .co-submit:hover { opacity: 0.85; }
     .co-submit:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .co-secure {
