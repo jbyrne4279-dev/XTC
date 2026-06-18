@@ -1136,7 +1136,8 @@
     /* ─── Supabase client ─── */
     var sb = supabase.createClient(
       'https://mugifniadilfwfgrsvie.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11Z2lmbmlhZGlsZndmZ3JzdmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTgxNzMsImV4cCI6MjA5NzI3NDE3M30.95VqWUKCcMeCCQON13Fy_USoGccoyCwVBRtKbp-aB60'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11Z2lmbmlhZGlsZndmZ3JzdmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTgxNzMsImV4cCI6MjA5NzI3NDE3M30.95VqWUKCcMeCCQON13Fy_USoGccoyCwVBRtKbp-aB60',
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
     );
 
     /* ─── Helpers ─── */
@@ -1197,22 +1198,31 @@
 
     /* Load profile from Supabase and merge with auth user, then show dashboard */
     async function loadAndShowDashboard(supaUser) {
-      var profile = await fetchProfile(supaUser.id);
       var meta = supaUser.user_metadata || {};
+      // Always build a valid user object from auth data first — never block on DB
       var merged = {
         id: supaUser.id,
         email: supaUser.email || '',
-        phone: supaUser.phone || profile && profile.phone || '',
-        name: (profile && profile.name) || meta.full_name || meta.name || (supaUser.email ? supaUser.email.split('@')[0] : ''),
-        points: (profile && profile.points) || 0,
-        since: (profile && profile.since) || new Date().getFullYear(),
+        phone: supaUser.phone || '',
+        name: meta.full_name || meta.name || (supaUser.email ? supaUser.email.split('@')[0] : ''),
+        points: 0,
+        since: new Date().getFullYear(),
         orders: [],
         provider: (supaUser.app_metadata && supaUser.app_metadata.provider) || 'email',
       };
-      // Upsert to ensure row exists for new users
-      if (!profile) {
-        await upsertProfile(supaUser.id, { name: merged.name, phone: merged.phone, points: 0, since: merged.since });
-      }
+      // Try to enrich from profiles table — silently ignore if table doesn't exist yet
+      try {
+        var profile = await fetchProfile(supaUser.id);
+        if (profile) {
+          merged.name = profile.name || merged.name;
+          merged.phone = profile.phone || merged.phone;
+          merged.points = profile.points || 0;
+          merged.since = profile.since || merged.since;
+        } else {
+          // Create profile row for new users (don't await — non-blocking)
+          upsertProfile(supaUser.id, { name: merged.name, phone: merged.phone, points: 0, since: merged.since });
+        }
+      } catch(e) { /* profiles table may not exist yet — still show dashboard */ }
       localStorage.setItem('xtc-user', JSON.stringify(merged));
       showDashboard(merged);
     }
