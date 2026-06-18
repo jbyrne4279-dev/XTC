@@ -23,6 +23,18 @@ function updateCartCount() {
 }
 
 function addToCart(id, name, price, img, quantity = 1) {
+  // Stock guard — id format is "polo-black-s", "polo-white-l", etc.
+  if (typeof getSizeStock === 'function') {
+    const parts = id.split('-');
+    const size = parts[parts.length - 1].toUpperCase();
+    const productId = parts.slice(0, -1).join('-');
+    const inStock = getSizeStock(productId, size);
+    if (inStock <= 0) {
+      showToast('Sorry, ' + name + ' is out of stock.');
+      return;
+    }
+  }
+
   const cart = getCart();
   const existing = cart.find(item => item.id === id);
   if (existing) {
