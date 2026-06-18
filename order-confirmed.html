@@ -151,7 +151,7 @@
       gap: 10px;
       width: 100%;
       padding: 14px 20px;
-      background: #b366ff;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
       color: #fff;
       font-size: 11px;
       font-weight: 700;
@@ -159,10 +159,19 @@
       text-transform: uppercase;
       border: none;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: opacity 0.2s;
     }
-    .oc-btn-save:hover { background: #c77fff; }
-    .oc-btn-save:active { background: #9a3ff7; }
+    .oc-btn-save:hover { opacity: 0.88; }
+    .oc-btn-save:active { opacity: 0.72; }
+
+    .oc-win-note {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .oc-win-note strong { color: rgba(255,255,255,0.6); }
 
     .oc-btn-shop {
       display: flex;
@@ -219,10 +228,11 @@
 
     <!-- Actions — outside the card so they don't appear in screenshot -->
     <div class="oc-actions" id="ocActions">
-      <button class="oc-btn-save" id="saveBtn" onclick="saveImage()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Save to Camera Roll
+      <button class="oc-btn-save" id="saveBtn" onclick="shareToInstagram()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Share to Instagram Story
       </button>
+      <p class="oc-win-note" id="winNote">Tag <strong>@xtcclothing</strong> for a chance to win a free t&#8209;shirt</p>
       <p class="oc-saving-msg" id="savingMsg">Generating image…</p>
       <a href="/" class="oc-btn-shop">Continue Shopping</a>
     </div>
@@ -284,15 +294,19 @@
       document.getElementById('ocTotal').textContent = '£' + total.toFixed(2);
     }
 
-    async function saveImage() {
+    const IGBtnHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Share to Instagram Story';
+
+    async function shareToInstagram() {
       const btn = document.getElementById('saveBtn');
       const msg = document.getElementById('savingMsg');
+      const winNote = document.getElementById('winNote');
       const actions = document.getElementById('ocActions');
 
       btn.disabled = true;
       btn.textContent = 'Generating…';
       msg.style.display = 'block';
-      actions.style.display = 'none'; // hide buttons during capture
+      winNote.style.display = 'none';
+      actions.style.display = 'none';
 
       try {
         const card = document.getElementById('ocCard');
@@ -305,32 +319,37 @@
         });
 
         actions.style.display = 'flex';
+        winNote.style.display = 'block';
 
-        // Try native share (mobile) first
         canvas.toBlob(async (blob) => {
-          if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'xtc-order.png', { type: 'image/png' })] })) {
+          const file = new File([blob], 'xtc-order.png', { type: 'image/png' });
+          // Web Share API — on mobile Instagram picks this up for Stories
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
               await navigator.share({
-                files: [new File([blob], 'xtc-order.png', { type: 'image/png' })],
+                files: [file],
                 title: 'My XTC Order',
+                text: 'Just copped from @xtcclothing 🖤',
               });
             } catch(e) {
-              // User cancelled share — fall through to download
-              downloadCanvas(canvas);
+              if (e.name !== 'AbortError') downloadCanvas(canvas);
             }
           } else {
+            // Desktop fallback: download image + open Instagram
             downloadCanvas(canvas);
+            setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 600);
           }
           btn.disabled = false;
-          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save to Camera Roll';
+          btn.innerHTML = IGBtnHTML;
           msg.style.display = 'none';
         }, 'image/png');
       } catch(e) {
         actions.style.display = 'flex';
+        winNote.style.display = 'block';
         btn.disabled = false;
-        btn.textContent = 'Save to Camera Roll';
+        btn.innerHTML = IGBtnHTML;
         msg.style.display = 'none';
-        alert('Could not save image. Try taking a screenshot manually.');
+        alert('Could not generate image. Try screenshotting the card manually.');
       }
     }
 
