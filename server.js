@@ -74,7 +74,7 @@ app.post('/validate-promo', (req, res) => {
 });
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, promoCode } = req.body;
+  const { amount, promoCode, cartSummary } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
 
   let finalAmount = Math.round(amount);
@@ -96,7 +96,8 @@ app.post('/create-payment-intent', async (req, res) => {
       amount: finalAmount,
       currency: 'gbp',
       automatic_payment_methods: { enabled: true },
-      metadata: { promoCode: promoCode || '' },
+      description: cartSummary || '',
+      metadata: { promoCode: promoCode || '', cartSummary: (cartSummary || '').slice(0, 500) },
     });
     res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
   } catch (err) {

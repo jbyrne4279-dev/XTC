@@ -810,10 +810,12 @@
 
   async function createPaymentIntent() {
     const totalPence = calcTotalPence();
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    const cartSummary = cart.map(i => i.qty + 'x ' + i.name + (i.size ? ' (' + i.size + ')' : '')).join(', ');
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: totalPence }),
+      body: JSON.stringify({ amount: totalPence, cartSummary }),
     });
     if (!res.ok) throw new Error('Failed to create payment intent');
     const data = await res.json();

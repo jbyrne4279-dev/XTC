@@ -829,9 +829,10 @@ async function renderOrders() {
       const shortId = o.id.slice(0, 16) + '…';
 
       const localMatch = localByAmount[o.amount];
-      const items = localMatch
-        ? (localMatch.items || []).map(i => i.name + ' ×' + i.qty).join(', ')
-        : (o.metadata && o.metadata.items) || o.description || '—';
+      const items = (o.metadata && o.metadata.cartSummary)
+        || o.description
+        || (localMatch ? (localMatch.items || []).map(i => i.name + ' ×' + i.qty).join(', ') : '')
+        || '—';
 
       const payBadge = o.status === 'succeeded'
         ? '<span class="badge badge--ok">Paid</span>'
