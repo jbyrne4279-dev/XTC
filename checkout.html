@@ -668,7 +668,7 @@
     });
 
     const paymentElement = _elements.create('payment', {
-      fields: { billingDetails: { phone: 'auto' } },
+      fields: { billingDetails: 'auto' },
       layout: 'tabs',
       wallets: { applePay: 'never', googlePay: 'never' },
     });
@@ -691,7 +691,6 @@
               billing_details: {
                 name: document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value,
                 email: document.getElementById('coEmail').value,
-                phone: '',
                 address: {
                   line1: document.getElementById('coAddress').value,
                   city: document.getElementById('coCity').value,
