@@ -163,7 +163,8 @@ ul, ol { list-style: none; }
 /* Size button out-of-stock state */
 .pdp-size-btn.size-btn--oos,
 .pdp-bundle-size-btn.size-btn--oos,
-.pdp-bundle-size-btn:disabled {
+.pdp-bundle-size-btn:disabled,
+.sm-size-btn.size-btn--oos {
   cursor: not-allowed;
   pointer-events: none;
   border-color: rgba(220, 38, 38, 0.7) !important;
@@ -2361,7 +2362,7 @@ ul, ol { list-style: none; }
 }
 
 .coming-soon-grid {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .coming-soon-card { opacity: 1; }

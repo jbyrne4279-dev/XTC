@@ -313,6 +313,118 @@
     </div>
   </section>
 
+  <!-- Coming Soon -->
+  <section class="coming-soon-section">
+    <div class="coming-soon-header">
+      <p class="coming-soon-header__eyebrow">Next Drop</p>
+      <h2 class="coming-soon-header__title">Coming Soon</h2>
+      <p class="coming-soon-header__sub">Dropping soon — register your interest below to get early access.</p>
+    </div>
+    <div class="coming-soon-grid">
+
+      <!-- Drop 02 / Black -->
+      <div class="fp-card coming-soon-card">
+        <div class="coming-soon-card__media fp-card__media">
+          <div class="coming-soon-card__blur"></div>
+          <div class="coming-soon-card__overlay-text">DROP 02</div>
+          <div class="coming-soon-card__lock">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <span class="coming-soon-card__tag">Coming Soon</span>
+        </div>
+        <div class="fp-card__info">
+          <div class="fp-card__top">
+            <span class="fp-card__drop">Drop 02</span>
+          </div>
+          <h3 class="fp-card__name">Drop 02 / [Black]</h3>
+          <div class="fp-card__bottom">
+            <span class="fp-card__price">£65</span>
+            <button class="fp-card__cta" onclick="openPreOrderModal('drop02-black','Drop 02 / [Black]','£65')">Pre-Order</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drop 02 / White -->
+      <div class="fp-card coming-soon-card">
+        <div class="coming-soon-card__media fp-card__media">
+          <div class="coming-soon-card__blur"></div>
+          <div class="coming-soon-card__overlay-text">DROP 02</div>
+          <div class="coming-soon-card__lock">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <span class="coming-soon-card__tag">Coming Soon</span>
+        </div>
+        <div class="fp-card__info">
+          <div class="fp-card__top">
+            <span class="fp-card__drop">Drop 02</span>
+          </div>
+          <h3 class="fp-card__name">Drop 02 / [White]</h3>
+          <div class="fp-card__bottom">
+            <span class="fp-card__price">£65</span>
+            <button class="fp-card__cta" onclick="openPreOrderModal('drop02-white','Drop 02 / [White]','£65')">Pre-Order</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drop 02 / Grey -->
+      <div class="fp-card coming-soon-card">
+        <div class="coming-soon-card__media fp-card__media">
+          <div class="coming-soon-card__blur"></div>
+          <div class="coming-soon-card__overlay-text">DROP 02</div>
+          <div class="coming-soon-card__lock">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <span class="coming-soon-card__tag">Coming Soon</span>
+        </div>
+        <div class="fp-card__info">
+          <div class="fp-card__top">
+            <span class="fp-card__drop">Drop 02</span>
+          </div>
+          <h3 class="fp-card__name">Drop 02 / [Grey]</h3>
+          <div class="fp-card__bottom">
+            <span class="fp-card__price">£65</span>
+            <button class="fp-card__cta" onclick="openPreOrderModal('drop02-grey','Drop 02 / [Grey]','£65')">Pre-Order</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pre-Order Modal -->
+  <div id="preOrderModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;">
+    <div style="background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:32px;width:90%;max-width:400px;position:relative;">
+      <button onclick="closePreOrderModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">×</button>
+      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(179,102,255,0.8);margin-bottom:8px;">Early Access</p>
+      <h3 id="preOrderTitle" style="font-size:18px;font-weight:600;margin-bottom:20px;"></h3>
+      <input id="preOrderEmail" type="email" placeholder="Your email address" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:2px;padding:12px 14px;color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;" />
+      <button onclick="submitPreOrder()" style="width:100%;background:rgba(179,102,255,0.15);border:1px solid rgba(179,102,255,0.4);color:#fff;padding:12px;border-radius:2px;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Register Interest</button>
+      <p id="preOrderConfirm" style="display:none;color:rgba(34,197,94,0.9);font-size:13px;text-align:center;margin-top:12px;">You're on the list. We'll be in touch.</p>
+    </div>
+  </div>
+
+  <script>
+    function openPreOrderModal(id, name, price) {
+      document.getElementById('preOrderTitle').textContent = name + ' — ' + price;
+      document.getElementById('preOrderEmail').value = '';
+      document.getElementById('preOrderConfirm').style.display = 'none';
+      const modal = document.getElementById('preOrderModal');
+      modal.style.display = 'flex';
+    }
+    function closePreOrderModal() {
+      document.getElementById('preOrderModal').style.display = 'none';
+    }
+    function submitPreOrder() {
+      const email = document.getElementById('preOrderEmail').value.trim();
+      if (!email || !email.includes('@')) { document.getElementById('preOrderEmail').focus(); return; }
+      document.getElementById('preOrderConfirm').style.display = 'block';
+      setTimeout(closePreOrderModal, 2000);
+    }
+    document.getElementById('preOrderModal').addEventListener('click', function(e) {
+      if (e.target === this) closePreOrderModal();
+    });
+  </script>
+
   <!-- Footer -->
   <footer class="site-footer">
 

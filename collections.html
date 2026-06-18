@@ -358,9 +358,20 @@
       _smProduct = { id, name, price, img };
       document.getElementById('sizeModalName').textContent = name;
       document.querySelectorAll('.sm-size-btn').forEach(function(b) {
-        b.classList.remove('sm-selected');
+        b.classList.remove('sm-selected', 'size-btn--oos');
         b.style.borderColor = '';
         b.style.color = '';
+        b.style.background = '';
+        b.disabled = false;
+        b.style.pointerEvents = '';
+        b.style.cursor = '';
+        var size = b.dataset.size;
+        if (typeof getSizeStock === 'function') {
+          var stock = getSizeStock(id, size);
+          if (stock <= 0) {
+            b.classList.add('size-btn--oos');
+          }
+        }
       });
       document.getElementById('sizeModalError').style.display = 'none';
       var modal = document.getElementById('sizeModal');
