@@ -1122,11 +1122,18 @@ function exportCustomers() {
 }
 
 /* ─────────── STOCK ─────────── */
-function getStock() {
-  try { return JSON.parse(localStorage.getItem('xtc-stock')) || DEFAULT_STOCK; }
-  catch(e) { return DEFAULT_STOCK; }
+let _adminStock = null;
+
+async function fetchAdminStock() {
+  try {
+    const res = await fetch('/admin/stock', { headers: { 'Authorization': 'Bearer ' + ADMIN_TOKEN } });
+    if (res.ok) { const d = await res.json(); _adminStock = d.stock; }
+  } catch(e) {}
+  if (!_adminStock) _adminStock = JSON.parse(JSON.stringify(DEFAULT_STOCK));
+  return _adminStock;
 }
-function saveStockData(data) { localStorage.setItem('xtc-stock', JSON.stringify(data)); }
+
+function getStock() { return _adminStock || DEFAULT_STOCK; }
 function getLowThreshold() { return parseInt(localStorage.getItem('xtc-low-threshold') || '3'); }
 
 function renderStockTable(productId, tbodyId, totalId) {
@@ -1151,19 +1158,25 @@ function renderStockTable(productId, tbodyId, totalId) {
   document.getElementById(totalId).textContent = total + ' units total';
 }
 
-function renderStock() {
+async function renderStock() {
+  await fetchAdminStock();
   renderStockTable('polo-black', 'blackStockTbody', 'blackTotal');
   renderStockTable('polo-white', 'whiteStockTbody', 'whiteTotal');
   renderStockAlerts();
 }
 
-function saveStock(productId) {
-  const stock = getStock();
+async function saveStock(productId) {
   const inputs = document.querySelectorAll('input[data-product="' + productId + '"]');
-  inputs.forEach(inp => {
-    stock[productId][inp.dataset.size] = Math.max(0, parseInt(inp.value) || 0);
-  });
-  saveStockData(stock);
+  const updates = [];
+  inputs.forEach(inp => updates.push(
+    fetch('/admin/stock', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+      body: JSON.stringify({ productId, size: inp.dataset.size, qty: parseInt(inp.value) || 0 }),
+    })
+  ));
+  await Promise.all(updates);
+  await fetchAdminStock();
   renderStockTable(productId,
     productId === 'polo-black' ? 'blackStockTbody' : 'whiteStockTbody',
     productId === 'polo-black' ? 'blackTotal' : 'whiteTotal');
@@ -1390,9 +1403,20 @@ function saveSettings() {
   showToast('Settings saved');
 }
 
-function resetStock() {
+async function resetStock() {
   if (!confirm('Reset all stock to default values?')) return;
-  localStorage.setItem('xtc-stock', JSON.stringify(DEFAULT_STOCK));
+  // Push all default values to the server
+  const updates = [];
+  Object.entries(DEFAULT_STOCK).forEach(([productId, sizes]) => {
+    Object.entries(sizes).forEach(([size, qty]) => {
+      updates.push(fetch('/admin/stock', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+        body: JSON.stringify({ productId, size, qty }),
+      }));
+    });
+  });
+  await Promise.all(updates);
   showToast('Stock reset to defaults');
   if (document.getElementById('page-stock').classList.contains('active')) renderStock();
 }

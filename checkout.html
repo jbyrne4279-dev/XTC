@@ -673,11 +673,13 @@
     const email = emailOverride || document.getElementById('coEmail').value || '';
     orders[orderId] = { id: orderId, number: orderId, email, items: cart, date: new Date().toISOString(), status: 'Processing' };
     localStorage.setItem('xtc-orders', JSON.stringify(orders));
-    if (typeof decrementStock === 'function') {
-      cart.forEach(item => {
+    // Decrement stock server-side so all customers see the same live count
+    if (typeof decrementStockServer === 'function') {
+      const stockItems = cart.map(item => {
         const parts = item.id.split('-');
-        decrementStock(parts.slice(0, -1).join('-'), parts[parts.length - 1].toUpperCase(), item.qty);
+        return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: item.qty };
       });
+      decrementStockServer(stockItems);
     }
     localStorage.setItem('xtc-cart', '[]');
     const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);

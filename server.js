@@ -11,6 +11,50 @@ const PRODUCTS = {
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
 };
 
+// ── Server-side stock ─────────────────────────────────────────────────────────
+let serverStock = {
+  'polo-black': { S: 0, M: 0, L: 6, XL: 0, XXL: 0 },
+  'polo-white': { S: 0, M: 2, L: 8, XL: 0, XXL: 0 },
+};
+
+// Public: read all stock (used by storefront to display availability)
+app.get('/stock', (req, res) => {
+  res.json({ stock: serverStock });
+});
+
+// Called after successful payment to decrement stock
+app.post('/stock/decrement', (req, res) => {
+  const { items } = req.body; // [{ productId, size, qty }]
+  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+  const errors = [];
+  items.forEach(({ productId, size, qty = 1 }) => {
+    const sizeKey = (size || '').toUpperCase();
+    if (!serverStock[productId] || serverStock[productId][sizeKey] === undefined) {
+      errors.push(`Unknown product/size: ${productId}/${sizeKey}`);
+      return;
+    }
+    serverStock[productId][sizeKey] = Math.max(0, serverStock[productId][sizeKey] - qty);
+  });
+  res.json({ ok: true, stock: serverStock, errors });
+});
+
+// Admin: update stock levels
+app.put('/admin/stock', requireAdmin, (req, res) => {
+  const { productId, size, qty } = req.body;
+  if (!productId || !size || qty === undefined) {
+    return res.status(400).json({ error: 'productId, size, qty required' });
+  }
+  const sizeKey = size.toUpperCase();
+  if (!serverStock[productId]) serverStock[productId] = {};
+  serverStock[productId][sizeKey] = Math.max(0, parseInt(qty) || 0);
+  res.json({ ok: true, stock: serverStock });
+});
+
+// Admin: get full stock
+app.get('/admin/stock', requireAdmin, (req, res) => {
+  res.json({ stock: serverStock });
+});
+
 const BASE_URL = process.env.BASE_URL || 'https://xtcclothing.com';
 
 // ── Promo codes ──────────────────────────────────────────────────────────────
