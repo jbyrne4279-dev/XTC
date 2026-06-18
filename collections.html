@@ -127,7 +127,7 @@
             <a href="product-polo-black.html" class="product-card__name">POLO [BLACK]</a>
             <p class="product-card__price">£60.00 GBP</p>
             <div class="product-card__actions">
-              <button class="btn btn--primary btn--sm" onclick="addToCart('polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">Add to Cart</button>
+              <button class="btn btn--primary btn--sm" onclick="openSizeModal('polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">Add to Cart</button>
               <a href="product-polo-black.html" class="btn btn--secondary btn--sm">Choose</a>
             </div>
           </div>
@@ -144,7 +144,7 @@
             <a href="product-polo-white.html" class="product-card__name">POLO [WHITE]</a>
             <p class="product-card__price">£60.00 GBP</p>
             <div class="product-card__actions">
-              <button class="btn btn--primary btn--sm" onclick="addToCart('polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg')">Add to Cart</button>
+              <button class="btn btn--primary btn--sm" onclick="openSizeModal('polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg')">Add to Cart</button>
               <a href="product-polo-white.html" class="btn btn--secondary btn--sm">Choose</a>
             </div>
           </div>
@@ -334,6 +334,72 @@
   </script>
   <script src="js/main.js"></script>
   <script src="js/analytics.js"></script>
+
+  <!-- Size selection modal -->
+  <div id="sizeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;" onclick="if(event.target===this)closeSizeModal()">
+    <div style="background:#111;border:1px solid rgba(255,255,255,0.12);padding:32px 28px;max-width:340px;width:90%;position:relative;">
+      <button onclick="closeSizeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;line-height:1;">&#x2715;</button>
+      <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;">Select Size</p>
+      <p id="sizeModalName" style="font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:20px;"></p>
+      <div id="sizeModalBtns" style="display:flex;gap:8px;margin-bottom:8px;">
+        <button class="sm-size-btn" data-size="S" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">S</button>
+        <button class="sm-size-btn" data-size="M" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">M</button>
+        <button class="sm-size-btn" data-size="L" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">L</button>
+      </div>
+      <p id="sizeModalError" style="display:none;font-size:11px;color:rgba(255,100,100,0.7);letter-spacing:0.5px;margin-bottom:16px;">Please select a size.</p>
+      <button onclick="confirmSizeModal()" style="width:100%;padding:16px;background:#fff;color:#000;border:none;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:8px;">Add to Cart</button>
+    </div>
+  </div>
+
+  <script>
+    var _smProduct = null;
+
+    function openSizeModal(id, name, price, img) {
+      _smProduct = { id, name, price, img };
+      document.getElementById('sizeModalName').textContent = name;
+      document.querySelectorAll('.sm-size-btn').forEach(function(b) {
+        b.classList.remove('sm-selected');
+        b.style.borderColor = 'rgba(255,255,255,0.15)';
+        b.style.color = 'rgba(255,255,255,0.6)';
+      });
+      document.getElementById('sizeModalError').style.display = 'none';
+      var modal = document.getElementById('sizeModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSizeModal() {
+      document.getElementById('sizeModal').style.display = 'none';
+      document.body.style.overflow = '';
+      _smProduct = null;
+    }
+
+    function confirmSizeModal() {
+      var selected = document.querySelector('.sm-size-btn.sm-selected');
+      if (!selected) {
+        document.getElementById('sizeModalError').style.display = 'block';
+        return;
+      }
+      var p = _smProduct;
+      var size = selected.dataset.size;
+      addToCart(p.id + '-' + size.toLowerCase(), p.name + ' — ' + size, p.price, p.img, 1);
+      closeSizeModal();
+    }
+
+    document.getElementById('sizeModalBtns').addEventListener('click', function(e) {
+      var btn = e.target.closest('.sm-size-btn');
+      if (!btn) return;
+      document.querySelectorAll('.sm-size-btn').forEach(function(b) {
+        b.classList.remove('sm-selected');
+        b.style.borderColor = 'rgba(255,255,255,0.15)';
+        b.style.color = 'rgba(255,255,255,0.6)';
+      });
+      btn.classList.add('sm-selected');
+      btn.style.borderColor = '#fff';
+      btn.style.color = '#fff';
+      document.getElementById('sizeModalError').style.display = 'none';
+    });
+  </script>
 </body>
 </html>
 
