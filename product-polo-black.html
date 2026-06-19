@@ -194,6 +194,15 @@
       margin-bottom: 16px;
     }
     .pdp-size-error.show { display: block; }
+    .pdp-stock-note {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 8px;
+      min-height: 16px;
+    }
+    .pdp-stock-note--low { color: rgba(239,68,68,0.8); }
+    .pdp-stock-note--ok  { color: rgba(34,197,94,0.7); }
 
     /* Quantity */
     .pdp-qty {
@@ -593,6 +602,7 @@
             <button class="pdp-size-btn" data-size="L">L</button>
           </div>
           <p class="pdp-size-error" id="sizeError">Please select a size.</p>
+          <p class="pdp-stock-note" id="stockNote"></p>
         </div>
 
         <!-- ATC -->
@@ -961,6 +971,21 @@
       document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       document.getElementById('sizeError').classList.remove('show');
+      const note = document.getElementById('stockNote');
+      if (note && typeof getSizeStock === 'function') {
+        const qty = getSizeStock('polo-black', btn.dataset.size);
+        note.className = 'pdp-stock-note';
+        if (qty <= 0) {
+          note.textContent = 'Out of stock';
+          note.classList.add('pdp-stock-note--low');
+        } else if (qty <= 3) {
+          note.textContent = qty + ' left in this size';
+          note.classList.add('pdp-stock-note--low');
+        } else {
+          note.textContent = qty + ' available in this size';
+          note.classList.add('pdp-stock-note--ok');
+        }
+      }
     });
 
     const qty = 1;
