@@ -516,7 +516,10 @@
   <script src="js/main.js"></script>
   <script src="js/analytics.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', renderCartPage);
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof refreshStock === 'function') await refreshStock();
+      renderCartPage();
+    });
 
     function renderCartPage() {
       const cart = getCart();
