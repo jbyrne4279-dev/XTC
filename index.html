@@ -641,12 +641,18 @@
   const SIZES = ['S','M','L','XL','XXL'];
 
   function openSizePicker(btn, productId, name, price, img) {
-    // Close any open picker first
-    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
-
     const picker = document.getElementById('picker-' + productId);
     const sizesEl = document.getElementById('picker-' + productId + '-sizes');
     if (!picker || !sizesEl) return;
+
+    // If already open, close it (toggle)
+    if (picker.classList.contains('open')) {
+      picker.classList.remove('open');
+      return;
+    }
+
+    // Close any other open picker
+    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
     // Build size buttons using live stock
     const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
@@ -661,16 +667,14 @@
     sizesEl.dataset.img = img;
 
     picker.classList.add('open');
-
-    // Close when clicking outside
-    setTimeout(() => {
-      document.addEventListener('click', closePicker, { once: true });
-    }, 0);
   }
 
-  function closePicker() {
-    document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
-  }
+  // Close pickers when clicking outside any picker or ATC button
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
+      document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+    }
+  });
 
   // Delegated click on size buttons inside any picker
   document.addEventListener('click', function(e) {
