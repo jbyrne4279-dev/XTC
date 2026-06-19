@@ -965,22 +965,27 @@
 
 
     // Size selection
-    document.getElementById('sizeButtons').addEventListener('click', async e => {
+    document.getElementById('sizeButtons').addEventListener('click', function(e) {
       const btn = e.target.closest('.pdp-size-btn');
       if (!btn || btn.classList.contains('size-btn--oos') || btn.disabled) return;
       document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       document.getElementById('sizeError').classList.remove('show');
-      const note = document.getElementById('stockNote');
-      if (note) {
-        note.className = 'pdp-stock-note';
-        note.textContent = '…';
-        if (typeof refreshStock === 'function') await refreshStock();
-        const q = typeof getSizeStock === 'function' ? getSizeStock('polo-black', btn.dataset.size) : 0;
+      var note = document.getElementById('stockNote');
+      if (!note) return;
+      var size = btn.dataset.size;
+      note.className = 'pdp-stock-note';
+      // Show from cache immediately, then refresh from Supabase
+      function showStockNote() {
+        var q = typeof getSizeStock === 'function' ? getSizeStock('polo-black', size) : 0;
         note.className = 'pdp-stock-note';
         if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--low'); }
         else if (q <= 3) { note.textContent = q + ' left in this size'; note.classList.add('pdp-stock-note--low'); }
-        else { note.textContent = q + ' available in this size'; note.classList.add('pdp-stock-note--ok'); }
+        else { note.textContent = q + ' available'; note.classList.add('pdp-stock-note--ok'); }
+      }
+      showStockNote();
+      if (typeof refreshStock === 'function') {
+        refreshStock().then(function() { showStockNote(); });
       }
     });
 
