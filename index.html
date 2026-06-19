@@ -41,23 +41,28 @@
     .fp-sp-btn {
       padding: 8px 12px;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
       font-family: inherit;
       font-size: 11px;
       letter-spacing: 1px;
       cursor: pointer;
       transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
-    .fp-sp-btn:hover:not(:disabled) {
-      border-color: rgba(179,102,255,0.6);
-      color: #fff;
+    .fp-sp-btn:hover:not(:disabled):not(.fp-sp-btn--selected) {
+      border-color: rgba(179,102,255,0.5);
       background: rgba(179,102,255,0.08);
     }
-    .fp-sp-btn:disabled {
-      opacity: 0.25;
+    .fp-sp-btn--oos {
+      border-color: rgba(239,68,68,0.5);
+      color: rgba(239,68,68,0.6);
       cursor: not-allowed;
       text-decoration: line-through;
+    }
+    .fp-sp-btn--selected {
+      border-color: rgba(34,197,94,0.7);
+      color: rgba(34,197,94,0.9);
+      background: rgba(34,197,94,0.08);
     }
     .fp-card__info-right { position: relative; }
   </style>
@@ -649,10 +654,12 @@
     sizesEl.innerHTML = SIZES.map(s => {
       const qty = stock[s] || 0;
       const oos = qty === 0;
-      return `<button class="fp-sp-btn" ${oos ? 'disabled' : ''}
-        onclick="pickSize('${productId}','${name}','${price}','${img}','${s}')"
-        title="${oos ? 'Out of stock' : s}">${s}</button>`;
+      return `<button class="fp-sp-btn${oos ? ' fp-sp-btn--oos' : ''}" data-size="${s}">${s}</button>`;
     }).join('');
+    sizesEl.dataset.product = productId;
+    sizesEl.dataset.name = name;
+    sizesEl.dataset.price = price;
+    sizesEl.dataset.img = img;
 
     picker.classList.add('open');
 
@@ -665,6 +672,22 @@
   function closePicker() {
     document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
   }
+
+  // Delegated click on size buttons inside any picker
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.fp-sp-btn');
+    if (!btn || btn.classList.contains('fp-sp-btn--oos')) return;
+    const sizesEl = btn.closest('.fp-size-picker__sizes');
+    if (!sizesEl) return;
+    // Highlight selected, clear others
+    sizesEl.querySelectorAll('.fp-sp-btn').forEach(b => b.classList.remove('fp-sp-btn--selected'));
+    btn.classList.add('fp-sp-btn--selected');
+    // Short delay so user sees the green flash before the picker closes
+    setTimeout(() => {
+      const { product, name, price, img } = sizesEl.dataset;
+      pickSize(product, name, price, img, btn.dataset.size);
+    }, 180);
+  });
 
   function pickSize(productId, name, price, img, size) {
     document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
