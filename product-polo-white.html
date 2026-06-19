@@ -964,26 +964,22 @@
 
 
     // Size selection
-    document.getElementById('sizeButtons').addEventListener('click', e => {
+    document.getElementById('sizeButtons').addEventListener('click', async e => {
       const btn = e.target.closest('.pdp-size-btn');
       if (!btn || btn.classList.contains('size-btn--oos') || btn.disabled) return;
       document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       document.getElementById('sizeError').classList.remove('show');
       const note = document.getElementById('stockNote');
-      if (note && typeof getSizeStock === 'function') {
-        const qty = getSizeStock('polo-white', btn.dataset.size);
+      if (note) {
         note.className = 'pdp-stock-note';
-        if (qty <= 0) {
-          note.textContent = 'Out of stock';
-          note.classList.add('pdp-stock-note--low');
-        } else if (qty <= 3) {
-          note.textContent = qty + ' left in this size';
-          note.classList.add('pdp-stock-note--low');
-        } else {
-          note.textContent = qty + ' available in this size';
-          note.classList.add('pdp-stock-note--ok');
-        }
+        note.textContent = '…';
+        if (typeof refreshStock === 'function') await refreshStock();
+        const q = typeof getSizeStock === 'function' ? getSizeStock('polo-white', btn.dataset.size) : 0;
+        note.className = 'pdp-stock-note';
+        if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--low'); }
+        else if (q <= 3) { note.textContent = q + ' left in this size'; note.classList.add('pdp-stock-note--low'); }
+        else { note.textContent = q + ' available in this size'; note.classList.add('pdp-stock-note--ok'); }
       }
     });
 

@@ -22,6 +22,18 @@ async function loadStock() {
   return _stockCache;
 }
 
+// Force a fresh fetch from the server, bypassing cache
+async function refreshStock() {
+  try {
+    const res = await fetch('/stock?t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      _stockCache = data.stock;
+    }
+  } catch(e) { /* keep existing cache on network error */ }
+  return _stockCache || DEFAULT_STOCK;
+}
+
 function getStock() {
   return _stockCache || DEFAULT_STOCK;
 }
