@@ -64,15 +64,11 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
-    .coming-soon-card .fp-card__info {
-      flex-direction: column;
-      align-items: stretch;
-    }
     .coming-soon-card .fp-card__bottom {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 8px;
+      gap: 20px;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -347,10 +343,12 @@
           <span class="coming-soon-card__tag">Coming Soon</span>
         </div>
         <div class="fp-card__info">
-          <div class="fp-card__top">
-            <span class="fp-card__drop">Drop 02</span>
+          <div class="fp-card__info-left">
+            <div class="fp-card__top">
+              <span class="fp-card__drop">Drop 02</span>
+            </div>
+            <h3 class="fp-card__name">Drop 02 / [Black]</h3>
           </div>
-          <h3 class="fp-card__name">Drop 02 / [Black]</h3>
           <div class="fp-card__bottom">
             <span class="fp-card__price">£65</span>
             <button class="fp-card__cta" onclick="openPreOrderModal('drop02-black','Drop 02 / [Black]','£65')">Pre-Order</button>
@@ -369,10 +367,12 @@
           <span class="coming-soon-card__tag">Coming Soon</span>
         </div>
         <div class="fp-card__info">
-          <div class="fp-card__top">
-            <span class="fp-card__drop">Drop 02</span>
+          <div class="fp-card__info-left">
+            <div class="fp-card__top">
+              <span class="fp-card__drop">Drop 02</span>
+            </div>
+            <h3 class="fp-card__name">Drop 02 / [White]</h3>
           </div>
-          <h3 class="fp-card__name">Drop 02 / [White]</h3>
           <div class="fp-card__bottom">
             <span class="fp-card__price">£65</span>
             <button class="fp-card__cta" onclick="openPreOrderModal('drop02-white','Drop 02 / [White]','£65')">Pre-Order</button>
@@ -391,10 +391,12 @@
           <span class="coming-soon-card__tag">Coming Soon</span>
         </div>
         <div class="fp-card__info">
-          <div class="fp-card__top">
-            <span class="fp-card__drop">Drop 02</span>
+          <div class="fp-card__info-left">
+            <div class="fp-card__top">
+              <span class="fp-card__drop">Drop 02</span>
+            </div>
+            <h3 class="fp-card__name">Drop 02 / [Grey]</h3>
           </div>
-          <h3 class="fp-card__name">Drop 02 / [Grey]</h3>
           <div class="fp-card__bottom">
             <span class="fp-card__price">£65</span>
             <button class="fp-card__cta" onclick="openPreOrderModal('drop02-grey','Drop 02 / [Grey]','£65')">Pre-Order</button>
