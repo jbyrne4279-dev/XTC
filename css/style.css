@@ -2645,11 +2645,8 @@ textarea {
   .form-input,
   .form-select,
   .form-textarea,
-  .cart-note textarea,
-  .footer-club__form input,
-  .lb-comment-input {
-    font-size: 16px;
-    letter-spacing: 0.5px;
+  input, textarea, select {
+    font-size: 16px !important;
   }
 
   /* ── Minimum 44 × 44 pt tap targets (Apple HIG) ── */
