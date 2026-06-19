@@ -305,6 +305,23 @@
       transition: background 0.2s;
     }
     .nr-modal__btn:hover { background: rgba(179,102,255,0.25); }
+    .nr-modal__divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+      color: rgba(255,255,255,0.15);
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+    .nr-modal__divider::before,
+    .nr-modal__divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+    .nr-modal__divider span { color: rgba(255,255,255,0.2); }
     .nr-modal__confirm {
       display: none;
       font-size: 11px;
@@ -517,7 +534,9 @@
       <button class="nr-modal__close" onclick="closeNrModal()">&#215;</button>
       <p class="nr-modal__eye">Early Access</p>
       <h3 class="nr-modal__title" id="nrModalTitle"></h3>
-      <input class="nr-modal__input" type="email" id="nrModalEmail" placeholder="Your email address" autocomplete="email" />
+      <input class="nr-modal__input" type="email" id="nrModalEmail" placeholder="Email address" autocomplete="email" />
+      <div class="nr-modal__divider"><span>or</span></div>
+      <input class="nr-modal__input" type="tel" id="nrModalPhone" placeholder="Phone number (e.g. +447...)" autocomplete="tel" />
       <button class="nr-modal__btn" onclick="submitNrNotify()">Notify Me</button>
       <p class="nr-modal__confirm" id="nrModalConfirm">&#10003; You're on the list. We'll be in touch.</p>
     </div>
@@ -582,6 +601,7 @@
     function openNrModal(name) {
       document.getElementById('nrModalTitle').textContent = name;
       document.getElementById('nrModalEmail').value = '';
+      document.getElementById('nrModalPhone').value = '';
       document.getElementById('nrModalConfirm').style.display = 'none';
       const btn = document.querySelector('.nr-modal__btn');
       btn.disabled = false;
@@ -592,9 +612,14 @@
     }
     function submitNrNotify() {
       const email = document.getElementById('nrModalEmail').value.trim();
+      const phone = document.getElementById('nrModalPhone').value.trim();
       const product = document.getElementById('nrModalTitle').textContent;
-      if (!email || !email.includes('@')) { document.getElementById('nrModalEmail').focus(); return; }
-      if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'new-releases-notify');
+      if (!email && !phone) { document.getElementById('nrModalEmail').focus(); return; }
+      if (email && !email.includes('@')) { document.getElementById('nrModalEmail').focus(); return; }
+      if (typeof omnisendSubscribe === 'function') {
+        if (email) omnisendSubscribe(email, 'new-releases-notify');
+        if (phone) omnisendSubscribe(null, 'new-releases-sms-notify', phone);
+      }
       if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'new_release_notify', product });
       document.getElementById('nrModalConfirm').style.display = 'block';
       document.querySelector('.nr-modal__btn').disabled = true;
