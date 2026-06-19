@@ -338,6 +338,80 @@
 </head>
 <body>
 
+  <div class="sticky-top"><div class="announcement-bar">
+    <div class="announcement-bar__track">
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+    </div>
+  </div></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="header-logo">
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png"
+             alt="XTC Clothing"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="header-logo-text" style="display:none">XTC</span>
+      </a>
+      <nav class="header-nav">
+        <a href="/">Home</a>
+        <a href="/collections">New Releases</a>
+        <a href="/track-order">Track Order</a>
+        <a href="/contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="/profile" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <a href="/cart" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
+    <div class="nav-drawer__panel">
+      <button class="nav-drawer__close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Close
+      </button>
+      <nav class="nav-drawer__links">
+        <a href="/">Home</a>
+        <a href="/collections">New Releases</a>
+        <a href="/track-order">Track Order</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/contact">Contact</a>
+        <a href="/profile">Account</a>
+        <a href="/cart">Cart (<span id="drawerCartCount">0</span>)</a>
+      </nav>
+    </div>
+  </div>
+
 <div class="co-success" id="successScreen">
   <div class="co-success__icon">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
