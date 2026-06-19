@@ -391,6 +391,37 @@
     </div>
   </section>
 
+  <!-- Coming Soon — Email & SMS Signup -->
+  <section class="cs-signup reveal">
+    <div class="cs-signup__inner">
+      <p class="cs-signup__eyebrow">Get Early Access</p>
+      <h3 class="cs-signup__title">Be First to Know</h3>
+      <p class="cs-signup__sub">Drop alerts, exclusive access and early releases — straight to your inbox or phone.</p>
+      <div class="cs-signup__forms">
+        <!-- Email -->
+        <form class="cs-signup__form" id="csEmailForm" onsubmit="csSignup(event,'email')">
+          <div class="cs-signup__field">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+            <input type="email" placeholder="Email address" required autocomplete="email" />
+          </div>
+          <button type="submit">Notify Me</button>
+          <p class="cs-signup__confirm" id="csEmailConfirm">✓ You're on the list.</p>
+        </form>
+        <div class="cs-signup__divider"><span>or</span></div>
+        <!-- SMS -->
+        <form class="cs-signup__form" id="csSmsForm" onsubmit="csSignup(event,'sms')">
+          <div class="cs-signup__field">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+            <input type="tel" placeholder="Phone number (e.g. +447...)" autocomplete="tel" />
+          </div>
+          <button type="submit">Text Me</button>
+          <p class="cs-signup__confirm" id="csSmsConfirm">✓ You'll get a text before we drop.</p>
+        </form>
+      </div>
+      <p class="cs-signup__legal">No spam. Unsubscribe any time.</p>
+    </div>
+  </section>
+
   <!-- Pre-Order Modal -->
 
   <div id="preOrderModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;">
@@ -492,6 +523,25 @@
     e.target.reset();
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
     if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'loyalty_form' });
+  }
+
+  function csSignup(e, type) {
+    e.preventDefault();
+    const form = e.target;
+    const input = form.querySelector('input');
+    const val = input.value.trim();
+    if (!val) { input.focus(); return; }
+    const confirmId = type === 'email' ? 'csEmailConfirm' : 'csSmsConfirm';
+    if (type === 'email') {
+      if (typeof omnisendSubscribe === 'function') omnisendSubscribe(val, 'coming-soon-email');
+      if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'coming_soon_email' });
+    } else {
+      if (typeof omnisendSubscribe === 'function') omnisendSubscribe(null, 'coming-soon-sms', val);
+      if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'coming_soon_sms' });
+    }
+    document.getElementById(confirmId).style.display = 'block';
+    form.querySelector('button').disabled = true;
+    input.disabled = true;
   }
   </script>
 

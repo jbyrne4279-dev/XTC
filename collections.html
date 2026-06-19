@@ -1,414 +1,468 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Releases — XTC Clothing</title>
-  <meta name="description" content="Shop the XTC Original Members collection. Limited units, never restocked." />
-    <meta property="og:title" content="Collections — XTC Clothing" />
-  <meta property="og:description" content="Shop the XTC Clothing collection. Limited drops, never restocked." />
-  <meta property="og:image" content="https://xtcclothing.com/images/polo-black-flat.jpg" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
+  <title>New Releases — XTC</title>
+  <meta name="description" content="New releases from XTC. War™ Zip Hoodie, War™ Joggers, Uniform T." />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .col-hero {
+      padding: 100px 20px 56px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .col-hero__eyebrow {
+      font-size: 9px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.7);
+      margin-bottom: 12px;
+    }
+    .col-hero__title {
+      font-size: clamp(32px, 5vw, 60px);
+      font-weight: 200;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .col-hero__title strong { font-weight: 800; }
+    .col-hero__sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .col-grid-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 72px 20px 100px;
+    }
+    .col-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) { .col-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+    @media (max-width: 560px) { .col-grid { grid-template-columns: 1fr; gap: 14px; } }
+
+    /* ── Product card ── */
+    @property --nr-a {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes nr-spin { to { --nr-a: 360deg; } }
+
+    .nr-card {
+      display: flex;
+      flex-direction: column;
+      background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      cursor: pointer;
+    }
+    .nr-card::before,
+    .nr-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .nr-card::before {
+      animation: nr-spin 3.5s linear infinite;
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 60%,
+        rgba(100,30,200,0.6) 72%, rgba(179,102,255,1) 80%, rgba(220,170,255,1) 85%,
+        rgba(179,102,255,0.8) 92%, transparent 100%
+      );
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+    .nr-card::after {
+      animation: nr-spin 0.8s linear infinite;
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 50%,
+        rgba(100,30,200,0.7) 65%, rgba(179,102,255,1) 75%, rgba(230,190,255,1) 82%,
+        rgba(179,102,255,0.8) 90%, transparent 100%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .nr-card:hover { border-color: rgba(179,102,255,0.2); }
+    .nr-card:hover::before { opacity: 0; }
+    .nr-card:hover::after  { opacity: 1; }
+
+    .nr-card__media {
+      aspect-ratio: 1;
+      background: #111;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nr-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .nr-card:hover .nr-card__media img { transform: scale(1.04); }
+
+    .nr-card__placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #0d0d0d 0%, #111 100%);
+    }
+    .nr-card__placeholder-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.12);
+    }
+
+    .nr-card__badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      background: rgba(179,102,255,0.15);
+      border: 1px solid rgba(179,102,255,0.3);
+      color: rgba(179,102,255,0.9);
+      z-index: 2;
+    }
+
+    .nr-card__info {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .nr-card__drop {
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.6);
+    }
+    .nr-card__name {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      font-weight: 500;
+    }
+    .nr-card__desc {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+      line-height: 1.7;
+    }
+    .nr-card__bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .nr-card__price {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+    }
+    .nr-card__cta {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 9px 16px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: inherit;
+    }
+    .nr-card__cta:hover {
+      border-color: rgba(179,102,255,0.5);
+      color: #fff;
+      background: rgba(179,102,255,0.08);
+    }
+
+    /* ── Notify modal ── */
+    #nrModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+    }
+    #nrModal.open { display: flex; }
+    .nr-modal__box {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 36px 32px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+    .nr-modal__close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .nr-modal__close:hover { color: #fff; }
+    .nr-modal__eye {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.7);
+      margin-bottom: 8px;
+    }
+    .nr-modal__title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .nr-modal__input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 13px;
+      font-family: inherit;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    .nr-modal__input:focus { border-color: rgba(179,102,255,0.4); }
+    .nr-modal__btn {
+      width: 100%;
+      padding: 13px;
+      background: rgba(179,102,255,0.15);
+      border: 1px solid rgba(179,102,255,0.4);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .nr-modal__btn:hover { background: rgba(179,102,255,0.25); }
+    .nr-modal__confirm {
+      display: none;
+      font-size: 11px;
+      color: rgba(34,197,94,0.85);
+      letter-spacing: 1px;
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Announcement Bar -->
-  <div class="sticky-top"><div class="announcement-bar">
-    <div class="announcement-bar__track">
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-    </div>
-  </div>
-
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="/" class="header-logo">
-        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png"
-             alt="XTC Clothing"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
-        <span class="header-logo-text" style="display:none">XTC</span>
-      </a>
-
-      <nav class="header-nav">
-        <a href="/">Home</a>
-        <a href="/collections" class="active">New Releases</a>
-        <a href="/track-order">Track Order</a>
-        <a href="/contact">Contact</a>
-      </nav>
-
-      <div class="header-actions">
-        <a href="/profile" aria-label="Account">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </a>
-        <a href="/cart" aria-label="Cart">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <path d="M16 10a4 4 0 01-8 0"/>
-          </svg>
-          <span class="cart-count" id="cartCount">0</span>
-        </a>
-        <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
-          <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
-            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
-            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header></div>
-
-  <!-- Mobile Nav Drawer -->
-  <div class="nav-drawer" id="navDrawer">
-    <div class="nav-drawer__overlay" id="drawerOverlay"></div>
-    <div class="nav-drawer__panel">
-      <button class="nav-drawer__close" id="drawerClose">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-        Close
+  <!-- ── Header ── -->
+  <header class="site-header" id="siteHeader">
+    <a href="/" class="site-header__logo">XTC<span>.</span></a>
+    <nav class="header-nav">
+      <a href="/">Home</a>
+      <a href="/collections" class="active">New Releases</a>
+      <a href="/gallery">Gallery</a>
+      <a href="/profile">Account</a>
+    </nav>
+    <div class="header-right">
+      <button class="cart-btn" onclick="openCart()" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
       </button>
-      <nav class="nav-drawer__links">
-        <a href="/">Home</a>
-        <a href="/collections">New Releases</a>
-        <a href="/track-order">Track Order</a>
-        <a href="/gallery">Gallery</a>
-        <a href="/contact">Contact</a>
-        <a href="/profile">Account</a>
-        <a href="/cart">Cart (<span id="drawerCartCount">0</span>)</a>
-      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Nav drawer ── -->
+  <div class="nav-drawer" id="navDrawer">
+    <button class="nav-drawer__close" id="drawerClose">Close</button>
+    <nav class="nav-drawer__links">
+      <a href="/">Home</a>
+      <a href="/collections" class="active">New Releases</a>
+      <a href="/gallery">Gallery</a>
+      <a href="/profile">Account</a>
+    </nav>
+  </div>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- ── Hero ── -->
+  <section class="col-hero reveal">
+    <p class="col-hero__eyebrow">Drop 02</p>
+    <h1 class="col-hero__title">New <strong>Releases</strong></h1>
+    <p class="col-hero__sub">Limited run — never restocked</p>
+  </section>
+
+  <!-- ── Product grid ── -->
+  <div class="col-grid-wrap">
+    <div class="col-grid reveal-group">
+
+      <!-- War™ Zip Hoodie -->
+      <div class="nr-card reveal">
+        <div class="nr-card__media">
+          <div class="nr-card__placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+            <span class="nr-card__placeholder-label">Image Coming Soon</span>
+          </div>
+          <span class="nr-card__badge">New</span>
+        </div>
+        <div class="nr-card__info">
+          <span class="nr-card__drop">Drop 02</span>
+          <h2 class="nr-card__name">War&#8482; Zip Hoodie</h2>
+          <p class="nr-card__desc">Heavyweight fleece. Full zip. Embroidered War&#8482; mark at chest. Drop 02 woven label.</p>
+          <div class="nr-card__bottom">
+            <span class="nr-card__price">TBC</span>
+            <button class="nr-card__cta" onclick="openNrModal('War™ Zip Hoodie')">Notify Me</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- War™ Joggers -->
+      <div class="nr-card reveal">
+        <div class="nr-card__media">
+          <div class="nr-card__placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+            <span class="nr-card__placeholder-label">Image Coming Soon</span>
+          </div>
+          <span class="nr-card__badge">New</span>
+        </div>
+        <div class="nr-card__info">
+          <span class="nr-card__drop">Drop 02</span>
+          <h2 class="nr-card__name">War&#8482; Joggers</h2>
+          <p class="nr-card__desc">Tapered fit. Ribbed cuffs. War&#8482; mark embroidered at left thigh. Matched set with the zip hoodie.</p>
+          <div class="nr-card__bottom">
+            <span class="nr-card__price">TBC</span>
+            <button class="nr-card__cta" onclick="openNrModal('War™ Joggers')">Notify Me</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uniform T -->
+      <div class="nr-card reveal">
+        <div class="nr-card__media">
+          <div class="nr-card__placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+            <span class="nr-card__placeholder-label">Image Coming Soon</span>
+          </div>
+          <span class="nr-card__badge">New</span>
+        </div>
+        <div class="nr-card__info">
+          <span class="nr-card__drop">Drop 02</span>
+          <h2 class="nr-card__name">Uniform T</h2>
+          <p class="nr-card__desc">260gsm heavyweight cotton. Dropped shoulder. XTC chest hit, woven back label. The foundation piece.</p>
+          <div class="nr-card__bottom">
+            <span class="nr-card__price">TBC</span>
+            <button class="nr-card__cta" onclick="openNrModal('Uniform T')">Notify Me</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Collection Header -->
-  <section class="collection-header">
-    <h1 class="collection-header__title">New Releases</h1>
-    <p class="collection-header__sub">Limited Units — <span class="no-restock-shine">No Restock</span></p>
-  </section>
-
-  <!-- Collection Body -->
-  <main class="collection-body">
-    <div class="container">
-
-      <!-- Sort / count bar -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-8);padding-bottom:var(--sp-4);border-bottom:1px solid var(--clr-border);">
-        <p style="font-size:var(--fs-xs);letter-spacing:0.08em;color:var(--clr-grey-4);text-transform:uppercase;">2 Products</p>
-        <div style="display:flex;align-items:center;gap:var(--sp-3);">
-          <label for="sortSelect" style="font-size:var(--fs-xs);letter-spacing:0.08em;text-transform:uppercase;color:var(--clr-grey-4);">Sort</label>
-          <select id="sortSelect" class="form-select" style="width:auto;padding:8px 32px 8px 12px;font-size:var(--fs-xs);">
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="newest">Newest</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="product-grid product-grid--2 reveal-group" id="productGrid">
-
-        <!-- POLO [BLACK] -->
-        <article class="product-card">
-          <a href="/product-polo-black" class="product-card__media">
-            <img src="images/polo-black-flat.jpg" alt="XTC Original Members Polo Black — front" loading="lazy" />
-            <img class="product-card__media-alt" src="images/polo-black-model-3.jpg" alt="XTC Original Members Polo Black — alt" loading="lazy" />
-            <span class="product-card__badge">Limited</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/product-polo-black" class="product-card__name">POLO [BLACK]</a>
-            <p class="product-card__price">£60.00 GBP</p>
-            <div class="product-card__actions">
-              <button class="btn btn--primary btn--sm" onclick="openSizeModal('polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">Add to Cart</button>
-              <a href="/product-polo-black" class="btn btn--secondary btn--sm">Choose</a>
-            </div>
-          </div>
-        </article>
-
-        <!-- POLO [WHITE] -->
-        <article class="product-card">
-          <a href="/product-polo-white" class="product-card__media">
-            <img src="images/polo-white-flat.jpg" alt="XTC Original Members Polo White — front" loading="lazy" />
-            <img class="product-card__media-alt" src="images/polo-white-model-3.jpg" alt="XTC Original Members Polo White — alt" loading="lazy" />
-            <span class="product-card__badge">Limited</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/product-polo-white" class="product-card__name">POLO [WHITE]</a>
-            <p class="product-card__price">£60.00 GBP</p>
-            <div class="product-card__actions">
-              <button class="btn btn--primary btn--sm" onclick="openSizeModal('polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg')">Add to Cart</button>
-              <a href="/product-polo-white" class="btn btn--secondary btn--sm">Choose</a>
-            </div>
-          </div>
-        </article>
-
-      </div>
+  <!-- ── Notify modal ── -->
+  <div id="nrModal">
+    <div class="nr-modal__box">
+      <button class="nr-modal__close" onclick="closeNrModal()">&#215;</button>
+      <p class="nr-modal__eye">Early Access</p>
+      <h3 class="nr-modal__title" id="nrModalTitle"></h3>
+      <input class="nr-modal__input" type="email" id="nrModalEmail" placeholder="Your email address" autocomplete="email" />
+      <button class="nr-modal__btn" onclick="submitNrNotify()">Notify Me</button>
+      <p class="nr-modal__confirm" id="nrModalConfirm">&#10003; You're on the list. We'll be in touch.</p>
     </div>
-  </main>
+  </div>
 
-  <!-- Coming Soon -->
-  <section class="coming-soon-section">
-    <div class="container">
-      <div class="coming-soon-header">
-        <p class="coming-soon-header__eyebrow">Next Drop</p>
-        <h2 class="coming-soon-header__title">Coming Soon</h2>
-        <p class="coming-soon-header__sub">Dropping soon — register your interest below to get early access.</p>
-      </div>
-
-      <div class="product-grid product-grid--2 coming-soon-grid">
-
-        <!-- Drop 02 A -->
-        <article class="product-card coming-soon-card">
-          <a href="/product-drop02-a" class="product-card__media coming-soon-card__media">
-            <div class="coming-soon-card__blur"></div>
-            <div class="coming-soon-card__overlay-text">
-              <span class="coming-soon-card__lock">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </span>
-              <span class="coming-soon-card__tag">Drop 02</span>
-            </div>
-          </a>
-          <div class="product-card__info">
-            <span class="product-card__name">Drop 02 / [Black]</span>
-            <p class="product-card__price">£65</p>
-            <div class="product-card__actions">
-              <a href="/product-drop02-a" class="btn btn--primary btn--sm">Pre-Order</a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Drop 02 B -->
-        <article class="product-card coming-soon-card">
-          <a href="/product-drop02-b" class="product-card__media coming-soon-card__media">
-            <div class="coming-soon-card__blur"></div>
-            <div class="coming-soon-card__overlay-text">
-              <span class="coming-soon-card__lock">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </span>
-              <span class="coming-soon-card__tag">Drop 02</span>
-            </div>
-          </a>
-          <div class="product-card__info">
-            <span class="product-card__name">Drop 02 / [White]</span>
-            <p class="product-card__price">£65</p>
-            <div class="product-card__actions">
-              <a href="/product-drop02-b" class="btn btn--primary btn--sm">Pre-Order</a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Drop 02 C -->
-        <article class="product-card coming-soon-card">
-          <a href="/product-drop02-c" class="product-card__media coming-soon-card__media">
-            <div class="coming-soon-card__blur"></div>
-            <div class="coming-soon-card__overlay-text">
-              <span class="coming-soon-card__lock">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </span>
-              <span class="coming-soon-card__tag">Drop 02</span>
-            </div>
-          </a>
-          <div class="product-card__info">
-            <span class="product-card__name">Drop 02 / [Grey]</span>
-            <p class="product-card__price">£65</p>
-            <div class="product-card__actions">
-              <a href="/product-drop02-c" class="btn btn--primary btn--sm">Pre-Order</a>
-            </div>
-          </div>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <script>
-    function notifyMe(btn) {
-      btn.textContent = 'Registered';
-      btn.disabled = true;
-      btn.style.opacity = '0.5';
-      btn.style.cursor = 'default';
-    }
-  </script>
-
-  <!-- Footer -->
+  <!-- ── Footer ── -->
   <footer class="site-footer">
-
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-brand__logo">
-            <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none'" />
-          </div>
-          <p class="footer-brand__tagline"><span class="tagline-drop">Limited drops.</span> <span class="tagline-never">Never restocked.</span></p>
-          <div class="footer-socials">
-            <a href="https://instagram.com/xtcclothing" target="_blank" class="footer-social-link" aria-label="Instagram">
-              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-            </a>
-            <a href="https://tiktok.com/@xtcclothing" target="_blank" class="footer-social-link" aria-label="TikTok">
-              <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.69a4.85 4.85 0 01-1-.01z"/></svg>
-            </a>
-          </div>
-        </div>
-        <div class="footer-links-grid">
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Shop</h3>
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/collections">New Releases</a></li>
-              <li><a href="/product-polo-black">Polo [Black]</a></li>
-              <li><a href="/product-polo-white">Polo [White]</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Account</h3>
-            <ul>
-              <li><a href="/profile">My Profile</a></li>
-              <li><a href="/track-order">Track Order</a></li>
-              <li><a href="/cart">Cart</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Help</h3>
-            <ul>
-              <li><a href="/contact">Contact Us</a></li>
-              <li><a href="/shipping">Shipping</a></li>
-              <li><a href="/returns">Returns</a></li>
-              <li><a href="/privacy">Privacy</a></li>
-              <li><a href="/terms">Terms</a></li>
-            </ul>
-          </div>
-        </div>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">XTC<span>.</span></div>
+        <p class="footer-tagline">Limited drops.<br>Never restocked.</p>
       </div>
-      <div class="footer-bottom">
-        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+      <div class="footer-links-grid">
+        <div>
+          <p class="footer-links__heading">Shop</p>
+          <ul class="footer-links__list">
+            <li><a href="/collections">New Releases</a></li>
+            <li><a href="/#featured">Drop 01</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-links__heading">Info</p>
+          <ul class="footer-links__list">
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/profile">Account</a></li>
+          </ul>
+        </div>
       </div>
     </div>
-
+    <div class="footer-bottom">
+      <p class="footer-copy">&#169; 2025 XTC Clothing. All rights reserved.</p>
+    </div>
   </footer>
 
-  <script>
-  function handleLoyaltySignup(e) {
-    e.preventDefault();
-    const email = e.target.querySelector('input[type=email]').value;
-    const msg = document.getElementById('loyaltyMsg');
-    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
-    msg.style.display = 'block';
-    e.target.reset();
-    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
-    if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'loyalty_form' });
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const select = document.getElementById('sortSelect');
-    if (!select) return;
-    select.addEventListener('change', function() {
-      const grid = document.getElementById('productGrid');
-      const cards = Array.from(grid.querySelectorAll('.product-card'));
-      const getPrice = c => parseFloat(c.querySelector('.product-card__price')?.textContent.replace(/[^0-9.]/g,'') || 0);
-      cards.sort((a, b) => {
-        if (select.value === 'price-asc')  return getPrice(a) - getPrice(b);
-        if (select.value === 'price-desc') return getPrice(b) - getPrice(a);
-        return 0;
-      });
-      cards.forEach(c => grid.appendChild(c));
-    });
-  });
-  </script>
-
-  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
-  <script src="js/stock.js"></script>
-  <script src="js/omnisend-config.js"></script>
-  <script>
-  (function(){
-    var id = localStorage.getItem('xtc-ga4-id');
-    if(id){ var s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.appendChild(s); window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);}; gtag('js',new Date()); gtag('config',id); }
-  })();
-  </script>
   <script src="js/main.js"></script>
-  <script src="js/analytics.js"></script>
-
-  <!-- Size selection modal -->
-  <div id="sizeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;" onclick="if(event.target===this)closeSizeModal()">
-    <div style="background:#111;border:1px solid rgba(255,255,255,0.12);padding:32px 28px;max-width:340px;width:90%;position:relative;">
-      <button onclick="closeSizeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;line-height:1;">&#x2715;</button>
-      <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;">Select Size</p>
-      <p id="sizeModalName" style="font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:20px;"></p>
-      <div id="sizeModalBtns" style="display:flex;gap:8px;margin-bottom:8px;">
-        <button class="sm-size-btn" data-size="S" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">S</button>
-        <button class="sm-size-btn" data-size="M" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">M</button>
-        <button class="sm-size-btn" data-size="L" style="width:52px;height:52px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1px;cursor:pointer;transition:border-color 0.2s,color 0.2s;">L</button>
-      </div>
-      <p id="sizeModalError" style="display:none;font-size:11px;color:rgba(255,100,100,0.7);letter-spacing:0.5px;margin-bottom:16px;">Please select a size.</p>
-      <button onclick="confirmSizeModal()" style="width:100%;padding:16px;background:#fff;color:#000;border:none;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:8px;">Add to Cart</button>
-    </div>
-  </div>
-
   <script>
-    var _smProduct = null;
-
-    function openSizeModal(id, name, price, img) {
-      _smProduct = { id, name, price, img };
-      document.getElementById('sizeModalName').textContent = name;
-      document.querySelectorAll('.sm-size-btn').forEach(function(b) {
-        b.classList.remove('sm-selected', 'size-btn--oos');
-        b.style.borderColor = '';
-        b.style.color = '';
-        b.style.background = '';
-        b.disabled = false;
-        b.style.pointerEvents = '';
-        b.style.cursor = '';
-        var size = b.dataset.size;
-        if (typeof getSizeStock === 'function') {
-          var stock = getSizeStock(id, size);
-          if (stock <= 0) {
-            b.classList.add('size-btn--oos');
-          }
-        }
-      });
-      document.getElementById('sizeModalError').style.display = 'none';
-      var modal = document.getElementById('sizeModal');
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+    function openNrModal(name) {
+      document.getElementById('nrModalTitle').textContent = name;
+      document.getElementById('nrModalEmail').value = '';
+      document.getElementById('nrModalConfirm').style.display = 'none';
+      const btn = document.querySelector('.nr-modal__btn');
+      btn.disabled = false;
+      document.getElementById('nrModal').classList.add('open');
     }
-
-    function closeSizeModal() {
-      document.getElementById('sizeModal').style.display = 'none';
-      document.body.style.overflow = '';
-      _smProduct = null;
+    function closeNrModal() {
+      document.getElementById('nrModal').classList.remove('open');
     }
-
-    function confirmSizeModal() {
-      var selected = document.querySelector('.sm-size-btn.sm-selected');
-      if (!selected) {
-        document.getElementById('sizeModalError').style.display = 'block';
-        return;
-      }
-      var p = _smProduct;
-      var size = selected.dataset.size;
-      addToCart(p.id + '-' + size.toLowerCase(), p.name + ' — ' + size, p.price, p.img, 1);
-      closeSizeModal();
+    function submitNrNotify() {
+      const email = document.getElementById('nrModalEmail').value.trim();
+      const product = document.getElementById('nrModalTitle').textContent;
+      if (!email || !email.includes('@')) { document.getElementById('nrModalEmail').focus(); return; }
+      if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'new-releases-notify');
+      if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'new_release_notify', product });
+      document.getElementById('nrModalConfirm').style.display = 'block';
+      document.querySelector('.nr-modal__btn').disabled = true;
     }
-
-    document.getElementById('sizeModalBtns').addEventListener('click', function(e) {
-      var btn = e.target.closest('.sm-size-btn');
-      if (!btn) return;
-      document.querySelectorAll('.sm-size-btn').forEach(function(b) {
-        b.classList.remove('sm-selected');
-        b.style.borderColor = '';
-        b.style.color = '';
-      });
-      btn.classList.add('sm-selected');
-      document.getElementById('sizeModalError').style.display = 'none';
+    document.getElementById('nrModal').addEventListener('click', function(e) {
+      if (e.target === this) closeNrModal();
     });
   </script>
 </body>
 </html>
-
