@@ -29,11 +29,18 @@ async function getStock() {
   return stock;
 }
 
+async function setStockSizes(productId, sizesObj) {
+  // Write all sizes for a product atomically in one upsert
+  const sizes = {};
+  Object.keys(sizesObj).forEach(k => { sizes[k.toUpperCase()] = Math.max(0, parseInt(sizesObj[k]) || 0); });
+  await sb.from('stock').upsert({ product_id: productId, sizes, updated_at: new Date().toISOString() }, { onConflict: 'product_id' });
+}
+
 async function setStockSize(productId, sizeKey, qty) {
-  // Read current row, patch the size, write back
+  // Read current row, patch the one size, write back atomically
   const { data } = await sb.from('stock').select('sizes').eq('product_id', productId).single();
-  const sizes = (data && data.sizes) || {};
-  sizes[sizeKey] = Math.max(0, qty);
+  const sizes = (data && data.sizes) ? { ...data.sizes } : {};
+  sizes[sizeKey.toUpperCase()] = Math.max(0, qty);
   await sb.from('stock').upsert({ product_id: productId, sizes, updated_at: new Date().toISOString() }, { onConflict: 'product_id' });
 }
 
@@ -63,13 +70,19 @@ app.post('/stock/decrement', async (req, res) => {
   res.json({ ok: true, stock, errors });
 });
 
-// Admin: update a single size
+// Admin: update all sizes for a product at once (bulk) or a single size
 app.put('/admin/stock', requireAdmin, async (req, res) => {
-  const { productId, size, qty } = req.body;
-  if (!productId || !size || qty === undefined) {
-    return res.status(400).json({ error: 'productId, size, qty required' });
+  const { productId, size, qty, sizes } = req.body;
+  if (!productId) return res.status(400).json({ error: 'productId required' });
+  if (sizes && typeof sizes === 'object') {
+    // Bulk: { productId, sizes: { S: 3, M: 5, ... } }
+    await setStockSizes(productId, sizes);
+  } else if (size !== undefined && qty !== undefined) {
+    // Single size: { productId, size, qty }
+    await setStockSize(productId, size.toUpperCase(), parseInt(qty) || 0);
+  } else {
+    return res.status(400).json({ error: 'sizes object or size+qty required' });
   }
-  await setStockSize(productId, size.toUpperCase(), parseInt(qty) || 0);
   const stock = await getStock();
   res.json({ ok: true, stock });
 });

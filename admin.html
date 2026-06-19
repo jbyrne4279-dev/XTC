@@ -1195,15 +1195,16 @@ async function renderStock() {
 
 async function saveStock(productId) {
   const inputs = document.querySelectorAll('input[data-product="' + productId + '"]');
-  const updates = [];
-  inputs.forEach(inp => updates.push(
-    fetch('/admin/stock', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
-      body: JSON.stringify({ productId, size: inp.dataset.size, qty: parseInt(inp.value) || 0 }),
-    })
-  ));
-  await Promise.all(updates);
+  const sizes = {};
+  inputs.forEach(inp => { sizes[inp.dataset.size] = parseInt(inp.value) || 0; });
+  const res = await fetch('/admin/stock', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+    body: JSON.stringify({ productId, sizes }),
+  });
+  if (!res.ok) { showToast('Save failed — check connection'); return; }
+  const data = await res.json();
+  if (data.stock) window._adminStock = data.stock;
   await fetchAdminStock();
   renderStockGrid(productId,
     productId === 'polo-black' ? 'blackStockGrid' : 'whiteStockGrid',
