@@ -326,8 +326,8 @@
       width: 100%;
       padding: 16px 24px;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(179,102,255,0.4);
+      color: #fff;
       font-family: inherit;
       font-size: 11px;
       font-weight: 500;
@@ -335,9 +335,29 @@
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 10px;
-      transition: border-color 0.2s, color 0.2s;
+      transition: background 0.2s, border-color 0.2s;
+      position: relative;
     }
-    .pdp-buy-now:hover { border-color: #fff; color: #fff; }
+    @property --pdp-buy-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    @keyframes pdp-buy-spin { to { --pdp-buy-a: 360deg; } }
+    .pdp-buy-now::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      background: conic-gradient(from var(--pdp-buy-a),
+        transparent 0%, transparent 55%,
+        rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+        rgba(179,102,255,0.8) 91%, transparent 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: pdp-buy-spin 3s linear infinite;
+      pointer-events: none;
+    }
+    .pdp-buy-now:hover { background: rgba(179,102,255,0.1); border-color: rgba(179,102,255,0.7); }
 
     /* Bundle Offers */
     .pdp-bundles { margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; }
