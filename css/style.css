@@ -2786,22 +2786,23 @@ textarea {
 .early-access-bar {
   border-top: 1px solid var(--border);
   background: #050505;
-  padding: 72px 24px;
+  padding: 80px 64px;
 }
 .early-access-bar__inner {
-  max-width: 580px;
+  max-width: 1100px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
 }
 .early-access-bar__heading {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 300;
   letter-spacing: 6px;
   text-transform: uppercase;
   color: #fff;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 .early-access-bar__sub {
   font-size: 10px;
@@ -2870,13 +2871,24 @@ textarea {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.18);
-  text-align: center;
+  text-align: left;
 }
 .early-access-bar__confirm {
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--accent);
-  text-align: center;
+  text-align: left;
   margin-top: 16px;
+}
+@media (max-width: 768px) {
+  .early-access-bar {
+    padding: 60px 24px;
+  }
+  .early-access-bar__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .early-access-bar__legal,
+  .early-access-bar__confirm { text-align: center; }
 }
