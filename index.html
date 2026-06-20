@@ -362,7 +362,7 @@
       <form class="early-access-bar__form" id="earlyAccessForm" onsubmit="earlyAccessSubmit(event)">
         <div class="early-access-bar__fields">
           <div class="early-access-bar__field">
-            <label class="early-access-bar__label">EMAIL ADDRESS</label>
+            <label class="early-access-bar__label">EMAIL ADDRESS <span style="opacity:0.4">(OPTIONAL)</span></label>
             <input class="early-access-bar__input" type="email" placeholder="your@email.com" id="earlyAccessEmail" autocomplete="email" />
           </div>
           <div class="early-access-bar__field">
@@ -381,7 +381,7 @@
     e.preventDefault();
     var email = document.getElementById('earlyAccessEmail').value.trim();
     var phone = document.getElementById('earlyAccessPhone').value.trim();
-    if (!email) return;
+    if (!email && !phone) return;
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'ss26-early-access');
     if (phone   <!-- Footer -->  <!-- Footer --> window.omnisend) omnisend.push(['identifyContact', { email, phone }]);
     document.getElementById('earlyAccessForm').style.display = 'none';
