@@ -612,14 +612,14 @@
     return cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
   }
 
-  function removeFromCheckoutCart(index) {
+  window.removeFromCheckoutCart = function(index) {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     cart.splice(index, 1);
     localStorage.setItem('xtc-cart', JSON.stringify(cart));
     if (!cart.length) { window.location.href = '/cart'; return; }
     renderSummary();
     reinitPayment();
-  }
+  };
 
   function renderSummary() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
