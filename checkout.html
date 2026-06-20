@@ -238,6 +238,24 @@
       margin-bottom: 4px;
     }
     .co-item__meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .co-item__remove {
+      background: none;
+      border: none;
+      color: rgba(220, 80, 80, 0.45);
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .co-item__remove:hover { color: rgba(220, 80, 80, 0.8); }
+    .co-item__meta span {
       font-size: 11px;
       color: rgba(255,255,255,0.3);
       letter-spacing: 0.5px;
@@ -594,18 +612,26 @@
     return cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
   }
 
+  function removeFromCheckoutCart(index) {
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    cart.splice(index, 1);
+    localStorage.setItem('xtc-cart', JSON.stringify(cart));
+    if (!cart.length) { window.location.href = '/cart'; return; }
+    renderSummary();
+  }
+
   function renderSummary() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     if (!cart.length) { window.location.href = '/cart'; return; }
     const itemsEl = document.getElementById('coItems');
     let subtotal = 0;
-    itemsEl.innerHTML = cart.map(item => {
+    itemsEl.innerHTML = cart.map((item, i) => {
       const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       subtotal += price * item.qty;
       const img = item.img
         ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" />`
         : `<div class="co-item__img-placeholder"></div>`;
-      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${item.name}</p><p class="co-item__meta">Qty ${item.qty}</p></div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
+      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${item.name}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p></div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
     updateTotals(subtotal);
   }
