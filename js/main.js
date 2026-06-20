@@ -222,25 +222,3 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavDrawer();
   initHero();
 });
-
-// Scroll reveal — attach to .reveal and .reveal-group elements
-(function () {
-  if (!('IntersectionObserver' in window)) return;
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('revealed');
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  function observe() {
-    document.querySelectorAll('.reveal, .reveal-group').forEach(el => io.observe(el));
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', observe);
-  } else {
-    observe();
-  }
-})();
