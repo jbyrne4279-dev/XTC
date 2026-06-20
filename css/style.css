@@ -2781,3 +2781,102 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal-group > * { transition: none; opacity: 1; transform: none; }
 }
+
+/* ── Early Access Bar ── */
+.early-access-bar {
+  border-top: 1px solid var(--border);
+  background: #050505;
+  padding: 72px 24px;
+}
+.early-access-bar__inner {
+  max-width: 580px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.early-access-bar__heading {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.early-access-bar__sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.early-access-bar__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.early-access-bar__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.early-access-bar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.early-access-bar__label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+.early-access-bar__input {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 16px 18px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.early-access-bar__input::placeholder { color: rgba(255,255,255,0.18); }
+.early-access-bar__input:focus { border-color: rgba(255,255,255,0.3); }
+.early-access-bar__btn {
+  width: 100%;
+  padding: 18px 24px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  margin-bottom: 20px;
+}
+.early-access-bar__btn:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+}
+.early-access-bar__legal {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+  text-align: center;
+}
+.early-access-bar__confirm {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  margin-top: 16px;
+}
