@@ -34,6 +34,24 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
+    @keyframes col-never-shine {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    .col-hero__never {
+      background: linear-gradient(90deg,
+        rgba(60,0,120,0.9) 0%,
+        rgba(130,60,200,1) 30%,
+        rgba(179,102,255,1) 50%,
+        rgba(130,60,200,1) 70%,
+        rgba(60,0,120,0.9) 100%
+      );
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: col-never-shine 4s linear infinite;
+    }
 
     .col-grid-wrap {
       max-width: 1200px;
@@ -414,7 +432,7 @@
   <section class="col-hero reveal">
     <p class="col-hero__eyebrow">Drop 02</p>
     <h1 class="col-hero__title">New Releases</h1>
-    <p class="col-hero__sub">Limited run — never restocked</p>
+    <p class="col-hero__sub">Limited Edition — <span class="col-hero__never">Never Restocked</span></p>
   </section>
 
   <!-- ── Product grid ── -->
