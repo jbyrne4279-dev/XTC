@@ -2356,7 +2356,7 @@ ul, ol { list-style: none; }
    YOU MAY ALSO LIKE — RECOMMENDATIONS
    ============================================ */
 .recs-section {
-  padding: 72px 0 96px;
+  padding: 96px 0 120px;
   border-top: 1px solid var(--border);
   background: var(--bg-2);
 }
@@ -2365,15 +2365,24 @@ ul, ol { list-style: none; }
   letter-spacing: 4px;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 .recs-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-6);
 }
+.recs-grid .product-card:only-child {
+  grid-column: 1 / 3;
+}
+.recs-grid .product-card:only-child .product-card__media {
+  aspect-ratio: 1/1;
+  max-width: 540px;
+}
 @media (max-width: 900px) {
   .recs-grid { grid-template-columns: repeat(2, 1fr); }
+  .recs-grid .product-card:only-child { grid-column: 1 / -1; }
+  .recs-grid .product-card:only-child .product-card__media { max-width: 100%; }
 }
 @media (max-width: 480px) {
   .recs-grid { grid-template-columns: 1fr; }
