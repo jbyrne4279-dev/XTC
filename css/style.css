@@ -1780,7 +1780,7 @@ ul, ol { list-style: none; }
    ============================================ */
 .site-footer {
   background: #000;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: none;
   box-shadow: none;
   padding: var(--sp-16) 0 var(--sp-8);
   position: relative;
@@ -1788,8 +1788,23 @@ ul, ol { list-style: none; }
 .site-footer::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.03) 5%,
+    rgba(255,255,255,0.12) 15%,
+    rgba(179,102,255,0.35) 30%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.06) 55%,
+    rgba(179,102,255,0.25) 68%,
+    rgba(255,255,255,0.14) 80%,
+    rgba(255,255,255,0.04) 92%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
