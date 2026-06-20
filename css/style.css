@@ -2851,20 +2851,40 @@ textarea {
   width: 100%;
   padding: 18px 24px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(179,102,255,0.4);
+  color: #fff;
   font-family: inherit;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 4px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: background 0.2s, border-color 0.2s;
   margin-bottom: 20px;
+  position: relative;
 }
+.early-access-bar__btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(from var(--ea-btn-a, 0deg),
+    transparent 0%, transparent 55%,
+    rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+    rgba(179,102,255,0.8) 91%, transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ea-btn-spin 3s linear infinite;
+  pointer-events: none;
+}
+@property --ea-btn-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes ea-btn-spin { to { --ea-btn-a: 360deg; } }
 .early-access-bar__btn:hover {
-  border-color: rgba(255,255,255,0.4);
-  color: #fff;
+  background: rgba(179,102,255,0.1);
+  border-color: rgba(179,102,255,0.7);
 }
 .early-access-bar__legal {
   font-size: 9px;
