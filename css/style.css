@@ -197,7 +197,7 @@ ul, ol { list-style: none; }
    HEADER
    ============================================ */
 .site-header {
-  position: static;
+  position: relative;
   top: auto;
   z-index: 100;
   background: rgba(10,10,10,0.85);
