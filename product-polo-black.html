@@ -32,8 +32,9 @@
     /* Layout */
     .pdp {
       display: grid;
-      grid-template-columns: 1fr 480px;
+      grid-template-columns: minmax(0, 540px) 480px;
       min-height: 85vh;
+      justify-content: center;
     }
 
     /* Gallery */
@@ -47,7 +48,7 @@
       position: relative;
       overflow: hidden;
       background: #050505;
-      aspect-ratio: 3/4;
+      aspect-ratio: 1/1;
     }
     .pdp-gallery__main img {
       width: 100%;
