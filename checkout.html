@@ -532,7 +532,7 @@
 
     <!-- Promo code -->
     <div class="co-promo">
-      <input type="text" id="promoInput" placeholder="Discount code" maxlength="20" />
+      <input type="text" id="promoInput" placeholder="Discount code" maxlength="20" onkeydown="if(event.key==='Enter'){event.preventDefault();applyPromo();}" />
       <button type="button" id="promoBtn" onclick="applyPromo()">Apply</button>
     </div>
     <p class="co-promo-msg" id="promoMsg"></p>
