@@ -730,14 +730,6 @@
     const email = emailOverride || document.getElementById('coEmail').value || '';
     orders[orderId] = { id: orderId, number: orderId, email, items: cart, date: new Date().toISOString(), status: 'Processing' };
     localStorage.setItem('xtc-orders', JSON.stringify(orders));
-    // Decrement stock server-side so all customers see the same live count
-    if (typeof decrementStockServer === 'function') {
-      const stockItems = cart.map(item => {
-        const parts = item.id.split('-');
-        return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: item.qty };
-      });
-      decrementStockServer(stockItems);
-    }
     // Save cart before clearing so order-confirmed page can show items
     localStorage.setItem('xtc-last-order', JSON.stringify(cart));
     localStorage.setItem('xtc-cart', '[]');
@@ -871,13 +863,23 @@
     const totalPence = calcTotalPence();
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     const cartSummary = cart.map(i => i.qty + 'x ' + i.name + (i.size ? ' (' + i.size + ')' : '')).join(', ');
+    const cartItems = cart.map(i => {
+      const parts = i.id.split('-');
+      return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: i.qty };
+    });
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: totalPence, cartSummary }),
+      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems }),
     });
-    if (!res.ok) throw new Error('Failed to create payment intent');
     const data = await res.json();
+    if (!res.ok) {
+      if (data.outOfStock) {
+        window.location.href = '/cart?oos=1';
+        throw new Error(data.error);
+      }
+      throw new Error(data.error || 'Failed to create payment intent');
+    }
     _intentId = data.intentId || null;
     return data.clientSecret;
   }

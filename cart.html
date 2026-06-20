@@ -527,6 +527,12 @@
     document.addEventListener('DOMContentLoaded', async () => {
       if (typeof refreshStock === 'function') await refreshStock();
       renderCartPage();
+      if (new URLSearchParams(window.location.search).get('oos')) {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'background:#ef4444;color:#fff;text-align:center;padding:12px 16px;font-size:13px;letter-spacing:1px;';
+        banner.textContent = 'One or more items in your cart is out of stock. Please review your cart below.';
+        document.body.prepend(banner);
+      }
     });
 
     function renderCartPage() {

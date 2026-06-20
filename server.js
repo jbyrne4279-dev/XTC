@@ -5,6 +5,8 @@ const { createClient } = require('@supabase/supabase-js');
 const ws = require('ws');
 
 const app = express();
+// Raw body parser for Stripe webhook signature verification (must come before express.json)
+app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
@@ -112,8 +114,22 @@ app.post('/validate-promo', (req, res) => {
 });
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, promoCode, cartSummary } = req.body;
+  const { amount, promoCode, cartSummary, cartItems } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
+
+  // Stock check — reject if any item is out of stock
+  if (Array.isArray(cartItems) && cartItems.length) {
+    const stock = await getStock();
+    if (!stock) return res.status(500).json({ error: 'Could not load stock' });
+    for (const { productId, size, qty = 1 } of cartItems) {
+      const sizeKey = (size || '').toUpperCase();
+      const available = (stock[productId] && stock[productId][sizeKey]) || 0;
+      if (available < qty) {
+        const label = `${productId} ${sizeKey}`;
+        return res.status(400).json({ error: `Sorry, "${label}" is out of stock or has insufficient quantity. Please update your cart.`, outOfStock: true });
+      }
+    }
+  }
 
   let finalAmount = Math.round(amount);
 
@@ -135,13 +151,55 @@ app.post('/create-payment-intent', async (req, res) => {
       currency: 'gbp',
       automatic_payment_methods: { enabled: true },
       description: cartSummary || '',
-      metadata: { promoCode: promoCode || '', cartSummary: (cartSummary || '').slice(0, 500) },
+      metadata: {
+        promoCode: promoCode || '',
+        cartSummary: (cartSummary || '').slice(0, 500),
+        cartItems: JSON.stringify(cartItems || []).slice(0, 500),
+      },
     });
     res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// ── Stripe webhook — reliable server-side stock decrement ────────────────────
+app.post('/webhook', async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let event;
+  try {
+    if (webhookSecret) {
+      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } else {
+      event = JSON.parse(req.body.toString());
+    }
+  } catch (err) {
+    console.error('Webhook signature error:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'payment_intent.succeeded') {
+    const pi = event.data.object;
+    try {
+      const cartItems = JSON.parse(pi.metadata.cartItems || '[]');
+      if (Array.isArray(cartItems) && cartItems.length) {
+        const stock = await getStock();
+        for (const { productId, size, qty = 1 } of cartItems) {
+          const sizeKey = (size || '').toUpperCase();
+          const current = (stock && stock[productId] && stock[productId][sizeKey]) || 0;
+          await setStockSize(productId, sizeKey, Math.max(0, current - qty));
+          if (stock && stock[productId]) stock[productId][sizeKey] = Math.max(0, current - qty);
+        }
+        console.log('Stock decremented for payment_intent', pi.id);
+      }
+    } catch (err) {
+      console.error('Stock decrement error:', err.message);
+    }
+  }
+
+  res.json({ received: true });
 });
 
 // Attach shipping/customer details to payment intent before confirmation
