@@ -258,68 +258,6 @@
     .pdp-atc:hover { opacity: 0.85; }
     .pdp-size-guide-section .pdp-acc-trigger { pointer-events: none; }
     #sizeContent table td { color: var(--accent); }
-    .pdp-size-finder {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    .pdp-size-finder__label {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 14px;
-    }
-    .pdp-size-finder__inputs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .pdp-size-finder__field {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .pdp-size-finder__field label {
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-    }
-    .pdp-size-finder__field input {
-      background: transparent;
-      border: 1px solid rgba(179,102,255,0.4);
-      color: #fff;
-      font-family: inherit;
-      font-size: 13px;
-      padding: 10px 12px;
-      outline: none;
-      width: 100%;
-      transition: border-color 0.2s;
-    }
-    .pdp-size-finder__field input:focus { border-color: rgba(179,102,255,0.9); }
-    .pdp-size-finder__field input::placeholder { color: rgba(255,255,255,0.15); }
-    .pdp-size-finder__btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.6);
-      font-family: inherit;
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .pdp-size-finder__btn:hover { border-color: var(--accent); color: var(--accent); }
-    .pdp-size-finder__result {
-      margin-top: 14px;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: var(--accent);
-      min-height: 18px;
-    }
     .pdp-buy-now {
       width: 100%;
       padding: 16px 24px;
@@ -454,8 +392,6 @@
       .pdp-size-btn { width: 48px; height: 48px; font-size: 11px; }
       .pdp-atc { font-size: 10px; letter-spacing: 2px; padding: 16px; margin-top: 16px; box-sizing: border-box; }
       .pdp-buy-now { font-size: 10px; letter-spacing: 2px; padding: 14px; box-sizing: border-box; }
-      .pdp-size-finder__inputs { flex-direction: column; gap: 12px; }
-      .pdp-size-finder__field input { font-size: 16px; }
       .pdp-accordion { max-width: 100%; overflow: hidden; }
     }
     .pdp-gallery__main { user-select: none; }
@@ -608,21 +544,6 @@
                   <tr><td>L</td><td>73.7</td><td>55.9</td><td>21.3</td></tr>
                 </tbody>
               </table>
-              <div class="pdp-size-finder">
-                <p class="pdp-size-finder__label">Find Your Size</p>
-                <div class="pdp-size-finder__inputs">
-                  <div class="pdp-size-finder__field">
-                    <label>Height (cm)</label>
-                    <input type="number" id="sfHeight" placeholder="e.g. 178" min="140" max="220" />
-                  </div>
-                  <div class="pdp-size-finder__field">
-                    <label>Chest (cm)</label>
-                    <input type="number" id="sfChest" placeholder="e.g. 96" min="60" max="140" />
-                  </div>
-                </div>
-                <button class="pdp-size-finder__btn" onclick="recommendSize()">Get Recommendation</button>
-                <p class="pdp-size-finder__result" id="sfResult"></p>
-              </div>
             </div>
           </div>
 
@@ -912,31 +833,6 @@
     });
 
     galleryMain.style.cursor = 'grab';
-
-    function recommendSize() {
-      const height = parseFloat(document.getElementById('sfHeight').value);
-      const chest = parseFloat(document.getElementById('sfChest').value);
-      const result = document.getElementById('sfResult');
-      if (!height && !chest) { result.textContent = 'Please enter your height or chest measurement.'; result.style.color = 'rgba(255,255,255,0.3)'; return; }
-      // Size chart: chest is primary, height secondary
-      // S: chest ≤52, M: chest ≤55, L: chest ≤58
-      let rec = null;
-      if (chest) {
-        if (chest <= 52) rec = 'S';
-        else if (chest <= 55) rec = 'M';
-        else rec = 'L';
-      } else {
-        if (height <= 170) rec = 'S';
-        else if (height <= 180) rec = 'M';
-        else rec = 'L';
-      }
-      result.style.color = 'var(--accent)';
-      result.textContent = 'We recommend size ' + rec + ' for you.';
-      // Highlight that size button
-      document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
-      const btn = document.querySelector('.pdp-size-btn[data-size="' + rec + '"]');
-      if (btn && !btn.classList.contains('size-btn--oos')) btn.classList.add('selected');
-    }
 
     function addToCartFromPage(id, name, price, img) {
       const selected = document.querySelector('.pdp-size-btn.selected');
