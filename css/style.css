@@ -364,6 +364,8 @@ ul, ol { list-style: none; }
   transition: color var(--dur) var(--ease);
 }
 .nav-drawer__links a:hover { color: var(--text-primary); }
+.nav-drawer__links a.nav-primary { color: var(--accent); }
+.nav-drawer__links a.nav-primary:hover { color: #c97fff; }
 
 /* ============================================
    HERO — FULL BLEED EDITORIAL
