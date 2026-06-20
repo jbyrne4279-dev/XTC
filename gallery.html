@@ -1235,7 +1235,7 @@
           </div>
           <button class="early-access-bar__btn" type="submit">REQUEST EARLY ACCESS</button>
           <p class="early-access-bar__legal">STRICTLY CONFIDENTIAL &mdash; NO SPAM, EVER</p>
-          <p class="early-access-bar__confirm" id="earlyAccessConfirm" style="display:none;">YOU'RE ON THE LIST.</p>
+          <p class="early-access-bar__confirm" id="earlyAccessConfirm" style="display:none;">YOU'RE ON THE LIST — WE'LL NOTIFY YOU THE MOMENT EARLY ACCESS TO THE NEXT DROP GOES LIVE.</p>
         </form>
       </div>
       <div class="early-access-bar__image"><img src="images/editorial-1.jpg" alt="SS26 Collection" loading="lazy" /></div>
@@ -1249,8 +1249,14 @@
     if (!email && !phone) return;
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'ss26-early-access');
     if (phone && window.omnisend) omnisend.push(['identifyContact', { email, phone }]);
-    document.getElementById('earlyAccessForm').style.display = 'none';
-    document.getElementById('earlyAccessConfirm').style.display = 'block';
+    var btn = document.querySelector('.early-access-bar__btn');
+    var legal = document.querySelector('.early-access-bar__legal');
+    var confirm = document.getElementById('earlyAccessConfirm');
+    if (btn) btn.style.display = 'none';
+    if (legal) legal.style.display = 'none';
+    if (confirm) { confirm.style.display = 'block'; }
+    var inputs = document.querySelectorAll('.early-access-bar__input');
+    inputs.forEach(function(i) { i.disabled = true; i.style.opacity = '0.4'; });
   }
   </script>
 

@@ -2921,11 +2921,15 @@ textarea {
   color: rgba(255,255,255,0.18);
 }
 .early-access-bar__confirm {
-  font-size: 11px;
-  letter-spacing: 3px;
+  font-size: 10px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--accent);
-  margin-top: 16px;
+  margin-top: 0;
+  line-height: 1.8;
+  border: 1px solid rgba(179,102,255,0.2);
+  padding: 16px 20px;
+  background: rgba(179,102,255,0.05);
 }
 @media (max-width: 860px) {
   .early-access-bar__inner { grid-template-columns: 1fr; }
