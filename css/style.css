@@ -2802,9 +2802,33 @@ textarea {
 
 /* ── Early Access Bar ── */
 .early-access-bar {
-  border-top: 1px solid var(--border);
+  border-top: none;
   background: #050505;
   overflow: hidden;
+  position: relative;
+}
+.early-access-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.03) 5%,
+    rgba(255,255,255,0.12) 15%,
+    rgba(179,102,255,0.35) 30%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.06) 55%,
+    rgba(179,102,255,0.25) 68%,
+    rgba(255,255,255,0.14) 80%,
+    rgba(255,255,255,0.04) 92%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 .early-access-bar__inner {
   display: grid;
