@@ -141,9 +141,9 @@ function initHero() {
   // 12:black-m3(B) 13:white-m7(W) 14:black-m4(B) 15:white-m8(W) 16:black-m5(B)
   // 17-22:editorial(B) alternating with black models, 23-26:editorial(B)
   const SLIDE_DATA = [
-    B, W, B, W, B, W, W, W,
-    B, W, B, W, B, W, B, W,
-    B, B, B, B, B, B, B, B, B, B, B,
+    B, B, W, B, W, W, W, W,
+    B, W, B, W, B, B, B, B,
+    B, B, B, B, B, B, W,
   ];
 
   const COPY_ELS = [eyebrow, title, document.querySelector('.hero-bar__right')].filter(Boolean);
