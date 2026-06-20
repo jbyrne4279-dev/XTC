@@ -618,6 +618,7 @@
     localStorage.setItem('xtc-cart', JSON.stringify(cart));
     if (!cart.length) { window.location.href = '/cart'; return; }
     renderSummary();
+    reinitPayment();
   }
 
   function renderSummary() {
