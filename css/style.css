@@ -1842,7 +1842,7 @@ ul, ol { list-style: none; }
   letter-spacing: 1.5px;
   text-transform: uppercase;
   line-height: 2;
-  color: rgba(255,255,255,0.3);
+  color: var(--text-secondary);
   max-width: 220px;
 }
 
@@ -2273,7 +2273,7 @@ ul, ol { list-style: none; }
   letter-spacing: 1.5px;
   text-transform: uppercase;
   line-height: 2;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   max-width: 200px;
   margin-bottom: var(--sp-6);
 }
@@ -2286,8 +2286,7 @@ ul, ol { list-style: none; }
   font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #1a1a1a;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.08), 0 -1px 0 rgba(0,0,0,0.6);
+  color: var(--text-primary);
   margin-bottom: var(--sp-6);
 }
 .footer-links ul { display: flex; flex-direction: column; gap: 14px; }
@@ -2295,11 +2294,10 @@ ul, ol { list-style: none; }
   font-size: 12px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #1a1a1a;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.08), 0 -1px 0 rgba(0,0,0,0.6);
-  transition: color 0.2s, text-shadow 0.2s;
+  color: var(--text-secondary);
+  transition: color 0.2s;
 }
-.footer-links a:hover { color: rgba(179,102,255,0.9); text-shadow: none; }
+.footer-links a:hover { color: var(--text-primary); }
 
 /* ── Footer base ── */
 .footer-bottom {
