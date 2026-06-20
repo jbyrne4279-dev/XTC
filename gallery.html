@@ -1217,25 +1217,28 @@
   <!-- Early Access Capture -->
   <section class="early-access-bar">
     <div class="early-access-bar__inner">
-      <div class="early-access-bar__text">
-        <p class="early-access-bar__heading">SS26 EARLY ACCESS</p>
-        <p class="early-access-bar__sub">LIMITED UNITS &mdash; REGISTER YOUR INTEREST</p>
-      </div>
-      <form class="early-access-bar__form" id="earlyAccessForm" onsubmit="earlyAccessSubmit(event)">
-        <div class="early-access-bar__fields">
-          <div class="early-access-bar__field">
-            <label class="early-access-bar__label">EMAIL ADDRESS <span style="opacity:0.4">(OPTIONAL)</span></label>
-            <input class="early-access-bar__input" type="email" placeholder="your@email.com" id="earlyAccessEmail" autocomplete="email" />
-          </div>
-          <div class="early-access-bar__field">
-            <label class="early-access-bar__label">PHONE NUMBER <span style="opacity:0.4">(OPTIONAL)</span></label>
-            <input class="early-access-bar__input" type="tel" placeholder="+44 7700 000000" id="earlyAccessPhone" autocomplete="tel" />
-          </div>
+      <div class="early-access-bar__left">
+        <div class="early-access-bar__text">
+          <p class="early-access-bar__heading">SS26 EARLY ACCESS</p>
+          <p class="early-access-bar__sub">LIMITED UNITS &mdash; REGISTER YOUR INTEREST</p>
         </div>
-        <button class="early-access-bar__btn" type="submit">REQUEST EARLY ACCESS</button>
-        <p class="early-access-bar__legal">STRICTLY CONFIDENTIAL &mdash; NO SPAM, EVER</p>
-        <p class="early-access-bar__confirm" id="earlyAccessConfirm" style="display:none;">YOU'RE ON THE LIST.</p>
-      </form>
+        <form class="early-access-bar__form" id="earlyAccessForm" onsubmit="earlyAccessSubmit(event)">
+          <div class="early-access-bar__fields">
+            <div class="early-access-bar__field">
+              <label class="early-access-bar__label">EMAIL ADDRESS <span style="opacity:0.4">(OPTIONAL)</span></label>
+              <input class="early-access-bar__input" type="email" placeholder="your@email.com" id="earlyAccessEmail" autocomplete="email" />
+            </div>
+            <div class="early-access-bar__field">
+              <label class="early-access-bar__label">PHONE NUMBER <span style="opacity:0.4">(OPTIONAL)</span></label>
+              <input class="early-access-bar__input" type="tel" placeholder="+44 7700 000000" id="earlyAccessPhone" autocomplete="tel" />
+            </div>
+          </div>
+          <button class="early-access-bar__btn" type="submit">REQUEST EARLY ACCESS</button>
+          <p class="early-access-bar__legal">STRICTLY CONFIDENTIAL &mdash; NO SPAM, EVER</p>
+          <p class="early-access-bar__confirm" id="earlyAccessConfirm" style="display:none;">YOU'RE ON THE LIST.</p>
+        </form>
+      </div>
+      <div class="early-access-bar__image">SS26</div>
     </div>
   </section>
   <script>
@@ -1245,7 +1248,7 @@
     var phone = document.getElementById('earlyAccessPhone').value.trim();
     if (!email && !phone) return;
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'ss26-early-access');
-    if (phone   <!-- Footer -->  <!-- Footer --> window.omnisend) omnisend.push(['identifyContact', { email, phone }]);
+    if (phone && window.omnisend) omnisend.push(['identifyContact', { email, phone }]);
     document.getElementById('earlyAccessForm').style.display = 'none';
     document.getElementById('earlyAccessConfirm').style.display = 'block';
   }
