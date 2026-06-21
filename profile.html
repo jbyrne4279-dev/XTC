@@ -61,6 +61,26 @@
       text-transform: uppercase;
     }
     .announcement-bar__track span { padding: 0 2rem; }
+    /* "Free Delivery" only — purple with shine sweep */
+    .announcement-bar__track span .ad-free {
+      padding: 0;
+      background: linear-gradient(90deg,
+        rgba(100,40,160,0.8)  0%,
+        rgba(160,80,255,1)   35%,
+        rgba(80,20,120,1)    50%,
+        rgba(160,80,255,1)   65%,
+        rgba(100,40,160,0.8) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: purple-shine-move 7s linear infinite;
+    }
+    @keyframes purple-shine-move {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
     @keyframes ticker {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -844,14 +864,14 @@
   <!-- ── STICKY HEADER ── -->
   <div class="sticky-top"><div class="announcement-bar">
     <div class="announcement-bar__track">
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span>Free Delivery On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
     </div>
   </div>
   <header class="site-header">

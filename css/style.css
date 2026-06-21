@@ -119,6 +119,11 @@ ul, ol { list-style: none; }
   letter-spacing: 1.5px;
   text-transform: uppercase;
   padding-right: 80px;
+  color: rgba(255,255,255,0.4);
+}
+/* "Free Delivery" only — purple with shine sweep */
+.announcement-bar__track span .ad-free {
+  padding-right: 0;
   background: linear-gradient(90deg,
     rgba(100,40,160,0.8)  0%,
     rgba(160,80,255,1)   35%,
