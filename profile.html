@@ -515,6 +515,7 @@
       margin-bottom: 32px;
     }
     .dash-avatar {
+      position: relative;
       width: 52px;
       height: 52px;
       border-radius: 50%;
@@ -527,7 +528,34 @@
       color: #fff;
       flex-shrink: 0;
       letter-spacing: -0.02em;
+      cursor: pointer;
     }
+    .dash-avatar__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .dash-avatar__edit {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      z-index: 2;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .dash-avatar:hover .dash-avatar__edit { color: var(--text); border-color: var(--accent); }
+    .dash-avatar input { display: none; }
     .dash-user-info { flex: 1; min-width: 0; }
     .dash-user-name {
       font-size: 18px;
@@ -1013,7 +1041,14 @@
     <section id="dashSection">
       <!-- Top bar -->
       <div class="dash-topbar">
-        <div class="dash-avatar" id="dashAvatar">JD</div>
+        <label class="dash-avatar" id="dashAvatar" title="Change photo">
+          <span id="dashAvatarInitials">JD</span>
+          <img class="dash-avatar__img" id="dashAvatarImg" alt="" style="display:none" />
+          <span class="dash-avatar__edit" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </span>
+          <input type="file" id="avatarInput" accept="image/*" />
+        </label>
         <div class="dash-user-info">
           <div class="dash-user-name" id="dashName">Jane Doe</div>
           <div class="dash-user-email" id="dashEmail">jane@example.com</div>
@@ -1248,6 +1283,7 @@
         email: supaUser.email || '',
         phone: supaUser.phone || '',
         name: meta.full_name || meta.name || (supaUser.email ? supaUser.email.split('@')[0] : ''),
+        avatar: meta.avatar_url || meta.avatar || '',
         points: 0,
         since: new Date().getFullYear(),
         orders: [],
@@ -1323,8 +1359,16 @@
 
     /* ─── Dashboard Population ─── */
     function populateDashboard(user) {
-      var av = document.getElementById('dashAvatar');
-      if (av) av.textContent = initials(user.name || user.email || user.phone || '?');
+      var initialsEl = document.getElementById('dashAvatarInitials');
+      var imgEl = document.getElementById('dashAvatarImg');
+      if (initialsEl) initialsEl.textContent = initials(user.name || user.email || user.phone || '?');
+      if (user.avatar) {
+        if (imgEl) { imgEl.src = user.avatar; imgEl.style.display = 'block'; }
+        if (initialsEl) initialsEl.style.display = 'none';
+      } else {
+        if (imgEl) { imgEl.removeAttribute('src'); imgEl.style.display = 'none'; }
+        if (initialsEl) initialsEl.style.display = '';
+      }
 
       var dn = document.getElementById('dashName');
       if (dn) dn.textContent = user.name || user.phone || 'Account';
@@ -1710,20 +1754,90 @@
     if (detailForm) detailForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       var name = document.getElementById('detailName').value.trim();
+      var email = document.getElementById('detailEmail').value.trim();
       var phone = document.getElementById('detailPhone').value.trim();
+      if (email && !isValidEmail(email)) { toast('Please enter a valid email.'); return; }
       var local = getLocalUser() || {};
-      // Save to Supabase profiles table
-      await upsertProfile(local.id, { name: name, phone: phone });
-      // Also update Supabase auth metadata
-      await sb.auth.updateUser({ data: { full_name: name } });
+      var emailChanged = email && email.toLowerCase() !== (local.email || '').toLowerCase();
+      var saveBtn = document.getElementById('saveDetailsBtn');
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+      try {
+        // Save name/phone to the Supabase profiles table
+        await upsertProfile(local.id, { name: name, phone: phone });
+        // Update Supabase auth: display name (+ email if it changed — needs confirmation)
+        var authUpdate = { data: { full_name: name } };
+        if (emailChanged) authUpdate.email = email;
+        var res = await sb.auth.updateUser(authUpdate);
+        if (res && res.error) throw res.error;
+      } catch (err) {
+        toast((err && err.message) || 'Could not save changes.');
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Changes'; }
+        return;
+      }
+      // Email only changes after the user confirms via the link Supabase emails,
+      // so keep showing the current address until then.
       local.name = name;
       local.phone = phone;
       localStorage.setItem('xtc-user', JSON.stringify(local));
-      var av = document.getElementById('dashAvatar');
-      if (av) av.textContent = initials(name || local.email || '?');
+      var initialsEl = document.getElementById('dashAvatarInitials');
+      if (initialsEl) initialsEl.textContent = initials(name || local.email || '?');
       var dn = document.getElementById('dashName');
       if (dn) dn.textContent = name || local.phone || 'Account';
-      toast('Details saved.');
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Changes'; }
+      toast(emailChanged ? 'Saved. Check your inbox to confirm your new email.' : 'Details saved.');
+    });
+
+    /* ─── Avatar Upload ─── */
+    // Compress/resize the chosen image to a small JPEG data URL so it fits in
+    // Supabase auth metadata (syncs across devices) without a storage bucket.
+    function compressImage(file, maxSize, quality) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          var img = new Image();
+          img.onload = function () {
+            var scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+            var cw = Math.round(img.width * scale);
+            var ch = Math.round(img.height * scale);
+            var canvas = document.createElement('canvas');
+            canvas.width = cw; canvas.height = ch;
+            canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    var avatarInput = document.getElementById('avatarInput');
+    if (avatarInput) avatarInput.addEventListener('change', async function () {
+      var file = this.files && this.files[0];
+      this.value = '';
+      if (!file) return;
+      if (!/^image\//.test(file.type)) { toast('Please choose an image file.'); return; }
+      var dataUrl;
+      try {
+        dataUrl = await compressImage(file, 256, 0.72);
+      } catch (e) { toast('Could not read that image.'); return; }
+      // Optimistic UI update
+      var imgEl = document.getElementById('dashAvatarImg');
+      var initialsEl = document.getElementById('dashAvatarInitials');
+      if (imgEl) { imgEl.src = dataUrl; imgEl.style.display = 'block'; }
+      if (initialsEl) initialsEl.style.display = 'none';
+      // Persist to local + Supabase auth metadata (syncs to other devices)
+      var local = getLocalUser() || {};
+      local.avatar = dataUrl;
+      localStorage.setItem('xtc-user', JSON.stringify(local));
+      try {
+        var res = await sb.auth.updateUser({ data: { avatar_url: dataUrl } });
+        if (res && res.error) throw res.error;
+        toast('Profile photo updated.');
+      } catch (e) {
+        toast((e && e.message) || 'Photo saved on this device, but sync failed.');
+      }
     });
 
     /* ─── Delete Account ─── */
