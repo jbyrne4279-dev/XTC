@@ -1788,9 +1788,9 @@
     });
 
     /* ─── Avatar Upload ─── */
-    // Compress/resize the chosen image to a small JPEG data URL so it fits in
-    // Supabase auth metadata (syncs across devices) without a storage bucket.
-    function compressImage(file, maxSize, quality) {
+    // Compress/resize the chosen image to a JPEG Blob before uploading to the
+    // Supabase 'avatars' storage bucket.
+    function compressImageToBlob(file, maxSize, quality) {
       return new Promise(function (resolve, reject) {
         var reader = new FileReader();
         reader.onload = function () {
@@ -1802,7 +1802,9 @@
             var canvas = document.createElement('canvas');
             canvas.width = cw; canvas.height = ch;
             canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+            canvas.toBlob(function (blob) {
+              blob ? resolve(blob) : reject(new Error('Image encode failed'));
+            }, 'image/jpeg', quality);
           };
           img.onerror = reject;
           img.src = reader.result;
@@ -1818,25 +1820,44 @@
       this.value = '';
       if (!file) return;
       if (!/^image\//.test(file.type)) { toast('Please choose an image file.'); return; }
-      var dataUrl;
+      var local = getLocalUser() || {};
+      if (!local.id) { toast('Please sign in again.'); return; }
+
+      var blob;
       try {
-        dataUrl = await compressImage(file, 256, 0.72);
+        blob = await compressImageToBlob(file, 512, 0.82);
       } catch (e) { toast('Could not read that image.'); return; }
-      // Optimistic UI update
+
+      // Optimistic preview from the local blob
       var imgEl = document.getElementById('dashAvatarImg');
       var initialsEl = document.getElementById('dashAvatarInitials');
-      if (imgEl) { imgEl.src = dataUrl; imgEl.style.display = 'block'; }
+      var previewUrl = URL.createObjectURL(blob);
+      if (imgEl) { imgEl.src = previewUrl; imgEl.style.display = 'block'; }
       if (initialsEl) initialsEl.style.display = 'none';
-      // Persist to local + Supabase auth metadata (syncs to other devices)
-      var local = getLocalUser() || {};
-      local.avatar = dataUrl;
-      localStorage.setItem('xtc-user', JSON.stringify(local));
+
       try {
-        var res = await sb.auth.updateUser({ data: { avatar_url: dataUrl } });
+        // One file per user: <uid>/avatar.jpg, overwritten on each change
+        var path = local.id + '/avatar.jpg';
+        var up = await sb.storage.from('avatars').upload(path, blob, {
+          upsert: true, contentType: 'image/jpeg', cacheControl: '3600'
+        });
+        if (up.error) throw up.error;
+
+        // Public URL + cache-busting version so re-uploads show immediately
+        var pub = sb.storage.from('avatars').getPublicUrl(path);
+        var publicUrl = (pub.data && pub.data.publicUrl) + '?v=' + Date.now();
+
+        local.avatar = publicUrl;
+        localStorage.setItem('xtc-user', JSON.stringify(local));
+        if (imgEl) imgEl.src = publicUrl;
+
+        var res = await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
         if (res && res.error) throw res.error;
         toast('Profile photo updated.');
       } catch (e) {
-        toast((e && e.message) || 'Photo saved on this device, but sync failed.');
+        toast((e && e.message) || 'Could not upload photo.');
+      } finally {
+        URL.revokeObjectURL(previewUrl);
       }
     });
 
