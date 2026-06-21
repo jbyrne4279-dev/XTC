@@ -283,11 +283,25 @@ app.get('/order/:sessionId', async (req, res) => {
     const pi = typeof session.payment_intent === 'string'
       ? session.payment_intent
       : (session.payment_intent && session.payment_intent.id) || session.id;
+    const ref = 'XTC' + pi.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+    const email = (session.customer_details && session.customer_details.email) || '';
+
+    // Persist the Stripe hosted-checkout order so it shows on the customer's
+    // profile (idempotent on the order ref — safe to re-run on page refresh).
+    saveOrder({
+      id: ref,
+      email,
+      items: items.map(li => ({ name: li.name, qty: li.qty, price: '£' + (li.amount / 100 / (li.qty || 1)).toFixed(2) })),
+      total: session.amount_total != null ? session.amount_total / 100 : null,
+      status: 'Processing',
+      source: 'stripe',
+    });
+
     res.json({
       ok: true,
       paid: true,
-      ref: 'XTC' + pi.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase(),
-      email: (session.customer_details && session.customer_details.email) || '',
+      ref,
+      email,
       total: session.amount_total, // pence
       currency: session.currency,
       items,
@@ -295,6 +309,72 @@ app.get('/order/:sessionId', async (req, res) => {
   } catch (err) {
     console.error('Order lookup error:', err.message);
     res.status(404).json({ error: 'Order not found' });
+  }
+});
+
+// ── Orders (persistent, Supabase) ────────────────────────────────────────────
+// Verify a Supabase access token and return the auth user (or null if absent/invalid).
+async function getUserFromToken(req) {
+  const authz = req.headers['authorization'] || '';
+  const token = authz.startsWith('Bearer ') ? authz.slice(7) : '';
+  if (!token) return null;
+  try {
+    const { data, error } = await sb.auth.getUser(token);
+    if (error) return null;
+    return (data && data.user) || null;
+  } catch (e) { return null; }
+}
+
+// Idempotent upsert of an order row. Swallows errors so checkout / the
+// confirmation page never break if the orders table isn't set up yet.
+async function saveOrder(order) {
+  try {
+    const row = {
+      id: String(order.id || ''),
+      user_id: order.user_id || null,
+      email: (order.email || '').toLowerCase(),
+      items: Array.isArray(order.items) ? order.items : [],
+      total: order.total != null ? Number(order.total) : null,
+      status: order.status || 'Processing',
+      source: order.source || 'custom',
+    };
+    if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
+    const { error } = await sb.from('orders').upsert(row, { onConflict: 'id' });
+    if (error) { console.error('saveOrder error:', error.message); return { ok: false, error: error.message }; }
+    return { ok: true };
+  } catch (e) {
+    console.error('saveOrder exception:', e.message);
+    return { ok: false, error: e.message };
+  }
+}
+
+// Save an order placed via the custom checkout (called from checkout.html).
+app.post('/orders', async (req, res) => {
+  const { id, email, items, total, status, source } = req.body || {};
+  if (!id || !email) return res.status(400).json({ error: 'id and email required' });
+  const user = await getUserFromToken(req); // optional — links the order to the account when signed in
+  const result = await saveOrder({
+    id, email, items, total, status,
+    source: source || 'custom',
+    user_id: user ? user.id : null,
+  });
+  if (!result.ok) return res.status(500).json({ error: result.error });
+  res.json({ ok: true });
+});
+
+// Return the signed-in user's orders (matched by user_id or email).
+app.get('/orders', async (req, res) => {
+  const user = await getUserFromToken(req);
+  if (!user) return res.status(401).json({ error: 'Not signed in', orders: [] });
+  const email = (user.email || '').toLowerCase();
+  try {
+    let query = sb.from('orders').select('*').order('created_at', { ascending: false });
+    query = email ? query.or(`user_id.eq.${user.id},email.eq.${email}`) : query.eq('user_id', user.id);
+    const { data, error } = await query;
+    if (error) return res.status(500).json({ error: error.message, orders: [] });
+    res.json({ orders: data || [] });
+  } catch (e) {
+    res.status(500).json({ error: e.message, orders: [] });
   }
 });
 

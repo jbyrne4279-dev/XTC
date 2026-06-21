@@ -1187,6 +1187,28 @@
       try { return JSON.parse(localStorage.getItem('xtc-user') || 'null'); } catch(e) { return null; }
     }
 
+    /* ─── Persistent orders (server) ─── */
+    async function fetchServerOrders() {
+      try {
+        var sess = await sb.auth.getSession();
+        var token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        if (!token) return [];
+        var res = await fetch('/orders', { headers: { Authorization: 'Bearer ' + token } });
+        if (!res.ok) return [];
+        var data = await res.json();
+        return (data.orders || []).map(function (o) {
+          return {
+            id: o.id,
+            email: o.email,
+            items: o.items || [],
+            total: o.total,
+            status: o.status || 'Processing',
+            date: o.created_at || o.date
+          };
+        });
+      } catch (e) { return []; }
+    }
+
     /* ─── Supabase profiles table helpers ─── */
     async function fetchProfile(userId) {
       var res = await sb.from('profiles').select('*').eq('id', userId).single();
@@ -1224,6 +1246,11 @@
           upsertProfile(supaUser.id, { name: merged.name, phone: merged.phone, points: 0, since: merged.since });
         }
       } catch(e) { /* profiles table may not exist yet — still show dashboard */ }
+      // Pull persisted orders for this account (synced across devices) — non-fatal
+      try {
+        var serverOrders = await fetchServerOrders();
+        if (serverOrders && serverOrders.length) merged.orders = serverOrders;
+      } catch(e) { /* orders table may not exist yet — fall back to localStorage */ }
       localStorage.setItem('xtc-user', JSON.stringify(merged));
       showDashboard(merged);
     }
