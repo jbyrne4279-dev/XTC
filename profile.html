@@ -1285,12 +1285,20 @@
       var de = document.getElementById('dashEmail');
       if (de) de.textContent = user.email || user.phone || '';
 
-      // Merge orders from user object and xtc-orders key
+      // Merge orders from user object and xtc-orders key.
+      // xtc-orders is stored as an object keyed by order id (see checkout.html),
+      // so normalise to a list and only show the signed-in user's orders.
       var orders = (user.orders || []).slice();
       try {
-        var stored = JSON.parse(localStorage.getItem('xtc-orders') || '[]');
+        var raw = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
+        var stored = Array.isArray(raw) ? raw : Object.values(raw || {});
+        var userEmail = (user.email || '').trim().toLowerCase();
         stored.forEach(function(o) {
-          if (!orders.find(function(x){ return x.id === o.id; })) orders.push(o);
+          var oEmail = (o.email || '').trim().toLowerCase();
+          // Skip orders that belong to a different email; keep ones with no email
+          if (userEmail && oEmail && oEmail !== userEmail) return;
+          var oid = o.id || o.orderId;
+          if (!orders.find(function(x){ return (x.id || x.orderId) === oid; })) orders.push(o);
         });
       } catch(e) {}
 
@@ -1313,7 +1321,12 @@
           orders.slice().reverse().forEach(function(o) {
             var id = o.id || o.orderId || '#—';
             var date = o.date ? new Date(o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-            var total = o.total ? '£' + parseFloat(o.total).toFixed(2) : '—';
+            var totalNum = (o.total != null && o.total !== '')
+              ? parseFloat(o.total)
+              : ((o.items || []).reduce(function(s, it){
+                  return s + parseFloat((it.price || '0').toString().replace(/[^0-9.]/g, '')) * (it.qty || 1);
+                }, 0));
+            var total = totalNum ? '£' + totalNum.toFixed(2) : '—';
             var status = o.status || 'Processing';
             html += '<div class="order-item">' +
               '<div class="order-item-top">' +
