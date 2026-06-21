@@ -135,7 +135,7 @@ ul, ol { list-style: none; }
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: purple-shine-move 7s linear infinite;
+  animation: purple-shine-move 14s linear infinite;
 }
 
 /* Size button selected — green circuit animation */
