@@ -182,8 +182,11 @@ app.post('/webhook', async (req, res) => {
 
   if (event.type === 'payment_intent.succeeded') {
     const pi = event.data.object;
+    let cartItems = [];
+    try { cartItems = JSON.parse((pi.metadata && pi.metadata.cartItems) || '[]'); } catch (e) { cartItems = []; }
+
+    // 1) Decrement stock (custom-checkout intents carry cartItems)
     try {
-      const cartItems = JSON.parse(pi.metadata.cartItems || '[]');
       if (Array.isArray(cartItems) && cartItems.length) {
         const stock = await getStock();
         for (const { productId, size, qty = 1 } of cartItems) {
@@ -196,6 +199,31 @@ app.post('/webhook', async (req, res) => {
       }
     } catch (err) {
       console.error('Stock decrement error:', err.message);
+    }
+
+    // 2) Persist the order as a safety net. The id is the SAME XTC ref derived
+    //    from the PaymentIntent that the client checkout and the confirmation
+    //    page use, so this reconciles to one row; insertOnly means it never
+    //    overwrites their richer data (it only fills in if they never ran).
+    try {
+      const email = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
+      const ref = 'XTC' + pi.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+      const items = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
+        const p = PRODUCTS[ci.productId];
+        const unit = p ? p.amount / 100 : null;
+        const name = (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : '');
+        return { name, qty: ci.qty || 1, price: unit != null ? '£' + unit.toFixed(2) : '' };
+      });
+      await saveOrder({
+        id: ref,
+        email,
+        items,
+        total: pi.amount != null ? pi.amount / 100 : null,
+        status: 'Processing',
+        source: 'stripe',
+      }, { insertOnly: true });
+    } catch (err) {
+      console.error('Webhook order save error:', err.message);
     }
   }
 
@@ -325,9 +353,12 @@ async function getUserFromToken(req) {
   } catch (e) { return null; }
 }
 
-// Idempotent upsert of an order row. Swallows errors so checkout / the
-// confirmation page never break if the orders table isn't set up yet.
-async function saveOrder(order) {
+// Idempotent upsert of an order row, keyed on the order id. Swallows errors so
+// checkout / the confirmation page never break if the orders table isn't set up.
+// Pass { insertOnly: true } for the webhook safety net so a sparse fallback row
+// never overwrites the richer row written by the client or confirmation page.
+async function saveOrder(order, opts) {
+  opts = opts || {};
   try {
     const row = {
       id: String(order.id || ''),
@@ -339,7 +370,7 @@ async function saveOrder(order) {
       source: order.source || 'custom',
     };
     if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
-    const { error } = await sb.from('orders').upsert(row, { onConflict: 'id' });
+    const { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
     if (error) { console.error('saveOrder error:', error.message); return { ok: false, error: error.message }; }
     return { ok: true };
   } catch (e) {
@@ -375,6 +406,23 @@ app.get('/orders', async (req, res) => {
     res.json({ orders: data || [] });
   } catch (e) {
     res.status(500).json({ error: e.message, orders: [] });
+  }
+});
+
+// Admin/debug: inspect the persisted orders table. Confirms the table exists and
+// the pipeline is writing rows. Optional ?email= filter. Requires the admin token.
+app.get('/admin/orders-db', requireAdmin, async (req, res) => {
+  try {
+    const email = (req.query.email || '').toString().toLowerCase();
+    let q = sb.from('orders').select('*').order('created_at', { ascending: false }).limit(200);
+    if (email) q = q.eq('email', email);
+    const { data, error } = await q;
+    if (error) {
+      return res.status(500).json({ ok: false, error: error.message, hint: 'Run db/orders.sql in the Supabase SQL editor to create the orders table.' });
+    }
+    res.json({ ok: true, count: data ? data.length : 0, orders: data || [] });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 

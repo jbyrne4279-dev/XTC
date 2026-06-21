@@ -780,10 +780,15 @@
     reinitPayment();
   };
 
-  function completeOrder(emailOverride) {
+  function completeOrder(emailOverride, paymentIntentId) {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     const orders = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
-    const orderId = 'XTC' + Date.now().toString().slice(-6);
+    // Derive the order id from the PaymentIntent so it matches the server-side
+    // webhook + confirmation-page refs (one reconciled order, no duplicates).
+    const piId = paymentIntentId || _intentId || '';
+    const orderId = piId
+      ? 'XTC' + piId.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()
+      : 'XTC' + Date.now().toString().slice(-6);
     const email = emailOverride || document.getElementById('coEmail').value || '';
     const totalValue = cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
     orders[orderId] = { id: orderId, number: orderId, email, items: cart, total: totalValue, date: new Date().toISOString(), status: 'Processing' };
@@ -966,7 +971,7 @@
     if (piSecret) {
       const { paymentIntent } = await stripe.retrievePaymentIntent(piSecret);
       if (paymentIntent && paymentIntent.status === 'succeeded') {
-        completeOrder();
+        completeOrder(undefined, paymentIntent.id);
       } else {
         document.getElementById('payment-errors').textContent = 'Payment could not be completed. Please try again.';
         document.getElementById('checkoutWrap').style.display = 'grid';
