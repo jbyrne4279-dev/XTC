@@ -711,7 +711,7 @@
       border: 1px solid rgba(179,102,255,0.3);
       border-radius: var(--radius);
       padding: 20px 22px;
-      margin-top: 16px;
+      margin-bottom: 32px;
     }
     .loyalty-card-head {
       display: flex;
@@ -1056,6 +1056,24 @@
         <button class="btn-signout" id="signOutBtn" type="button">Sign Out</button>
       </div>
 
+      <!-- Loyalty Card -->
+      <div class="loyalty-card">
+        <div class="loyalty-card-head">
+          <span class="loyalty-label">XTC Loyalty</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b366ff" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="loyalty-points"><span id="loyaltyPoints">0</span> <span>pts</span></div>
+        <div class="loyalty-note">100 pts = £1 off your next order</div>
+        <div class="loyalty-bar-wrap">
+          <div class="loyalty-bar" id="loyaltyBar" style="width:0%"></div>
+        </div>
+        <div class="loyalty-bar-labels">
+          <span>0</span>
+          <span id="loyaltyNextReward">Next reward at 100 pts</span>
+          <span>100</span>
+        </div>
+      </div>
+
       <!-- Stats -->
       <div class="dash-stats">
         <div class="stat-card">
@@ -1107,24 +1125,6 @@
                   <button class="btn-save" type="submit" id="saveDetailsBtn">Save Changes</button>
                 </div>
               </form>
-            </div>
-          </div>
-
-          <!-- Loyalty Card -->
-          <div class="loyalty-card">
-            <div class="loyalty-card-head">
-              <span class="loyalty-label">XTC Loyalty</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b366ff" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </div>
-            <div class="loyalty-points"><span id="loyaltyPoints">0</span> <span>pts</span></div>
-            <div class="loyalty-note">100 pts = £1 off your next order</div>
-            <div class="loyalty-bar-wrap">
-              <div class="loyalty-bar" id="loyaltyBar" style="width:0%"></div>
-            </div>
-            <div class="loyalty-bar-labels">
-              <span>0</span>
-              <span id="loyaltyNextReward">Next reward at 100 pts</span>
-              <span>100</span>
             </div>
           </div>
 
