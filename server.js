@@ -594,14 +594,25 @@ function refFromPiId(piId) {
 }
 
 async function setOrderFulfillment(orderId, fields) {
-  const patch = { updated_at: new Date().toISOString() };
-  if (fields.status != null && fields.status !== '') patch.status = String(fields.status);
-  if (fields.carrier != null) patch.carrier = String(fields.carrier);
-  if (fields.trackingNumber != null) patch.tracking_number = String(fields.trackingNumber);
-  const { data, error } = await sb.from('orders')
-    .update(patch)
-    .eq('id', String(orderId))
-    .select('id, status, carrier, tracking_number');
+  const core = {};
+  if (fields.status != null && fields.status !== '') core.status = String(fields.status);
+  if (fields.carrier != null) core.carrier = String(fields.carrier);
+  if (fields.trackingNumber != null) core.tracking_number = String(fields.trackingNumber);
+  if (Object.keys(core).length === 0) return { ok: false, error: 'Nothing to update' };
+
+  const run = (patch) => sb.from('orders').update(patch).eq('id', String(orderId)).select('id, status');
+
+  // Try the full update (incl. carrier/tracking/updated_at). If those columns
+  // aren't migrated yet, fall back to a status-only update so status changes
+  // always work — the part customers care about.
+  let { data, error } = await run(Object.assign({ updated_at: new Date().toISOString() }, core));
+  if (error && /column|schema cache/i.test(error.message || '')) {
+    if (core.status) {
+      ({ data, error } = await run({ status: core.status }));
+    } else {
+      return { ok: false, error: error.message, needsMigration: true };
+    }
+  }
   if (error) return { ok: false, error: error.message };
   return { ok: true, updated: !!(data && data.length), order: data && data[0] };
 }
