@@ -949,7 +949,7 @@ ul, ol { list-style: none; }
 }
 .fp-card::before {
   --circuit-a: 0deg;
-  animation: circuit-run 3.5s linear infinite;
+  animation: circuit-run 7s linear infinite;
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 60%,
     rgba(100,30,200,0.6) 72%, rgba(179,102,255,1) 80%, rgba(220,170,255,1) 85%,
@@ -960,7 +960,7 @@ ul, ol { list-style: none; }
 }
 .fp-card::after {
   --circuit-a: 0deg;
-  animation: circuit-run 0.8s linear infinite;
+  animation: circuit-run 1.6s linear infinite;
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 50%,
     rgba(100,30,200,0.7) 65%, rgba(179,102,255,1) 75%, rgba(230,190,255,1) 82%,
