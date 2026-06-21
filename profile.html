@@ -590,7 +590,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-bottom: 32px;
+      margin-top: 24px;
     }
     .stat-card {
       background: var(--bg-2);
@@ -1077,31 +1077,33 @@
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="dash-stats">
-        <div class="stat-card">
-          <div class="stat-value" id="statOrders">0</div>
-          <div class="stat-label">Orders</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statPoints">0</div>
-          <div class="stat-label">Points</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statSince">—</div>
-          <div class="stat-label">Member Since</div>
-        </div>
-      </div>
-
       <!-- Two col -->
       <div class="dash-cols">
-        <!-- Order History -->
-        <div class="dash-panel">
-          <div class="dash-panel-head">Order History</div>
-          <div class="dash-panel-body" id="orderHistoryBody">
-            <div class="orders-empty">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-              <p>No orders yet.<br /><a href="/new-releases">Start shopping</a></p>
+        <!-- Order History + Stats -->
+        <div>
+          <div class="dash-panel">
+            <div class="dash-panel-head">Order History</div>
+            <div class="dash-panel-body" id="orderHistoryBody">
+              <div class="orders-empty">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                <p>No orders yet.<br /><a href="/new-releases">Start shopping</a></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="dash-stats">
+            <div class="stat-card">
+              <div class="stat-value" id="statOrders">0</div>
+              <div class="stat-label">Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statPoints">0</div>
+              <div class="stat-label">Points</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statSince">—</div>
+              <div class="stat-label">Member Since</div>
             </div>
           </div>
         </div>
