@@ -1248,10 +1248,12 @@
     }
 
     /* ─── Loyalty balance (server-authoritative, derived from Supabase orders) ─── */
-    async function fetchLoyalty() {
+    async function fetchLoyalty(token) {
       try {
-        var sess = await sb.auth.getSession();
-        var token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        if (!token) {
+          var sess = await sb.auth.getSession();
+          token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        }
         if (!token) return null;
         var res = await fetch('/loyalty', { headers: { Authorization: 'Bearer ' + token } });
         if (!res.ok) return null;
@@ -1260,10 +1262,12 @@
     }
 
     /* ─── Persistent orders (server) ─── */
-    async function fetchServerOrders() {
+    async function fetchServerOrders(token) {
       try {
-        var sess = await sb.auth.getSession();
-        var token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        if (!token) {
+          var sess = await sb.auth.getSession();
+          token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        }
         if (!token) return [];
         var res = await fetch('/orders', { headers: { Authorization: 'Bearer ' + token } });
         if (!res.ok) return [];
@@ -1293,18 +1297,18 @@
 
     /* Load profile from Supabase and merge with auth user, then show dashboard */
     var _dashLoading = false;
-    async function loadAndShowDashboard(supaUser) {
+    async function loadAndShowDashboard(supaUser, accessToken) {
       if (!supaUser) return;
       // Guard against concurrent double-loads (explicit sign-in call + auth event)
       if (_dashLoading) return;
       _dashLoading = true;
       try {
-        await _loadAndShowDashboard(supaUser);
+        await _loadAndShowDashboard(supaUser, accessToken);
       } finally {
         _dashLoading = false;
       }
     }
-    async function _loadAndShowDashboard(supaUser) {
+    async function _loadAndShowDashboard(supaUser, accessToken) {
       var meta = supaUser.user_metadata || {};
       // Always build a valid user object from auth data first — never block on DB
       var merged = {
@@ -1333,13 +1337,13 @@
       } catch(e) { /* profiles table may not exist yet — still show dashboard */ }
       // Pull persisted orders for this account (synced across devices) — non-fatal
       try {
-        var serverOrders = await fetchServerOrders();
+        var serverOrders = await fetchServerOrders(accessToken);
         if (serverOrders && serverOrders.length) merged.orders = serverOrders;
       } catch(e) { /* orders table may not exist yet — fall back to localStorage */ }
       // Authoritative loyalty balance computed server-side from Supabase orders,
       // so the points shown can't drift or be lost. Falls back to client calc.
       try {
-        var bal = await fetchLoyalty();
+        var bal = await fetchLoyalty(accessToken);
         if (bal && typeof bal.available === 'number') merged.pointsServer = bal.available;
       } catch(e) { /* fall back to client-side computation */ }
       localStorage.setItem('xtc-user', JSON.stringify(merged));
@@ -1633,7 +1637,8 @@
           setError('fieldSignInPass', true);
         } else {
           toast('Welcome back!');
-          loadAndShowDashboard(res.data.user);
+          var sess = res.data && res.data.session;
+          loadAndShowDashboard(res.data.user, sess && sess.access_token);
         }
       });
     });
@@ -1675,7 +1680,7 @@
         /* Session exists = email confirmation is off, log them straight in */
         if (session && user) {
           toast('Welcome to XTC, ' + name + '!');
-          loadAndShowDashboard(user);
+          loadAndShowDashboard(user, session.access_token);
           return;
         }
         /* No session = user created, awaiting confirmation or auto-confirmed */
@@ -1793,7 +1798,8 @@
         verifyOtpBtn.textContent = 'Verify';
         if (res.error) { toast('Incorrect code. Try again.'); return; }
         toast('Phone verified! Welcome.');
-        loadAndShowDashboard(res.data.user);
+        var sess = res.data && res.data.session;
+        loadAndShowDashboard(res.data.user, sess && sess.access_token);
       });
     });
 
@@ -1953,7 +1959,7 @@
       sb.auth.getSession().then(function(res) {
         var session = res.data && res.data.session;
         if (session && session.user) {
-          loadAndShowDashboard(session.user);
+          loadAndShowDashboard(session.user, session.access_token);
         } else {
           showAuth();
           setSignInMode(true);
@@ -1961,22 +1967,23 @@
         }
       });
 
-      /* React to auth changes (sign-in, OAuth redirect, sign-out).
-         IMPORTANT: never call async Supabase methods synchronously inside this
-         callback — it runs while GoTrue holds its auth lock, and doing so
-         dead-locks the lock and drops the session on some (especially mobile)
-         browsers. Always defer with setTimeout. */
+      /* React to auth changes (sign-in, OAuth redirect).
+         IMPORTANT:
+         - Never call async Supabase methods synchronously inside this callback —
+           it runs while GoTrue holds its auth lock; doing so dead-locks and drops
+           the session on some (esp. mobile) browsers. Always defer with setTimeout.
+         - We deliberately do NOT log the user out on SIGNED_OUT here. On mobile a
+           transient token-refresh hiccup can emit a spurious SIGNED_OUT that would
+           otherwise kick the user off mid-session and wipe their cached data. The
+           explicit Sign Out button (and delete-account) handle showing the auth
+           screen themselves, so reacting here is unnecessary and harmful. */
       sb.auth.onAuthStateChange(function(event, session) {
+        if (event !== 'SIGNED_IN' || !session || !session.user) return;
         setTimeout(function() {
-          if (event === 'SIGNED_IN' && session && session.user) {
-            // Only handle if we're currently showing the auth screen (explicit
-            // sign-in or Google OAuth redirect) — not on token refreshes.
-            var authVisible = authSection && authSection.style.display !== 'none';
-            if (authVisible) loadAndShowDashboard(session.user);
-          } else if (event === 'SIGNED_OUT') {
-            localStorage.removeItem('xtc-user');
-            showAuth();
-          }
+          // Only act on an explicit sign-in / OAuth redirect (auth screen visible),
+          // not on routine token refreshes while already on the dashboard.
+          var authVisible = authSection && authSection.style.display !== 'none';
+          if (authVisible) loadAndShowDashboard(session.user, session.access_token);
         }, 0);
       });
 
