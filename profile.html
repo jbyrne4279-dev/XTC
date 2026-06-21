@@ -1393,11 +1393,31 @@
         });
       } catch(e) {}
 
+      // Total of an order (stored total, else summed from line items)
+      function orderTotal(o) {
+        if (o.total != null && o.total !== '') return parseFloat(o.total) || 0;
+        return (o.items || []).reduce(function (s, it) {
+          return s + parseFloat((it.price || '0').toString().replace(/[^0-9.]/g, '')) * (it.qty || 1);
+        }, 0);
+      }
+
+      // Loyalty points: earn 1 point per £1 spent across all the account's orders.
+      // Derived from saved orders, so it's recovered/recomputed on every login.
+      var earnedPoints = orders.reduce(function (s, o) {
+        return s + Math.max(0, Math.round(orderTotal(o)));
+      }, 0);
+      // Persist to the account (profiles table) so it's stored and admin-visible.
+      if (user.id && earnedPoints !== (user.points || 0)) {
+        user.points = earnedPoints;
+        try { localStorage.setItem('xtc-user', JSON.stringify(user)); } catch (e) {}
+        upsertProfile(user.id, { points: earnedPoints }).catch(function () {});
+      }
+
       var so = document.getElementById('statOrders');
       if (so) so.textContent = orders.length;
 
       var sp = document.getElementById('statPoints');
-      if (sp) sp.textContent = (user.points || 0);
+      if (sp) sp.textContent = earnedPoints;
 
       var ss = document.getElementById('statSince');
       if (ss) ss.textContent = user.since || new Date().getFullYear();
@@ -1412,11 +1432,7 @@
           orders.slice().reverse().forEach(function(o) {
             var id = o.id || o.orderId || '#—';
             var date = o.date ? new Date(o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-            var totalNum = (o.total != null && o.total !== '')
-              ? parseFloat(o.total)
-              : ((o.items || []).reduce(function(s, it){
-                  return s + parseFloat((it.price || '0').toString().replace(/[^0-9.]/g, '')) * (it.qty || 1);
-                }, 0));
+            var totalNum = orderTotal(o);
             var total = totalNum ? '£' + totalNum.toFixed(2) : '—';
             var status = o.status || 'Processing';
             html += '<div class="order-item">' +
@@ -1440,7 +1456,7 @@
       if (dfp) dfp.value = user.phone || '';
 
       // Loyalty
-      var pts = user.points || 0;
+      var pts = earnedPoints;
       var lp = document.getElementById('loyaltyPoints');
       if (lp) lp.textContent = pts;
       var lb = document.getElementById('loyaltyBar');
