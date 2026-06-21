@@ -14,13 +14,15 @@ create table if not exists public.orders (
   total           numeric,                          -- order total in GBP
   currency        text        default 'gbp',
   status          text        default 'Processing',
-  source          text        default 'custom',     -- 'custom' | 'stripe'
-  redeemed_points numeric     default 0,            -- loyalty points spent on this order
-  created_at      timestamptz default now()
+  source            text        default 'custom',   -- 'custom' | 'stripe'
+  redeemed_points   numeric     default 0,          -- loyalty points spent on this order
+  stock_decremented boolean     default false,      -- guards one-time stock decrement
+  created_at        timestamptz default now()
 );
 
--- If the table already exists from an earlier version, add the new column:
-alter table public.orders add column if not exists redeemed_points numeric default 0;
+-- If the table already exists from an earlier version, add the new columns:
+alter table public.orders add column if not exists redeemed_points   numeric default 0;
+alter table public.orders add column if not exists stock_decremented boolean default false;
 
 create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);

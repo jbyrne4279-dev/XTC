@@ -52,12 +52,10 @@ app.get('/stock', async (req, res) => {
   res.json({ stock });
 });
 
-// Called after successful payment to decrement stock
-app.post('/stock/decrement', async (req, res) => {
-  const { items } = req.body;
-  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+// Decrement stock for a list of { productId, size, qty } items.
+async function doStockDecrement(items) {
   const stock = await getStock();
-  if (!stock) return res.status(500).json({ error: 'Could not load stock' });
+  if (!stock) return { ok: false, error: 'Could not load stock' };
   const errors = [];
   for (const { productId, size, qty = 1 } of items) {
     const sizeKey = (size || '').toUpperCase();
@@ -69,7 +67,39 @@ app.post('/stock/decrement', async (req, res) => {
     await setStockSize(productId, sizeKey, newQty);
     stock[productId][sizeKey] = newQty;
   }
-  res.json({ ok: true, stock, errors });
+  return { ok: true, stock, errors };
+}
+
+// Idempotency guard: claim the stock decrement for an order so it only runs once,
+// no matter how many paths (client order-save, webhook) try it.
+// Returns true (claimed now → caller should decrement), false (already done →
+// skip), or null (can't determine — e.g. stock_decremented column not migrated
+// yet, or the order row doesn't exist).
+async function claimStockDecrement(orderId) {
+  if (!orderId) return null;
+  try {
+    const { data, error } = await sb.from('orders')
+      .update({ stock_decremented: true })
+      .eq('id', String(orderId))
+      .eq('stock_decremented', false)
+      .select('id');
+    if (error) return null;
+    return Array.isArray(data) && data.length > 0;
+  } catch (e) { return null; }
+}
+
+// Called after successful payment to decrement stock. Idempotent per order when
+// an orderId is supplied.
+app.post('/stock/decrement', async (req, res) => {
+  const { items, orderId } = req.body;
+  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+  if (orderId) {
+    const claimed = await claimStockDecrement(orderId);
+    if (claimed === false) return res.json({ ok: true, alreadyDone: true, stock: await getStock() });
+    // claimed === true or null (best-effort, e.g. pre-migration) → proceed
+  }
+  const result = await doStockDecrement(items);
+  res.json(result);
 });
 
 // Admin: update all sizes for a product at once (bulk) or a single size
@@ -206,30 +236,15 @@ app.post('/webhook', async (req, res) => {
     const pi = event.data.object;
     let cartItems = [];
     try { cartItems = JSON.parse((pi.metadata && pi.metadata.cartItems) || '[]'); } catch (e) { cartItems = []; }
+    const ref = 'XTC' + pi.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
 
-    // 1) Decrement stock (custom-checkout intents carry cartItems)
-    try {
-      if (Array.isArray(cartItems) && cartItems.length) {
-        const stock = await getStock();
-        for (const { productId, size, qty = 1 } of cartItems) {
-          const sizeKey = (size || '').toUpperCase();
-          const current = (stock && stock[productId] && stock[productId][sizeKey]) || 0;
-          await setStockSize(productId, sizeKey, Math.max(0, current - qty));
-          if (stock && stock[productId]) stock[productId][sizeKey] = Math.max(0, current - qty);
-        }
-        console.log('Stock decremented for payment_intent', pi.id);
-      }
-    } catch (err) {
-      console.error('Stock decrement error:', err.message);
-    }
-
-    // 2) Persist the order as a safety net. The id is the SAME XTC ref derived
+    // 1) Persist the order as a safety net. The id is the SAME XTC ref derived
     //    from the PaymentIntent that the client checkout and the confirmation
     //    page use, so this reconciles to one row; insertOnly means it never
     //    overwrites their richer data (it only fills in if they never ran).
+    //    Saved first so the stock claim below has a row to mark.
     try {
       const email = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
-      const ref = 'XTC' + pi.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
       const redeemed = redeemFromMetadata(pi.metadata);
       const items = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
         const p = PRODUCTS[ci.productId];
@@ -254,6 +269,20 @@ app.post('/webhook', async (req, res) => {
       }
     } catch (err) {
       console.error('Webhook order save error:', err.message);
+    }
+
+    // 2) Decrement stock — idempotent fallback. Only runs if this order's stock
+    //    wasn't already decremented by the client's POST /orders.
+    try {
+      if (Array.isArray(cartItems) && cartItems.length) {
+        const claimed = await claimStockDecrement(ref);
+        if (claimed === true) {
+          await doStockDecrement(cartItems);
+          console.log('Stock decremented (webhook) for payment_intent', pi.id);
+        }
+      }
+    } catch (err) {
+      console.error('Stock decrement error:', err.message);
     }
   }
 
@@ -449,7 +478,7 @@ async function saveOrder(order, opts) {
 
 // Save an order placed via the custom checkout (called from checkout.html).
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source, intentId } = req.body || {};
+  const { id, email, items, total, status, source, intentId, cartItems } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
   const user = await getUserFromToken(req); // optional — links the order to the account when signed in
   // Redeemed points come from the trusted PaymentIntent metadata (set server-side
@@ -468,6 +497,14 @@ app.post('/orders', async (req, res) => {
     redeemed_points,
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
+  // Decrement stock once per order (idempotent via the order's flag). cartItems
+  // is [{ productId, size, qty }]. The webhook does the same as a fallback.
+  if (Array.isArray(cartItems) && cartItems.length) {
+    try {
+      const claimed = await claimStockDecrement(id);
+      if (claimed !== false) await doStockDecrement(cartItems);
+    } catch (e) { console.error('Order stock decrement error:', e.message); }
+  }
   res.json({ ok: true });
 });
 
