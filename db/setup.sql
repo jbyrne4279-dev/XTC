@@ -85,7 +85,21 @@ create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);
 
 alter table public.orders enable row level security;
--- Intentionally no policies: access is via the service-role key in server.js only.
+-- Writes are via the service-role key (server.js), which bypasses RLS.
+-- This SELECT policy lets a signed-in customer read ONLY their own orders —
+-- required so Supabase Realtime can push live status updates to their profile.
+drop policy if exists "Orders select own" on public.orders;
+create policy "Orders select own" on public.orders
+  for select to authenticated
+  using ( user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt()->>'email','')) );
+
+-- Realtime: deliver full updated rows and add the table to the realtime publication.
+alter table public.orders replica identity full;
+do $$
+begin
+  alter publication supabase_realtime add table public.orders;
+exception when others then null;  -- already added / publication absent — ignore
+end $$;
 
 
 -- ─────────────────────────────────────────────────────────────────────

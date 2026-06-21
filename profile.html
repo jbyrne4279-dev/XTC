@@ -1383,6 +1383,8 @@
       } catch(e) { /* fall back to client-side computation */ }
       localStorage.setItem('xtc-user', JSON.stringify(merged));
       showDashboard(merged);
+      // Live-update order status/tracking when the admin changes it (best-effort)
+      subscribeOrderRealtime(accessToken);
     }
 
     /* ─── Nav Drawer & Search ─── */
@@ -1526,7 +1528,7 @@
                 : o.tracking_number;
               trackHtml = '<div class="order-track">' + (o.carrier ? o.carrier + ' · ' : '') + tInner + '</div>';
             }
-            html += '<div class="order-item">' +
+            html += '<div class="order-item" data-order-id="' + String(id).replace(/[^A-Za-z0-9_-]/g, '') + '">' +
               '<div class="order-item-top">' +
                 '<div><div class="order-item-id">' + id + '</div><div class="order-item-date">' + date + '</div></div>' +
                 '<div class="order-item-total">' + total + '</div>' +
@@ -1576,6 +1578,53 @@
           if (dc) dc.textContent = count;
         }
       } catch(e) {}
+    }
+
+    /* ─── Realtime: live order status / tracking updates ─── */
+    var _ordersChannel = null;
+    async function subscribeOrderRealtime(token) {
+      try {
+        if (_ordersChannel) return; // already subscribed for this session
+        if (!token) {
+          var sess = await sb.auth.getSession();
+          token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        }
+        if (token) { try { sb.realtime.setAuth(token); } catch (e) {} }
+        _ordersChannel = sb.channel('orders-rt')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, function (payload) {
+            var o = payload && payload.new;
+            if (o && o.id) patchOrderInUI(o);
+          })
+          .subscribe();
+      } catch (e) { /* realtime is best-effort — never blocks the dashboard */ }
+    }
+
+    function patchOrderInUI(o) {
+      if (!o.id || !/^[A-Za-z0-9_-]+$/.test(o.id)) return;
+      var item = document.querySelector('.order-item[data-order-id="' + o.id + '"]');
+      if (!item) return; // order not currently on screen — refreshed on next load
+      var status = o.status || 'Processing';
+      var statusEl = item.querySelector('.order-status');
+      if (statusEl) {
+        statusEl.textContent = status;
+        statusEl.className = 'order-status order-status--' + status.toLowerCase();
+      }
+      var track = item.querySelector('.order-track');
+      if (o.tracking_number) {
+        var tUrl = trackingUrl(o.carrier, o.tracking_number);
+        var tInner = (tUrl && tUrl !== '#')
+          ? '<a href="' + tUrl + '" target="_blank" rel="noopener">' + o.tracking_number + '</a>'
+          : o.tracking_number;
+        var trackHtml = (o.carrier ? o.carrier + ' · ' : '') + tInner;
+        if (track) { track.innerHTML = trackHtml; }
+        else { track = document.createElement('div'); track.className = 'order-track'; track.innerHTML = trackHtml; item.appendChild(track); }
+      } else if (track) {
+        track.remove();
+      }
+      // Brief highlight so the live change is noticed
+      item.style.transition = 'background 0.5s ease';
+      item.style.background = 'rgba(179,102,255,0.10)';
+      setTimeout(function () { item.style.background = ''; }, 1400);
     }
 
     /* ─── Auth UI helpers ─── */
