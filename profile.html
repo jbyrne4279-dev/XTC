@@ -1242,6 +1242,18 @@
       try { return JSON.parse(localStorage.getItem('xtc-user') || 'null'); } catch(e) { return null; }
     }
 
+    /* ─── Loyalty balance (server-authoritative, derived from Supabase orders) ─── */
+    async function fetchLoyalty() {
+      try {
+        var sess = await sb.auth.getSession();
+        var token = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        if (!token) return null;
+        var res = await fetch('/loyalty', { headers: { Authorization: 'Bearer ' + token } });
+        if (!res.ok) return null;
+        return await res.json(); // { earned, redeemed, available }
+      } catch (e) { return null; }
+    }
+
     /* ─── Persistent orders (server) ─── */
     async function fetchServerOrders() {
       try {
@@ -1307,6 +1319,12 @@
         var serverOrders = await fetchServerOrders();
         if (serverOrders && serverOrders.length) merged.orders = serverOrders;
       } catch(e) { /* orders table may not exist yet — fall back to localStorage */ }
+      // Authoritative loyalty balance computed server-side from Supabase orders,
+      // so the points shown can't drift or be lost. Falls back to client calc.
+      try {
+        var bal = await fetchLoyalty();
+        if (bal && typeof bal.available === 'number') merged.pointsServer = bal.available;
+      } catch(e) { /* fall back to client-side computation */ }
       localStorage.setItem('xtc-user', JSON.stringify(merged));
       showDashboard(merged);
     }
@@ -1401,12 +1419,21 @@
         }, 0);
       }
 
-      // Loyalty points: earn 1 point per £1 spent across all the account's orders.
-      // Derived from saved orders, so it's recovered/recomputed on every login.
-      var earnedPoints = orders.reduce(function (s, o) {
+      // Loyalty: earn 1 point per £1 spent, minus points redeemed at checkout.
+      // Available balance is derived from saved orders, so it's recovered and
+      // recomputed on every login (and on every device).
+      var earned = orders.reduce(function (s, o) {
         return s + Math.max(0, Math.round(orderTotal(o)));
       }, 0);
-      // Persist to the account (profiles table) so it's stored and admin-visible.
+      var redeemed = orders.reduce(function (s, o) {
+        return s + Math.max(0, Math.round(parseFloat(o.redeemed_points) || 0));
+      }, 0);
+      // Prefer the server-authoritative balance (computed from Supabase orders);
+      // fall back to the client-side computation if it wasn't available.
+      var earnedPoints = (typeof user.pointsServer === 'number')
+        ? Math.max(0, user.pointsServer)
+        : Math.max(0, earned - redeemed); // available balance
+      // Persist available balance to the account (profiles table) for admin/consistency.
       if (user.id && earnedPoints !== (user.points || 0)) {
         user.points = earnedPoints;
         try { localStorage.setItem('xtc-user', JSON.stringify(user)); } catch (e) {}

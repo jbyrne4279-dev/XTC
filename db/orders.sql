@@ -7,16 +7,20 @@
 -- each request by verifying the user's Supabase access token.
 
 create table if not exists public.orders (
-  id          text primary key,                 -- order ref, e.g. XTC123456
-  user_id     uuid,                              -- linked Supabase auth user (nullable for guest)
-  email       text,                              -- customer email (join key across devices)
-  items       jsonb       default '[]'::jsonb,   -- line items
-  total       numeric,                           -- order total in GBP
-  currency    text        default 'gbp',
-  status      text        default 'Processing',
-  source      text        default 'custom',      -- 'custom' | 'stripe'
-  created_at  timestamptz default now()
+  id              text primary key,                 -- order ref, e.g. XTC123456
+  user_id         uuid,                             -- linked Supabase auth user (nullable for guest)
+  email           text,                             -- customer email (join key across devices)
+  items           jsonb       default '[]'::jsonb,  -- line items
+  total           numeric,                          -- order total in GBP
+  currency        text        default 'gbp',
+  status          text        default 'Processing',
+  source          text        default 'custom',     -- 'custom' | 'stripe'
+  redeemed_points numeric     default 0,            -- loyalty points spent on this order
+  created_at      timestamptz default now()
 );
+
+-- If the table already exists from an earlier version, add the new column:
+alter table public.orders add column if not exists redeemed_points numeric default 0;
 
 create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);

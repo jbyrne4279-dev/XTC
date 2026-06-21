@@ -290,6 +290,24 @@
     }
     .co-total-row--discount { color: rgba(34,197,94,0.9); }
 
+    /* Loyalty redeem toggle */
+    .co-redeem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 12px 14px;
+      border: 1px solid rgba(179,102,255,0.3);
+      border-radius: 2px;
+      background: rgba(179,102,255,0.06);
+      cursor: pointer;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.75);
+    }
+    .co-redeem input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+    .co-redeem #coRedeemLabel { color: var(--accent); }
+
     /* Promo code input */
     .co-promo {
       display: flex;
@@ -555,6 +573,12 @@
     </div>
     <p class="co-promo-msg" id="promoMsg"></p>
 
+    <!-- Loyalty redemption (shown only when signed in with points) -->
+    <label class="co-redeem" id="coRedeemWrap" style="display:none;">
+      <input type="checkbox" id="coRedeemCheck" />
+      <span id="coRedeemLabel">Use points</span>
+    </label>
+
     <div class="co-totals">
       <div class="co-total-row">
         <span>Subtotal</span>
@@ -563,6 +587,10 @@
       <div class="co-total-row co-total-row--discount" id="coDiscountRow" style="display:none;">
         <span id="coDiscountLabel">Discount</span>
         <span id="coDiscountAmount">—</span>
+      </div>
+      <div class="co-total-row co-total-row--discount" id="coRedeemRow" style="display:none;">
+        <span>Points redeemed</span>
+        <span id="coRedeemAmount">—</span>
       </div>
       <div class="co-total-row">
         <span>Shipping</span>
@@ -579,6 +607,7 @@
 
 <script src="js/stock.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/main.js"></script>
 <script src="js/omnisend-config.js"></script>
 <script>
@@ -606,6 +635,32 @@
 
   // Active promo state
   let _promo = null; // { type, value, description, code }
+
+  // ── Loyalty redemption state (best-effort; never blocks checkout) ──
+  const SUPA_URL = 'https://mugifniadilfwfgrsvie.supabase.co';
+  const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11Z2lmbmlhZGlsZndmZ3JzdmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTgxNzMsImV4cCI6MjA5NzI3NDE3M30.95VqWUKCcMeCCQON13Fy_USoGccoyCwVBRtKbp-aB60';
+  let _sb = null;
+  try { if (window.supabase) _sb = window.supabase.createClient(SUPA_URL, SUPA_ANON); } catch (e) {}
+  let _loyaltyToken = null;
+  let _loyaltyAvailable = 0;
+  let _redeemPoints = 0;
+
+  async function loadLoyalty() {
+    if (!_sb) return;
+    try {
+      const { data } = await _sb.auth.getSession();
+      const token = data && data.session && data.session.access_token;
+      if (!token) return;
+      _loyaltyToken = token;
+      const res = await fetch('/loyalty', { headers: { Authorization: 'Bearer ' + token } });
+      if (!res.ok) return;
+      const bal = await res.json();
+      _loyaltyAvailable = Math.max(0, parseInt(bal.available, 10) || 0);
+      const wrap = document.getElementById('coRedeemWrap');
+      if (wrap) wrap.style.display = _loyaltyAvailable > 0 ? 'flex' : 'none';
+      updateTotals();
+    } catch (e) { /* loyalty is best-effort; never block checkout */ }
+  }
 
   function getCartSubtotal() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
@@ -652,7 +707,17 @@
     }
 
     const afterDiscount = subtotal - discountAmount;
-    const total = afterDiscount + shipping;
+    let total = afterDiscount + shipping;
+
+    // Loyalty redemption (1 pt = 1 penny), capped to the balance and so the
+    // charge stays >= £0.30 (Stripe minimum). Server re-validates on its side.
+    const redeemCheck = document.getElementById('coRedeemCheck');
+    const maxPence = Math.max(0, Math.round(total * 100) - 30);
+    const cap = Math.min(_loyaltyAvailable, maxPence);
+    const redeemPoints = (redeemCheck && redeemCheck.checked && cap > 0) ? cap : 0;
+    _redeemPoints = redeemPoints;
+    const redeemValue = redeemPoints / 100;
+    total = total - redeemValue;
 
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
     document.getElementById('coShipping').textContent = shipping === 0 ? 'Free' : '£4.99';
@@ -665,6 +730,19 @@
       document.getElementById('coDiscountAmount').textContent = '−£' + discountAmount.toFixed(2);
     } else {
       discountRow.style.display = 'none';
+    }
+
+    // Redeem label (current usable cap) + redemption row
+    const lbl = document.getElementById('coRedeemLabel');
+    if (lbl) lbl.textContent = 'Use ' + cap + ' points (−£' + (cap / 100).toFixed(2) + ')';
+    const redeemRow = document.getElementById('coRedeemRow');
+    if (redeemRow) {
+      if (redeemPoints > 0) {
+        redeemRow.style.display = 'flex';
+        document.getElementById('coRedeemAmount').textContent = '−£' + redeemValue.toFixed(2);
+      } else {
+        redeemRow.style.display = 'none';
+      }
     }
   }
 
@@ -794,12 +872,16 @@
     orders[orderId] = { id: orderId, number: orderId, email, items: cart, total: totalValue, date: new Date().toISOString(), status: 'Processing' };
     localStorage.setItem('xtc-orders', JSON.stringify(orders));
     // Persist to the account (server) so the order syncs across devices and
-    // shows on the customer's profile. Fire-and-forget — never block checkout.
+    // shows on the customer's profile. intentId lets the server record the
+    // redeemed points (read from the PaymentIntent metadata). The token links
+    // the order to the account. Fire-and-forget — never block checkout.
     try {
+      const orderHeaders = { 'Content-Type': 'application/json' };
+      if (_loyaltyToken) orderHeaders['Authorization'] = 'Bearer ' + _loyaltyToken;
       fetch('/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom' })
+        headers: orderHeaders,
+        body: JSON.stringify({ id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId })
       }).catch(function () {});
     } catch (e) {}
     // Save cart before clearing so order-confirmed page can show items
@@ -938,10 +1020,12 @@
       const parts = i.id.split('-');
       return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: i.qty };
     });
+    const headers = { 'Content-Type': 'application/json' };
+    if (_loyaltyToken) headers['Authorization'] = 'Bearer ' + _loyaltyToken;
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems }),
+      headers: headers,
+      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems, redeemPoints: _redeemPoints }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -952,6 +1036,11 @@
       throw new Error(data.error || 'Failed to create payment intent');
     }
     _intentId = data.intentId || null;
+    // Reconcile the displayed total with the server's actual charge
+    if (typeof data.finalAmount === 'number') {
+      const ct = document.getElementById('coTotal');
+      if (ct) ct.textContent = '£' + (data.finalAmount / 100).toFixed(2);
+    }
     return data.clientSecret;
   }
 
@@ -986,12 +1075,23 @@
 
     if (typeof xtcEvent === 'function') xtcEvent('begin_checkout', { currency: 'GBP', value: getCartSubtotal() });
 
+    // Loyalty redeem toggle — recompute totals and re-create the intent so the
+    // server applies/records the redemption.
+    const redeemCheck = document.getElementById('coRedeemCheck');
+    if (redeemCheck) redeemCheck.addEventListener('change', async function () {
+      updateTotals();
+      try { await reinitPayment(); } catch (e) {}
+    });
+
     try {
       const clientSecret = await createPaymentIntent();
       await mountStripeElements(clientSecret);
     } catch {
       document.getElementById('payment-errors').textContent = 'Failed to initialise payment. Please refresh.';
     }
+
+    // Load the signed-in user's points balance (best-effort, after payment is up)
+    loadLoyalty();
   }
 
   if (document.readyState === 'loading') {

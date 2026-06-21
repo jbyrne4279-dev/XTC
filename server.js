@@ -114,7 +114,7 @@ app.post('/validate-promo', (req, res) => {
 });
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, promoCode, cartSummary, cartItems } = req.body;
+  const { amount, promoCode, cartSummary, cartItems, redeemPoints } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
 
   // Stock check — reject if any item is out of stock
@@ -145,6 +145,26 @@ app.post('/create-payment-intent', async (req, res) => {
     }
   }
 
+  // Apply loyalty redemption server-side: validate against the signed-in user's
+  // real balance, clamp, and discount (1 pt = 1 penny). Never trust the client.
+  let redeemApplied = 0;
+  let redeemUserId = '';
+  const reqRedeem = parseInt(redeemPoints, 10);
+  if (Number.isFinite(reqRedeem) && reqRedeem > 0) {
+    const user = await getUserFromToken(req);
+    if (user) {
+      try {
+        const bal = await computeBalance(user);
+        const maxByAmount = Math.max(0, finalAmount - 30); // keep >= Stripe min (30p)
+        redeemApplied = Math.max(0, Math.min(reqRedeem, bal.available, maxByAmount));
+        if (redeemApplied > 0) {
+          finalAmount -= redeemApplied;
+          redeemUserId = user.id;
+        }
+      } catch (e) { redeemApplied = 0; redeemUserId = ''; }
+    }
+  }
+
   try {
     const intent = await stripe.paymentIntents.create({
       amount: finalAmount,
@@ -155,9 +175,11 @@ app.post('/create-payment-intent', async (req, res) => {
         promoCode: promoCode || '',
         cartSummary: (cartSummary || '').slice(0, 500),
         cartItems: JSON.stringify(cartItems || []).slice(0, 500),
+        redeemPoints: String(redeemApplied),
+        redeemUserId: redeemUserId,
       },
     });
-    res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
+    res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount, redeemApplied });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -208,6 +230,7 @@ app.post('/webhook', async (req, res) => {
     try {
       const email = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
       const ref = 'XTC' + pi.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+      const redeemed = redeemFromMetadata(pi.metadata);
       const items = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
         const p = PRODUCTS[ci.productId];
         const unit = p ? p.amount / 100 : null;
@@ -221,7 +244,14 @@ app.post('/webhook', async (req, res) => {
         total: pi.amount != null ? pi.amount / 100 : null,
         status: 'Processing',
         source: 'stripe',
+        redeemed_points: redeemed,
       }, { insertOnly: true });
+      // Authoritative redemption record: ensure it's set even if the client's
+      // POST /orders created the row first without it. Same trusted value, so
+      // this is idempotent.
+      if (redeemed > 0) {
+        try { await sb.from('orders').update({ redeemed_points: redeemed }).eq('id', ref); } catch (e) {}
+      }
     } catch (err) {
       console.error('Webhook order save error:', err.message);
     }
@@ -353,6 +383,39 @@ async function getUserFromToken(req) {
   } catch (e) { return null; }
 }
 
+// ── Loyalty points ───────────────────────────────────────────────────────────
+// Points are derived from the account's orders: earn 1 point per £1 spent,
+// minus points already redeemed on past orders. 100 pts = £1 (1 pt = 1 penny).
+function redeemFromMetadata(meta) {
+  const n = parseInt((meta && meta.redeemPoints) || '0', 10);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+async function computeBalance(user) {
+  const email = (user.email || '').toLowerCase();
+  let q = sb.from('orders').select('total, redeemed_points, user_id, email');
+  q = email ? q.or(`user_id.eq.${user.id},email.eq.${email}`) : q.eq('user_id', user.id);
+  const { data, error } = await q;
+  if (error) return { earned: 0, redeemed: 0, available: 0 };
+  let earned = 0, redeemed = 0;
+  (data || []).forEach(function (o) {
+    earned += Math.max(0, Math.round(Number(o.total) || 0));
+    redeemed += Math.max(0, Math.round(Number(o.redeemed_points) || 0));
+  });
+  return { earned: earned, redeemed: redeemed, available: Math.max(0, earned - redeemed) };
+}
+
+// Current user's loyalty balance (for the checkout redeem UI + profile).
+app.get('/loyalty', async (req, res) => {
+  const user = await getUserFromToken(req);
+  if (!user) return res.status(401).json({ error: 'Not signed in', earned: 0, redeemed: 0, available: 0 });
+  try {
+    res.json(await computeBalance(user));
+  } catch (e) {
+    res.json({ earned: 0, redeemed: 0, available: 0 });
+  }
+});
+
 // Idempotent upsert of an order row, keyed on the order id. Swallows errors so
 // checkout / the confirmation page never break if the orders table isn't set up.
 // Pass { insertOnly: true } for the webhook safety net so a sparse fallback row
@@ -369,6 +432,11 @@ async function saveOrder(order, opts) {
       status: order.status || 'Processing',
       source: order.source || 'custom',
     };
+    // Only set redeemed_points when there's a redemption, so order saving still
+    // works before the redeemed_points column migration has been run (redemption
+    // is impossible until then anyway, since computeBalance returns 0).
+    const rp = Math.max(0, Math.round(Number(order.redeemed_points) || 0));
+    if (rp > 0) row.redeemed_points = rp;
     if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
     const { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
     if (error) { console.error('saveOrder error:', error.message); return { ok: false, error: error.message }; }
@@ -381,13 +449,23 @@ async function saveOrder(order, opts) {
 
 // Save an order placed via the custom checkout (called from checkout.html).
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source } = req.body || {};
+  const { id, email, items, total, status, source, intentId } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
   const user = await getUserFromToken(req); // optional — links the order to the account when signed in
+  // Redeemed points come from the trusted PaymentIntent metadata (set server-side
+  // in /create-payment-intent), never from the client claim.
+  let redeemed_points = 0;
+  if (intentId) {
+    try {
+      const pi = await stripe.paymentIntents.retrieve(intentId);
+      redeemed_points = redeemFromMetadata(pi.metadata);
+    } catch (e) { /* ignore — leave at 0 */ }
+  }
   const result = await saveOrder({
     id, email, items, total, status,
     source: source || 'custom',
     user_id: user ? user.id : null,
+    redeemed_points,
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
   res.json({ ok: true });
