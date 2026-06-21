@@ -142,6 +142,17 @@
       color: var(--accent);
       font-weight: 600;
     }
+    /* Row variant — full width under the cart-with-items layout */
+    .cart-recs--row {
+      grid-column: 1 / -1;
+      max-width: none;
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .cart-recs--row .cart-recs__grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
 
     /* Cart split layout */
     .cart-layout {
@@ -546,6 +557,27 @@
         <div class="cart-secure">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Secure checkout
+        </div>
+      </div>
+
+      <!-- Recommended products -->
+      <div class="cart-recs cart-recs--row">
+        <p class="cart-recs__heading">You May Also Like</p>
+        <div class="cart-recs__grid">
+          <a href="/product-polo-black" class="cart-rec">
+            <div class="cart-rec__media"><img src="images/polo-black-flat.jpg" alt="XTC Polo [Black]" loading="lazy" /></div>
+            <div class="cart-rec__info">
+              <span class="cart-rec__name">Polo [Black]</span>
+              <span class="cart-rec__price">£60</span>
+            </div>
+          </a>
+          <a href="/product-polo-white" class="cart-rec">
+            <div class="cart-rec__media"><img src="images/polo-white-flat.jpg" alt="XTC Polo [White]" loading="lazy" /></div>
+            <div class="cart-rec__info">
+              <span class="cart-rec__name">Polo [White]</span>
+              <span class="cart-rec__price">£60</span>
+            </div>
+          </a>
         </div>
       </div>
     </div>
