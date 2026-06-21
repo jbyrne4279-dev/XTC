@@ -642,10 +642,17 @@
   let _sb = null;
   // Read-only auth client: it only needs the existing session's token. Disable
   // token auto-refresh and URL detection so it never rotates tokens or touches
-  // the (Stripe 3DS) return URL — which could disturb the profile session.
+  // the (Stripe 3DS) return URL — which could disturb the profile session. Use
+  // an in-memory lock instead of navigator.locks (buggy in iOS webviews).
+  var _coLockChain = Promise.resolve();
+  function _coLock(name, acquireTimeout, fn) {
+    var run = _coLockChain.then(fn, fn);
+    _coLockChain = run.then(function () {}, function () {});
+    return run;
+  }
   try {
     if (window.supabase) _sb = window.supabase.createClient(SUPA_URL, SUPA_ANON, {
-      auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false }
+      auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: _coLock }
     });
   } catch (e) {}
   let _loyaltyToken = null;
