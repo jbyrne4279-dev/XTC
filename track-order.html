@@ -444,32 +444,40 @@
     btn.disabled = true;
     btn.textContent = 'Searching…';
 
-    // Check localStorage orders first (saved as object keyed by ID)
-    const ordersRaw = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
-    const ordersList = Array.isArray(ordersRaw) ? ordersRaw : Object.values(ordersRaw);
-    const local = ordersList.find(o =>
-      (o.id?.toLowerCase() === orderNum.toLowerCase() || o.number?.toLowerCase() === orderNum.toLowerCase()) &&
-      o.email?.toLowerCase() === email.toLowerCase()
-    );
-
-    // Try Track123 API
     let found = false;
+
+    // 1) Our own order record — authoritative status + tracking from the orders
+    //    table (this is what the admin panel updates).
     try {
-      const res = await fetch(`https://www.track123.com/api/v3/trackings/${encodeURIComponent(orderNum)}`, {
-        headers: { 'tracking-token': '37fec19310a9468b9b4d02108d26ffab' }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.data) {
-          found = true;
-          showResult(data.data, orderNum);
-        }
+      const r = await fetch('/track?id=' + encodeURIComponent(orderNum) + '&email=' + encodeURIComponent(email));
+      if (r.ok) {
+        const d = await r.json();
+        if (d && d.order) { found = true; showServerResult(d.order); }
       }
     } catch (_) {}
 
-    if (!found && local) {
-      found = true;
-      showLocalResult(local);
+    // 2) Live courier tracking (Track123) — only if we didn't find our own record
+    if (!found) {
+      try {
+        const res = await fetch(`https://www.track123.com/api/v3/trackings/${encodeURIComponent(orderNum)}`, {
+          headers: { 'tracking-token': '37fec19310a9468b9b4d02108d26ffab' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.data) { found = true; showResult(data.data, orderNum); }
+        }
+      } catch (_) {}
+    }
+
+    // 3) localStorage fallback (orders saved as an object keyed by ID)
+    if (!found) {
+      const ordersRaw = JSON.parse(localStorage.getItem('xtc-orders') || '{}');
+      const ordersList = Array.isArray(ordersRaw) ? ordersRaw : Object.values(ordersRaw);
+      const local = ordersList.find(o =>
+        (o.id?.toLowerCase() === orderNum.toLowerCase() || o.number?.toLowerCase() === orderNum.toLowerCase()) &&
+        o.email?.toLowerCase() === email.toLowerCase()
+      );
+      if (local) { found = true; showLocalResult(local); }
     }
 
     if (!found) {
@@ -479,6 +487,46 @@
 
     btn.disabled = false;
     btn.textContent = 'Track Order';
+  }
+
+  function trackingUrlTO(carrier, trackingNumber) {
+    const t = encodeURIComponent(trackingNumber || '');
+    if (carrier === 'Royal Mail') return 'https://www.royalmail.com/track-your-item#/tracking-results/' + t;
+    if (carrier === 'DHL') return 'https://www.dhl.com/gb-en/home/tracking.html?tracking-id=' + t;
+    if (carrier === 'Evri') return 'https://www.evri.com/track-a-parcel#/tracking/' + t;
+    if (carrier === 'DPD') return 'https://www.dpd.co.uk/apps/tracking/?reference=' + t;
+    if (carrier === 'UPS') return 'https://www.ups.com/track?tracknum=' + t;
+    return '#';
+  }
+
+  function showServerResult(order) {
+    const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+    const status = order.status || 'Processing';
+    let active = 1;
+    if (status === 'Shipped') active = 2;
+    else if (status === 'Delivered') active = 4;
+
+    document.getElementById('resultStatus').textContent = status;
+    let orderLine = 'Order ' + order.id;
+    if (order.tracking_number) {
+      const tUrl = trackingUrlTO(order.carrier, order.tracking_number);
+      const label = (order.carrier ? order.carrier + ' ' : '') + order.tracking_number;
+      orderLine += (tUrl && tUrl !== '#')
+        ? ' · <a href="' + tUrl + '" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">' + label + '</a>'
+        : ' · ' + label;
+    }
+    document.getElementById('resultOrder').innerHTML = orderLine;
+
+    const stepsEl = document.getElementById('resultSteps');
+    if (status === 'Cancelled') {
+      stepsEl.innerHTML = '<div class="to-step to-step--active"><span class="to-step__dot"></span><span class="to-step__label">Order Cancelled</span></div>';
+    } else {
+      stepsEl.innerHTML = STEPS.map((s, i) => {
+        const cls = i < active ? 'to-step to-step--done' : i === active ? 'to-step to-step--active' : 'to-step';
+        return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
+      }).join('');
+    }
+    document.getElementById('trackResult').classList.add('show');
   }
 
   function showResult(data, orderNum) {

@@ -171,6 +171,12 @@
     .btn-sm--danger:hover { background: rgba(239,68,68,0.1); }
     .btn-sm--success { border-color: rgba(34,197,94,0.4); color: var(--success); }
     .btn-sm--success:hover { background: rgba(34,197,94,0.1); }
+    .admin-status-select {
+      padding: 5px 8px; font-size: 11px; letter-spacing: 0.5px; font-family: var(--font);
+      background: var(--bg, #0d0d0d); color: var(--text, #fff);
+      border: 1px solid var(--border); cursor: pointer; border-radius: 2px;
+    }
+    .admin-status-select:focus { outline: none; border-color: var(--accent); }
 
     /* Filter tabs */
     .filter-tabs { display: flex; gap: 4px; }
@@ -734,7 +740,7 @@ async function adminFetch(path, opts) {
 
 /* ─────────── STRIPE ORDERS CACHE ─────────── */
 let _stripeOrders = null;
-let _shippingData = null;
+let _dbOrders = null;
 
 async function getStripeOrders() {
   if (_stripeOrders) return _stripeOrders;
@@ -747,17 +753,24 @@ async function getStripeOrders() {
   return _stripeOrders;
 }
 
-async function getShippingData() {
+// Orders persisted in Supabase — the customer-facing source of truth for
+// status + tracking. Keyed by the XTC ref derived from the PaymentIntent id.
+async function getDbOrders() {
+  if (_dbOrders) return _dbOrders;
   try {
-    const data = await adminFetch('/admin/shipping');
-    _shippingData = data.shipping || [];
+    const data = await adminFetch('/admin/orders-db');
+    _dbOrders = data.orders || [];
   } catch(e) {
-    _shippingData = [];
+    _dbOrders = [];
   }
-  return _shippingData;
+  return _dbOrders;
 }
 
-function invalidateOrdersCache() { _stripeOrders = null; _shippingData = null; }
+function refFromPiId(piId) {
+  return 'XTC' + String(piId || '').replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+}
+
+function invalidateOrdersCache() { _stripeOrders = null; _dbOrders = null; }
 
 /* ─────────── TRACKING URL ─────────── */
 function trackingUrl(carrier, trackingNumber) {
@@ -771,9 +784,13 @@ function trackingUrl(carrier, trackingNumber) {
 /* ─────────── NEEDS SHIPPING BADGE ─────────── */
 async function updateNeedsShippingBadge() {
   try {
-    const [orders, shipping] = await Promise.all([getStripeOrders(), getShippingData()]);
-    const shippedIds = new Set(shipping.map(s => s.paymentIntentId));
-    const count = orders.filter(o => o.status === 'succeeded' && !shippedIds.has(o.id)).length;
+    const [orders, dbOrders] = await Promise.all([getStripeOrders(), getDbOrders()]);
+    const dbByRef = {};
+    dbOrders.forEach(r => { dbByRef[r.id] = r; });
+    const count = orders.filter(function(o){
+      const f = dbByRef[refFromPiId(o.id)];
+      return o.status === 'succeeded' && (!f || (f.status || 'Processing') === 'Processing');
+    }).length;
     const badge = document.getElementById('needsShippingBadge');
     if (badge) {
       badge.textContent = count;
@@ -798,9 +815,12 @@ async function renderOrders() {
   tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">Loading orders from Stripe…</td></tr>';
 
   try {
-    const [stripeOrders, shippingArr] = await Promise.all([getStripeOrders(), getShippingData()]);
-    const shippingMap = {};
-    shippingArr.forEach(s => { shippingMap[s.paymentIntentId] = s; });
+    const [stripeOrders, dbOrders] = await Promise.all([getStripeOrders(), getDbOrders()]);
+    // Fulfillment (status/tracking) lives in the Supabase orders table, keyed by
+    // the XTC ref. Bridge from each Stripe PaymentIntent via the same ref.
+    const dbByRef = {};
+    dbOrders.forEach(r => { dbByRef[r.id] = r; });
+    const fulfil = function(o) { return dbByRef[refFromPiId(o.id)] || null; };
 
     // Local orders for item name merging
     const localOrders = getLocalOrders();
@@ -812,7 +832,7 @@ async function renderOrders() {
 
     let filtered = stripeOrders;
     if (_orderFilter === 'paid') filtered = stripeOrders.filter(o => o.status === 'succeeded');
-    if (_orderFilter === 'needs-shipping') filtered = stripeOrders.filter(o => o.status === 'succeeded' && !shippingMap[o.id]);
+    if (_orderFilter === 'needs-shipping') filtered = stripeOrders.filter(o => { const f = fulfil(o); return o.status === 'succeeded' && (!f || (f.status || 'Processing') === 'Processing'); });
     if (_orderFilter === 'refunded') filtered = stripeOrders.filter(o => o.status === 'canceled');
 
     if (countEl) countEl.textContent = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
@@ -827,6 +847,8 @@ async function renderOrders() {
       const amount = '£' + (o.amount / 100).toFixed(2);
       const email = o.receipt_email || (o.metadata && o.metadata.email) || '—';
       const shortId = o.id.slice(0, 16) + '…';
+      const f = fulfil(o);
+      const ref = refFromPiId(o.id);
 
       const localMatch = localByAmount[o.amount];
       const items = (o.metadata && o.metadata.cartSummary)
@@ -842,18 +864,24 @@ async function renderOrders() {
         ? '<span class="badge badge--oos">Failed</span>'
         : '<span class="badge badge--grey">' + o.status + '</span>';
 
-      const ship = shippingMap[o.id];
-      const shipBadge = ship
-        ? (ship.status === 'Delivered'
-            ? '<span class="badge badge--ok">Delivered</span>'
-            : '<span class="badge badge--blue">Shipped</span>')
-        : (o.status === 'succeeded'
-            ? '<span class="badge badge--warn">Unshipped</span>'
-            : '<span class="badge badge--grey">—</span>');
+      const fstatus = f ? (f.status || 'Processing') : '';
+      // Inline status dropdown — writes straight to the customer-facing order.
+      // Only shown for orders that exist in the orders table (new orders).
+      let fulfilCell;
+      if (f) {
+        const opts = ['Processing','Shipped','Delivered','Cancelled'].map(function(s){
+          return '<option value="' + s + '"' + (fstatus === s ? ' selected' : '') + '>' + s + '</option>';
+        }).join('');
+        fulfilCell = '<select class="admin-status-select" onchange="changeOrderStatus(\'' + ref + '\', this.value)">' + opts + '</select>';
+      } else {
+        fulfilCell = (o.status === 'succeeded')
+          ? '<span class="badge badge--grey" title="Order predates the orders table">—</span>'
+          : '<span class="badge badge--grey">—</span>';
+      }
 
       const safeEmail = email.replace(/'/g, "\\'");
-      const shipBtn = !ship && o.status === 'succeeded'
-        ? '<button class="btn-sm" onclick="openShippingModal(\'' + o.id + '\',\'' + safeEmail + '\')">Ship</button>'
+      const trackBtn = f
+        ? '<button class="btn-sm" onclick="openShippingModal(\'' + ref + '\',\'' + safeEmail + '\')">' + (f.tracking_number ? 'Edit Tracking' : 'Add Tracking') + '</button>'
         : '';
       const refundBtn = o.status === 'succeeded'
         ? '<button class="btn-sm btn-sm--danger" onclick="doRefund(\'' + o.id + '\')">Refund</button>'
@@ -871,17 +899,18 @@ async function renderOrders() {
       const shipEmail = o.receipt_email || (bill && bill.email) || '—';
       const cartSummary = (o.metadata && o.metadata.cartSummary) || items;
       const rowId = 'detail-' + o.id;
+      const tracking = (f && f.tracking_number) ? ((f.carrier || '') + ' — ' + f.tracking_number) : '';
 
       const expandBtn = '<button class="btn-sm" onclick="toggleOrderDetail(\'' + rowId + '\')" title="View details">&#8964;</button>';
       return '<tr>' +
-        '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + shortId + '</td>' +
+        '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + (f ? ref : shortId) + '</td>' +
         '<td style="white-space:nowrap;">' + date + '</td>' +
         '<td style="color:var(--muted);font-size:12px;">' + (shipName !== '—' ? shipName + '<br><span style="font-size:11px;">' + shipEmail + '</span>' : shipEmail) + '</td>' +
         '<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + cartSummary + '</td>' +
         '<td style="white-space:nowrap;">' + amount + '</td>' +
         '<td>' + payBadge + '</td>' +
-        '<td>' + shipBadge + '</td>' +
-        '<td style="white-space:nowrap;">' + expandBtn + ' ' + shipBtn + ' ' + refundBtn + '</td>' +
+        '<td>' + fulfilCell + '</td>' +
+        '<td style="white-space:nowrap;">' + expandBtn + ' ' + trackBtn + ' ' + refundBtn + '</td>' +
         '</tr>' +
         '<tr id="' + rowId + '" style="display:none;">' +
         '<td colspan="8" style="background:rgba(255,255,255,0.03);padding:16px 24px;border-bottom:1px solid var(--border);">' +
@@ -889,11 +918,28 @@ async function renderOrders() {
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + shipName + '</div><div style="font-size:12px;color:var(--muted);">' + shipEmail + '</div><div style="font-size:12px;color:var(--muted);">' + shipPhone + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + shipAddr + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
-        (ship ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + ship.carrier + ' — ' + ship.trackingNumber + '</div></div>' : '') +
+        (tracking ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + tracking + '</div></div>' : '') +
         '</div></td></tr>';
     }).join('');
   } catch(e) {
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+  }
+}
+
+/* Change an order's status straight from the table (writes to the orders table). */
+async function changeOrderStatus(ref, status) {
+  try {
+    await adminFetch('/admin/orders/' + encodeURIComponent(ref), {
+      method: 'PATCH',
+      body: JSON.stringify({ status: status }),
+    });
+    invalidateOrdersCache();
+    showToast('Status → ' + status);
+    renderOrders();
+    updateNeedsShippingBadge();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+    renderOrders();
   }
 }
 
@@ -904,21 +950,21 @@ function toggleOrderDetail(rowId) {
 
 function exportOrders() {
   const orders = _stripeOrders || [];
-  const shippingMap = {};
-  (_shippingData || []).forEach(s => { shippingMap[s.paymentIntentId] = s; });
+  const dbByRef = {};
+  (_dbOrders || []).forEach(r => { dbByRef[r.id] = r; });
 
-  const rows = [['Order ID','Date','Customer','Amount (GBP)','Payment Status','Shipping Status','Carrier','Tracking']];
+  const rows = [['Order Ref','Date','Customer','Amount (GBP)','Payment Status','Order Status','Carrier','Tracking']];
   orders.forEach(function(o) {
-    const ship = shippingMap[o.id] || {};
+    const f = dbByRef[refFromPiId(o.id)] || {};
     rows.push([
-      o.id,
+      refFromPiId(o.id),
       new Date(o.created * 1000).toLocaleDateString('en-GB'),
-      o.receipt_email || '',
+      o.receipt_email || f.email || '',
       (o.amount / 100).toFixed(2),
       o.status,
-      ship.status || (o.status === 'succeeded' ? 'Unshipped' : '—'),
-      ship.carrier || '',
-      ship.trackingNumber || '',
+      f.status || (o.status === 'succeeded' ? 'Processing' : '—'),
+      f.carrier || '',
+      f.tracking_number || '',
     ]);
   });
 
@@ -933,12 +979,13 @@ function exportOrders() {
 /* ─────────── SHIPPING MODAL ─────────── */
 let _shippingTargetId = '';
 
-function openShippingModal(orderId, email) {
-  _shippingTargetId = orderId;
-  document.getElementById('shippingModalOrderId').textContent = orderId;
-  document.getElementById('shippingTrackingNumber').value = '';
-  document.getElementById('shippingCarrier').value = 'Royal Mail';
-  document.getElementById('shippingStatus').value = 'Shipped';
+function openShippingModal(ref, email) {
+  _shippingTargetId = ref; // order ref (XTC…)
+  const row = (_dbOrders || []).find(function(r){ return r.id === ref; }) || {};
+  document.getElementById('shippingModalOrderId').textContent = ref;
+  document.getElementById('shippingTrackingNumber').value = row.tracking_number || '';
+  document.getElementById('shippingCarrier').value = row.carrier || 'Royal Mail';
+  document.getElementById('shippingStatus').value = (row.status === 'Delivered') ? 'Delivered' : 'Shipped';
   document.getElementById('shippingModal').classList.add('open');
 }
 
@@ -954,13 +1001,13 @@ async function submitShipping() {
   if (!trackingNumber) { showToast('Enter a tracking number'); return; }
 
   try {
-    await adminFetch('/admin/shipping', {
-      method: 'POST',
-      body: JSON.stringify({ paymentIntentId: _shippingTargetId, carrier: carrier, trackingNumber: trackingNumber, status: status }),
+    await adminFetch('/admin/orders/' + encodeURIComponent(_shippingTargetId), {
+      method: 'PATCH',
+      body: JSON.stringify({ status: status, carrier: carrier, trackingNumber: trackingNumber }),
     });
     invalidateOrdersCache();
     closeShippingModal();
-    showToast('Shipping saved');
+    showToast('Tracking saved');
     renderOrders();
     updateNeedsShippingBadge();
   } catch(e) {
@@ -974,33 +1021,33 @@ async function renderShippingPage() {
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">Loading…</td></tr>';
 
   try {
-    const [shippingArr, stripeOrders] = await Promise.all([getShippingData(), getStripeOrders()]);
-    const orderMap = {};
-    stripeOrders.forEach(o => { orderMap[o.id] = o; });
+    const dbOrders = await getDbOrders();
+    const shipped = dbOrders.filter(function(o){ return o.tracking_number || o.status === 'Shipped' || o.status === 'Delivered'; });
 
-    if (!shippingArr.length) {
+    if (!shipped.length) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">No shipped orders yet</td></tr>';
       return;
     }
 
-    tbody.innerHTML = shippingArr.map(function(s) {
-      const order = orderMap[s.paymentIntentId] || {};
-      const email = order.receipt_email || '—';
-      const shortId = s.paymentIntentId.slice(0,16) + '…';
-      const shippedDate = new Date(s.shippedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-      const url = trackingUrl(s.carrier, s.trackingNumber);
+    tbody.innerHTML = shipped.map(function(s) {
+      const email = s.email || '—';
+      const shippedDate = s.updated_at ? new Date(s.updated_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      const url = trackingUrl(s.carrier, s.tracking_number || '');
       const statusBadge = s.status === 'Delivered'
         ? '<span class="badge badge--ok">Delivered</span>'
         : '<span class="badge badge--blue">Shipped</span>';
       const updateBtn = s.status !== 'Delivered'
-        ? '<button class="btn-sm btn-sm--success" onclick="markDelivered(\'' + s.paymentIntentId + '\')">Mark Delivered</button>'
+        ? '<button class="btn-sm btn-sm--success" onclick="markDelivered(\'' + s.id + '\')">Mark Delivered</button>'
         : '<span style="color:var(--muted);font-size:11px;">Done</span>';
+      const trackCell = s.tracking_number
+        ? '<a href="' + url + '" target="_blank" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px;">' + s.tracking_number + '</a>'
+        : '—';
 
       return '<tr>' +
-        '<td style="font-family:monospace;font-size:11px;" title="' + s.paymentIntentId + '">' + shortId + '</td>' +
+        '<td style="font-family:monospace;font-size:11px;">' + s.id + '</td>' +
         '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
-        '<td>' + s.carrier + '</td>' +
-        '<td><a href="' + url + '" target="_blank" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px;">' + s.trackingNumber + '</a></td>' +
+        '<td>' + (s.carrier || '—') + '</td>' +
+        '<td>' + trackCell + '</td>' +
         '<td>' + shippedDate + '</td>' +
         '<td>' + statusBadge + '</td>' +
         '<td>' + updateBtn + '</td>' +
@@ -1011,15 +1058,16 @@ async function renderShippingPage() {
   }
 }
 
-async function markDelivered(paymentIntentId) {
+async function markDelivered(ref) {
   try {
-    await adminFetch('/admin/shipping/' + paymentIntentId, {
+    await adminFetch('/admin/orders/' + encodeURIComponent(ref), {
       method: 'PATCH',
       body: JSON.stringify({ status: 'Delivered' }),
     });
     invalidateOrdersCache();
     showToast('Marked as Delivered');
     renderShippingPage();
+    updateNeedsShippingBadge();
   } catch(e) {
     showToast('Error: ' + e.message);
   }

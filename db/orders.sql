@@ -17,12 +17,18 @@ create table if not exists public.orders (
   source            text        default 'custom',   -- 'custom' | 'stripe'
   redeemed_points   numeric     default 0,          -- loyalty points spent on this order
   stock_decremented boolean     default false,      -- guards one-time stock decrement
+  carrier           text,                           -- shipping carrier (admin-set)
+  tracking_number   text,                           -- tracking number (admin-set)
+  updated_at        timestamptz default now(),
   created_at        timestamptz default now()
 );
 
 -- If the table already exists from an earlier version, add the new columns:
 alter table public.orders add column if not exists redeemed_points   numeric default 0;
 alter table public.orders add column if not exists stock_decremented boolean default false;
+alter table public.orders add column if not exists carrier           text;
+alter table public.orders add column if not exists tracking_number   text;
+alter table public.orders add column if not exists updated_at        timestamptz default now();
 
 create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);

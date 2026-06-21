@@ -703,6 +703,18 @@
       border-radius: 50%;
       background: currentColor;
     }
+    .order-status--processing { color: #f5a623; }
+    .order-status--shipped    { color: var(--accent); }
+    .order-status--delivered  { color: var(--green); }
+    .order-status--cancelled  { color: var(--red); }
+    .order-track {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-2);
+      letter-spacing: 0.3px;
+    }
+    .order-track a { color: var(--accent); text-decoration: none; }
+    .order-track a:hover { text-decoration: underline; }
 
     /* Account details form */
     .detail-form .form-field { margin-bottom: 14px; }
@@ -1233,6 +1245,16 @@
     function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
     function isValidPhone(p) { return /^\+?[\d\s\-().]{7,}$/.test(p.trim()); }
 
+    function trackingUrl(carrier, trackingNumber) {
+      var t = encodeURIComponent(trackingNumber || '');
+      if (carrier === 'Royal Mail') return 'https://www.royalmail.com/track-your-item#/tracking-results/' + t;
+      if (carrier === 'DHL') return 'https://www.dhl.com/gb-en/home/tracking.html?tracking-id=' + t;
+      if (carrier === 'Evri') return 'https://www.evri.com/track-a-parcel#/tracking/' + t;
+      if (carrier === 'DPD') return 'https://www.dpd.co.uk/apps/tracking/?reference=' + t;
+      if (carrier === 'UPS') return 'https://www.ups.com/track?tracknum=' + t;
+      return '#';
+    }
+
     /* mirror Supabase user into xtc-user for rest of site (cart, gallery, etc.) */
     function syncLocalUser(supaUser, extraMeta) {
       if (!supaUser) { localStorage.removeItem('xtc-user'); return; }
@@ -1290,6 +1312,8 @@
             items: o.items || [],
             total: o.total,
             status: o.status || 'Processing',
+            carrier: o.carrier || '',
+            tracking_number: o.tracking_number || '',
             date: o.created_at || o.date
           };
         });
@@ -1494,12 +1518,21 @@
             var totalNum = orderTotal(o);
             var total = totalNum ? '£' + totalNum.toFixed(2) : '—';
             var status = o.status || 'Processing';
+            var trackHtml = '';
+            if (o.tracking_number) {
+              var tUrl = trackingUrl(o.carrier, o.tracking_number);
+              var tInner = (tUrl && tUrl !== '#')
+                ? '<a href="' + tUrl + '" target="_blank" rel="noopener">' + o.tracking_number + '</a>'
+                : o.tracking_number;
+              trackHtml = '<div class="order-track">' + (o.carrier ? o.carrier + ' · ' : '') + tInner + '</div>';
+            }
             html += '<div class="order-item">' +
               '<div class="order-item-top">' +
                 '<div><div class="order-item-id">' + id + '</div><div class="order-item-date">' + date + '</div></div>' +
                 '<div class="order-item-total">' + total + '</div>' +
               '</div>' +
-              '<span class="order-status">' + status + '</span>' +
+              '<span class="order-status order-status--' + status.toLowerCase() + '">' + status + '</span>' +
+              trackHtml +
             '</div>';
           });
           body.innerHTML = html;

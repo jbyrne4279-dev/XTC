@@ -587,6 +587,57 @@ app.get('/admin/orders', requireAdmin, async (req, res) => {
   }
 });
 
+// ── Order fulfillment (status / tracking) — written to the Supabase orders
+//    table so customers see it on their profile and the track-order page ───────
+function refFromPiId(piId) {
+  return 'XTC' + String(piId || '').replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+}
+
+async function setOrderFulfillment(orderId, fields) {
+  const patch = { updated_at: new Date().toISOString() };
+  if (fields.status != null && fields.status !== '') patch.status = String(fields.status);
+  if (fields.carrier != null) patch.carrier = String(fields.carrier);
+  if (fields.trackingNumber != null) patch.tracking_number = String(fields.trackingNumber);
+  const { data, error } = await sb.from('orders')
+    .update(patch)
+    .eq('id', String(orderId))
+    .select('id, status, carrier, tracking_number');
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, updated: !!(data && data.length), order: data && data[0] };
+}
+
+// Admin: update an order's status / tracking. :id is the order ref (XTC…).
+app.patch('/admin/orders/:id', requireAdmin, async (req, res) => {
+  const { status, carrier, trackingNumber } = req.body || {};
+  if (status == null && carrier == null && trackingNumber == null) {
+    return res.status(400).json({ error: 'Nothing to update' });
+  }
+  const r = await setOrderFulfillment(req.params.id, { status, carrier, trackingNumber });
+  if (!r.ok) return res.status(500).json({ error: r.error, hint: 'Run db/setup.sql (orders needs carrier/tracking_number columns).' });
+  if (!r.updated) return res.status(404).json({ error: 'Order not found in the orders table' });
+  res.json({ ok: true, order: r.order });
+});
+
+// Public: track an order by ref + email (email must match — prevents enumeration).
+app.get('/track', async (req, res) => {
+  const id = (req.query.id || '').toString().trim();
+  const email = (req.query.email || '').toString().trim().toLowerCase();
+  if (!id || !email) return res.status(400).json({ error: 'Order ID and email are required' });
+  try {
+    const { data, error } = await sb.from('orders')
+      .select('id, email, status, carrier, tracking_number, items, total, created_at')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) return res.status(500).json({ error: error.message });
+    if (!data || (data.email || '').toLowerCase() !== email) {
+      return res.status(404).json({ error: 'No order found for that ID and email.' });
+    }
+    res.json({ order: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Admin: Promo codes (read-only) ───────────────────────────────────────────
 app.get('/admin/promo-codes', requireAdmin, (req, res) => {
   const codes = Object.entries(PROMO_CODES).map(([code, data]) => ({
@@ -596,7 +647,7 @@ app.get('/admin/promo-codes', requireAdmin, (req, res) => {
   res.json({ codes });
 });
 
-// ── Admin: Shipping ──────────────────────────────────────────────────────────
+// ── Admin: Shipping (legacy in-memory; kept for compatibility) ───────────────
 app.post('/admin/shipping', requireAdmin, (req, res) => {
   const { paymentIntentId, carrier, trackingNumber, status } = req.body;
   if (!paymentIntentId || !carrier || !trackingNumber) {
