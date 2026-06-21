@@ -298,7 +298,8 @@
   <script src="js/main.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const orderId = params.get('id') || ('XTC' + Date.now().toString().slice(-6));
+    const sessionId = params.get('session_id');
+    let orderId = params.get('id') || ('XTC' + Date.now().toString().slice(-6));
 
     // Product images map
     const PRODUCT_IMAGES = {
@@ -306,46 +307,86 @@
       'polo-white': 'https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitepolo.jpg',
     };
 
-    function getProductImage(item) {
-      const id = (item.id || '').toLowerCase();
-      if (id.includes('black')) return PRODUCT_IMAGES['polo-black'];
-      if (id.includes('white')) return PRODUCT_IMAGES['polo-white'];
+    function getProductImage(text) {
+      const t = (text || '').toLowerCase();
+      if (t.includes('black')) return PRODUCT_IMAGES['polo-black'];
+      if (t.includes('white')) return PRODUCT_IMAGES['polo-white'];
       return null;
     }
 
-    function renderOrder() {
-      document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
-      document.getElementById('ocDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    // Build a single order-item row — shared by the server + localStorage paths
+    function buildItemRow(img, name, meta, priceText) {
+      const imgHtml = img
+        ? `<img class="oc-item-img" src="${img}" alt="${name}" crossorigin="anonymous" />`
+        : `<div class="oc-item-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">👕</div>`;
+      return `<div class="oc-item">
+        ${imgHtml}
+        <div class="oc-item-info">
+          <div class="oc-item-name">${name}</div>
+          <div class="oc-item-meta">${meta}</div>
+        </div>
+        <div class="oc-item-price">${priceText}</div>
+      </div>`;
+    }
 
+    function showEmpty() {
+      document.getElementById('ocItems').innerHTML = '<p style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:8px 0;">Your order details</p>';
+      document.getElementById('ocTotal').textContent = '—';
+    }
+
+    // Verified order from Stripe (via ?session_id) — the source of truth
+    async function renderFromServer(sid) {
+      const res = await fetch('/order/' + encodeURIComponent(sid));
+      if (!res.ok) throw new Error('Order lookup failed (' + res.status + ')');
+      const data = await res.json();
+      if (data.ref) orderId = data.ref;
+
+      const items = data.items || [];
+      if (!items.length) { showEmpty(); return; }
+
+      document.getElementById('ocItems').innerHTML = items.map(li => {
+        const parts = (li.name || '').split('—');
+        const name = (parts[0] || 'XTC Polo').trim();
+        const size = parts[1] ? parts[1].trim() : '';
+        const meta = (size ? 'Size: ' + size + ' &nbsp;·&nbsp; ' : '') + 'Qty: ' + (li.qty || 1);
+        return buildItemRow(getProductImage(li.name), name, meta, '£' + (li.amount / 100).toFixed(2));
+      }).join('');
+
+      document.getElementById('ocTotal').textContent = '£' + (data.total / 100).toFixed(2);
+    }
+
+    // Fallback: render from the browser cart (custom checkout, or if lookup fails)
+    function renderFromLocal() {
       const cart = JSON.parse(localStorage.getItem('xtc-last-order') || localStorage.getItem('xtc-cart') || '[]');
-      const itemsEl = document.getElementById('ocItems');
-
-      if (!cart.length) {
-        itemsEl.innerHTML = '<p style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:8px 0;">Your order details</p>';
-        document.getElementById('ocTotal').textContent = '—';
-        return;
-      }
+      if (!cart.length) { showEmpty(); return; }
 
       let total = 0;
-      itemsEl.innerHTML = cart.map(item => {
+      document.getElementById('ocItems').innerHTML = cart.map(item => {
         const price = parseFloat((item.price || '0').replace(/[^0-9.]/g, ''));
         const lineTotal = price * (item.qty || 1);
         total += lineTotal;
-        const img = getProductImage(item);
-        const imgHtml = img
-          ? `<img class="oc-item-img" src="${img}" alt="${item.name}" crossorigin="anonymous" />`
-          : `<div class="oc-item-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">👕</div>`;
-        return `<div class="oc-item">
-          ${imgHtml}
-          <div class="oc-item-info">
-            <div class="oc-item-name">${item.name || 'XTC Polo'}</div>
-            <div class="oc-item-meta">Size: ${item.size || '—'} &nbsp;·&nbsp; Qty: ${item.qty || 1}</div>
-          </div>
-          <div class="oc-item-price">£${lineTotal.toFixed(2)}</div>
-        </div>`;
+        const meta = 'Size: ' + (item.size || '—') + ' &nbsp;·&nbsp; Qty: ' + (item.qty || 1);
+        return buildItemRow(getProductImage(item.id || item.name), item.name || 'XTC Polo', meta, '£' + lineTotal.toFixed(2));
       }).join('');
 
       document.getElementById('ocTotal').textContent = '£' + total.toFixed(2);
+    }
+
+    async function renderOrder() {
+      document.getElementById('ocDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      if (sessionId) {
+        try {
+          await renderFromServer(sessionId);
+          document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
+          return;
+        } catch (e) {
+          // Lookup failed (e.g. lost session) — fall back to local cart
+        }
+      }
+
+      renderFromLocal();
+      document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
     }
 
     const IGBtnHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Share to Instagram Story';

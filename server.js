@@ -259,6 +259,45 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+// ── Order lookup — verified order details for the confirmation page ──────────
+// Reads the real Stripe Checkout Session so the confirmation page shows
+// trusted line items + total (not just whatever is in the browser's cart).
+app.get('/order/:sessionId', async (req, res) => {
+  const { sessionId } = req.params;
+  if (!sessionId || !sessionId.startsWith('cs_')) {
+    return res.status(400).json({ error: 'Invalid session id' });
+  }
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['line_items'],
+    });
+    // Only reveal details for genuinely paid orders
+    if (session.payment_status !== 'paid') {
+      return res.status(402).json({ error: 'Order not paid', paid: false });
+    }
+    const items = ((session.line_items && session.line_items.data) || []).map(li => ({
+      name: li.description,
+      qty: li.quantity,
+      amount: li.amount_total, // pence, includes quantity
+    }));
+    const pi = typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : (session.payment_intent && session.payment_intent.id) || session.id;
+    res.json({
+      ok: true,
+      paid: true,
+      ref: 'XTC' + pi.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase(),
+      email: (session.customer_details && session.customer_details.email) || '',
+      total: session.amount_total, // pence
+      currency: session.currency,
+      items,
+    });
+  } catch (err) {
+    console.error('Order lookup error:', err.message);
+    res.status(404).json({ error: 'Order not found' });
+  }
+});
+
 // ── In-memory shipping records ───────────────────────────────────────────────
 const shippingRecords = new Map();
 
