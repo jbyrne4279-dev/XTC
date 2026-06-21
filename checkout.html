@@ -640,7 +640,14 @@
   const SUPA_URL = 'https://mugifniadilfwfgrsvie.supabase.co';
   const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11Z2lmbmlhZGlsZndmZ3JzdmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTgxNzMsImV4cCI6MjA5NzI3NDE3M30.95VqWUKCcMeCCQON13Fy_USoGccoyCwVBRtKbp-aB60';
   let _sb = null;
-  try { if (window.supabase) _sb = window.supabase.createClient(SUPA_URL, SUPA_ANON); } catch (e) {}
+  // Read-only auth client: it only needs the existing session's token. Disable
+  // token auto-refresh and URL detection so it never rotates tokens or touches
+  // the (Stripe 3DS) return URL — which could disturb the profile session.
+  try {
+    if (window.supabase) _sb = window.supabase.createClient(SUPA_URL, SUPA_ANON, {
+      auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false }
+    });
+  } catch (e) {}
   let _loyaltyToken = null;
   let _loyaltyAvailable = 0;
   let _redeemPoints = 0;

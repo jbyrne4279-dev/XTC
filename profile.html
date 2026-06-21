@@ -1292,7 +1292,19 @@
     }
 
     /* Load profile from Supabase and merge with auth user, then show dashboard */
+    var _dashLoading = false;
     async function loadAndShowDashboard(supaUser) {
+      if (!supaUser) return;
+      // Guard against concurrent double-loads (explicit sign-in call + auth event)
+      if (_dashLoading) return;
+      _dashLoading = true;
+      try {
+        await _loadAndShowDashboard(supaUser);
+      } finally {
+        _dashLoading = false;
+      }
+    }
+    async function _loadAndShowDashboard(supaUser) {
       var meta = supaUser.user_metadata || {};
       // Always build a valid user object from auth data first — never block on DB
       var merged = {
@@ -1949,19 +1961,23 @@
         }
       });
 
-      /* Listen for OAuth redirect callback (Google) — only on explicit sign-in, not session restore */
+      /* React to auth changes (sign-in, OAuth redirect, sign-out).
+         IMPORTANT: never call async Supabase methods synchronously inside this
+         callback — it runs while GoTrue holds its auth lock, and doing so
+         dead-locks the lock and drops the session on some (especially mobile)
+         browsers. Always defer with setTimeout. */
       sb.auth.onAuthStateChange(function(event, session) {
-        if (event === 'SIGNED_IN' && session && session.user) {
-          // Only handle if we're currently showing the auth screen (e.g. Google OAuth redirect)
-          var authVisible = authSection && authSection.style.display !== 'none';
-          if (authVisible) {
-            loadAndShowDashboard(session.user);
+        setTimeout(function() {
+          if (event === 'SIGNED_IN' && session && session.user) {
+            // Only handle if we're currently showing the auth screen (explicit
+            // sign-in or Google OAuth redirect) — not on token refreshes.
+            var authVisible = authSection && authSection.style.display !== 'none';
+            if (authVisible) loadAndShowDashboard(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            localStorage.removeItem('xtc-user');
+            showAuth();
           }
-        }
-        if (event === 'SIGNED_OUT') {
-          localStorage.removeItem('xtc-user');
-          showAuth();
-        }
+        }, 0);
       });
 
       try {
