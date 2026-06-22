@@ -77,6 +77,84 @@
     .co-field select option { background: #141414; color: #fff; }
     .co-field select:invalid { color: rgba(255,255,255,0.3); }
 
+    /* Apple-style searchable country picker */
+    .co-country { position: relative; }
+    .co-country__input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 14px 40px 14px 16px;
+      outline: none;
+      transition: border-color 0.2s, padding 0.15s;
+    }
+    .co-country.has-flag .co-country__input { padding-left: 46px; }
+    .co-country__input:focus { border-color: var(--accent); }
+    .co-country__input::placeholder { color: rgba(255,255,255,0.2); }
+    .co-country__flag {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      display: none;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+      z-index: 1;
+    }
+    .co-country.has-flag .co-country__flag { display: block; }
+    .co-country__chev {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.35);
+      pointer-events: none;
+      transition: transform 0.2s ease;
+    }
+    .co-country.open .co-country__chev { transform: translateY(-50%) rotate(180deg); }
+    .co-country__list {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      max-height: 280px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16161a;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+      padding: 6px;
+      margin: 0;
+      list-style: none;
+      z-index: 50;
+      display: none;
+    }
+    .co-country.open .co-country__list { display: block; }
+    .co-country__opt {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      transition: background 0.12s;
+    }
+    .co-country__opt img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(255,255,255,0.08); }
+    .co-country__opt[aria-selected="true"],
+    .co-country__opt.active { background: rgba(179,102,255,0.16); color: #fff; }
+    .co-country__opt:hover { background: rgba(255,255,255,0.06); }
+    .co-country__opt .co-country__code { margin-left: auto; font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.3); }
+    .co-country__empty { padding: 14px 12px; font-size: 13px; color: rgba(255,255,255,0.35); text-align: center; }
+
     /* Spinning purple outline boxes */
     @property --co-box-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
     @keyframes co-box-spin { to { --co-box-a: 360deg; } }
@@ -537,68 +615,16 @@
             <input type="text" id="coPostcode" placeholder="EC1A 1BB" required />
           </div>
           <div class="co-field co-field--span2">
-            <label for="coCountry">Country</label>
-            <select id="coCountry" required>
-              <option value="" disabled selected>Select country…</option>
-              <option value="GB">United Kingdom</option>
-              <option value="IE">Ireland</option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="AU">Australia</option>
-              <option value="NZ">New Zealand</option>
-              <option value="" disabled>──────────</option>
-              <option value="AT">Austria</option>
-              <option value="BE">Belgium</option>
-              <option value="BG">Bulgaria</option>
-              <option value="HR">Croatia</option>
-              <option value="CY">Cyprus</option>
-              <option value="CZ">Czechia</option>
-              <option value="DK">Denmark</option>
-              <option value="EE">Estonia</option>
-              <option value="FI">Finland</option>
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
-              <option value="GR">Greece</option>
-              <option value="HU">Hungary</option>
-              <option value="IS">Iceland</option>
-              <option value="IT">Italy</option>
-              <option value="LV">Latvia</option>
-              <option value="LT">Lithuania</option>
-              <option value="LU">Luxembourg</option>
-              <option value="MT">Malta</option>
-              <option value="NL">Netherlands</option>
-              <option value="NO">Norway</option>
-              <option value="PL">Poland</option>
-              <option value="PT">Portugal</option>
-              <option value="RO">Romania</option>
-              <option value="SK">Slovakia</option>
-              <option value="SI">Slovenia</option>
-              <option value="ES">Spain</option>
-              <option value="SE">Sweden</option>
-              <option value="CH">Switzerland</option>
-              <option value="" disabled>──────────</option>
-              <option value="AE">United Arab Emirates</option>
-              <option value="AR">Argentina</option>
-              <option value="BR">Brazil</option>
-              <option value="CL">Chile</option>
-              <option value="CN">China</option>
-              <option value="HK">Hong Kong</option>
-              <option value="IN">India</option>
-              <option value="ID">Indonesia</option>
-              <option value="IL">Israel</option>
-              <option value="JP">Japan</option>
-              <option value="MY">Malaysia</option>
-              <option value="MX">Mexico</option>
-              <option value="QA">Qatar</option>
-              <option value="SA">Saudi Arabia</option>
-              <option value="SG">Singapore</option>
-              <option value="ZA">South Africa</option>
-              <option value="KR">South Korea</option>
-              <option value="TW">Taiwan</option>
-              <option value="TH">Thailand</option>
-              <option value="TR">Türkiye</option>
-              <option value="VN">Vietnam</option>
-            </select>
+            <label for="coCountryInput">Country</label>
+            <div class="co-country" id="coCountryWrap">
+              <img class="co-country__flag" id="coCountryFlag" alt="" />
+              <input type="text" id="coCountryInput" class="co-country__input" placeholder="Start typing your country…"
+                     autocomplete="off" autocapitalize="off" spellcheck="false"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCountryList" required />
+              <svg class="co-country__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              <input type="hidden" id="coCountry" />
+              <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
+            </div>
           </div>
         </div>
       </div>
@@ -1063,6 +1089,14 @@
         const _city = document.getElementById('coCity').value;
         const _postcode = document.getElementById('coPostcode').value;
         const _country = document.getElementById('coCountry').value;
+        if (!_country) {
+          document.getElementById('payment-errors').textContent = 'Please choose your country from the list.';
+          const ci = document.getElementById('coCountryInput');
+          if (ci) ci.focus();
+          btn.disabled = false;
+          btn.textContent = 'Place Order';
+          return;
+        }
         const _cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
         const _cartSummary = _cart.map(i => i.qty + 'x ' + i.name).join(', ');
 
@@ -1198,46 +1232,124 @@
     init();
   }
 
-  /* ─── Auto-detect the shopper's country (still fully editable) ─── */
-  function autodetectCountry() {
-    const sel = document.getElementById('coCountry');
-    if (!sel) return;
-    let touched = false;
-    sel.addEventListener('change', function () { touched = true; });
+  /* ─── Apple-style searchable country picker (typeable, with flags) ─── */
+  function initCountryPicker() {
+    const COUNTRIES = [
+      ['GB','United Kingdom'],['IE','Ireland'],['US','United States'],['CA','Canada'],['AU','Australia'],['NZ','New Zealand'],
+      ['AT','Austria'],['BE','Belgium'],['BG','Bulgaria'],['HR','Croatia'],['CY','Cyprus'],['CZ','Czechia'],['DK','Denmark'],
+      ['EE','Estonia'],['FI','Finland'],['FR','France'],['DE','Germany'],['GR','Greece'],['HU','Hungary'],['IS','Iceland'],
+      ['IT','Italy'],['LV','Latvia'],['LT','Lithuania'],['LU','Luxembourg'],['MT','Malta'],['NL','Netherlands'],['NO','Norway'],
+      ['PL','Poland'],['PT','Portugal'],['RO','Romania'],['SK','Slovakia'],['SI','Slovenia'],['ES','Spain'],['SE','Sweden'],
+      ['CH','Switzerland'],['AE','United Arab Emirates'],['AR','Argentina'],['BR','Brazil'],['CL','Chile'],['CN','China'],
+      ['HK','Hong Kong'],['IN','India'],['ID','Indonesia'],['IL','Israel'],['JP','Japan'],['MY','Malaysia'],['MX','Mexico'],
+      ['QA','Qatar'],['SA','Saudi Arabia'],['SG','Singapore'],['ZA','South Africa'],['KR','South Korea'],['TW','Taiwan'],
+      ['TH','Thailand'],['TR','Türkiye'],['VN','Vietnam']
+    ];
+    const wrap   = document.getElementById('coCountryWrap');
+    const input  = document.getElementById('coCountryInput');
+    const hidden = document.getElementById('coCountry');
+    const list   = document.getElementById('coCountryList');
+    const flagEl = document.getElementById('coCountryFlag');
+    if (!wrap || !input || !hidden || !list) return;
 
-    // Set only if the shopper hasn't manually changed it. Programmatic sets here
-    // don't fire 'change', so they never count as a manual choice.
-    function setCountry(code) {
-      if (touched || !code) return;
-      code = String(code).toUpperCase();
-      if (sel.querySelector('option[value="' + code + '"]')) sel.value = code;
+    const flagUrl = c => 'https://flagcdn.com/' + c.toLowerCase() + '.svg';
+    const nameOf  = code => { const m = COUNTRIES.find(c => c[0] === code); return m ? m[1] : ''; };
+    let touched = false;     // the shopper has typed or picked themselves
+    let activeIdx = -1;
+    let filtered = COUNTRIES.slice();
+
+    function open()  { wrap.classList.add('open'); input.setAttribute('aria-expanded', 'true'); }
+    function close() { wrap.classList.remove('open'); input.setAttribute('aria-expanded', 'false'); activeIdx = -1; }
+
+    function selectCode(code, opts) {
+      opts = opts || {};
+      const name = nameOf(code);
+      if (!name) return false;
+      hidden.value = code;
+      input.value = name;
+      flagEl.src = flagUrl(code);
+      flagEl.alt = name + ' flag';
+      wrap.classList.add('has-flag');
+      input.setCustomValidity('');
+      if (!opts.silent) touched = true;
+      return true;
+    }
+    function clearSelection() { hidden.value = ''; wrap.classList.remove('has-flag'); }
+
+    function render(q) {
+      q = (q || '').trim().toLowerCase();
+      filtered = COUNTRIES.filter(c => !q || c[1].toLowerCase().indexOf(q) > -1 || c[0].toLowerCase() === q);
+      if (!filtered.length) { list.innerHTML = '<li class="co-country__empty">No matching country</li>'; return; }
+      list.innerHTML = filtered.map(c =>
+        '<li class="co-country__opt' + (hidden.value === c[0] ? ' active" aria-selected="true"' : '"') + ' role="option" data-code="' + c[0] + '">' +
+          '<img src="' + flagUrl(c[0]) + '" alt="" loading="lazy" />' +
+          '<span>' + c[1] + '</span>' +
+          '<span class="co-country__code">' + c[0] + '</span>' +
+        '</li>'
+      ).join('');
     }
 
-    // 1) Instant guess from the browser's locale (offline, no network).
+    function setActive(i) {
+      const opts = list.querySelectorAll('.co-country__opt');
+      if (!opts.length) return;
+      activeIdx = (i + opts.length) % opts.length;
+      opts.forEach((o, idx) => o.classList.toggle('active', idx === activeIdx));
+      opts[activeIdx].scrollIntoView({ block: 'nearest' });
+    }
+
+    input.addEventListener('focus', function () { render(input.value && hidden.value ? '' : input.value); open(); });
+    input.addEventListener('input', function () { touched = true; clearSelection(); render(input.value); open(); activeIdx = -1; });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (!wrap.classList.contains('open')) { render(input.value); open(); } setActive(activeIdx + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIdx - 1); }
+      else if (e.key === 'Enter') { if (wrap.classList.contains('open') && activeIdx > -1 && filtered[activeIdx]) { e.preventDefault(); selectCode(filtered[activeIdx][0]); close(); } }
+      else if (e.key === 'Escape') { close(); }
+    });
+    list.addEventListener('mousedown', function (e) {
+      const li = e.target.closest('.co-country__opt');
+      if (!li) return;
+      e.preventDefault();               // keep focus, fire before blur
+      selectCode(li.getAttribute('data-code'));
+      close();
+    });
+    // Resolve a typed name to a code on blur, so typing a full country works without clicking.
+    input.addEventListener('blur', function () {
+      setTimeout(function () {
+        if (!hidden.value) {
+          const typed = input.value.trim().toLowerCase();
+          const match = COUNTRIES.find(c => c[1].toLowerCase() === typed || c[0].toLowerCase() === typed);
+          if (match) selectCode(match[0]);
+          else if (typed) input.setCustomValidity('Please choose a country from the list');
+        }
+        close();
+      }, 150);
+    });
+    document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) close(); });
+
+    // Auto-detect (silent — doesn't count as a manual choice, so it stays editable).
+    function autoSet(code) { if (!touched) selectCode(String(code || '').toUpperCase(), { silent: true }); }
     try {
       const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
       for (let i = 0; i < langs.length; i++) {
         let region = '';
         try { region = (window.Intl && Intl.Locale) ? new Intl.Locale(langs[i]).region : ''; } catch (e) {}
         if (!region && langs[i].indexOf('-') > -1) region = langs[i].split('-').pop();
-        if (region) { setCountry(region); break; }
+        if (region) { autoSet(region); break; }
       }
     } catch (e) {}
-
-    // 2) Refine from IP geolocation (closer to the real shipping location). Best-effort.
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(function () { ctrl.abort(); }, 3000);
       fetch('https://get.geojs.io/v1/ip/country.json', { signal: ctrl.signal })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { clearTimeout(timer); if (d && d.country) setCountry(d.country); })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { clearTimeout(timer); if (d && d.country) autoSet(d.country); })
         .catch(function () {});
     } catch (e) {}
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autodetectCountry);
+    document.addEventListener('DOMContentLoaded', initCountryPicker);
   } else {
-    autodetectCountry();
+    initCountryPicker();
   }
 })();
 </script>
