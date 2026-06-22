@@ -750,24 +750,6 @@
     .order-product__chev { color: var(--text-3); flex-shrink: 0; transition: color 0.15s, transform 0.15s; }
     .order-product:hover .order-product__chev { color: var(--accent); transform: translateX(2px); }
 
-    /* Limited-edition polo number badge */
-    .order-edition {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 12px;
-      padding: 6px 12px;
-      border: 1px solid rgba(179,102,255,0.35);
-      border-radius: 999px;
-      background: rgba(179,102,255,0.08);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .order-edition svg { opacity: 0.8; }
-
     /* Account details form */
     .detail-form .form-field { margin-bottom: 14px; }
     .detail-form .form-field:last-of-type { margin-bottom: 0; }
@@ -1366,7 +1348,6 @@
             status: o.status || 'Processing',
             carrier: o.carrier || '',
             tracking_number: o.tracking_number || '',
-            polo_numbers: o.polo_numbers || [],
             date: o.created_at || o.date
           };
         });
@@ -1582,17 +1563,6 @@
               trackHtml = '<div class="order-track">' + (o.carrier ? o.carrier + ' · ' : '') + tInner + '</div>';
             }
 
-            // Limited-edition polo number(s) for this order (1–50, unique & permanent).
-            var editionHtml = '';
-            if (o.polo_numbers && o.polo_numbers.length) {
-              var nums = o.polo_numbers.map(function (n) { return '№ ' + n; }).join(', ');
-              var label = (o.polo_numbers.length > 1 ? 'Limited Edition Polos ' : 'Limited Edition Polo ') + nums + ' / 50';
-              editionHtml = '<div class="order-edition">' +
-                '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg>' +
-                label +
-              '</div>';
-            }
-
             // Ordered products — thumbnail + colour/size, each links to its product page.
             var itemsHtml = '';
             if (o.items && o.items.length) {
@@ -1629,7 +1599,6 @@
                 '<div class="order-item-total">' + total + '</div>' +
               '</div>' +
               '<span class="order-status order-status--' + status.toLowerCase() + '">' + status + '</span>' +
-              editionHtml +
               itemsHtml +
               trackHtml +
             '</div>';

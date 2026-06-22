@@ -441,10 +441,6 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
       Stock
     </button>
-    <button class="nav-item" id="nav-polo" onclick="showPage('polo',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg>
-      Polo Editions
-    </button>
     <button class="nav-item" id="nav-promo" onclick="showPage('promo',this)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
       Promo Codes
@@ -569,30 +565,6 @@
         </div>
         <div class="stock-size-grid" id="whiteStockGrid"></div>
         <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('polo-white')">Save</button>
-      </div>
-    </div>
-
-    <!-- ── POLO EDITIONS ── -->
-    <div class="page" id="page-polo">
-      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div>
-          <h1 class="page-title">Polo Editions</h1>
-          <p class="page-sub">Limited run of 50 — unique number per polo sold</p>
-        </div>
-        <button class="btn-sm" onclick="renderPoloEditions()">Refresh</button>
-      </div>
-      <div id="poloAlerts"></div>
-      <div class="stat-grid" id="poloStats"></div>
-      <div class="table-box" style="margin-bottom:24px;">
-        <div class="table-box__header"><span class="table-box__title">Edition Map — № 1–50</span></div>
-        <div id="poloGrid" style="display:grid;grid-template-columns:repeat(10,1fr);gap:8px;padding:24px;"></div>
-      </div>
-      <div class="table-box">
-        <div class="table-box__header"><span class="table-box__title">Assigned Numbers</span></div>
-        <table>
-          <thead><tr><th>№</th><th>Order Ref</th><th>Customer</th><th>Assigned</th></tr></thead>
-          <tbody id="poloTbody"></tbody>
-        </table>
       </div>
     </div>
 
@@ -895,7 +867,6 @@ function showPage(name, triggerEl) {
   toggleMobileNav(false);            // close the drawer after picking a page (mobile)
   document.querySelector('.main').scrollTop = 0;
   if (name === 'stock')     renderStock();
-  if (name === 'polo')      renderPoloEditions();
   if (name === 'orders')    renderOrders();
   if (name === 'shipping')  renderShippingPage();
   if (name === 'promo')     renderPromo();
@@ -1473,70 +1444,6 @@ function renderStockAlerts() {
   });
   const el = document.getElementById('stockAlerts');
   if (el) el.innerHTML = alerts.length ? '<div class="alert alert--warn" style="margin-bottom:20px;">&#9888; ' + alerts.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '';
-}
-
-/* ─────────── POLO EDITIONS ─────────── */
-async function renderPoloEditions() {
-  const statsEl = document.getElementById('poloStats');
-  const gridEl  = document.getElementById('poloGrid');
-  const tbody   = document.getElementById('poloTbody');
-  const alertEl = document.getElementById('poloAlerts');
-  if (alertEl) alertEl.innerHTML = '';
-  if (gridEl)  gridEl.innerHTML = '<span style="grid-column:1/-1;color:var(--muted);">Loading…</span>';
-  if (tbody)   tbody.innerHTML = '';
-
-  let data;
-  try {
-    data = await adminFetch('/admin/polo-editions');
-  } catch (e) {
-    if (gridEl) gridEl.innerHTML = '';
-    if (alertEl) alertEl.innerHTML = '<div class="alert alert--warn" style="margin-bottom:20px;">Could not load editions: ' + e.message + ' — make sure db/polo-editions.sql has been run and the server redeployed.</div>';
-    if (statsEl) statsEl.innerHTML = '';
-    return;
-  }
-
-  const editions = data.editions || [];
-  const total = data.total || editions.length || 50;
-  const claimed = data.claimed != null ? data.claimed : editions.filter(e => e.order_id).length;
-  const remaining = data.remaining != null ? data.remaining : (total - claimed);
-  const pct = total ? Math.round((claimed / total) * 100) : 0;
-
-  if (statsEl) statsEl.innerHTML =
-    '<div class="stat-card"><p class="stat-card__label">Total Edition</p><p class="stat-card__value">' + total + '</p><p class="stat-card__delta">Limited run</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Sold / Claimed</p><p class="stat-card__value">' + claimed + '</p><p class="stat-card__delta">' + pct + '% of run</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Remaining</p><p class="stat-card__value">' + remaining + '</p><p class="stat-card__delta' + (remaining <= 5 ? ' warn' : '') + '">Numbers still free</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Next Number</p><p class="stat-card__value">' + (remaining > 0 ? ('№ ' + (editions.find(e => !e.order_id) || {}).number) : 'Sold out') + '</p><p class="stat-card__delta">Lowest free</p></div>';
-
-  // Number map 1–50
-  const byNumber = {};
-  editions.forEach(e => { byNumber[e.number] = e; });
-  let cells = '';
-  for (let n = 1; n <= 50; n++) {
-    const e = byNumber[n];
-    const taken = e && e.order_id;
-    const title = taken ? ('№ ' + n + ' — ' + (e.email || e.order_id)) : ('№ ' + n + ' — available');
-    cells += '<div title="' + title.replace(/"/g, '&quot;') + '" style="' +
-      'text-align:center;padding:10px 0;font-size:12px;border-radius:6px;border:1px solid ' +
-      (taken ? 'rgba(179,102,255,0.4);background:rgba(179,102,255,0.14);color:var(--accent);font-weight:600;' : 'var(--border);background:rgba(255,255,255,0.02);color:var(--muted);') +
-      '">' + n + '</div>';
-  }
-  if (gridEl) gridEl.innerHTML = cells;
-
-  // Assigned table
-  const assigned = editions.filter(e => e.order_id).sort((a, b) => a.number - b.number);
-  if (tbody) {
-    tbody.innerHTML = assigned.length
-      ? assigned.map(e => {
-          const when = e.assigned_at ? new Date(e.assigned_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
-          return '<tr>' +
-            '<td style="font-weight:700;color:var(--accent);">№ ' + e.number + '</td>' +
-            '<td style="font-family:monospace;font-size:12px;">' + (e.order_id || '—') + '</td>' +
-            '<td style="color:var(--muted);font-size:12px;">' + (e.email || '—') + '</td>' +
-            '<td style="color:var(--muted);">' + when + '</td>' +
-            '</tr>';
-        }).join('')
-      : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No polo numbers assigned yet</td></tr>';
-  }
 }
 
 /* ─────────── ANALYTICS ─────────── */
