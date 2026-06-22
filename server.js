@@ -501,6 +501,28 @@ app.post('/orders', async (req, res) => {
     redeemed_points,
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
+
+  // Assign limited-edition polo numbers (1..50) — one per polo unit purchased,
+  // any colour. Allocation is atomic + idempotent in the DB (claim_polo_numbers),
+  // so a number is never reused and re-submitting an order won't duplicate.
+  // Degrades silently until db/polo-editions.sql has been run.
+  try {
+    const poloUnits = (Array.isArray(items) ? items : []).reduce(function (n, it) {
+      return n + (/^polo[-_]/i.test(String((it && it.id) || '')) ? (parseInt(it.qty, 10) || 1) : 0);
+    }, 0);
+    if (poloUnits > 0) {
+      const { data, error } = await sb.rpc('claim_polo_numbers', {
+        p_order_id: String(id),
+        p_email: (email || '').toLowerCase(),
+        p_count: poloUnits,
+      });
+      if (error) { console.error('polo number assignment error:', error.message); }
+      else if (Array.isArray(data) && data.length) {
+        await sb.from('orders').update({ polo_numbers: data }).eq('id', String(id));
+      }
+    }
+  } catch (e) { console.error('polo number assignment exception:', e.message); }
+
   // Decrement stock once per order (idempotent via the order's flag). cartItems
   // is [{ productId, size, qty }]. The webhook does the same as a fallback.
   if (Array.isArray(cartItems) && cartItems.length) {
