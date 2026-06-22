@@ -348,6 +348,59 @@
       text-align: center;
       margin-top: 12px;
     }
+
+    /* Size picker popup (same as home page) */
+    .fp-size-picker {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      background: #111;
+      border: 1px solid rgba(179,102,255,0.25);
+      padding: 16px;
+      z-index: 50;
+      display: none;
+      min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+    }
+    .fp-size-picker.open { display: block; }
+    .fp-size-picker__label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+    .fp-size-picker__sizes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .fp-sp-btn {
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .fp-sp-btn:hover:not(:disabled):not(.fp-sp-btn--selected) {
+      border-color: rgba(179,102,255,0.5);
+      background: rgba(179,102,255,0.08);
+    }
+    .fp-sp-btn--oos {
+      border-color: rgba(239,68,68,0.5);
+      color: rgba(239,68,68,0.6);
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .fp-sp-btn--selected {
+      border-color: rgba(34,197,94,0.7);
+      color: rgba(34,197,94,0.9);
+      background: rgba(34,197,94,0.08);
+    }
   </style>
 </head>
 <body>
@@ -439,41 +492,53 @@
 
     <!-- Drop 01 -->
     <p style="font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(179,102,255,0.6);margin-bottom:20px;"><span style="color:rgba(255,255,255,0.45);">Drop 01 —</span> Original Members</p>
-    <div class="col-grid reveal-group" style="margin-bottom:64px;">
+    <div class="fp-grid reveal-group" style="margin-bottom:64px;">
 
-      <!-- Polo Black -->
-      <a href="/product-polo-black" class="nr-card reveal" style="text-decoration:none;display:block;">
-        <div class="nr-card__media">
-          <img src="images/polo-black-flat.jpg" alt="XTC Polo Black" />
-          <span class="nr-card__badge" style="background:rgba(10,10,10,0.85);border-color:rgba(179,102,255,0.35);color:rgba(179,102,255,1);">Limited Edition</span>
-        </div>
-        <div class="nr-card__info">
-          <span class="nr-card__drop">Original Members</span>
-          <h2 class="nr-card__name">Polo [Black]</h2>
-          <p class="nr-card__desc">260gsm heavyweight pique cotton. Embroidered XTC chest logo. Woven back label. Limited run.</p>
-          <div class="nr-card__bottom">
-            <span class="nr-card__price">£60</span>
-            <span class="nr-card__cta">Shop Now</span>
+      <!-- Product: POLO [BLACK] -->
+      <article class="fp-card">
+        <a href="/product-polo-black" class="fp-card__media">
+          <img src="images/product-black-1.jpg" alt="XTC Original Members Polo Black — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/product-black-2.jpg" alt="XTC Original Members Polo Black — alt" loading="lazy" />
+          <span class="fp-card__badge">Limited Edition</span>
+        </a>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-polo-black" class="fp-card__name">Polo [Black]</a>
+            <p class="fp-card__sub">Slim Fit · 100% Cotton · Stainless Steel</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£60</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-black">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-black-sizes"></div>
+            </div>
           </div>
         </div>
-      </a>
+      </article>
 
-      <!-- Polo White -->
-      <a href="/product-polo-white" class="nr-card reveal" style="text-decoration:none;display:block;">
-        <div class="nr-card__media">
-          <img src="images/polo-white-flat.jpg" alt="XTC Polo White" />
-          <span class="nr-card__badge" style="background:rgba(10,10,10,0.85);border-color:rgba(179,102,255,0.35);color:rgba(179,102,255,1);">Limited Edition</span>
-        </div>
-        <div class="nr-card__info">
-          <span class="nr-card__drop">Original Members</span>
-          <h2 class="nr-card__name">Polo [White]</h2>
-          <p class="nr-card__desc">260gsm heavyweight pique cotton. Embroidered XTC chest logo. Woven back label. Limited run.</p>
-          <div class="nr-card__bottom">
-            <span class="nr-card__price">£60</span>
-            <span class="nr-card__cta">Shop Now</span>
+      <!-- Product: POLO [WHITE] -->
+      <article class="fp-card">
+        <a href="/product-polo-white" class="fp-card__media">
+          <img src="images/product-white-1.jpg" alt="XTC Original Members Polo White — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/product-white-2.jpg" alt="XTC Original Members Polo White — alt" loading="lazy" />
+          <span class="fp-card__badge">Limited Edition</span>
+        </a>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-polo-white" class="fp-card__name">Polo [White]</a>
+            <p class="fp-card__sub">Slim Fit · 100% Cotton · Stainless Steel</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£60</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg')">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-white">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-white-sizes"></div>
+            </div>
           </div>
         </div>
-      </a>
+      </article>
 
     </div>
 
@@ -580,6 +645,7 @@
     </div>
   </footer>
 
+  <script src="js/stock.js"></script>
   <script src="js/main.js"></script>
   <script>
     function openNrModal(name) {
@@ -611,6 +677,57 @@
     document.getElementById('nrModal').addEventListener('click', function(e) {
       if (e.target === this) closeNrModal();
     });
+  </script>
+
+  <!-- Product card size picker — same logic as the home page -->
+  <script>
+  (function () {
+    const SIZES = ['S','M','L','XL','XXL'];
+
+    window.openSizePicker = function (btn, productId, name, price, img) {
+      const picker = document.getElementById('picker-' + productId);
+      const sizesEl = document.getElementById('picker-' + productId + '-sizes');
+      if (!picker || !sizesEl) return;
+
+      if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
+      document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+
+      const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
+      sizesEl.innerHTML = SIZES.map(s => {
+        const qty = stock[s] || 0;
+        const oos = qty === 0;
+        return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
+      }).join('');
+      sizesEl.dataset.product = productId;
+      sizesEl.dataset.name = name;
+      sizesEl.dataset.price = price;
+      sizesEl.dataset.img = img;
+
+      picker.classList.add('open');
+    };
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
+        document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.fp-sp-btn');
+      if (!btn || btn.classList.contains('fp-sp-btn--oos')) return;
+      const sizesEl = btn.closest('.fp-size-picker__sizes');
+      if (!sizesEl) return;
+      sizesEl.querySelectorAll('.fp-sp-btn').forEach(b => b.classList.remove('fp-sp-btn--selected'));
+      btn.classList.add('fp-sp-btn--selected');
+      setTimeout(function () {
+        const d = sizesEl.dataset;
+        document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+        if (typeof addToCart === 'function') {
+          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size, d.price, d.img, 1);
+        }
+      }, 180);
+    });
+  })();
   </script>
 </body>
 </html>
