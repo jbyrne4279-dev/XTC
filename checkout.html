@@ -387,14 +387,14 @@
     }
     .co-redeem input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
     .co-redeem #coRedeemLabel { color: var(--accent); }
-    .co-redeem-arrow {
+    .co-redeem-tick {
       color: var(--accent);
       opacity: 0;
-      transform: translateX(-6px);
+      transform: scale(0.6);
       transition: opacity 0.2s ease, transform 0.2s ease;
       flex-shrink: 0;
     }
-    .co-redeem input:checked ~ .co-redeem-arrow { opacity: 1; transform: translateX(0); }
+    .co-redeem input:checked ~ .co-redeem-tick { opacity: 1; transform: scale(1); }
 
     /* Promo code input */
     .co-promo {
@@ -676,8 +676,8 @@
     <!-- Loyalty redemption (shown only when signed in with points) -->
     <label class="co-redeem" id="coRedeemWrap" style="display:none;">
       <input type="checkbox" id="coRedeemCheck" />
+      <svg class="co-redeem-tick" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
       <span id="coRedeemLabel">Use points</span>
-      <svg class="co-redeem-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </label>
 
     <div class="co-totals">
@@ -1236,14 +1236,43 @@
   function initCountryPicker() {
     const COUNTRIES = [
       ['GB','United Kingdom'],['IE','Ireland'],['US','United States'],['CA','Canada'],['AU','Australia'],['NZ','New Zealand'],
-      ['AT','Austria'],['BE','Belgium'],['BG','Bulgaria'],['HR','Croatia'],['CY','Cyprus'],['CZ','Czechia'],['DK','Denmark'],
-      ['EE','Estonia'],['FI','Finland'],['FR','France'],['DE','Germany'],['GR','Greece'],['HU','Hungary'],['IS','Iceland'],
-      ['IT','Italy'],['LV','Latvia'],['LT','Lithuania'],['LU','Luxembourg'],['MT','Malta'],['NL','Netherlands'],['NO','Norway'],
-      ['PL','Poland'],['PT','Portugal'],['RO','Romania'],['SK','Slovakia'],['SI','Slovenia'],['ES','Spain'],['SE','Sweden'],
-      ['CH','Switzerland'],['AE','United Arab Emirates'],['AR','Argentina'],['BR','Brazil'],['CL','Chile'],['CN','China'],
-      ['HK','Hong Kong'],['IN','India'],['ID','Indonesia'],['IL','Israel'],['JP','Japan'],['MY','Malaysia'],['MX','Mexico'],
-      ['QA','Qatar'],['SA','Saudi Arabia'],['SG','Singapore'],['ZA','South Africa'],['KR','South Korea'],['TW','Taiwan'],
-      ['TH','Thailand'],['TR','Türkiye'],['VN','Vietnam']
+      ['AF','Afghanistan'],['AX','Åland Islands'],['AL','Albania'],['DZ','Algeria'],['AS','American Samoa'],['AD','Andorra'],
+      ['AO','Angola'],['AI','Anguilla'],['AG','Antigua and Barbuda'],['AR','Argentina'],['AM','Armenia'],['AW','Aruba'],
+      ['AT','Austria'],['AZ','Azerbaijan'],['BS','Bahamas'],['BH','Bahrain'],['BD','Bangladesh'],['BB','Barbados'],
+      ['BY','Belarus'],['BE','Belgium'],['BZ','Belize'],['BJ','Benin'],['BM','Bermuda'],['BT','Bhutan'],['BO','Bolivia'],
+      ['BA','Bosnia and Herzegovina'],['BW','Botswana'],['BR','Brazil'],['BN','Brunei'],['BG','Bulgaria'],['BF','Burkina Faso'],
+      ['BI','Burundi'],['KH','Cambodia'],['CM','Cameroon'],['CV','Cape Verde'],['KY','Cayman Islands'],['CF','Central African Republic'],
+      ['TD','Chad'],['CL','Chile'],['CN','China'],['CO','Colombia'],['KM','Comoros'],['CG','Congo'],['CD','Congo (DRC)'],
+      ['CK','Cook Islands'],['CR','Costa Rica'],['CI',"Côte d'Ivoire"],['HR','Croatia'],['CU','Cuba'],['CW','Curaçao'],
+      ['CY','Cyprus'],['CZ','Czechia'],['DK','Denmark'],['DJ','Djibouti'],['DM','Dominica'],['DO','Dominican Republic'],
+      ['EC','Ecuador'],['EG','Egypt'],['SV','El Salvador'],['GQ','Equatorial Guinea'],['ER','Eritrea'],['EE','Estonia'],
+      ['SZ','Eswatini'],['ET','Ethiopia'],['FK','Falkland Islands'],['FO','Faroe Islands'],['FJ','Fiji'],['FI','Finland'],
+      ['FR','France'],['GF','French Guiana'],['PF','French Polynesia'],['GA','Gabon'],['GM','Gambia'],['GE','Georgia'],
+      ['DE','Germany'],['GH','Ghana'],['GI','Gibraltar'],['GR','Greece'],['GL','Greenland'],['GD','Grenada'],['GP','Guadeloupe'],
+      ['GU','Guam'],['GT','Guatemala'],['GG','Guernsey'],['GN','Guinea'],['GW','Guinea-Bissau'],['GY','Guyana'],['HT','Haiti'],
+      ['HN','Honduras'],['HK','Hong Kong'],['HU','Hungary'],['IS','Iceland'],['IN','India'],['ID','Indonesia'],['IR','Iran'],
+      ['IQ','Iraq'],['IM','Isle of Man'],['IL','Israel'],['IT','Italy'],['JM','Jamaica'],['JP','Japan'],['JE','Jersey'],
+      ['JO','Jordan'],['KZ','Kazakhstan'],['KE','Kenya'],['KI','Kiribati'],['KW','Kuwait'],['KG','Kyrgyzstan'],['LA','Laos'],
+      ['LV','Latvia'],['LB','Lebanon'],['LS','Lesotho'],['LR','Liberia'],['LY','Libya'],['LI','Liechtenstein'],['LT','Lithuania'],
+      ['LU','Luxembourg'],['MO','Macao'],['MG','Madagascar'],['MW','Malawi'],['MY','Malaysia'],['MV','Maldives'],['ML','Mali'],
+      ['MT','Malta'],['MH','Marshall Islands'],['MQ','Martinique'],['MR','Mauritania'],['MU','Mauritius'],['YT','Mayotte'],
+      ['MX','Mexico'],['FM','Micronesia'],['MD','Moldova'],['MC','Monaco'],['MN','Mongolia'],['ME','Montenegro'],['MS','Montserrat'],
+      ['MA','Morocco'],['MZ','Mozambique'],['MM','Myanmar'],['NA','Namibia'],['NR','Nauru'],['NP','Nepal'],['NL','Netherlands'],
+      ['NC','New Caledonia'],['NI','Nicaragua'],['NE','Niger'],['NG','Nigeria'],['NU','Niue'],['KP','North Korea'],
+      ['MK','North Macedonia'],['NO','Norway'],['OM','Oman'],['PK','Pakistan'],['PW','Palau'],['PS','Palestine'],['PA','Panama'],
+      ['PG','Papua New Guinea'],['PY','Paraguay'],['PE','Peru'],['PH','Philippines'],['PL','Poland'],['PT','Portugal'],
+      ['PR','Puerto Rico'],['QA','Qatar'],['RE','Réunion'],['RO','Romania'],['RU','Russia'],['RW','Rwanda'],['BL','Saint Barthélemy'],
+      ['SH','Saint Helena'],['KN','Saint Kitts and Nevis'],['LC','Saint Lucia'],['MF','Saint Martin'],['PM','Saint Pierre and Miquelon'],
+      ['VC','Saint Vincent and the Grenadines'],['WS','Samoa'],['SM','San Marino'],['ST','Sao Tome and Principe'],['SA','Saudi Arabia'],
+      ['SN','Senegal'],['RS','Serbia'],['SC','Seychelles'],['SL','Sierra Leone'],['SG','Singapore'],['SX','Sint Maarten'],
+      ['SK','Slovakia'],['SI','Slovenia'],['SB','Solomon Islands'],['SO','Somalia'],['ZA','South Africa'],['KR','South Korea'],
+      ['SS','South Sudan'],['ES','Spain'],['LK','Sri Lanka'],['SD','Sudan'],['SR','Suriname'],['SE','Sweden'],['CH','Switzerland'],
+      ['SY','Syria'],['TW','Taiwan'],['TJ','Tajikistan'],['TZ','Tanzania'],['TH','Thailand'],['TL','Timor-Leste'],['TG','Togo'],
+      ['TK','Tokelau'],['TO','Tonga'],['TT','Trinidad and Tobago'],['TN','Tunisia'],['TR','Türkiye'],['TM','Turkmenistan'],
+      ['TC','Turks and Caicos Islands'],['TV','Tuvalu'],['UG','Uganda'],['UA','Ukraine'],['AE','United Arab Emirates'],
+      ['UY','Uruguay'],['UZ','Uzbekistan'],['VU','Vanuatu'],['VA','Vatican City'],['VE','Venezuela'],['VN','Vietnam'],
+      ['VG','British Virgin Islands'],['VI','U.S. Virgin Islands'],['WF','Wallis and Futuna'],['EH','Western Sahara'],
+      ['YE','Yemen'],['ZM','Zambia'],['ZW','Zimbabwe']
     ];
     const wrap   = document.getElementById('coCountryWrap');
     const input  = document.getElementById('coCountryInput');
