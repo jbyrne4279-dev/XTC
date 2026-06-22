@@ -133,18 +133,12 @@ function initHero() {
   const cta      = document.getElementById('heroCta');
   if (!slides.length) return;
 
-  const B = { eyebrow: 'Original Members', title: '', href: '/product-polo-black' };
-  const W = { eyebrow: 'Original Members', title: '', href: '/product-polo-white' };
-  // Order matches index.html slides 0-26:
-  // 0:hero-1(B) 1:white-m1(W) 2:hero-2(B) 3:white-m2(W) 4:hero-3(B) 5:white-m3(W)
-  // 6:hero-4(W) 7:white-m4(W) 8:black-m1(B) 9:white-m5(W) 10:black-m2(B) 11:white-m6(W)
-  // 12:black-m3(B) 13:white-m7(W) 14:black-m4(B) 15:white-m8(W) 16:black-m5(B)
-  // 17-22:editorial(B) alternating with black models, 23-26:editorial(B)
-  const SLIDE_DATA = [
-    B, B, W, B, W, W, W, W,
-    B, W, B, W, B, B, B, B,
-    B, B, B, B, B, B, W,
-  ];
+  // Each slide carries its own product link via data-product ("black" | "white")
+  // in index.html, so slides can be reordered/added/removed there with nothing to
+  // change here. The total count below is derived from the number of slides.
+  const PRODUCT_HREF = { white: '/product-polo-white', black: '/product-polo-black' };
+  const totalEl = document.getElementById('heroCountTotal');
+  if (totalEl) totalEl.textContent = slides.length;
 
   const COPY_ELS = [eyebrow, title, document.querySelector('.hero-bar__right')].filter(Boolean);
   let current = 0;
@@ -174,10 +168,10 @@ function initHero() {
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active');
 
-    const d = SLIDE_DATA[current];
-    if (eyebrow) eyebrow.textContent = d.eyebrow;
-    if (title)   title.innerHTML = d.title;
-    if (cta)     cta.href = d.href;
+    const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
+    if (eyebrow) eyebrow.textContent = 'Original Members';
+    if (title)   title.innerHTML = '';
+    if (cta)     cta.href = PRODUCT_HREF[product];
     if (countEl) countEl.textContent = pad(current + 1);
 
     animateIn();
