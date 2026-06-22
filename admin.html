@@ -903,11 +903,15 @@ let _stripeOrders = null;
 let _dbOrders = null;
 let _stripeOrdersError = null;
 
+// Abandoned / declined payment attempts that never became real orders — hidden
+// from the admin so the Orders list shows actual orders only.
+const FAILED_STATUSES = ['requires_payment_method', 'requires_confirmation', 'requires_action', 'payment_failed'];
+
 async function getStripeOrders() {
   if (_stripeOrders) return _stripeOrders;
   try {
     const data = await adminFetch('/admin/orders');
-    _stripeOrders = data.orders || [];
+    _stripeOrders = (data.orders || []).filter(function(o) { return FAILED_STATUSES.indexOf(o.status) === -1; });
     _stripeOrdersError = null;
   } catch(e) {
     _stripeOrders = [];
