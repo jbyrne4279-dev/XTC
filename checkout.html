@@ -723,14 +723,15 @@
     const afterDiscount = subtotal - discountAmount;
     let total = afterDiscount + shipping;
 
-    // Loyalty redemption (1 pt = 1 penny), capped to the balance and so the
-    // charge stays >= £0.30 (Stripe minimum). Server re-validates on its side.
+    // Loyalty redemption (1 pt = 5 pence — 100 pts = £5), capped to the balance and
+    // so the charge stays >= £0.30 (Stripe minimum). Server re-validates on its side.
+    const POINT_VALUE_PENCE = 5;
     const redeemCheck = document.getElementById('coRedeemCheck');
     const maxPence = Math.max(0, Math.round(total * 100) - 30);
-    const cap = Math.min(_loyaltyAvailable, maxPence);
+    const cap = Math.min(_loyaltyAvailable, Math.floor(maxPence / POINT_VALUE_PENCE));
     const redeemPoints = (redeemCheck && redeemCheck.checked && cap > 0) ? cap : 0;
     _redeemPoints = redeemPoints;
-    const redeemValue = redeemPoints / 100;
+    const redeemValue = redeemPoints * POINT_VALUE_PENCE / 100;
     total = total - redeemValue;
 
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
@@ -748,7 +749,7 @@
 
     // Redeem label (current usable cap) + redemption row
     const lbl = document.getElementById('coRedeemLabel');
-    if (lbl) lbl.textContent = 'Use ' + cap + ' points (−£' + (cap / 100).toFixed(2) + ')';
+    if (lbl) lbl.textContent = 'Use ' + cap + ' points (−£' + (cap * POINT_VALUE_PENCE / 100).toFixed(2) + ')';
     const redeemRow = document.getElementById('coRedeemRow');
     if (redeemRow) {
       if (redeemPoints > 0) {

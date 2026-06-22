@@ -15,6 +15,9 @@ const PRODUCTS = {
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
 };
 
+// Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
+const POINT_VALUE_PENCE = 5;
+
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
   'https://mugifniadilfwfgrsvie.supabase.co',
@@ -176,7 +179,7 @@ app.post('/create-payment-intent', async (req, res) => {
   }
 
   // Apply loyalty redemption server-side: validate against the signed-in user's
-  // real balance, clamp, and discount (1 pt = 1 penny). Never trust the client.
+  // real balance, clamp, and discount (1 pt = 5 pence — 100 pts = £5). Never trust the client.
   let redeemApplied = 0;
   let redeemUserId = '';
   const reqRedeem = parseInt(redeemPoints, 10);
@@ -185,10 +188,11 @@ app.post('/create-payment-intent', async (req, res) => {
     if (user) {
       try {
         const bal = await computeBalance(user);
-        const maxByAmount = Math.max(0, finalAmount - 30); // keep >= Stripe min (30p)
+        // Most points usable without dropping below the Stripe minimum (30p).
+        const maxByAmount = Math.floor(Math.max(0, finalAmount - 30) / POINT_VALUE_PENCE);
         redeemApplied = Math.max(0, Math.min(reqRedeem, bal.available, maxByAmount));
         if (redeemApplied > 0) {
-          finalAmount -= redeemApplied;
+          finalAmount -= redeemApplied * POINT_VALUE_PENCE;
           redeemUserId = user.id;
         }
       } catch (e) { redeemApplied = 0; redeemUserId = ''; }
@@ -414,7 +418,7 @@ async function getUserFromToken(req) {
 
 // ── Loyalty points ───────────────────────────────────────────────────────────
 // Points are derived from the account's orders: earn 1 point per £1 spent,
-// minus points already redeemed on past orders. 100 pts = £1 (1 pt = 1 penny).
+// minus points already redeemed on past orders. 100 pts = £5 (1 pt = 5 pence).
 function redeemFromMetadata(meta) {
   const n = parseInt((meta && meta.redeemPoints) || '0', 10);
   return Number.isFinite(n) && n > 0 ? n : 0;
