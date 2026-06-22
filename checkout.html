@@ -1188,6 +1188,48 @@
   } else {
     init();
   }
+
+  /* ─── Auto-detect the shopper's country (still fully editable) ─── */
+  function autodetectCountry() {
+    const sel = document.getElementById('coCountry');
+    if (!sel) return;
+    let touched = false;
+    sel.addEventListener('change', function () { touched = true; });
+
+    // Set only if the shopper hasn't manually changed it. Programmatic sets here
+    // don't fire 'change', so they never count as a manual choice.
+    function setCountry(code) {
+      if (touched || !code) return;
+      code = String(code).toUpperCase();
+      if (sel.querySelector('option[value="' + code + '"]')) sel.value = code;
+    }
+
+    // 1) Instant guess from the browser's locale (offline, no network).
+    try {
+      const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+      for (let i = 0; i < langs.length; i++) {
+        let region = '';
+        try { region = (window.Intl && Intl.Locale) ? new Intl.Locale(langs[i]).region : ''; } catch (e) {}
+        if (!region && langs[i].indexOf('-') > -1) region = langs[i].split('-').pop();
+        if (region) { setCountry(region); break; }
+      }
+    } catch (e) {}
+
+    // 2) Refine from IP geolocation (closer to the real shipping location). Best-effort.
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(function () { ctrl.abort(); }, 3000);
+      fetch('https://get.geojs.io/v1/ip/country.json', { signal: ctrl.signal })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { clearTimeout(timer); if (d && d.country) setCountry(d.country); })
+        .catch(function () {});
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autodetectCountry);
+  } else {
+    autodetectCountry();
+  }
 })();
 </script>
 
