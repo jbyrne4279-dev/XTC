@@ -199,6 +199,99 @@
       display: none;
     }
     .to-error.show { display: block; }
+
+    /* ── You May Also Like — same style as New Releases ── */
+    .ymal-section { border-top: 1px solid rgba(255,255,255,0.06); }
+    .ymal-head { text-align: center; padding: 64px 20px 0; }
+    .ymal-eyebrow {
+      font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+      color: rgba(179,102,255,0.7); margin-bottom: 12px;
+    }
+    .ymal-title {
+      font-size: clamp(22px, 3vw, 32px); letter-spacing: 0.08em;
+      text-transform: uppercase; font-weight: 300; color: #fff;
+    }
+    .col-grid-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 20px 90px; }
+    .col-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    @media (max-width: 900px) { .col-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+    @media (max-width: 560px) { .col-grid { grid-template-columns: 1fr; gap: 14px; } }
+
+    @property --nr-a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes nr-spin { to { --nr-a: 360deg; } }
+    .nr-card {
+      display: flex; flex-direction: column; background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,0.06); position: relative; cursor: pointer;
+    }
+    .nr-card::before, .nr-card::after {
+      content: ''; position: absolute; inset: 0; padding: 1px;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 1;
+    }
+    .nr-card::before {
+      animation: nr-spin 3.5s linear infinite;
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 60%,
+        rgba(100,30,200,0.6) 72%, rgba(179,102,255,1) 80%, rgba(220,170,255,1) 85%,
+        rgba(179,102,255,0.8) 92%, transparent 100%);
+      opacity: 1; transition: opacity 0.4s ease;
+    }
+    .nr-card::after {
+      animation: nr-spin 0.8s linear infinite;
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 50%,
+        rgba(100,30,200,0.7) 65%, rgba(179,102,255,1) 75%, rgba(230,190,255,1) 82%,
+        rgba(179,102,255,0.8) 90%, transparent 100%);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .nr-card:hover { border-color: rgba(179,102,255,0.2); }
+    .nr-card:hover::before { opacity: 0; }
+    .nr-card:hover::after  { opacity: 1; }
+    .nr-card__media {
+      aspect-ratio: 1; background: #111; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nr-card__media img {
+      width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease;
+    }
+    .nr-card:hover .nr-card__media img { transform: scale(1.04); }
+    .nr-card__badge {
+      position: absolute; top: 12px; left: 12px; font-size: 8px; letter-spacing: 2px;
+      text-transform: uppercase; padding: 4px 8px; background: rgba(179,102,255,0.15);
+      border: 1px solid rgba(179,102,255,0.3); color: rgba(179,102,255,0.9); z-index: 2;
+    }
+    .nr-card__info { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .nr-card__drop {
+      font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(179,102,255,0.6);
+    }
+    .nr-card__name {
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #fff; font-weight: 500;
+    }
+    .nr-card__desc {
+      font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 1px; line-height: 1.7;
+    }
+    .nr-card__bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .nr-card__price { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+    @property --cta-nr-a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes cta-nr-spin { to { --cta-nr-a: 360deg; } }
+    .nr-card__cta {
+      font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 9px 16px; background: transparent; border: 1px solid rgba(179,102,255,0.4);
+      color: #fff; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+      font-family: inherit; text-decoration: none; display: inline-block; position: relative;
+    }
+    .nr-card__cta::before {
+      content: ''; position: absolute; inset: -1px; padding: 1px;
+      background: conic-gradient(from var(--cta-nr-a),
+        transparent 0%, transparent 55%,
+        rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+        rgba(179,102,255,0.8) 91%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: cta-nr-spin 3s linear infinite; pointer-events: none;
+    }
+    .nr-card__cta:hover { background: rgba(179,102,255,0.12); border-color: rgba(179,102,255,0.7); }
   </style>
 </head>
 <body>
@@ -302,6 +395,53 @@
           <p class="to-result__order" id="resultOrder"></p>
           <div id="resultSteps"></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- You May Also Like -->
+  <section class="ymal-section">
+    <div class="ymal-head">
+      <p class="ymal-eyebrow">XTC Clothing</p>
+      <h2 class="ymal-title">You May Also Like</h2>
+    </div>
+    <div class="col-grid-wrap">
+      <div class="col-grid">
+
+        <!-- Polo Black -->
+        <a href="/product-polo-black" class="nr-card" style="text-decoration:none;">
+          <div class="nr-card__media">
+            <img src="images/polo-black-flat.jpg" alt="XTC Polo Black" />
+            <span class="nr-card__badge" style="background:rgba(10,10,10,0.85);border-color:rgba(179,102,255,0.35);color:rgba(179,102,255,1);">Limited Edition</span>
+          </div>
+          <div class="nr-card__info">
+            <span class="nr-card__drop">Original Members</span>
+            <h2 class="nr-card__name">Polo [Black]</h2>
+            <p class="nr-card__desc">260gsm heavyweight pique cotton. Embroidered XTC chest logo. Woven back label. Limited run.</p>
+            <div class="nr-card__bottom">
+              <span class="nr-card__price">£60</span>
+              <span class="nr-card__cta">Shop Now</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Polo White -->
+        <a href="/product-polo-white" class="nr-card" style="text-decoration:none;">
+          <div class="nr-card__media">
+            <img src="images/polo-white-flat.jpg" alt="XTC Polo White" />
+            <span class="nr-card__badge" style="background:rgba(10,10,10,0.85);border-color:rgba(179,102,255,0.35);color:rgba(179,102,255,1);">Limited Edition</span>
+          </div>
+          <div class="nr-card__info">
+            <span class="nr-card__drop">Original Members</span>
+            <h2 class="nr-card__name">Polo [White]</h2>
+            <p class="nr-card__desc">260gsm heavyweight pique cotton. Embroidered XTC chest logo. Woven back label. Limited run.</p>
+            <div class="nr-card__bottom">
+              <span class="nr-card__price">£60</span>
+              <span class="nr-card__cta">Shop Now</span>
+            </div>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
