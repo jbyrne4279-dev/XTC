@@ -567,6 +567,21 @@ app.get('/admin/orders-db', requireAdmin, async (req, res) => {
   }
 });
 
+// Admin: limited-edition polo numbers (1..50) — how many are claimed and by whom.
+app.get('/admin/polo-editions', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await sb.from('polo_editions').select('*').order('number', { ascending: true });
+    if (error) {
+      return res.status(500).json({ ok: false, error: error.message, hint: 'Run db/polo-editions.sql in the Supabase SQL editor.' });
+    }
+    const editions = data || [];
+    const claimed = editions.filter(e => e.order_id).length;
+    res.json({ ok: true, total: editions.length, claimed, remaining: editions.length - claimed, editions });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 // ── In-memory shipping records ───────────────────────────────────────────────
 const shippingRecords = new Map();
 
