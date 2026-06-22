@@ -896,14 +896,17 @@ async function adminFetch(path, opts) {
 /* ─────────── STRIPE ORDERS CACHE ─────────── */
 let _stripeOrders = null;
 let _dbOrders = null;
+let _stripeOrdersError = null;
 
 async function getStripeOrders() {
   if (_stripeOrders) return _stripeOrders;
   try {
     const data = await adminFetch('/admin/orders');
     _stripeOrders = data.orders || [];
+    _stripeOrdersError = null;
   } catch(e) {
     _stripeOrders = [];
+    _stripeOrdersError = e.message;
   }
   return _stripeOrders;
 }
@@ -925,7 +928,7 @@ function refFromPiId(piId) {
   return 'XTC' + String(piId || '').replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
 }
 
-function invalidateOrdersCache() { _stripeOrders = null; _dbOrders = null; }
+function invalidateOrdersCache() { _stripeOrders = null; _dbOrders = null; _stripeOrdersError = null; }
 
 /* ─────────── TRACKING URL ─────────── */
 function trackingUrl(carrier, trackingNumber) {
@@ -993,7 +996,9 @@ async function renderOrders() {
     if (countEl) countEl.textContent = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
 
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">No orders found</td></tr>';
+      tbody.innerHTML = _stripeOrdersError
+        ? '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">Could not load orders from Stripe: ' + _stripeOrdersError + '</td></tr>'
+        : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px;">No orders found</td></tr>';
       return;
     }
 

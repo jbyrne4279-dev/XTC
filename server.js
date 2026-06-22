@@ -557,9 +557,11 @@ function requireAdmin(req, res, next) {
 // ── Admin: Orders ────────────────────────────────────────────────────────────
 app.get('/admin/orders', requireAdmin, async (req, res) => {
   try {
-    const intents = await stripe.paymentIntents.list({ limit: 100, expand: ['data.charges'] });
+    const intents = await stripe.paymentIntents.list({ limit: 100, expand: ['data.latest_charge'] });
     const orders = intents.data.map(pi => {
-      const charge = pi.charges && pi.charges.data && pi.charges.data[0];
+      // `charges` was removed from PaymentIntent in recent Stripe API versions —
+      // use the expanded `latest_charge` object instead.
+      const charge = (pi.latest_charge && typeof pi.latest_charge === 'object') ? pi.latest_charge : null;
       const billing = charge && charge.billing_details;
       return {
         id: pi.id,
