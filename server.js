@@ -545,7 +545,7 @@ app.get('/admin/orders-db', requireAdmin, async (req, res) => {
 const shippingRecords = new Map();
 
 // ── Admin auth middleware ────────────────────────────────────────────────────
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'xtcadmin2026';
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'XTC4279';
 
 function requireAdmin(req, res, next) {
   const auth = req.headers['authorization'] || '';

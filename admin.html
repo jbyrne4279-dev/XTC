@@ -707,7 +707,7 @@
             <p class="settings-row__label">Admin API Token</p>
             <p class="settings-row__sub">Bearer token for /admin/* API routes — must exactly match the <code style="color:var(--accent);font-family:monospace;">ADMIN_TOKEN</code> env var on your server. If orders won't load, set this to that value.</p>
           </div>
-          <input type="text" id="adminTokenDisplay" placeholder="xtcadmin2026" />
+          <input type="text" id="adminTokenDisplay" placeholder="XTC4279" />
         </div>
         <div class="settings-save">
           <button class="btn-sm" onclick="saveAdminToken()">Save Token</button>
@@ -809,12 +809,13 @@ const DEFAULT_STOCK = {
 };
 const SIZES = ['S','M','L','XL','XXL'];
 const DEFAULT_PASS = 'xtcadmin2026';
+const DEFAULT_TOKEN = 'XTC4279';
 
 /* ─────────── AUTH ─────────── */
 function getAdminPass() { return localStorage.getItem('xtc-admin-pass') || DEFAULT_PASS; }
 // Bearer token for /admin/* API routes — must match the server's ADMIN_TOKEN env var.
 // Kept separate from the dashboard login password so the two can't silently drift apart.
-function getAdminToken() { return localStorage.getItem('xtc-admin-token') || DEFAULT_PASS; }
+function getAdminToken() { return localStorage.getItem('xtc-admin-token') || DEFAULT_TOKEN; }
 
 function doLogin() {
   const pass = document.getElementById('loginPass').value;
