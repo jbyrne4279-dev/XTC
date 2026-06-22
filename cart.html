@@ -100,8 +100,8 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.5);
       margin-bottom: 24px;
+      text-align: center;
     }
-    .cart-recs:not(.cart-recs--row) .cart-recs__heading { text-align: center; }
     .cart-recs__grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -139,16 +139,17 @@
       text-transform: uppercase;
       color: #fff;
     }
-    /* Row variant — full width under the cart-with-items layout */
+    /* Row variant (cart-with-items) — keep the same design as the empty state:
+       centered, 640px wide, two-column grid. */
     .cart-recs--row {
       grid-column: 1 / -1;
-      max-width: none;
-      margin-top: 80px;
-      padding-top: 56px;
-      border-top: 1px solid rgba(255,255,255,0.12);
+      max-width: 640px;
+      margin: 56px auto 0;
+      padding-top: 44px;
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
     .cart-recs--row .cart-recs__grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
 
     /* Cart split layout */
