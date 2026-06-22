@@ -309,6 +309,14 @@
     }
     .co-redeem input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
     .co-redeem #coRedeemLabel { color: var(--accent); }
+    .co-redeem-arrow {
+      color: var(--accent);
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .co-redeem input:checked ~ .co-redeem-arrow { opacity: 1; transform: translateX(0); }
 
     /* Promo code input */
     .co-promo {
@@ -643,6 +651,7 @@
     <label class="co-redeem" id="coRedeemWrap" style="display:none;">
       <input type="checkbox" id="coRedeemCheck" />
       <span id="coRedeemLabel">Use points</span>
+      <svg class="co-redeem-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </label>
 
     <div class="co-totals">
