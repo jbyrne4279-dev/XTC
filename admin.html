@@ -704,12 +704,13 @@
         </div>
         <div class="settings-row">
           <div>
-            <p class="settings-row__label">Admin Token</p>
-            <p class="settings-row__sub">Bearer token for /admin/* API routes — must match ADMIN_TOKEN env var on server</p>
+            <p class="settings-row__label">Admin API Token</p>
+            <p class="settings-row__sub">Bearer token for /admin/* API routes — must exactly match the <code style="color:var(--accent);font-family:monospace;">ADMIN_TOKEN</code> env var on your server. If orders won't load, set this to that value.</p>
           </div>
-          <input type="text" id="adminTokenDisplay" placeholder="xtcadmin2026" readonly style="color:var(--muted);" />
+          <input type="text" id="adminTokenDisplay" placeholder="xtcadmin2026" />
         </div>
         <div class="settings-save">
+          <button class="btn-sm" onclick="saveAdminToken()">Save Token</button>
           <button class="btn-sm btn-sm--accent" onclick="savePassword()">Save Password</button>
         </div>
       </div>
@@ -811,6 +812,9 @@ const DEFAULT_PASS = 'xtcadmin2026';
 
 /* ─────────── AUTH ─────────── */
 function getAdminPass() { return localStorage.getItem('xtc-admin-pass') || DEFAULT_PASS; }
+// Bearer token for /admin/* API routes — must match the server's ADMIN_TOKEN env var.
+// Kept separate from the dashboard login password so the two can't silently drift apart.
+function getAdminToken() { return localStorage.getItem('xtc-admin-token') || DEFAULT_PASS; }
 
 function doLogin() {
   const pass = document.getElementById('loginPass').value;
@@ -881,7 +885,7 @@ function initApp() {
 /* ─────────── API HELPERS ─────────── */
 async function adminFetch(path, opts) {
   opts = opts || {};
-  const token = getAdminPass();
+  const token = getAdminToken();
   const res = await fetch(path, Object.assign({}, opts, {
     headers: Object.assign({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, opts.headers || {}),
   }));
@@ -1364,7 +1368,7 @@ let _adminStock = null;
 
 async function fetchAdminStock() {
   try {
-    const res = await fetch('/admin/stock', { headers: { 'Authorization': 'Bearer ' + ADMIN_TOKEN } });
+    const res = await fetch('/admin/stock', { headers: { 'Authorization': 'Bearer ' + getAdminToken() } });
     if (res.ok) { const d = await res.json(); _adminStock = d.stock; }
   } catch(e) {}
   if (!_adminStock) _adminStock = JSON.parse(JSON.stringify(DEFAULT_STOCK));
@@ -1407,7 +1411,7 @@ async function saveStock(productId) {
   inputs.forEach(inp => { sizes[inp.dataset.size] = parseInt(inp.value) || 0; });
   const res = await fetch('/admin/stock', {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getAdminToken() },
     body: JSON.stringify({ productId, sizes }),
   });
   if (!res.ok) { showToast('Save failed — check connection'); return; }
@@ -1616,7 +1620,7 @@ function loadSettings() {
   const ga4 = localStorage.getItem('xtc-ga4-id');
   if (ga4) document.getElementById('ga4Id').value = ga4;
   document.getElementById('lowStockThreshold').value = localStorage.getItem('xtc-low-threshold') || '3';
-  document.getElementById('adminTokenDisplay').value = getAdminPass();
+  document.getElementById('adminTokenDisplay').value = getAdminToken();
 }
 
 function savePassword() {
@@ -1624,8 +1628,17 @@ function savePassword() {
   if (p.length < 6) { showToast('Password must be at least 6 characters'); return; }
   localStorage.setItem('xtc-admin-pass', p);
   document.getElementById('newPassword').value = '';
-  document.getElementById('adminTokenDisplay').value = p;
   showToast('Password updated');
+}
+
+function saveAdminToken() {
+  const t = document.getElementById('adminTokenDisplay').value.trim();
+  if (!t) { showToast('Enter the server ADMIN_TOKEN'); return; }
+  localStorage.setItem('xtc-admin-token', t);
+  invalidateOrdersCache();
+  showToast('API token saved');
+  // Re-test immediately so the user gets instant feedback.
+  if (document.getElementById('page-orders').classList.contains('active')) renderOrders();
 }
 
 function saveGa4() {
@@ -1648,7 +1661,7 @@ async function resetStock() {
     Object.entries(sizes).forEach(([size, qty]) => {
       updates.push(fetch('/admin/stock', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getAdminToken() },
         body: JSON.stringify({ productId, size, qty }),
       }));
     });
