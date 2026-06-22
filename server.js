@@ -295,7 +295,7 @@ app.post('/webhook', async (req, res) => {
 
 // Attach shipping/customer details to payment intent before confirmation
 app.post('/update-payment-intent', async (req, res) => {
-  const { intentId, name, email, phone, address, city, postcode, cartSummary } = req.body;
+  const { intentId, name, email, phone, address, city, postcode, country, cartSummary } = req.body;
   if (!intentId) return res.status(400).json({ error: 'intentId required' });
   try {
     await stripe.paymentIntents.update(intentId, {
@@ -307,10 +307,10 @@ app.post('/update-payment-intent', async (req, res) => {
           line1: address || '',
           city: city || '',
           postal_code: postcode || '',
-          country: 'GB',
+          country: country || 'GB',
         },
       },
-      metadata: { name: name || '', email: email || '', cartSummary: cartSummary || '' },
+      metadata: { name: name || '', email: email || '', country: country || '', cartSummary: cartSummary || '' },
     });
     res.json({ ok: true });
   } catch (err) {
