@@ -716,6 +716,51 @@
     .order-track a { color: var(--accent); text-decoration: none; }
     .order-track a:hover { text-decoration: underline; }
 
+    /* Ordered product thumbnails — click through to the product page */
+    .order-products {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .order-product {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      padding: 6px;
+      margin: 0 -6px;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+    .order-product:hover { background: rgba(255,255,255,0.045); }
+    .order-product__img {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      object-fit: cover;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+    }
+    .order-product__info { min-width: 0; flex: 1; }
+    .order-product__name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-product__meta {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+    .order-product__chev { color: var(--text-3); flex-shrink: 0; transition: color 0.15s, transform 0.15s; }
+    .order-product:hover .order-product__chev { color: var(--accent); transform: translateX(2px); }
+
     /* Account details form */
     .detail-form .form-field { margin-bottom: 14px; }
     .detail-form .form-field:last-of-type { margin-bottom: 0; }
@@ -1528,12 +1573,44 @@
                 : o.tracking_number;
               trackHtml = '<div class="order-track">' + (o.carrier ? o.carrier + ' · ' : '') + tInner + '</div>';
             }
+
+            // Ordered products — thumbnail + colour/size, each links to its product page.
+            var itemsHtml = '';
+            if (o.items && o.items.length) {
+              itemsHtml = '<div class="order-products">' + o.items.map(function (it) {
+                var rawId = (it.id || '').toString();
+                var sizeM = rawId.match(/-(xxl|xl|l|m|s)$/i);
+                var size = sizeM ? sizeM[1].toUpperCase() : '';
+                var pid = sizeM ? rawId.slice(0, sizeM.index) : rawId;
+                var url = pid ? '/product-' + pid : '#';
+                var nm = (it.name || 'Product').toString();
+                var title = nm.replace(/\s*[—–-]\s*[A-Za-z]+$/, ''); // drop trailing size from the name
+                var colorM = nm.match(/\[([^\]]+)\]/);
+                var color = colorM ? colorM[1].charAt(0).toUpperCase() + colorM[1].slice(1).toLowerCase() : '';
+                var img = it.img || it.image || (/white/i.test(rawId) ? 'images/polo-white-flat.jpg' : 'images/polo-black-flat.jpg');
+                var qty = it.qty || 1;
+                var meta = [];
+                if (color) meta.push(color);
+                if (size) meta.push('Size ' + size);
+                meta.push('Qty ' + qty);
+                return '<a class="order-product" href="' + url + '">' +
+                  '<img class="order-product__img" src="' + img + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'" />' +
+                  '<div class="order-product__info">' +
+                    '<div class="order-product__name">' + title + '</div>' +
+                    '<div class="order-product__meta">' + meta.join(' · ') + '</div>' +
+                  '</div>' +
+                  '<svg class="order-product__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>' +
+                '</a>';
+              }).join('') + '</div>';
+            }
+
             html += '<div class="order-item" data-order-id="' + String(id).replace(/[^A-Za-z0-9_-]/g, '') + '">' +
               '<div class="order-item-top">' +
                 '<div><div class="order-item-id">' + id + '</div><div class="order-item-date">' + date + '</div></div>' +
                 '<div class="order-item-total">' + total + '</div>' +
               '</div>' +
               '<span class="order-status order-status--' + status.toLowerCase() + '">' + status + '</span>' +
+              itemsHtml +
               trackHtml +
             '</div>';
           });
