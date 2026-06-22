@@ -90,15 +90,18 @@
     .cart-recs {
       width: 100%;
       max-width: 640px;
-      margin-top: 32px;
+      margin-top: 56px;
+      padding-top: 44px;
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
     .cart-recs__heading {
       font-size: 11px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.5);
       margin-bottom: 24px;
     }
+    .cart-recs:not(.cart-recs--row) .cart-recs__heading { text-align: center; }
     .cart-recs__grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -140,9 +143,9 @@
     .cart-recs--row {
       grid-column: 1 / -1;
       max-width: none;
-      margin-top: 56px;
-      padding-top: 40px;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 80px;
+      padding-top: 56px;
+      border-top: 1px solid rgba(255,255,255,0.12);
     }
     .cart-recs--row .cart-recs__grid {
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
