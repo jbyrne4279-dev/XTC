@@ -121,21 +121,10 @@ ul, ol { list-style: none; }
   padding-right: 80px;
   color: rgba(255,255,255,0.4);
 }
-/* "Free Delivery" only — purple with shine sweep */
+/* "Free Delivery" only — solid purple (no shine animation) */
 .announcement-bar__track span .ad-free {
   padding-right: 0;
-  background: linear-gradient(90deg,
-    rgba(100,40,160,0.8)  0%,
-    rgba(160,80,255,1)   35%,
-    rgba(80,20,120,1)    50%,
-    rgba(160,80,255,1)   65%,
-    rgba(100,40,160,0.8) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: purple-shine-move 14s linear infinite;
+  color: rgba(160,80,255,1);
 }
 
 /* Size button selected — green circuit animation */

@@ -61,21 +61,10 @@
       text-transform: uppercase;
     }
     .announcement-bar__track span { padding: 0 2rem; }
-    /* "Free Delivery" only — purple with shine sweep */
+    /* "Free Delivery" only — solid purple (no shine animation) */
     .announcement-bar__track span .ad-free {
       padding: 0;
-      background: linear-gradient(90deg,
-        rgba(100,40,160,0.8)  0%,
-        rgba(160,80,255,1)   35%,
-        rgba(80,20,120,1)    50%,
-        rgba(160,80,255,1)   65%,
-        rgba(100,40,160,0.8) 100%
-      );
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: purple-shine-move 14s linear infinite;
+      color: rgba(160,80,255,1);
     }
     @keyframes purple-shine-move {
       0%   { background-position: -200% center; }
