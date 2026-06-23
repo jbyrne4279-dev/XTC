@@ -254,7 +254,12 @@ function initEarlyAccessSlideshow() {
       slides[prev].classList.add('ea-exit');
       slides[prev].classList.remove('active');
       slides[cur].classList.add('active');
-      setTimeout(() => slides[prev].classList.remove('ea-exit'), 800);
+      setTimeout(() => {
+        slides[prev].style.transition = 'none';
+        slides[prev].classList.remove('ea-exit');
+        slides[prev].offsetWidth; // force reflow
+        slides[prev].style.transition = '';
+      }, 800);
     }, 4000);
   }
 
