@@ -209,10 +209,51 @@ function initHero() {
   startTimer();
 }
 
+// ---- Early-access image slideshow (right side of the SS26 sign-up form) ----
+// EDIT THIS LIST to set the slideshow images, in order. Upload the images into
+// the repo's images/ folder, then add their paths here. One image = static (no
+// rotation). Any image that fails to load is skipped automatically.
+const EARLY_ACCESS_IMAGES = [
+  'images/ZIP-HOODIE-WAR.png',
+  'images/summer-joggers-and-hoodie.png',
+];
+
+function initEarlyAccessSlideshow() {
+  const box = document.querySelector('.early-access-bar__image');
+  if (!box || !EARLY_ACCESS_IMAGES.length) return;
+
+  box.innerHTML = '';
+  const slides = [];
+  EARLY_ACCESS_IMAGES.forEach((src, i) => {
+    const img = document.createElement('img');
+    img.className = 'ea-slide' + (i === 0 ? ' active' : '');
+    img.src = src;
+    img.alt = 'XTC SS26';
+    img.loading = i === 0 ? 'eager' : 'lazy';
+    img.onerror = () => {
+      const idx = slides.indexOf(img);
+      if (idx > -1) slides.splice(idx, 1);
+      img.remove();
+    };
+    box.appendChild(img);
+    slides.push(img);
+  });
+
+  if (slides.length <= 1) return; // single image → no rotation
+  let cur = 0;
+  setInterval(() => {
+    if (slides.length <= 1) return;
+    if (slides[cur]) slides[cur].classList.remove('active');
+    cur = (cur + 1) % slides.length;
+    if (slides[cur]) slides[cur].classList.add('active');
+  }, 4000);
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   initNavDrawer();
   initHero();
+  initEarlyAccessSlideshow();
 });

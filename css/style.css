@@ -2803,6 +2803,9 @@ textarea {
   object-position: center top;
   display: block;
 }
+/* Slideshow: cross-fade between images */
+.early-access-bar__image img.ea-slide { opacity: 0; transition: opacity 1s ease; }
+.early-access-bar__image img.ea-slide.active { opacity: 1; }
 .early-access-bar__heading {
   font-size: 26px;
   font-weight: 200;
