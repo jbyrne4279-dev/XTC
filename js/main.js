@@ -255,5 +255,5 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   initNavDrawer();
   initHero();
-  initEarlyAccessSlideshow();
+  // initEarlyAccessSlideshow(); // disabled — early-access shows a single static image for now
 });
