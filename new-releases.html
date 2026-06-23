@@ -401,6 +401,21 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
+
+    /* ── Desktop layout polish (desktop only) ──
+       Cards reuse the home page .fp-grid which has full-bleed side padding;
+       inside this centred page that pushed the cards out of line with the
+       label and floated them. Re-centre everything into one tidy column. */
+    @media (min-width: 901px) {
+      .col-grid-wrap { max-width: 1080px; padding: 56px 40px 96px; }
+      .col-grid-wrap .fp-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        padding: 0;               /* drop the home full-bleed inset so cards align with the label */
+      }
+      .nr-drop-label { margin-bottom: 28px; }
+      .col-hero { padding-top: 120px; padding-bottom: 64px; }
+    }
   </style>
 </head>
 <body>
@@ -491,7 +506,7 @@
   <div class="col-grid-wrap">
 
     <!-- Drop 01 -->
-    <p style="font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(179,102,255,0.6);margin-bottom:20px;"><span style="color:rgba(255,255,255,0.45);">Drop 01 —</span> Original Members</p>
+    <p class="nr-drop-label" style="font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(179,102,255,0.6);margin-bottom:20px;"><span style="color:rgba(255,255,255,0.45);">Drop 01 —</span> Original Members</p>
     <div class="fp-grid reveal-group" style="margin-bottom:64px;">
 
       <!-- Product: POLO [BLACK] -->
