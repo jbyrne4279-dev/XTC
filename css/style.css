@@ -2803,9 +2803,21 @@ textarea {
   object-position: center;
   display: block;
 }
-/* Slideshow: continuous crossfade */
-.early-access-bar__image img.ea-slide { opacity: 0; transition: opacity 0.9s ease; }
-.early-access-bar__image img.ea-slide.active { opacity: 1; }
+/* Slideshow: smooth swipe with motion blur */
+.early-access-bar__image img.ea-slide {
+  transform: translateX(100%);
+  filter: blur(12px);
+  transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), filter 0.75s ease, opacity 0.1s;
+  opacity: 1;
+}
+.early-access-bar__image img.ea-slide.active {
+  transform: translateX(0);
+  filter: blur(0);
+}
+.early-access-bar__image img.ea-slide.ea-exit {
+  transform: translateX(-100%);
+  filter: blur(12px);
+}
 .ea-ss26 {
   background: linear-gradient(90deg, #b366ff 0%, #fff 45%, #b366ff 55%, #d4a0ff 100%);
   background-size: 250% auto;

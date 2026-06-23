@@ -251,8 +251,10 @@ function initEarlyAccessSlideshow() {
     setInterval(() => {
       const prev = cur;
       cur = (cur + 1) % slides.length;
+      slides[prev].classList.add('ea-exit');
+      slides[prev].classList.remove('active');
       slides[cur].classList.add('active');
-      setTimeout(() => slides[prev].classList.remove('active'), 900);
+      setTimeout(() => slides[prev].classList.remove('ea-exit'), 800);
     }, 4000);
   }
 
