@@ -2792,7 +2792,7 @@ textarea {
 .early-access-bar__image {
   position: relative;
   overflow: hidden;
-  background: #0d0d0d;
+  background: #000;
 }
 .early-access-bar__image img {
   position: absolute;
