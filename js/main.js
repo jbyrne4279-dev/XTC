@@ -249,9 +249,10 @@ function initEarlyAccessSlideshow() {
     if (slides.length <= 1) return;             // single image → no rotation
     let cur = 0;
     setInterval(() => {
-      slides[cur].classList.remove('active');
+      const prev = cur;
       cur = (cur + 1) % slides.length;
       slides[cur].classList.add('active');
+      setTimeout(() => slides[prev].classList.remove('active'), 900);
     }, 4000);
   }
 
