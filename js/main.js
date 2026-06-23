@@ -192,8 +192,8 @@ function initHero() {
   if (heroEl) {
     heroEl.addEventListener('click', e => {
       if (e.target.closest('button, a')) return;
-      const href = SLIDE_DATA[current] && SLIDE_DATA[current].href;
-      if (href) window.location.href = href;
+      const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
+      window.location.href = PRODUCT_HREF[product];
     });
     heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
     heroEl.addEventListener('touchend', e => {
