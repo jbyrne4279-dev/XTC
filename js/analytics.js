@@ -7,7 +7,7 @@
    PageView, ViewContent, AddToCart, InitiateCheckout and Purchase then fire
    automatically across the whole site.
    ───────────────────────────────────────────────────────────────────────── */
-var META_PIXEL_ID = ''; // e.g. '1234567890123456'
+var META_PIXEL_ID = '2539030076613054'; // Meta Pixel ID
 
 (function initMetaPixel() {
   if (!META_PIXEL_ID || window.fbq) return;
