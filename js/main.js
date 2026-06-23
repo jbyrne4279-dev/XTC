@@ -210,43 +210,57 @@ function initHero() {
 }
 
 // ---- Early-access image slideshow (right side of the SS26 sign-up form) ----
-// EDIT THIS LIST to set the slideshow images, in order. Upload the images into
-// the repo's images/ folder, then add their paths here. One image = static (no
-// rotation). Any image that fails to load is skipped automatically.
+// Upload your images to the repo's images/ folder named EXACTLY as below (in the
+// order you want them shown). The slideshow preloads them and only switches on
+// once they exist — until then the page keeps showing the single static image,
+// so it can never end up blank.
 const EARLY_ACCESS_IMAGES = [
-  'images/ZIP-HOODIE-WAR.png',
-  'images/summer-joggers-and-hoodie.png',
+  'images/ea-1.png', // zip hoodie (front)
+  'images/ea-2.png', // shorts (front)
+  'images/ea-3.png', // shorts (back)
+  'images/ea-4.png', // t-shirt
+  'images/ea-5.png', // hoodie (back)
 ];
 
 function initEarlyAccessSlideshow() {
   const box = document.querySelector('.early-access-bar__image');
   if (!box || !EARLY_ACCESS_IMAGES.length) return;
 
-  box.innerHTML = '';
-  const slides = [];
-  EARLY_ACCESS_IMAGES.forEach((src, i) => {
-    const img = document.createElement('img');
-    img.className = 'ea-slide' + (i === 0 ? ' active' : '');
-    img.src = src;
-    img.alt = 'XTC SS26';
-    img.loading = i === 0 ? 'eager' : 'lazy';
-    img.onerror = () => {
-      const idx = slides.indexOf(img);
-      if (idx > -1) slides.splice(idx, 1);
-      img.remove();
-    };
-    box.appendChild(img);
-    slides.push(img);
-  });
+  // Preload first — only build the slideshow from images that actually load, so
+  // missing files never blank the panel (the static fallback image stays).
+  const loaded = [];
+  let pending = EARLY_ACCESS_IMAGES.length;
 
-  if (slides.length <= 1) return; // single image → no rotation
-  let cur = 0;
-  setInterval(() => {
-    if (slides.length <= 1) return;
-    if (slides[cur]) slides[cur].classList.remove('active');
-    cur = (cur + 1) % slides.length;
-    if (slides[cur]) slides[cur].classList.add('active');
-  }, 4000);
+  function finish() {
+    if (--pending > 0) return;
+    if (!loaded.length) return;                 // none uploaded yet → keep static image
+    loaded.sort((a, b) => a.i - b.i);
+
+    box.innerHTML = '';
+    const slides = loaded.map((o, idx) => {
+      const img = document.createElement('img');
+      img.className = 'ea-slide' + (idx === 0 ? ' active' : '');
+      img.src = o.src;
+      img.alt = 'XTC SS26';
+      box.appendChild(img);
+      return img;
+    });
+
+    if (slides.length <= 1) return;             // single image → no rotation
+    let cur = 0;
+    setInterval(() => {
+      slides[cur].classList.remove('active');
+      cur = (cur + 1) % slides.length;
+      slides[cur].classList.add('active');
+    }, 4000);
+  }
+
+  EARLY_ACCESS_IMAGES.forEach((src, i) => {
+    const test = new Image();
+    test.onload = () => { loaded.push({ i: i, src: src }); finish(); };
+    test.onerror = finish;
+    test.src = src;
+  });
 }
 
 // ---- Init ----
@@ -255,5 +269,5 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   initNavDrawer();
   initHero();
-  // initEarlyAccessSlideshow(); // disabled — early-access shows a single static image for now
+  initEarlyAccessSlideshow();
 });
