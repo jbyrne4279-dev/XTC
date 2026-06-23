@@ -295,10 +295,23 @@
   <!-- html2canvas for screenshot -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
     let orderId = params.get('id') || ('XTC' + Date.now().toString().slice(-6));
+    let _orderValue = 0;
+
+    // Fire the Meta Pixel Purchase conversion exactly once per order.
+    function fireMetaPurchase(id, value) {
+      try {
+        if (!window.fbq) return;
+        const k = 'xtc-fb-purchased-' + id;
+        if (sessionStorage.getItem(k)) return;
+        sessionStorage.setItem(k, '1');
+        fbq('track', 'Purchase', { value: Number(value) || 0, currency: 'GBP' });
+      } catch (e) {}
+    }
 
     // Product images map
     const PRODUCT_IMAGES = {
@@ -351,6 +364,7 @@
         return buildItemRow(getProductImage(li.name), name, meta, '£' + (li.amount / 100).toFixed(2));
       }).join('');
 
+      _orderValue = (data.total || 0) / 100;
       document.getElementById('ocTotal').textContent = '£' + (data.total / 100).toFixed(2);
     }
 
@@ -368,6 +382,7 @@
         return buildItemRow(getProductImage(item.id || item.name), item.name || 'XTC Polo', meta, '£' + lineTotal.toFixed(2));
       }).join('');
 
+      _orderValue = total;
       document.getElementById('ocTotal').textContent = '£' + total.toFixed(2);
     }
 
@@ -378,6 +393,7 @@
         try {
           await renderFromServer(sessionId);
           document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
+          fireMetaPurchase(orderId, _orderValue);
           return;
         } catch (e) {
           // Lookup failed (e.g. lost session) — fall back to local cart
@@ -386,6 +402,7 @@
 
       renderFromLocal();
       document.getElementById('ocOrderId').textContent = 'Order ' + orderId;
+      fireMetaPurchase(orderId, _orderValue);
     }
 
     const IGBtnHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Share to Instagram Story';
