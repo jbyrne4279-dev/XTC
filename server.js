@@ -1,6 +1,7 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const ws = require('ws');
 
@@ -17,6 +18,69 @@ const PRODUCTS = {
 
 // Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
 const POINT_VALUE_PENCE = 5;
+
+// ── Meta Conversions API (server-side Purchase) ──────────────────────────────
+// Sends the Purchase event straight from the server so conversions still track
+// when the browser pixel is blocked (ad blockers / iOS). Deduplicated with the
+// browser pixel via a shared event_id (the order ref). Set META_CAPI_TOKEN in
+// the server environment (Railway) — never commit the token to the repo.
+const META_PIXEL_ID   = process.env.META_PIXEL_ID || '2539030076613054';
+const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || '';
+
+function sha256(v) {
+  return crypto.createHash('sha256').update(String(v == null ? '' : v).trim().toLowerCase()).digest('hex');
+}
+
+function readCookie(req, name) {
+  const c = req.headers.cookie || '';
+  const m = c.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
+  return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+async function sendMetaCapiPurchase(order, req, cartItems) {
+  if (!META_CAPI_TOKEN) return; // not configured yet — no-op
+  try {
+    const userData = {
+      client_ip_address: (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || (req.socket && req.socket.remoteAddress) || '',
+      client_user_agent: req.headers['user-agent'] || '',
+    };
+    if (order.email) userData.em = [sha256(order.email)];
+    const fbp = readCookie(req, '_fbp'); if (fbp) userData.fbp = fbp;
+    const fbc = readCookie(req, '_fbc'); if (fbc) userData.fbc = fbc;
+
+    const custom = { currency: 'GBP', value: Number(order.total) || 0 };
+    if (Array.isArray(cartItems) && cartItems.length) {
+      custom.content_type = 'product';
+      custom.content_ids = cartItems.map(i => i.productId).filter(Boolean);
+      custom.num_items = cartItems.reduce((n, i) => n + (parseInt(i.qty, 10) || 1), 0);
+    }
+
+    const payload = {
+      data: [{
+        event_name: 'Purchase',
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: String(order.id || ''),            // dedup key — matches the browser pixel's eventID
+        action_source: 'website',
+        event_source_url: 'https://xtcclothing.com/order-confirmed',
+        user_data: userData,
+        custom_data: custom,
+      }],
+    };
+
+    const url = 'https://graph.facebook.com/v21.0/' + META_PIXEL_ID + '/events?access_token=' + encodeURIComponent(META_CAPI_TOKEN);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => '');
+      console.error('Meta CAPI error:', res.status, t);
+    }
+  } catch (e) {
+    console.error('Meta CAPI exception:', e.message);
+  }
+}
 
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
@@ -501,6 +565,11 @@ app.post('/orders', async (req, res) => {
     redeemed_points,
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
+
+  // Fire the server-side Purchase to Meta (Conversions API). Fire-and-forget so
+  // it never delays the order response; deduped with the browser pixel by event_id.
+  sendMetaCapiPurchase({ id, email, total }, req, cartItems);
+
   // Decrement stock once per order (idempotent via the order's flag). cartItems
   // is [{ productId, size, qty }]. The webhook does the same as a fallback.
   if (Array.isArray(cartItems) && cartItems.length) {

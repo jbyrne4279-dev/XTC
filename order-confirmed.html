@@ -310,7 +310,8 @@
         const k = 'xtc-fb-purchased-' + id;
         if (sessionStorage.getItem(k)) return;
         sessionStorage.setItem(k, '1');
-        fbq('track', 'Purchase', { value: Number(value) || 0, currency: 'GBP' });
+        // eventID matches the server-side Conversions API event so Meta dedupes them.
+        fbq('track', 'Purchase', { value: Number(value) || 0, currency: 'GBP' }, { eventID: id });
       } catch (e) {}
     }
 
