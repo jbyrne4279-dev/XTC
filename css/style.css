@@ -2803,9 +2803,10 @@ textarea {
   object-position: center top;
   display: block;
 }
-/* Slideshow: cross-fade between images */
-.early-access-bar__image img.ea-slide { opacity: 0; transition: opacity 1s ease; }
-.early-access-bar__image img.ea-slide.active { opacity: 1; }
+/* Slideshow: show one image at a time (no overlap/ghosting) */
+.early-access-bar__image img.ea-slide { opacity: 0; }
+.early-access-bar__image img.ea-slide.active { opacity: 1; animation: ea-fade-in 0.6s ease; }
+@keyframes ea-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .early-access-bar__heading {
   font-size: 26px;
   font-weight: 200;
