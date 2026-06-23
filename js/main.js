@@ -246,36 +246,31 @@ function initEarlyAccessSlideshow() {
   let cur = 0;
   let autoTimer;
 
-  function goTo(next, direction) {
-    if (next === cur) return;
-    const prev = cur;
-    cur = next;
+  function goTo(nextIdx, direction) {
+    if (nextIdx === cur) return;
+    const incoming = slides[nextIdx];
+    const outgoing = slides[cur];
+    cur = nextIdx;
 
     const enterFrom = direction === 1 ? 'translateX(100%)' : 'translateX(-100%)';
-    const exitTo   = direction === 1 ? 'translateX(-100%)' : 'translateX(100%)';
+    const exitTo    = direction === 1 ? 'translateX(-100%)' : 'translateX(100%)';
 
-    // Position incoming off-screen instantly (no transition)
-    slides[cur].style.transition = 'none';
-    slides[cur].style.transform = enterFrom;
-    slides[cur].style.filter = 'blur(12px)';
-    slides[cur].offsetWidth; // force reflow
+    // Place the incoming slide just off-screen, instantly (no transition).
+    incoming.style.transition = 'none';
+    incoming.style.transform = enterFrom;
+    incoming.style.filter = 'blur(12px)';
+    incoming.offsetWidth; // force reflow so the next change animates
 
-    // Animate both
-    slides[cur].style.transition = '';
-    slides[cur].classList.add('active');
+    // Animate the incoming slide IN to centre, and the outgoing slide OUT.
+    incoming.style.transition = '';
+    incoming.classList.add('active');
+    incoming.style.transform = 'translateX(0)';
+    incoming.style.filter = 'blur(0)';
 
-    slides[prev].style.transition = slides[prev].style.transition || '';
-    slides[prev].style.transform = exitTo;
-    slides[prev].style.filter = 'blur(12px)';
-
-    setTimeout(() => {
-      slides[prev].style.transition = 'none';
-      slides[prev].classList.remove('active');
-      slides[prev].style.transform = '';
-      slides[prev].style.filter = '';
-      slides[prev].offsetWidth;
-      slides[prev].style.transition = '';
-    }, 800);
+    outgoing.classList.remove('active');
+    outgoing.style.transition = '';
+    outgoing.style.transform = exitTo;
+    outgoing.style.filter = 'blur(12px)';
   }
 
   function next() { goTo((cur + 1) % slides.length, 1); }
