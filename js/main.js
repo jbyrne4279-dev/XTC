@@ -215,11 +215,11 @@ function initHero() {
 // once they exist — until then the page keeps showing the single static image,
 // so it can never end up blank.
 const EARLY_ACCESS_IMAGES = [
-  'images/ea-1.png', // zip hoodie (front)
-  'images/ea-2.png', // shorts (front)
-  'images/ea-3.png', // shorts (back)
-  'images/ea-4.png', // t-shirt
-  'images/ea-5.png', // hoodie (back)
+  'images/JOGGERS-XTC-back.png',
+  'images/JOGGERS-XTC.png',
+  'images/T-SHIRT-XTC.png',
+  'images/ZIP-HOODIE-BLACK-BACK.png',
+  'images/ZIP-HOODIE-XTC.png',
 ];
 
 function initEarlyAccessSlideshow() {
