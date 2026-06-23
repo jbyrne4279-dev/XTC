@@ -2806,6 +2806,18 @@ textarea {
 /* Slideshow: continuous crossfade */
 .early-access-bar__image img.ea-slide { opacity: 0; transition: opacity 0.9s ease; }
 .early-access-bar__image img.ea-slide.active { opacity: 1; }
+.ea-ss26 {
+  background: linear-gradient(90deg, #b366ff 0%, #fff 45%, #b366ff 55%, #d4a0ff 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ea-shine 2.8s linear infinite;
+}
+@keyframes ea-shine {
+  0%   { background-position: 200% center; }
+  100% { background-position: -50% center; }
+}
 .early-access-bar__heading {
   font-size: 26px;
   font-weight: 200;
