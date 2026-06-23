@@ -248,19 +248,78 @@ function initEarlyAccessSlideshow() {
 
     if (slides.length <= 1) return;             // single image → no rotation
     let cur = 0;
-    setInterval(() => {
+    let autoTimer;
+
+    function goTo(next, direction) {
+      if (next === cur) return;
       const prev = cur;
-      cur = (cur + 1) % slides.length;
-      slides[prev].classList.add('ea-exit');
-      slides[prev].classList.remove('active');
+      cur = next;
+
+      const enterFrom = direction === 1 ? 'translateX(100%)' : 'translateX(-100%)';
+      const exitTo   = direction === 1 ? 'translateX(-100%)' : 'translateX(100%)';
+
+      // Position incoming off-screen instantly (no transition)
+      slides[cur].style.transition = 'none';
+      slides[cur].style.transform = enterFrom;
+      slides[cur].style.filter = 'blur(12px)';
+      slides[cur].offsetWidth; // force reflow
+
+      // Animate both
+      slides[cur].style.transition = '';
       slides[cur].classList.add('active');
+
+      slides[prev].style.transition = slides[prev].style.transition || '';
+      slides[prev].style.transform = exitTo;
+      slides[prev].style.filter = 'blur(12px)';
+
       setTimeout(() => {
         slides[prev].style.transition = 'none';
-        slides[prev].classList.remove('ea-exit');
-        slides[prev].offsetWidth; // force reflow
+        slides[prev].classList.remove('active');
+        slides[prev].style.transform = '';
+        slides[prev].style.filter = '';
+        slides[prev].offsetWidth;
         slides[prev].style.transition = '';
       }, 800);
-    }, 4000);
+    }
+
+    function next() { goTo((cur + 1) % slides.length, 1); }
+    function prev() { goTo((cur - 1 + slides.length) % slides.length, -1); }
+
+    function resetAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(next, 4000);
+    }
+    resetAuto();
+
+    // Drag / swipe support (pointer events — works for mouse + touch)
+    let dragStartX = null;
+    let dragging = false;
+
+    box.addEventListener('pointerdown', e => {
+      dragStartX = e.clientX;
+      dragging = false;
+      box.setPointerCapture(e.pointerId);
+    });
+
+    box.addEventListener('pointermove', e => {
+      if (dragStartX === null) return;
+      if (Math.abs(e.clientX - dragStartX) > 5) dragging = true;
+    });
+
+    box.addEventListener('pointerup', e => {
+      if (dragStartX === null) return;
+      const dx = e.clientX - dragStartX;
+      dragStartX = null;
+      if (!dragging) return;
+      if (Math.abs(dx) < 40) return;   // ignore tiny drags
+      if (dx < 0) { next(); } else { prev(); }
+      resetAuto();
+    });
+
+    box.addEventListener('pointercancel', () => { dragStartX = null; });
+
+    // Prevent image drag interfering
+    box.addEventListener('dragstart', e => e.preventDefault());
   }
 
   EARLY_ACCESS_IMAGES.forEach((src, i) => {
