@@ -27,6 +27,10 @@ const POINT_VALUE_PENCE = 5;
 const META_PIXEL_ID   = process.env.META_PIXEL_ID || '2539030076613054';
 const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || '';
 
+// ── Omnisend (server-side order confirmation email) ──────────────────────────
+// Set OMNISEND_API_KEY in the Railway environment variables.
+const OMNISEND_API_KEY = process.env.OMNISEND_API_KEY || '';
+
 function sha256(v) {
   return crypto.createHash('sha256').update(String(v == null ? '' : v).trim().toLowerCase()).digest('hex');
 }
@@ -79,6 +83,68 @@ async function sendMetaCapiPurchase(order, req, cartItems) {
     }
   } catch (e) {
     console.error('Meta CAPI exception:', e.message);
+  }
+}
+
+// Posts an order to Omnisend's Orders API, which triggers the "Order Confirmation"
+// automation and sends the customer a transactional confirmation email.
+// Fire-and-forget — never blocks or breaks the checkout response.
+async function sendOmnisendOrderConfirmation(order, cartItems) {
+  if (!OMNISEND_API_KEY) return;
+  try {
+    const now = new Date().toISOString();
+    const lineItems = (Array.isArray(cartItems) && cartItems.length)
+      ? cartItems.map(ci => {
+          const p = PRODUCTS[ci.productId];
+          const unitPrice = p ? p.amount / 100 : (order.total || 0);
+          return {
+            productID: String(ci.productId || ''),
+            productTitle: p ? p.name : String(ci.productId || ''),
+            variantTitle: ci.size || '',
+            quantity: parseInt(ci.qty, 10) || 1,
+            price: parseFloat(unitPrice.toFixed(2)),
+            currency: 'GBP',
+          };
+        })
+      : (Array.isArray(order.items) ? order.items : []).map((it, idx) => ({
+          productID: String(idx + 1),
+          productTitle: it.name || 'Item',
+          variantTitle: '',
+          quantity: it.qty || 1,
+          price: parseFloat(String(it.price || '0').replace(/[^0-9.]/g, '')) || 0,
+          currency: 'GBP',
+        }));
+
+    const payload = {
+      orderID: String(order.id || ''),
+      email: (order.email || '').toLowerCase().trim(),
+      orderUrl: `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`,
+      currency: 'GBP',
+      orderSum: parseFloat((Number(order.total) || 0).toFixed(2)),
+      paymentStatus: 'paid',
+      fulfillmentStatus: 'inProgress',
+      createdAt: now,
+      updatedAt: now,
+      lineItems,
+    };
+
+    const res = await fetch('https://api.omnisend.com/v3/orders', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': OMNISEND_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      console.error('Omnisend order confirmation error:', res.status, body);
+    } else {
+      console.log('Omnisend order confirmation sent for', order.id);
+    }
+  } catch (e) {
+    console.error('Omnisend order confirmation exception:', e.message);
   }
 }
 
@@ -339,7 +405,25 @@ app.post('/webhook', async (req, res) => {
       console.error('Webhook order save error:', err.message);
     }
 
-    // 2) Decrement stock — idempotent fallback. Only runs if this order's stock
+    // 2) Send Omnisend order confirmation — idempotent (Omnisend deduplicates by
+    //    orderID, so re-posting the same order won't send a duplicate email).
+    try {
+      const emailForOmnisend = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
+      if (emailForOmnisend) {
+        const itemsForOmnisend = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
+          const p = PRODUCTS[ci.productId];
+          return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '' };
+        });
+        sendOmnisendOrderConfirmation(
+          { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend },
+          cartItems
+        );
+      }
+    } catch (err) {
+      console.error('Webhook Omnisend error:', err.message);
+    }
+
+    // 3) Decrement stock — idempotent fallback. Only runs if this order's stock
     //    wasn't already decremented by the client's POST /orders.
     try {
       if (Array.isArray(cartItems) && cartItems.length) {
@@ -569,6 +653,9 @@ app.post('/orders', async (req, res) => {
   // Fire the server-side Purchase to Meta (Conversions API). Fire-and-forget so
   // it never delays the order response; deduped with the browser pixel by event_id.
   sendMetaCapiPurchase({ id, email, total }, req, cartItems);
+
+  // Send Omnisend order confirmation email (triggers the automation in Omnisend).
+  sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
   // is [{ productId, size, qty }]. The webhook does the same as a fallback.
