@@ -1063,7 +1063,7 @@ async function renderOrders() {
       const shipName = (stripeShip && stripeShip.name) || (bill && bill.name) || (o.metadata && o.metadata.name) || '—';
       const addrObj = (stripeShip && stripeShip.address) || (bill && bill.address);
       const shipAddr = addrObj
-        ? [addrObj.line1, addrObj.city, addrObj.postal_code].filter(Boolean).join(', ')
+        ? [addrObj.line1, addrObj.city, addrObj.postal_code, addrObj.country].filter(Boolean).join(', ')
         : '—';
       const shipPhone = (stripeShip && stripeShip.phone) || (bill && bill.phone) || '—';
       const shipEmail = o.receipt_email || (bill && bill.email) || '—';
