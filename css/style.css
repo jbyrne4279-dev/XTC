@@ -2819,7 +2819,6 @@ textarea {
   filter: blur(12px);
 }
 .ea-ss26 {
-  font-weight: 700;
   background: linear-gradient(90deg, #7a1fa2 0%, #b366ff 35%, #4a0080 50%, #b366ff 65%, #7a1fa2 100%);
   background-size: 300% auto;
   -webkit-background-clip: text;
