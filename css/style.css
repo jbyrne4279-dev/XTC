@@ -3012,4 +3012,6 @@ textarea {
   .early-access-bar__inner { grid-template-columns: 1fr; }
   .early-access-bar__left { padding: 56px 24px; }
   .early-access-bar__image { min-height: 300px; }
+  .ea-success { align-items: center; text-align: center; }
+  .ea-success__body { text-align: center; }
 }
