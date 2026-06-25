@@ -2927,16 +2927,86 @@ textarea {
   text-transform: uppercase;
   color: rgba(255,255,255,0.18);
 }
-.early-access-bar__confirm {
-  font-size: 10px;
-  letter-spacing: 2px;
+/* ── Form/text collapse out ──────────────────────────────────────────────── */
+.ea-form--out,
+.ea-text--out {
+  animation: ea-collapse-out 0.38s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes ea-collapse-out {
+  0%   { opacity: 1; transform: translateY(0)   scale(1);    filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-18px) scale(0.96); filter: blur(4px); }
+}
+
+/* ── Success panel ────────────────────────────────────────────────────────── */
+.ea-success {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(24px) scale(0.95);
+  pointer-events: none;
+}
+.ea-success--visible {
+  animation: ea-success-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  pointer-events: auto;
+}
+@keyframes ea-success-pop {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.95); }
+  60%  { opacity: 1; transform: translateY(-4px)  scale(1.02); }
+  100% { opacity: 1; transform: translateY(0)     scale(1);    }
+}
+.ea-success__icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+.ea-success__circle {
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  .ea-success--visible & { animation: ea-draw-circle 0.5s 0.15s ease forwards; }
+}
+.ea-success--visible .ea-success__circle {
+  animation: ea-draw-circle 0.5s 0.15s ease forwards;
+}
+.ea-success--visible .ea-success__check {
+  animation: ea-draw-check 0.35s 0.55s ease forwards;
+}
+@keyframes ea-draw-circle {
+  to { stroke-dashoffset: 0; }
+}
+.ea-success__check {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+}
+@keyframes ea-draw-check {
+  to { stroke-dashoffset: 0; }
+}
+.ea-success__title {
+  font-size: 32px;
+  font-weight: 200;
+  letter-spacing: 8px;
+  color: #fff;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-top: 0;
-  line-height: 1.8;
-  border: 1px solid rgba(179,102,255,0.2);
-  padding: 16px 20px;
-  background: rgba(179,102,255,0.05);
+  margin: 0;
+  line-height: 1;
+}
+.ea-success__body {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 2.5px;
+  line-height: 2;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  margin: 0;
+}
+.ea-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 @media (max-width: 860px) {
   .early-access-bar__inner { grid-template-columns: 1fr; }
