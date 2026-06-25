@@ -229,12 +229,60 @@
       transition: transform 0.25s;
     }
     .cf-btn:hover .cf-btn__arrow { transform: translateX(4px); }
-    .cf-success {
-      display: none; margin-top: 20px; font-size: 10px; letter-spacing: 1.5px;
-      text-transform: uppercase; color: rgba(80,220,140,0.8);
-      padding-left: 12px; border-left: 2px solid rgba(80,220,140,0.3);
+    /* Collapse form out */
+    .cf-out {
+      animation: cf-collapse 0.36s cubic-bezier(0.4,0,1,1) forwards;
     }
-    .cf-success.show { display: block; }
+    @keyframes cf-collapse {
+      0%   { opacity:1; transform:translateY(0) scale(1);     filter:blur(0); }
+      100% { opacity:0; transform:translateY(-14px) scale(0.97); filter:blur(3px); }
+    }
+
+    /* Success panel */
+    .cf-sent {
+      display: flex; flex-direction: column; gap: 18px;
+      opacity: 0; transform: translateY(20px) scale(0.96); pointer-events: none;
+    }
+    .cf-sent--visible {
+      animation: cf-sent-pop 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+      pointer-events: auto;
+    }
+    @keyframes cf-sent-pop {
+      0%   { opacity:0; transform:translateY(20px) scale(0.96); }
+      60%  { opacity:1; transform:translateY(-3px)  scale(1.015); }
+      100% { opacity:1; transform:translateY(0)     scale(1); }
+    }
+    .cf-sent__icon { width:52px; height:52px; flex-shrink:0; }
+    .cf-sent__circle {
+      stroke-dasharray:160; stroke-dashoffset:160;
+    }
+    .cf-sent--visible .cf-sent__circle {
+      animation: cf-draw-circle 0.5s 0.1s ease forwards;
+    }
+    .cf-sent__check {
+      stroke-dasharray:40; stroke-dashoffset:40;
+    }
+    .cf-sent--visible .cf-sent__check {
+      animation: cf-draw-check 0.32s 0.52s ease forwards;
+    }
+    @keyframes cf-draw-circle { to { stroke-dashoffset:0; } }
+    @keyframes cf-draw-check  { to { stroke-dashoffset:0; } }
+    .cf-sent__title {
+      font-size:28px; font-weight:200; letter-spacing:7px;
+      color:#fff; text-transform:uppercase; margin:0; line-height:1;
+    }
+    .cf-sent__name {
+      font-size:13px; font-weight:300; letter-spacing:2px;
+      color:rgba(179,102,255,0.85); margin:0; text-transform:uppercase;
+    }
+    .cf-sent__body {
+      font-size:11px; letter-spacing:1.5px; line-height:2;
+      color:rgba(255,255,255,0.4); text-transform:uppercase; margin:0;
+    }
+    .cf-sent__particles {
+      position:absolute; inset:0; width:100%; height:100%; pointer-events:none;
+    }
+
     .cf-error {
       display: none; margin-top: 20px; font-size: 10px; letter-spacing: 1px;
       color: rgba(255,100,100,0.8); padding-left: 12px;
@@ -338,7 +386,7 @@
 
       <!-- Form card -->
       <div class="ct-form-card">
-        <p class="ct-form-card__label">Send a Message</p>
+        <p class="ct-form-card__label" id="ctFormLabel">Send a Message</p>
         <form id="contactForm" novalidate>
           <div class="cf-row">
             <div class="cf-group">
@@ -376,9 +424,28 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </span>
           </button>
-          <div class="cf-success" id="formSuccess">✓ Message sent — we'll reply within 24 hours.</div>
           <div class="cf-error" id="formError">Please fill in all required fields.</div>
         </form>
+
+        <!-- Success state -->
+        <div class="cf-sent" id="cfSent" aria-live="polite">
+          <div class="cf-sent__icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="cf-sent__circle" cx="26" cy="26" r="24" stroke="url(#cf-grad)" stroke-width="1.5"/>
+              <polyline class="cf-sent__check" points="14,27 22,35 38,18" stroke="#b366ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="cf-grad" x1="2" y1="2" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#7a1fa2"/>
+                  <stop offset="100%" stop-color="#b366ff"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <p class="cf-sent__title">MESSAGE SENT.</p>
+          <p class="cf-sent__name" id="cfSentName"></p>
+          <p class="cf-sent__body">Your message has been sent to our team.<br>We'll reply within 24 hours, Monday – Friday.</p>
+          <canvas class="cf-sent__particles" id="cfParticles"></canvas>
+        </div>
       </div>
 
       <!-- Info card -->
@@ -550,19 +617,60 @@
       e.preventDefault();
       const fields = ['firstName','lastName','email','subject','message'];
       const allFilled = fields.every(id => document.getElementById(id).value.trim() !== '');
-      const success = document.getElementById('formSuccess');
       const error = document.getElementById('formError');
-      if (!allFilled) {
-        error.classList.add('show');
-        success.classList.remove('show');
-        return;
-      }
+      if (!allFilled) { error.classList.add('show'); return; }
       error.classList.remove('show');
-      success.classList.add('show');
-      const email = document.getElementById('email').value;
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const email = document.getElementById('email').value.trim();
       if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'contact-form');
       this.reset();
+
+      // Transition: collapse form out, show success state
+      const label = document.getElementById('ctFormLabel');
+      const form  = document.getElementById('contactForm');
+      const sent  = document.getElementById('cfSent');
+
+      label.classList.add('cf-out');
+      form.classList.add('cf-out');
+
+      setTimeout(function() {
+        label.style.display = 'none';
+        form.style.display  = 'none';
+        document.getElementById('cfSentName').textContent = firstName ? 'Thanks, ' + firstName + '.' : '';
+        sent.classList.add('cf-sent--visible');
+        cfParticleBurst();
+      }, 360);
     });
+
+    function cfParticleBurst() {
+      var canvas = document.getElementById('cfParticles');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      canvas.width  = canvas.offsetWidth  || 360;
+      canvas.height = canvas.offsetHeight || 260;
+      var W = canvas.width, H = canvas.height;
+      var colors = ['#b366ff','#7a1fa2','#dca8ff','#ffffff','#9c3fe8'];
+      var particles = Array.from({length: 50}, function() {
+        var angle = Math.random() * Math.PI * 2;
+        var speed = 2 + Math.random() * 3.5;
+        return { x: W/2, y: H/2, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - 1.5,
+          size: 2+Math.random()*2.5, color: colors[Math.floor(Math.random()*colors.length)], alpha: 1, decay: 0.013+Math.random()*0.013 };
+      });
+      (function draw() {
+        ctx.clearRect(0,0,W,H);
+        var alive = false;
+        particles.forEach(function(p) {
+          if (p.alpha <= 0) return;
+          alive = true;
+          p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=p.decay;
+          ctx.globalAlpha = Math.max(0,p.alpha);
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+        });
+        if (alive) requestAnimationFrame(draw);
+      })();
+    }
   </script>
 </body>
 </html>
