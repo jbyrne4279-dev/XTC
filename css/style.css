@@ -989,7 +989,8 @@ ul, ol { list-style: none; }
   opacity: 0;
   transition: opacity 0.5s ease;
 }
-.fp-card:hover .fp-card__alt { opacity: 1; }
+.fp-card:hover .fp-card__alt,
+.fp-card--swiped .fp-card__alt { opacity: 1; }
 
 .fp-card__badge {
   position: absolute;

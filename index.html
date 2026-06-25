@@ -710,6 +710,30 @@
     );
   }
   </script>
+
+  <script>
+  // Swipe to toggle alt image on product cards (touch devices)
+  document.querySelectorAll('.fp-card__media').forEach(function(media) {
+    var startX = 0, startY = 0, moved = false;
+    media.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      moved = false;
+    }, { passive: true });
+    media.addEventListener('touchmove', function(e) {
+      if (Math.abs(e.touches[0].clientX - startX) > 8) moved = true;
+    }, { passive: true });
+    media.addEventListener('touchend', function(e) {
+      if (!moved) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+      // Only register horizontal swipes
+      if (Math.abs(dx) < 30 || Math.abs(dy) > Math.abs(dx)) return;
+      var card = media.closest('.fp-card');
+      card.classList.toggle('fp-card--swiped');
+    }, { passive: true });
+  });
+  </script>
 </body>
 </html>
 
