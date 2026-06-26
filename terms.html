@@ -184,12 +184,12 @@
     </div>
   </main>
 
-  <!-- Early Access Capture -->
+    <!-- Early Access Capture -->
   <section class="early-access-bar">
     <div class="early-access-bar__inner">
       <div class="early-access-bar__left">
         <div class="early-access-bar__text">
-          <p class="early-access-bar__heading">SS26 EARLY ACCESS</p>
+          <p class="early-access-bar__heading"><span class="ea-ss26">SS26</span> EARLY ACCESS</p>
           <p class="early-access-bar__sub">LIMITED UNITS &mdash; REGISTER YOUR INTEREST</p>
         </div>
         <form class="early-access-bar__form" id="earlyAccessForm" onsubmit="earlyAccessSubmit(event)">
@@ -203,10 +203,28 @@
               <input class="early-access-bar__input" type="tel" placeholder="+44 7700 000000" id="earlyAccessPhone" autocomplete="tel" />
             </div>
           </div>
-          <button class="early-access-bar__btn" type="submit">REQUEST EARLY ACCESS</button>
-          <p class="early-access-bar__legal">STRICTLY CONFIDENTIAL &mdash; NO SPAM, EVER</p>
-          <p class="early-access-bar__confirm" id="earlyAccessConfirm" style="display:none;">YOU'RE ON THE LIST. WE'LL NOTIFY YOU WHEN THE NEXT DROP GOES LIVE.</p>
+          <button class="early-access-bar__btn" type="submit">JOIN</button>
+          <p class="early-access-bar__legal">GET EARLY ACCESS TO DROPS, DISCOUNTS AND GIVEAWAYS</p>
         </form>
+
+        <!-- Success state (hidden until join) -->
+        <div class="ea-success" id="eaSuccess" aria-live="polite">
+          <div class="ea-success__icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="ea-success__circle" cx="26" cy="26" r="24" stroke="url(#ea-grad)" stroke-width="1.5"/>
+              <polyline class="ea-success__check" points="14,27 22,35 38,18" stroke="#b366ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="ea-grad" x1="2" y1="2" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#7a1fa2"/>
+                  <stop offset="100%" stop-color="#b366ff"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <p class="ea-success__title">YOU'RE IN.</p>
+          <p class="ea-success__body">EARLY ACCESS TO SS26 DROPS,<br>DISCOUNTS AND GIVEAWAYS IS YOURS.</p>
+          <canvas class="ea-particles" id="eaParticles"></canvas>
+        </div>
       </div>
       <div class="early-access-bar__image"><img src="images/ZIP-HOODIE-WAR.png" alt="XTC SS26 Zip Hoodie" loading="lazy" /></div>
     </div>
@@ -219,14 +237,64 @@
     if (!email && !phone) return;
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'ss26-early-access');
     if (phone && window.omnisend) omnisend.push(['identifyContact', { email, phone }]);
-    var btn = document.querySelector('.early-access-bar__btn');
-    var legal = document.querySelector('.early-access-bar__legal');
-    var confirm = document.getElementById('earlyAccessConfirm');
-    if (btn) btn.style.display = 'none';
-    if (legal) legal.style.display = 'none';
-    if (confirm) { confirm.style.display = 'block'; }
-    var inputs = document.querySelectorAll('.early-access-bar__input');
-    inputs.forEach(function(i) { i.disabled = true; i.style.opacity = '0.4'; });
+
+    var form  = document.getElementById('earlyAccessForm');
+    var text  = form.closest('.early-access-bar__left').querySelector('.early-access-bar__text');
+    var success = document.getElementById('eaSuccess');
+
+    // Collapse form + heading out
+    form.classList.add('ea-form--out');
+    text.classList.add('ea-text--out');
+
+    setTimeout(function() {
+      form.style.display = 'none';
+      text.style.display = 'none';
+      success.classList.add('ea-success--visible');
+      eaParticlesBurst();
+    }, 380);
+  }
+
+  // Particle burst on the canvas
+  function eaParticlesBurst() {
+    var canvas = document.getElementById('eaParticles');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    canvas.width  = canvas.offsetWidth  || 400;
+    canvas.height = canvas.offsetHeight || 300;
+    var W = canvas.width, H = canvas.height;
+    var colors = ['#b366ff','#7a1fa2','#dca8ff','#ffffff','#9c3fe8'];
+    var particles = Array.from({length: 60}, function() {
+      var angle = Math.random() * Math.PI * 2;
+      var speed = 2.5 + Math.random() * 4;
+      return {
+        x: W / 2, y: H / 2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        size: 2 + Math.random() * 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        decay: 0.012 + Math.random() * 0.012,
+      };
+    });
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var alive = false;
+      particles.forEach(function(p) {
+        if (p.alpha <= 0) return;
+        alive = true;
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vy += 0.12; // gravity
+        p.alpha -= p.decay;
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      if (alive) requestAnimationFrame(draw);
+    }
+    draw();
   }
   </script>
 
