@@ -2955,7 +2955,8 @@ textarea {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 20px;
   opacity: 0;
   transform: translateY(24px) scale(0.95);
@@ -3013,6 +3014,7 @@ textarea {
   color: rgba(255,255,255,0.45);
   text-transform: uppercase;
   margin: 0;
+  text-align: center;
 }
 .ea-particles {
   position: absolute;
