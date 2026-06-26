@@ -1072,7 +1072,15 @@ async function renderOrders() {
       const tracking = (f && f.tracking_number) ? ((f.carrier || '') + ' — ' + f.tracking_number) : '';
 
       const expandBtn = '<button class="btn-sm" onclick="toggleOrderDetail(\'' + rowId + '\')" title="View details">&#8964;</button>';
-      return '<tr>' +
+      // Supplement Stripe data with fields saved directly to Supabase orders
+        const dbPhone    = (f && f.phone)    || shipPhone;
+        const dbCountry  = (f && f.country)  || (addrObj && addrObj.country) || '';
+        const dbName     = (f && f.name)     || shipName;
+        const dbAddress  = (f && f.address)  || (addrObj && addrObj.line1)   || '';
+        const dbCity     = (f && f.city)     || (addrObj && addrObj.city)    || '';
+        const dbPostcode = (f && f.postcode) || (addrObj && addrObj.postal_code) || '';
+        const dbAddrFull = [dbAddress, dbCity, dbPostcode, dbCountry].filter(Boolean).join(', ') || shipAddr;
+        return '<tr>' +
         '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + (f ? ref : shortId) + '</td>' +
         '<td style="white-space:nowrap;">' + date + '</td>' +
         '<td style="color:var(--muted);font-size:12px;">' + (shipName !== '—' ? shipName + '<br><span style="font-size:11px;">' + shipEmail + '</span>' : shipEmail) + '</td>' +
@@ -1085,8 +1093,8 @@ async function renderOrders() {
         '<tr id="' + rowId + '" style="display:none;">' +
         '<td colspan="8" style="background:rgba(255,255,255,0.03);padding:16px 24px;border-bottom:1px solid var(--border);">' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + shipName + '</div><div style="font-size:12px;color:var(--muted);">' + shipEmail + '</div><div style="font-size:12px;color:var(--muted);">' + shipPhone + '</div></div>' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + shipAddr + '</div></div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + dbName + '</div><div style="font-size:12px;color:var(--muted);">' + shipEmail + '</div>' + (dbPhone && dbPhone !== '—' ? '<div style="font-size:12px;color:var(--muted);">' + dbPhone + '</div>' : '') + '</div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + dbAddrFull + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
         (tracking ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + tracking + '</div></div>' : '') +
         '</div></td></tr>';

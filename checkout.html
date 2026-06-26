@@ -1008,7 +1008,15 @@
         method: 'POST',
         headers: orderHeaders,
         keepalive: true,
-        body: JSON.stringify({ id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId, cartItems: cartItems })
+        body: JSON.stringify({
+          id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId, cartItems: cartItems,
+          phone: document.getElementById('coPhone').value.trim(),
+          country: document.getElementById('coCountry').value.trim(),
+          name: (document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value).trim(),
+          address: document.getElementById('coAddress').value.trim(),
+          city: document.getElementById('coCity').value.trim(),
+          postcode: document.getElementById('coPostcode').value.trim(),
+        })
       }).catch(function () {});
     } catch (e) {}
     // Save cart before clearing so order-confirmed page can show items

@@ -618,8 +618,20 @@ async function saveOrder(order, opts) {
     // is impossible until then anyway, since computeBalance returns 0).
     const rp = Math.max(0, Math.round(Number(order.redeemed_points) || 0));
     if (rp > 0) row.redeemed_points = rp;
+    if (order.phone)    row.phone    = String(order.phone);
+    if (order.country)  row.country  = String(order.country);
+    if (order.name)     row.name     = String(order.name);
+    if (order.address)  row.address  = String(order.address);
+    if (order.city)     row.city     = String(order.city);
+    if (order.postcode) row.postcode = String(order.postcode);
     if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
-    const { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
+    let { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
+    // Graceful fallback: if columns don't exist yet, retry without the new fields
+    if (error && /column|schema cache/i.test(error.message || '')) {
+      const baseRow = { id: row.id, user_id: row.user_id, email: row.email, items: row.items, total: row.total, status: row.status, source: row.source };
+      if (rp > 0) baseRow.redeemed_points = rp;
+      ({ error } = await sb.from('orders').upsert(baseRow, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly }));
+    }
     if (error) { console.error('saveOrder error:', error.message); return { ok: false, error: error.message }; }
     return { ok: true };
   } catch (e) {
@@ -630,7 +642,7 @@ async function saveOrder(order, opts) {
 
 // Save an order placed via the custom checkout (called from checkout.html).
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source, intentId, cartItems } = req.body || {};
+  const { id, email, items, total, status, source, intentId, cartItems, phone, country, name, address, city, postcode } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
   const user = await getUserFromToken(req); // optional — links the order to the account when signed in
   // Redeemed points come from the trusted PaymentIntent metadata (set server-side
@@ -647,6 +659,12 @@ app.post('/orders', async (req, res) => {
     source: source || 'custom',
     user_id: user ? user.id : null,
     redeemed_points,
+    phone: phone || '',
+    country: country || '',
+    name: name || '',
+    address: address || '',
+    city: city || '',
+    postcode: postcode || '',
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
 

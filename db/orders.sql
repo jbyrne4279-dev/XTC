@@ -19,6 +19,12 @@ create table if not exists public.orders (
   stock_decremented boolean     default false,      -- guards one-time stock decrement
   carrier           text,                           -- shipping carrier (admin-set)
   tracking_number   text,                           -- tracking number (admin-set)
+  phone             text,                           -- customer phone
+  country           text,                           -- shipping country code (e.g. GB)
+  name              text,                           -- customer full name
+  address           text,                           -- street address
+  city              text,                           -- city
+  postcode          text,                           -- postcode / ZIP
   updated_at        timestamptz default now(),
   created_at        timestamptz default now()
 );
@@ -29,6 +35,12 @@ alter table public.orders add column if not exists stock_decremented boolean def
 alter table public.orders add column if not exists carrier           text;
 alter table public.orders add column if not exists tracking_number   text;
 alter table public.orders add column if not exists updated_at        timestamptz default now();
+alter table public.orders add column if not exists phone             text;
+alter table public.orders add column if not exists country           text;
+alter table public.orders add column if not exists name              text;
+alter table public.orders add column if not exists address           text;
+alter table public.orders add column if not exists city              text;
+alter table public.orders add column if not exists postcode          text;
 
 create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);
