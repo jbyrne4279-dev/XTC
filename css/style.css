@@ -852,6 +852,10 @@ ul, ol { list-style: none; }
   position: relative;
   overflow: hidden;
 }
+/* Home: when two product sections stack (Original Members + War), integrate
+   them into one even-flowing block instead of a large doubled gap. */
+.featured-products:has(+ .featured-products) { padding-bottom: 64px; }
+.featured-products + .featured-products { padding-top: 0; }
 #smokeCanvas {
   position: absolute;
   inset: 0;
