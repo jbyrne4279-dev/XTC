@@ -864,5 +864,16 @@ app.post('/admin/refund', requireAdmin, async (req, res) => {
 });
 
 
+// ── SEO: sitemap + robots ────────────────────────────────────────────────────
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(
+    'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /order-confirmed\nDisallow: /profile\n\nSitemap: https://xtcclothing.com/sitemap.xml\n'
+  );
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`XTC server running on port ${PORT}`));
