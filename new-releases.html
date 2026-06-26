@@ -525,8 +525,8 @@
         <a href="/product-polo-black" class="fp-card__media">
           <img src="images/product-black-1.jpg" alt="XTC Original Members Polo Black — front" loading="lazy" />
           <img class="fp-card__alt" src="images/product-black-2.jpg" alt="XTC Original Members Polo Black — alt" loading="lazy" />
-          <span class="fp-card__badge">Limited Edition</span>
         </a>
+        <span class="fp-card__badge">Limited Edition</span>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
             <a href="/product-polo-black" class="fp-card__name">Polo [Black]</a>
@@ -548,8 +548,8 @@
         <a href="/product-polo-white" class="fp-card__media">
           <img src="images/product-white-1.jpg" alt="XTC Original Members Polo White — front" loading="lazy" />
           <img class="fp-card__alt" src="images/product-white-2.jpg" alt="XTC Original Members Polo White — alt" loading="lazy" />
-          <span class="fp-card__badge">Limited Edition</span>
         </a>
+        <span class="fp-card__badge">Limited Edition</span>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
             <a href="/product-polo-white" class="fp-card__name">Polo [White]</a>
@@ -568,6 +568,80 @@
 
     </div>
 
+    <!-- Drop 02 -->
+    <p class="nr-drop-label" style="font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(179,102,255,0.6);margin-bottom:20px;"><span style="color:rgba(255,255,255,0.45);">Drop 02 —</span> War&trade; <span style="color:rgba(255,255,255,0.45);">·</span> Pre-Order <span style="color:rgba(255,255,255,0.45);">·</span> Ships 21st July</p>
+    <div class="fp-grid fp-grid--3 reveal-group" style="margin-bottom:16px;">
+
+      <!-- Product: WAR™ ZIP -->
+      <article class="fp-card">
+        <a href="/product-war-zip" class="fp-card__media">
+          <img src="images/ZIP-HOODIE-XTC.png" alt="XTC War Zip Hoodie — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/ZIP-HOODIE-BLACK-BACK.png" alt="XTC War Zip Hoodie — back" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-war-zip" class="fp-card__name">War&trade; Zip</a>
+            <p class="fp-card__sub">400gsm French Terry Cotton · Custom Zips &amp; Drawstrings · Embroidered</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£90</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-zip','WAR™ ZIP','£90.00','images/ZIP-HOODIE-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-zip">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-zip-sizes"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product: WAR™ JOGGERS -->
+      <article class="fp-card">
+        <a href="/product-war-joggers" class="fp-card__media">
+          <img src="images/JOGGERS-XTC.png" alt="XTC War Joggers — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/JOGGERS-XTC-back.png" alt="XTC War Joggers — back" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-war-joggers" class="fp-card__name">War&trade; Joggers</a>
+            <p class="fp-card__sub">400gsm French Terry Cotton · Custom Zips &amp; Drawstrings · Relaxed Fit</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£110</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-joggers','WAR™ JOGGERS','£110.00','images/JOGGERS-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-joggers">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-joggers-sizes"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product: UNIFORM T -->
+      <article class="fp-card">
+        <a href="/product-uniform-t" class="fp-card__media">
+          <img src="images/T-SHIRT-XTC.png" alt="XTC Uniform T — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/T-SHIRT-XTC.png" alt="XTC Uniform T" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-uniform-t" class="fp-card__name">Uniform T</a>
+            <p class="fp-card__sub">100% Cotton · Oversized · Washed Black</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£30</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'uniform-t','UNIFORM T','£30.00','images/T-SHIRT-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-uniform-t">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-uniform-t-sizes"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
 
   </div>
 
@@ -779,7 +853,7 @@
   (function () {
     const SIZES = ['S','M','L','XL','XXL'];
 
-    window.openSizePicker = function (btn, productId, name, price, img) {
+    window.openSizePicker = function (btn, productId, name, price, img, sizeList) {
       const picker = document.getElementById('picker-' + productId);
       const sizesEl = document.getElementById('picker-' + productId + '-sizes');
       if (!picker || !sizesEl) return;
@@ -788,7 +862,7 @@
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
       const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
-      sizesEl.innerHTML = SIZES.map(s => {
+      sizesEl.innerHTML = (sizeList || SIZES).map(s => {
         const qty = stock[s] || 0;
         const oos = qty === 0;
         return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
