@@ -319,14 +319,14 @@
         <p class="fp-eyebrow">SS26 — Coming Soon</p>
         <h2 class="fp-title">The War Collection</h2>
       </div>
-      <p class="fp-note"><span class="no-restock-shine">Pre-Order Now.</span> Shipping SS26.</p>
+      <p class="fp-note"><span class="no-restock-shine">Pre-Order Now.</span> Ships 21 July.</p>
     </div>
 
     <div class="fp-grid reveal-group">
 
       <!-- Product: WAR™ ZIP -->
       <article class="fp-card">
-        <a href="javascript:void(0)" class="fp-card__media" onclick="openPreOrderModal('war-zip','War™ Zip','£90'); return false;">
+        <a href="/product-war-zip" class="fp-card__media">
           <img
             src="images/ZIP-HOODIE-XTC.png"
             alt="XTC War Zip Hoodie — front"
@@ -342,19 +342,23 @@
         </a>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
-            <a href="javascript:void(0)" class="fp-card__name" onclick="openPreOrderModal('war-zip','War™ Zip','£90'); return false;">War&trade; Zip</a>
+            <a href="/product-war-zip" class="fp-card__name">War&trade; Zip</a>
             <p class="fp-card__sub">400gsm French Terry Cotton · Custom Zips & Drawstrings · Embroidered</p>
           </div>
           <div class="fp-card__info-right">
             <p class="fp-card__price">£90</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openPreOrderModal('war-zip','War™ Zip','£90')">Pre-Order</button>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-zip','WAR™ ZIP','£90.00','images/ZIP-HOODIE-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-zip">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-zip-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
 
       <!-- Product: WAR™ JOGGERS -->
       <article class="fp-card">
-        <a href="javascript:void(0)" class="fp-card__media" onclick="openPreOrderModal('war-joggers','War™ Joggers','£110'); return false;">
+        <a href="/product-war-joggers" class="fp-card__media">
           <img
             src="images/JOGGERS-XTC.png"
             alt="XTC War Joggers — front"
@@ -370,19 +374,23 @@
         </a>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
-            <a href="javascript:void(0)" class="fp-card__name" onclick="openPreOrderModal('war-joggers','War™ Joggers','£110'); return false;">War&trade; Joggers</a>
+            <a href="/product-war-joggers" class="fp-card__name">War&trade; Joggers</a>
             <p class="fp-card__sub">400gsm French Terry Cotton · Custom Zips & Drawstrings · Relaxed Fit</p>
           </div>
           <div class="fp-card__info-right">
             <p class="fp-card__price">£110</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openPreOrderModal('war-joggers','War™ Joggers','£110')">Pre-Order</button>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-joggers','WAR™ JOGGERS','£110.00','images/JOGGERS-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-joggers">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-joggers-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
 
       <!-- Product: UNIFORM T -->
       <article class="fp-card">
-        <a href="javascript:void(0)" class="fp-card__media" onclick="openPreOrderModal('uniform-t','Uniform T','£30'); return false;">
+        <a href="/product-uniform-t" class="fp-card__media">
           <img
             src="images/T-SHIRT-XTC.png"
             alt="XTC Uniform T — front"
@@ -398,12 +406,16 @@
         </a>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
-            <a href="javascript:void(0)" class="fp-card__name" onclick="openPreOrderModal('uniform-t','Uniform T','£30'); return false;">Uniform T</a>
+            <a href="/product-uniform-t" class="fp-card__name">Uniform T</a>
             <p class="fp-card__sub">100% Cotton · Oversized · Washed Black</p>
           </div>
           <div class="fp-card__info-right">
             <p class="fp-card__price">£30</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openPreOrderModal('uniform-t','Uniform T','£30')">Pre-Order</button>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'uniform-t','UNIFORM T','£30.00','images/T-SHIRT-XTC.png',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-uniform-t">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-uniform-t-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
@@ -772,7 +784,7 @@
   // ---- Home page size picker ----
   const SIZES = ['S','M','L','XL','XXL'];
 
-  function openSizePicker(btn, productId, name, price, img) {
+  function openSizePicker(btn, productId, name, price, img, sizeList) {
     const picker = document.getElementById('picker-' + productId);
     const sizesEl = document.getElementById('picker-' + productId + '-sizes');
     if (!picker || !sizesEl) return;
@@ -786,9 +798,9 @@
     // Close any other open picker
     document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
-    // Build size buttons using live stock
+    // Build size buttons using live stock (sizeList overrides the default S–XXL set)
     const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
-    sizesEl.innerHTML = SIZES.map(s => {
+    sizesEl.innerHTML = (sizeList || SIZES).map(s => {
       const qty = stock[s] || 0;
       const oos = qty === 0;
       return `<button class="fp-sp-btn${oos ? ' fp-sp-btn--oos' : ''}" data-size="${s}">${s}</button>`;

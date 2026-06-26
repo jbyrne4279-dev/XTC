@@ -14,6 +14,10 @@ app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 const PRODUCTS = {
   'polo-black': { name: 'XTC Polo [Black]', amount: 6000 },
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
+  // SS26 War Collection — pre-order (ships 21 July)
+  'war-zip': { name: 'XTC War™ Zip', amount: 9000 },
+  'war-joggers': { name: 'XTC War™ Joggers', amount: 11000 },
+  'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
 };
 
 // Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
@@ -178,6 +182,29 @@ async function setStockSize(productId, sizeKey, qty) {
   sizes[sizeKey.toUpperCase()] = Math.max(0, qty);
   await sb.from('stock').upsert({ product_id: productId, sizes, updated_at: new Date().toISOString() }, { onConflict: 'product_id' });
 }
+
+// Seed stock rows for products that don't have one yet. Runs once on boot.
+// Only inserts MISSING products — never overwrites existing rows, so admin edits
+// and live quantities are preserved across restarts.
+const STOCK_SEED = {
+  'war-zip':     { S: 10, M: 10, L: 10 },
+  'war-joggers': { S: 10, M: 10, L: 10 },
+  'uniform-t':   { S: 10, M: 10, L: 10 },
+};
+async function seedStock() {
+  try {
+    const { data, error } = await sb.from('stock').select('product_id');
+    if (error) { console.error('seedStock: could not read stock:', error.message); return; }
+    const existing = new Set((data || []).map(r => r.product_id));
+    for (const [pid, sizes] of Object.entries(STOCK_SEED)) {
+      if (!existing.has(pid)) {
+        await setStockSizes(pid, sizes);
+        console.log('seedStock: seeded', pid, sizes);
+      }
+    }
+  } catch (e) { console.error('seedStock exception:', e.message); }
+}
+seedStock();
 
 // Public: read all stock
 app.get('/stock', async (req, res) => {

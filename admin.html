@@ -559,13 +559,42 @@
         <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('polo-black')">Save</button>
       </div>
 
-      <div class="stock-product">
+      <div class="stock-product" style="margin-bottom:32px;">
         <div class="stock-product__head">
           <span class="stock-product__name">Polo — White</span>
           <span class="badge badge--grey" id="whiteTotal">—</span>
         </div>
         <div class="stock-size-grid" id="whiteStockGrid"></div>
         <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('polo-white')">Save</button>
+      </div>
+
+      <p class="page-sub" style="margin:32px 0 16px;text-transform:uppercase;letter-spacing:2px;font-size:11px;">SS26 War Collection — Pre-Order (ships 21 July)</p>
+
+      <div class="stock-product" style="margin-bottom:32px;">
+        <div class="stock-product__head">
+          <span class="stock-product__name">War — Zip</span>
+          <span class="badge badge--grey" id="warZipTotal">—</span>
+        </div>
+        <div class="stock-size-grid" id="warZipStockGrid"></div>
+        <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('war-zip')">Save</button>
+      </div>
+
+      <div class="stock-product" style="margin-bottom:32px;">
+        <div class="stock-product__head">
+          <span class="stock-product__name">War — Joggers</span>
+          <span class="badge badge--grey" id="warJoggersTotal">—</span>
+        </div>
+        <div class="stock-size-grid" id="warJoggersStockGrid"></div>
+        <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('war-joggers')">Save</button>
+      </div>
+
+      <div class="stock-product">
+        <div class="stock-product__head">
+          <span class="stock-product__name">Uniform — T</span>
+          <span class="badge badge--grey" id="uniformTTotal">—</span>
+        </div>
+        <div class="stock-size-grid" id="uniformTStockGrid"></div>
+        <button class="btn-sm btn-sm--accent" style="margin-top:16px;" onclick="saveStock('uniform-t')">Save</button>
       </div>
     </div>
 
@@ -807,8 +836,19 @@
 const DEFAULT_STOCK = {
   'polo-black': { S: 0, M: 0, L: 6, XL: 0, XXL: 0 },
   'polo-white': { S: 0, M: 2, L: 8, XL: 0, XXL: 0 },
+  'war-zip': { S: 10, M: 10, L: 10 },
+  'war-joggers': { S: 10, M: 10, L: 10 },
+  'uniform-t': { S: 10, M: 10, L: 10 },
 };
 const SIZES = ['S','M','L','XL','XXL'];
+// Per-product stock UI config (drives the Stock page render/save/alerts)
+const STOCK_GRIDS = {
+  'polo-black':   { grid: 'blackStockGrid',      total: 'blackTotal',      sizes: SIZES,            label: 'Polo / Black' },
+  'polo-white':   { grid: 'whiteStockGrid',      total: 'whiteTotal',      sizes: SIZES,            label: 'Polo / White' },
+  'war-zip':      { grid: 'warZipStockGrid',     total: 'warZipTotal',     sizes: ['S','M','L'],    label: 'War Zip' },
+  'war-joggers':  { grid: 'warJoggersStockGrid', total: 'warJoggersTotal', sizes: ['S','M','L'],    label: 'War Joggers' },
+  'uniform-t':    { grid: 'uniformTStockGrid',   total: 'uniformTTotal',   sizes: ['S','M','L'],    label: 'Uniform T' },
+};
 const DEFAULT_PASS = 'xtcadmin2026';
 const DEFAULT_TOKEN = 'XTC4279';
 
@@ -1392,13 +1432,14 @@ async function fetchAdminStock() {
 function getStock() { return _adminStock || DEFAULT_STOCK; }
 function getLowThreshold() { return parseInt(localStorage.getItem('xtc-low-threshold') || '3'); }
 
-function renderStockGrid(productId, gridId, totalId) {
+function renderStockGrid(productId, gridId, totalId, sizeList) {
   const stock = getStock();
   const sizes = stock[productId] || {};
   const threshold = getLowThreshold();
   let total = 0;
   const grid = document.getElementById(gridId);
-  grid.innerHTML = SIZES.map(size => {
+  if (!grid) return;
+  grid.innerHTML = (sizeList || SIZES).map(size => {
     const qty = sizes[size] || 0;
     total += qty;
     const badgeCls = qty === 0 ? 'badge--oos' : qty <= threshold ? 'badge--warn' : 'badge--ok';
@@ -1414,8 +1455,10 @@ function renderStockGrid(productId, gridId, totalId) {
 
 async function renderStock() {
   await fetchAdminStock();
-  renderStockGrid('polo-black', 'blackStockGrid', 'blackTotal');
-  renderStockGrid('polo-white', 'whiteStockGrid', 'whiteTotal');
+  Object.keys(STOCK_GRIDS).forEach(pid => {
+    const c = STOCK_GRIDS[pid];
+    renderStockGrid(pid, c.grid, c.total, c.sizes);
+  });
   renderStockAlerts();
 }
 
@@ -1432,9 +1475,8 @@ async function saveStock(productId) {
   const data = await res.json();
   if (data.stock) window._adminStock = data.stock;
   await fetchAdminStock();
-  renderStockGrid(productId,
-    productId === 'polo-black' ? 'blackStockGrid' : 'whiteStockGrid',
-    productId === 'polo-black' ? 'blackTotal' : 'whiteTotal');
+  const c = STOCK_GRIDS[productId];
+  if (c) renderStockGrid(productId, c.grid, c.total, c.sizes);
   renderStockAlerts();
   showToast('Stock saved');
 }
@@ -1443,10 +1485,11 @@ function renderStockAlerts() {
   const stock = getStock();
   const threshold = getLowThreshold();
   const alerts = [];
-  ['polo-black','polo-white'].forEach(pid => {
-    SIZES.forEach(size => {
+  Object.keys(STOCK_GRIDS).forEach(pid => {
+    const cfg = STOCK_GRIDS[pid];
+    cfg.sizes.forEach(size => {
       const qty = (stock[pid] || {})[size] || 0;
-      const label = pid === 'polo-black' ? 'Black' : 'White';
+      const label = cfg.label;
       if (qty === 0) alerts.push('<strong>' + label + ' / ' + size + '</strong> is <span style="color:var(--danger)">out of stock</span>');
       else if (qty <= threshold) alerts.push('<strong>' + label + ' / ' + size + '</strong> is low — only ' + qty + ' left');
     });
@@ -1509,10 +1552,11 @@ function renderDashboard() {
 
   const threshold = getLowThreshold();
   const lowItems = [];
-  ['polo-black','polo-white'].forEach(pid => {
-    SIZES.forEach(sz => {
+  Object.keys(STOCK_GRIDS).forEach(pid => {
+    const cfg = STOCK_GRIDS[pid];
+    cfg.sizes.forEach(sz => {
       const q = (stock[pid]||{})[sz]||0;
-      if (q <= threshold) lowItems.push((pid === 'polo-black' ? 'Black' : 'White') + '/' + sz + ' (' + q + ')');
+      if (q <= threshold) lowItems.push(cfg.label + '/' + sz + ' (' + q + ')');
     });
   });
   const alertEl = document.getElementById('lowStockAlert');

@@ -3,6 +3,10 @@
 const DEFAULT_STOCK = {
   'polo-black': { S: 0, M: 0, L: 6, XL: 0, XXL: 0 },
   'polo-white': { S: 0, M: 2, L: 8, XL: 0, XXL: 0 },
+  // SS26 War Collection — pre-order (ships 21 July), limited run of 10 per size
+  'war-zip': { S: 10, M: 10, L: 10 },
+  'war-joggers': { S: 10, M: 10, L: 10 },
+  'uniform-t': { S: 10, M: 10, L: 10 },
 };
 
 // In-memory cache populated by loadStock()
