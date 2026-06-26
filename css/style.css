@@ -3024,10 +3024,10 @@ textarea {
   pointer-events: none;
 }
 @media (max-width: 860px) {
-  .early-access-bar__inner { grid-template-columns: 1fr; }
-  .early-access-bar__left { padding: 56px 24px; }
+  .early-access-bar__inner { grid-template-columns: 1fr; min-height: auto; }
+  .early-access-bar__left { padding: 56px 24px 40px; }
   .early-access-bar__image {
-    min-height: 300px;
+    min-height: 360px;
     border-left: none;
     border-top: 1px solid transparent;
     border-image: linear-gradient(
