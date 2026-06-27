@@ -235,7 +235,7 @@ function initEarlyAccessSlideshow() {
     const img = document.createElement('img');
     img.className = 'ea-slide' + (idx === 0 ? ' active' : '');
     img.src = src;
-    img.alt = 'XTC SS26';
+    img.alt = 'XTC';
     img.loading = idx === 0 ? 'eager' : 'lazy';
     img.draggable = false;
     box.appendChild(img);
