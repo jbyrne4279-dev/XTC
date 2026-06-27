@@ -210,17 +210,12 @@ function initHero() {
   startTimer();
 }
 
-// ---- Early-access image slideshow (right side of the SS26 sign-up form) ----
-// Upload your images to the repo's images/ folder named EXACTLY as below (in the
-// order you want them shown). The slideshow preloads them and only switches on
-// once they exist — until then the page keeps showing the single static image,
-// so it can never end up blank.
+// ---- Members Only image (right side of the sign-up form) ----
+// A single static image (girl wearing the polo). With one entry the builder
+// shows it without any rotation. Add more entries to turn it back into a
+// rotating slideshow.
 const EARLY_ACCESS_IMAGES = [
-  'images/ZIP-HOODIE-XTC.png',        // hoodie front
-  'images/JOGGERS-XTC.png',           // joggers front
-  'images/ZIP-HOODIE-BLACK-BACK.png', // hoodie back
-  'images/JOGGERS-XTC-back.png',      // jogger
-  'images/T-SHIRT-XTC.png',           // t-shirt
+  'images/gallery/campaign-white-polo-girl-169.png',
 ];
 
 function initEarlyAccessSlideshow() {
