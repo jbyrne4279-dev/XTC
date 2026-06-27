@@ -19,9 +19,21 @@
     /* Track Order page */
     .to-hero {
       position: relative;
-      height: 100vh;
-      min-height: 600px;
+      min-height: 100vh;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 24px 64px;
+    }
+    /* dark tint over the background slides (overlay is now in normal flow) */
+    .to-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1;
+      pointer-events: none;
     }
     .to-hero__slide {
       position: absolute;
@@ -36,13 +48,12 @@
     }
     .to-hero__slide.active { opacity: 1; }
     .to-hero__overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 480px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 24px;
     }
     @property --to-circuit-a {
       syntax: '<angle>';
