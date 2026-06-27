@@ -321,12 +321,21 @@
     const PRODUCT_IMAGES = {
       'polo-black': 'images/polo-black-flat.jpg',
       'polo-white': 'images/polo-white-flat.jpg',
+      'war-zip': 'images/ZIP-HOODIE-XTC.png',
+      'war-joggers': 'images/JOGGERS-XTC.png',
+      'uniform-t': 'images/T-SHIRT-XTC.png',
     };
 
+    // Resolve a preview image from either a product id ('war-zip-l') or a
+    // display name ('WAR™ ZIP — L'). Order matters: match the distinctive
+    // SS26 keywords before the generic black/white polos.
     function getProductImage(text) {
       const t = (text || '').toLowerCase();
-      if (t.includes('black')) return PRODUCT_IMAGES['polo-black'];
+      if (t.includes('zip')) return PRODUCT_IMAGES['war-zip'];
+      if (t.includes('jogger')) return PRODUCT_IMAGES['war-joggers'];
+      if (t.includes('uniform')) return PRODUCT_IMAGES['uniform-t'];
       if (t.includes('white')) return PRODUCT_IMAGES['polo-white'];
+      if (t.includes('black')) return PRODUCT_IMAGES['polo-black'];
       return null;
     }
 
