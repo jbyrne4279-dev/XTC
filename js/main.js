@@ -29,7 +29,8 @@ function addToCart(id, name, price, img, quantity = 1) {
     const size = parts[parts.length - 1].toUpperCase();
     const productId = parts.slice(0, -1).join('-');
     const inStock = getSizeStock(productId, size);
-    if (inStock <= 0) {
+    const canPreorder = typeof isPreorderProduct === 'function' && isPreorderProduct(productId);
+    if (inStock <= 0 && !canPreorder) {
       showToast('Sorry, ' + name + ' is out of stock.');
       return;
     }

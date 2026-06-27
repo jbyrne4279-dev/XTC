@@ -20,6 +20,11 @@ const PRODUCTS = {
   'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
 };
 
+// Products whose out-of-stock sizes can still be pre-ordered (charged now,
+// shipped 21 July) instead of being blocked at checkout. Keep in sync with
+// PREORDER_PRODUCTS in js/stock.js.
+const PREORDER_PRODUCTS = new Set(['polo-black', 'polo-white']);
+
 // Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
 const POINT_VALUE_PENCE = 5;
 
@@ -307,11 +312,13 @@ app.post('/create-payment-intent', async (req, res) => {
   const { amount, promoCode, cartSummary, cartItems, redeemPoints } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
 
-  // Stock check — reject if any item is out of stock
+  // Stock check — reject if out of stock, EXCEPT pre-order products whose
+  // out-of-stock sizes are sold as pre-orders (charged now, shipped 21 July).
   if (Array.isArray(cartItems) && cartItems.length) {
     const stock = await getStock();
     if (!stock) return res.status(500).json({ error: 'Could not load stock' });
     for (const { productId, size, qty = 1 } of cartItems) {
+      if (PREORDER_PRODUCTS.has(productId)) continue;
       const sizeKey = (size || '').toUpperCase();
       const available = (stock[productId] && stock[productId][sizeKey]) || 0;
       if (available < qty) {

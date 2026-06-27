@@ -54,6 +54,13 @@ function getSizeStock(productId, size) {
   return (getStockForProduct(productId)[size.toUpperCase()] || 0);
 }
 
+// Products whose out-of-stock sizes can still be PRE-ORDERED (charged now,
+// shipped 21 July) rather than being blocked. Keep in sync with the server.
+const PREORDER_PRODUCTS = ['polo-black', 'polo-white'];
+function isPreorderProduct(productId) {
+  return PREORDER_PRODUCTS.indexOf(productId) !== -1;
+}
+
 // Called after successful payment — sends decrement to server
 async function decrementStockServer(items) {
   try {
@@ -69,17 +76,29 @@ async function decrementStockServer(items) {
   } catch(e) { /* non-critical */ }
 }
 
-// Attach size stock badges to product page size buttons
+// Attach size stock badges to product page size buttons. For pre-order
+// products, out-of-stock sizes stay selectable and are marked "Pre-Order"
+// instead of being disabled.
 async function applyStockToBadges(productId) {
   await loadStock();
+  const preorder = isPreorderProduct(productId);
   const btns = document.querySelectorAll('[data-size]');
   btns.forEach(btn => {
     const size = btn.dataset.size;
     const qty = getSizeStock(productId, size);
+    btn.classList.remove('size-btn--oos', 'size-btn--preorder');
+    btn.disabled = false;
+    btn.removeAttribute('data-stock-label');
     if (qty === 0) {
-      btn.classList.add('size-btn--oos');
-      btn.disabled = true;
-      btn.title = 'Out of stock';
+      if (preorder) {
+        // No data-stock-label here — it triggers the amber low-stock border.
+        btn.classList.add('size-btn--preorder');
+        btn.title = 'Out of stock — pre-order, ships 21 July';
+      } else {
+        btn.classList.add('size-btn--oos');
+        btn.disabled = true;
+        btn.title = 'Out of stock';
+      }
     } else if (qty <= 3) {
       btn.setAttribute('data-stock-label', `${qty} left`);
     }

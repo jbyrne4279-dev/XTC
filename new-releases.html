@@ -453,6 +453,22 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
+    .fp-sp-btn--preorder {
+      border-color: rgba(179,102,255,0.5);
+      color: rgba(179,102,255,0.95);
+    }
+    .fp-sp-btn--preorder:hover:not(.fp-sp-btn--selected) {
+      border-color: rgba(179,102,255,0.8);
+      background: rgba(179,102,255,0.1);
+    }
+    .fp-size-picker__note {
+      margin: 12px 0 0;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.8);
+      line-height: 1.5;
+    }
 
     /* ── Desktop layout polish (desktop only) ──
        Cards reuse the home page .fp-grid which has full-bleed side padding;
@@ -909,15 +925,25 @@
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
       const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
+      const preorder = (typeof isPreorderProduct === 'function') && isPreorderProduct(productId);
+      let hasPre = false;
       sizesEl.innerHTML = (sizeList || SIZES).map(s => {
         const qty = stock[s] || 0;
         const oos = qty === 0;
+        if (oos && preorder) { hasPre = true; return '<button class="fp-sp-btn fp-sp-btn--preorder" data-size="' + s + '" data-preorder="1">' + s + '</button>'; }
         return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
       }).join('');
       sizesEl.dataset.product = productId;
       sizesEl.dataset.name = name;
       sizesEl.dataset.price = price;
       sizesEl.dataset.img = img;
+
+      let note = picker.querySelector('.fp-size-picker__note');
+      if (hasPre) {
+        if (!note) { note = document.createElement('p'); note.className = 'fp-size-picker__note'; picker.appendChild(note); }
+        note.textContent = 'Out of stock — pre-order now, ships 21 July';
+        note.style.display = '';
+      } else if (note) { note.style.display = 'none'; }
 
       picker.classList.add('open');
     };
@@ -937,9 +963,10 @@
       btn.classList.add('fp-sp-btn--selected');
       setTimeout(function () {
         const d = sizesEl.dataset;
+        const pre = btn.dataset.preorder === '1';
         document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
         if (typeof addToCart === 'function') {
-          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size, d.price, d.img, 1);
+          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size + (pre ? ' · Pre-Order' : ''), d.price, d.img, 1);
         }
       }, 180);
     });

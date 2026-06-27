@@ -228,6 +228,12 @@
     }
     .pdp-stock-note--low { color: rgba(239,68,68,0.8); }
     .pdp-stock-note--ok  { color: rgba(34,197,94,0.7); }
+    .pdp-stock-note--pre { color: rgba(179,102,255,0.85); }
+    .pdp-size-btn.size-btn--oos { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
+    .pdp-size-btn.size-btn--preorder { border-color: rgba(179,102,255,0.7); color: rgba(179,102,255,0.95); }
+    .pdp-size-btn.size-btn--preorder:hover { border-color: rgba(179,102,255,0.85); color: #fff; }
+    .pdp-preorder-hint { display: none; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(179,102,255,0.8); margin-top: 10px; }
+    .pdp-preorder-hint.show { display: block; }
 
     /* Quantity */
     .pdp-qty {
@@ -556,6 +562,7 @@
           </div>
           <p class="pdp-size-error" id="sizeError">Please select a size.</p>
           <p class="pdp-stock-note" id="stockNote"></p>
+          <p class="pdp-preorder-hint" id="preorderHint">Available to pre-order — ships 21 July</p>
         </div>
 
         <!-- ATC -->
@@ -850,7 +857,13 @@
   <script src="js/analytics.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      if (typeof applyStockToBadges === 'function') applyStockToBadges('polo-black');
+      if (typeof applyStockToBadges === 'function') {
+        applyStockToBadges('polo-black').then(function () {
+          if (document.querySelector('.size-btn--preorder')) {
+            var h = document.getElementById('preorderHint'); if (h) h.classList.add('show');
+          }
+        });
+      }
     });
     // Accordion
     document.querySelectorAll('.pdp-acc-trigger').forEach(trigger => {
@@ -879,7 +892,7 @@
       function showStockNote() {
         var q = typeof getSizeStock === 'function' ? getSizeStock('polo-black', size) : 0;
         note.className = 'pdp-stock-note';
-        if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--low'); }
+        if (q <= 0) { note.textContent = 'Out of stock — pre-order, ships 21 July'; note.classList.add('pdp-stock-note--pre'); }
         else if (q <= 3) { note.textContent = q + ' left in this size'; note.classList.add('pdp-stock-note--low'); }
         else { note.textContent = q + ' available'; note.classList.add('pdp-stock-note--ok'); }
       }
@@ -945,8 +958,10 @@
         document.getElementById('sizeButtons').scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-      const fullName = name + ' — ' + selected.dataset.size;
-      addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+      const size = selected.dataset.size;
+      const isPre = typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && typeof isPreorderProduct === 'function' && isPreorderProduct(id);
+      const fullName = name + ' — ' + size + (isPre ? ' · Pre-Order' : '');
+      addToCart(id + '-' + size.toLowerCase(), fullName, price, img, qty);
     }
     function buyNowFromPage(id, name, price, img) {
       const selected = document.querySelector('.pdp-size-btn.selected');
@@ -957,12 +972,13 @@
       }
       const size = selected.dataset.size;
       const fullId = id + '-' + size.toLowerCase();
-      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0) {
+      const isPre = typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && typeof isPreorderProduct === 'function' && isPreorderProduct(id);
+      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && !isPre) {
         document.getElementById('sizeError').textContent = 'This size is out of stock.';
         document.getElementById('sizeError').classList.add('show');
         return;
       }
-      const fullName = name + ' — ' + size;
+      const fullName = name + ' — ' + size + (isPre ? ' · Pre-Order' : '');
       const cart = getCart();
       const existing = cart.find(item => item.id === fullId);
       if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price, img, qty: 1 }); }

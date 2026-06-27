@@ -91,6 +91,22 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
+    .fp-sp-btn--preorder {
+      border-color: rgba(179,102,255,0.5);
+      color: rgba(179,102,255,0.95);
+    }
+    .fp-sp-btn--preorder:hover:not(.fp-sp-btn--selected) {
+      border-color: rgba(179,102,255,0.8);
+      background: rgba(179,102,255,0.1);
+    }
+    .fp-size-picker__note {
+      margin: 12px 0 0;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(179,102,255,0.8);
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -800,15 +816,26 @@
 
     // Build size buttons using live stock (sizeList overrides the default S–XXL set)
     const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
+    const preorder = (typeof isPreorderProduct === 'function') && isPreorderProduct(productId);
+    let hasPre = false;
     sizesEl.innerHTML = (sizeList || SIZES).map(s => {
       const qty = stock[s] || 0;
       const oos = qty === 0;
+      if (oos && preorder) { hasPre = true; return `<button class="fp-sp-btn fp-sp-btn--preorder" data-size="${s}" data-preorder="1">${s}</button>`; }
       return `<button class="fp-sp-btn${oos ? ' fp-sp-btn--oos' : ''}" data-size="${s}">${s}</button>`;
     }).join('');
     sizesEl.dataset.product = productId;
     sizesEl.dataset.name = name;
     sizesEl.dataset.price = price;
     sizesEl.dataset.img = img;
+
+    // Pre-order note for out-of-stock sizes
+    let note = picker.querySelector('.fp-size-picker__note');
+    if (hasPre) {
+      if (!note) { note = document.createElement('p'); note.className = 'fp-size-picker__note'; picker.appendChild(note); }
+      note.textContent = 'Out of stock — pre-order now, ships 21 July';
+      note.style.display = '';
+    } else if (note) { note.style.display = 'none'; }
 
     picker.classList.add('open');
   }
@@ -832,15 +859,15 @@
     // Short delay so user sees the green flash before the picker closes
     setTimeout(() => {
       const { product, name, price, img } = sizesEl.dataset;
-      pickSize(product, name, price, img, btn.dataset.size);
+      pickSize(product, name, price, img, btn.dataset.size, btn.dataset.preorder === '1');
     }, 180);
   });
 
-  function pickSize(productId, name, price, img, size) {
+  function pickSize(productId, name, price, img, size, preorder) {
     document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
     addToCart(
       productId + '-' + size.toLowerCase(),
-      name + ' — ' + size,
+      name + ' — ' + size + (preorder ? ' · Pre-Order' : ''),
       price,
       img,
       1
