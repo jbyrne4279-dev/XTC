@@ -688,7 +688,7 @@
         const preProd = (typeof isPreorderProduct === 'function') && isPreorderProduct(productBase);
         const stock = (typeof getStockForProduct === 'function' && productBase)
           ? getStockForProduct(productBase) : {};
-        const allSizes = ['S','M','L','XL','XXL'];
+        const allSizes = ['S','M','L'];
 
         const hasSizes = productBase.startsWith('polo-');
         const curQty = stock[currentSize] || 0;
