@@ -233,8 +233,6 @@
     .pdp-size-btn.size-btn--oos { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
     .pdp-size-btn.size-btn--preorder { border-color: rgba(179,102,255,0.7); color: rgba(179,102,255,0.95); }
     .pdp-size-btn.size-btn--preorder:hover { border-color: rgba(179,102,255,0.85); color: #fff; }
-    .pdp-preorder-hint { display: none; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(179,102,255,0.8); margin-top: 10px; }
-    .pdp-preorder-hint.show { display: block; }
 
     /* Quantity */
     .pdp-qty {
@@ -856,13 +854,7 @@
   <script src="js/analytics.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      if (typeof applyStockToBadges === 'function') {
-        applyStockToBadges('polo-white').then(function () {
-          if (document.querySelector('.size-btn--preorder')) {
-            var h = document.getElementById('preorderHint'); if (h) h.classList.add('show');
-          }
-        });
-      }
+      if (typeof applyStockToBadges === 'function') applyStockToBadges('polo-white');
     });
     // Accordion
     document.querySelectorAll('.pdp-acc-trigger').forEach(trigger => {
