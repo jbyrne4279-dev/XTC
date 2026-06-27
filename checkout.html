@@ -1011,7 +1011,7 @@
         body: JSON.stringify({
           id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId, cartItems: cartItems,
           phone: document.getElementById('coPhone').value.trim(),
-          country: document.getElementById('coCountry').value.trim(),
+          country: (document.getElementById('coCountry').dataset.name || document.getElementById('coCountry').value).trim(),
           name: (document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value).trim(),
           address: document.getElementById('coAddress').value.trim(),
           city: document.getElementById('coCity').value.trim(),
@@ -1307,6 +1307,7 @@
       const name = nameOf(code);
       if (!name) return false;
       hidden.value = code;
+      hidden.dataset.name = name;   // full country name for the saved order record
       input.value = name;
       flagEl.src = flagUrl(code);
       flagEl.alt = name + ' flag';
@@ -1315,7 +1316,7 @@
       if (!opts.silent) touched = true;
       return true;
     }
-    function clearSelection() { hidden.value = ''; wrap.classList.remove('has-flag'); }
+    function clearSelection() { hidden.value = ''; delete hidden.dataset.name; wrap.classList.remove('has-flag'); }
 
     function render(q) {
       q = (q || '').trim().toLowerCase();
