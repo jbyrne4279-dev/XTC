@@ -843,7 +843,7 @@ app.get('/track', async (req, res) => {
   if (!id || !email) return res.status(400).json({ error: 'Order ID and email are required' });
   try {
     const { data, error } = await sb.from('orders')
-      .select('id, email, status, carrier, tracking_number, items, total, created_at')
+      .select('id, email, status, carrier, tracking_number, items, total, created_at, name, phone, country, address, city, postcode')
       .eq('id', id)
       .maybeSingle();
     if (error) return res.status(500).json({ error: error.message });

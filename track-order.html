@@ -198,6 +198,24 @@
     }
     .to-step--done .to-step__label,
     .to-step--active .to-step__label { color: #fff; }
+
+    /* Order receipt (products, total, customer + shipping) */
+    .to-receipt { margin-top: 36px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08); display: none; }
+    .to-receipt.show { display: block; }
+    .to-rc-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+    .to-rc-item { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .to-rc-item__img { width: 50px; height: 50px; object-fit: cover; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .to-rc-item__ph { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .to-rc-item__info { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .to-rc-item__name { font-size: 12px; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+    .to-rc-item__meta { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.3); }
+    .to-rc-item__price { font-size: 12px; color: #fff; font-weight: 600; white-space: nowrap; }
+    .to-rc-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .to-rc-total strong { font-size: 15px; color: var(--accent); letter-spacing: 1px; }
+    .to-rc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+    .to-rc-block__label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(179,102,255,0.65); margin-bottom: 8px; }
+    .to-rc-block__text { font-size: 11px; line-height: 1.85; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; }
+    @media (max-width: 560px) { .to-rc-cols { grid-template-columns: 1fr; gap: 18px; } }
     .to-error {
       margin-top: 24px;
       font-size: 11px;
@@ -403,6 +421,7 @@
           <p class="to-result__status" id="resultStatus">In Transit</p>
           <p class="to-result__order" id="resultOrder"></p>
           <div id="resultSteps"></div>
+          <div class="to-receipt" id="resultReceipt"></div>
         </div>
       </div>
     </div>
@@ -738,6 +757,76 @@
     return '#';
   }
 
+  function escTO(s) {
+    return (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  // Resolve a product preview image from the saved item.img, or its id/name.
+  function receiptImg(it) {
+    if (it && it.img) return it.img;
+    const t = (((it && it.id) || '') + ' ' + ((it && it.name) || '')).toLowerCase();
+    if (t.includes('zip')) return 'images/ZIP-HOODIE-XTC.png';
+    if (t.includes('jogger')) return 'images/JOGGERS-XTC.png';
+    if (t.includes('uniform')) return 'images/T-SHIRT-XTC.png';
+    if (t.includes('white')) return 'images/polo-white-flat.jpg';
+    if (t.includes('black')) return 'images/polo-black-flat.jpg';
+    return '';
+  }
+
+  function priceNum(p) {
+    if (typeof p === 'number') return p;
+    return parseFloat(String(p == null ? '' : p).replace(/[^0-9.]/g, '')) || 0;
+  }
+
+  // Render a full order receipt: products, total, customer details, shipping.
+  function buildReceipt(order) {
+    const el = document.getElementById('resultReceipt');
+    if (!el) return;
+    const items = Array.isArray(order.items) ? order.items : [];
+    const hasCustomer = order.name || order.email || order.phone || order.address;
+    if (!items.length && !hasCustomer) { el.innerHTML = ''; el.classList.remove('show'); return; }
+
+    let subtotal = 0;
+    const rows = items.map(it => {
+      const qty = it.qty || 1;
+      const line = priceNum(it.price) * qty;
+      subtotal += line;
+      const img = receiptImg(it);
+      const imgHtml = img
+        ? `<img class="to-rc-item__img" src="${escTO(img)}" alt="${escTO(it.name || '')}" onerror="this.style.display='none'" />`
+        : `<div class="to-rc-item__ph">👕</div>`;
+      const nm = escTO((it.name || 'Item'));
+      return `<div class="to-rc-item">${imgHtml}
+        <div class="to-rc-item__info">
+          <span class="to-rc-item__name">${nm}</span>
+          <span class="to-rc-item__meta">Qty ${qty}</span>
+        </div>
+        <span class="to-rc-item__price">£${line.toFixed(2)}</span>
+      </div>`;
+    }).join('');
+
+    const total = (order.total != null && !isNaN(Number(order.total))) ? Number(order.total) : subtotal;
+
+    // Customer + shipping blocks (only render lines we actually have)
+    const custLines = [order.name, order.email, order.phone].filter(Boolean).map(escTO).join('<br>');
+    const shipLines = [order.name, order.address, [order.city, order.postcode].filter(Boolean).join(', '), order.country]
+      .filter(Boolean).map(escTO).join('<br>');
+
+    let cols = '';
+    if (custLines || shipLines) {
+      cols = `<div class="to-rc-cols">
+        ${custLines ? `<div class="to-rc-block"><p class="to-rc-block__label">Customer</p><p class="to-rc-block__text">${custLines}</p></div>` : ''}
+        ${shipLines ? `<div class="to-rc-block"><p class="to-rc-block__label">Shipping Address</p><p class="to-rc-block__text">${shipLines}</p></div>` : ''}
+      </div>`;
+    }
+
+    el.innerHTML =
+      (items.length ? `<p class="to-rc-title">Order Summary</p>${rows}
+        <div class="to-rc-total"><span>Total</span><strong>£${total.toFixed(2)}</strong></div>` : '')
+      + cols;
+    el.classList.add('show');
+  }
+
   function showServerResult(order) {
     const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
     const status = order.status || 'Processing';
@@ -765,6 +854,7 @@
         return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
       }).join('');
     }
+    buildReceipt(order);
     document.getElementById('trackResult').classList.add('show');
   }
 
@@ -783,6 +873,7 @@
       return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
     }).join('');
 
+    const rc = document.getElementById('resultReceipt'); if (rc) { rc.innerHTML = ''; rc.classList.remove('show'); }
     document.getElementById('trackResult').classList.add('show');
   }
 
@@ -795,6 +886,7 @@
       const cls = i === 0 ? 'to-step to-step--done' : i === 1 ? 'to-step to-step--active' : 'to-step';
       return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
     }).join('');
+    buildReceipt(order);
     document.getElementById('trackResult').classList.add('show');
   }
   </script>
