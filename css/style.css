@@ -2882,10 +2882,10 @@ textarea {
     transparent 0%,
     rgba(255,255,255,0.03) 5%,
     rgba(255,255,255,0.12) 15%,
-    rgba(179,102,255,0.35) 30%,
+    rgba(255,255,255,0.22) 30%,
     rgba(255,255,255,0.18) 45%,
     rgba(255,255,255,0.06) 55%,
-    rgba(179,102,255,0.25) 68%,
+    rgba(255,255,255,0.16) 68%,
     rgba(255,255,255,0.14) 80%,
     rgba(255,255,255,0.04) 92%,
     transparent 100%
@@ -2915,9 +2915,9 @@ textarea {
   border-image: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(179,102,255,0.2) 15%,
-    rgba(255,255,255,0.12) 40%,
-    rgba(179,102,255,0.3) 60%,
+    rgba(255,255,255,0.12) 15%,
+    rgba(255,255,255,0.22) 40%,
+    rgba(255,255,255,0.14) 60%,
     rgba(255,255,255,0.08) 82%,
     transparent 100%
   ) 1;
@@ -2932,7 +2932,7 @@ textarea {
   height: 100%;
   gap: 3px;
   width: max-content;
-  animation: ea-scroll 18s linear infinite;
+  animation: ea-scroll 30s linear infinite;
 }
 .ea-scroll-track img {
   height: 100%;
@@ -2948,12 +2948,14 @@ textarea {
 .ea-scroll-track:hover { animation-play-state: paused; }
 .ea-scroll-track img:hover { filter: brightness(1); }
 .ea-ss26 {
-  background: linear-gradient(90deg, #7a1fa2 0%, #b366ff 35%, #4a0080 50%, #b366ff 65%, #7a1fa2 100%);
+  background: linear-gradient(90deg, #1a1a1a 0%, #666 28%, #111 45%, #888 60%, #333 75%, #555 90%, #1a1a1a 100%);
   background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ea-shine 3s linear infinite;
+  animation: ea-shine 4s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 -1px 0 rgba(0,0,0,0.9));
 }
 @keyframes ea-shine {
   0%   { background-position: 200% center; }
@@ -3015,7 +3017,7 @@ textarea {
   width: 100%;
   padding: 18px 24px;
   background: transparent;
-  border: 1px solid rgba(179,102,255,0.4);
+  border: 1px solid rgba(255,255,255,0.18);
   color: #fff;
   font-family: inherit;
   font-size: 11px;
@@ -3026,6 +3028,7 @@ textarea {
   transition: background 0.2s, border-color 0.2s;
   margin-bottom: 20px;
   position: relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.6);
 }
 .early-access-bar__btn::before {
   content: '';
@@ -3034,8 +3037,8 @@ textarea {
   padding: 1px;
   background: conic-gradient(from var(--ea-btn-a, 0deg),
     transparent 0%, transparent 55%,
-    rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
-    rgba(179,102,255,0.8) 91%, transparent 100%
+    rgba(30,30,30,0.8) 68%, rgba(180,180,180,1) 78%, rgba(240,240,240,1) 84%,
+    rgba(160,160,160,0.8) 91%, transparent 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -3047,8 +3050,8 @@ textarea {
 @property --ea-btn-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes ea-btn-spin { to { --ea-btn-a: 360deg; } }
 .early-access-bar__btn:hover {
-  background: rgba(179,102,255,0.1);
-  border-color: rgba(179,102,255,0.7);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.35);
 }
 .early-access-bar__legal {
   font-size: 9px;
