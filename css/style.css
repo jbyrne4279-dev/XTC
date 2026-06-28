@@ -1056,6 +1056,7 @@ ul, ol { list-style: none; }
   text-decoration: none;
 }
 .fp-card__sub {
+  display: none;
   font-size: 11px;
   letter-spacing: 1px;
   text-transform: uppercase;
