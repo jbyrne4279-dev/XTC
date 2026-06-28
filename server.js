@@ -253,19 +253,8 @@ async function claimStockDecrement(orderId) {
   } catch (e) { return null; }
 }
 
-// Called after successful payment to decrement stock. Idempotent per order when
-// an orderId is supplied.
-app.post('/stock/decrement', async (req, res) => {
-  const { items, orderId } = req.body;
-  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
-  if (orderId) {
-    const claimed = await claimStockDecrement(orderId);
-    if (claimed === false) return res.json({ ok: true, alreadyDone: true, stock: await getStock() });
-    // claimed === true or null (best-effort, e.g. pre-migration) → proceed
-  }
-  const result = await doStockDecrement(items);
-  res.json(result);
-});
+// Stock decrement is handled internally by /orders (client POST) and the Stripe
+// webhook — there is no public HTTP endpoint for it.
 
 // Admin: update all sizes for a product at once (bulk) or a single size
 app.put('/admin/stock', requireAdmin, async (req, res) => {
@@ -389,12 +378,12 @@ app.post('/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   let event;
+  if (!webhookSecret) {
+    console.error('Webhook rejected: STRIPE_WEBHOOK_SECRET not set');
+    return res.status(400).send('Webhook Error: webhook secret not configured');
+  }
   try {
-    if (webhookSecret) {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-    } else {
-      event = JSON.parse(req.body.toString());
-    }
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err) {
     console.error('Webhook signature error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -620,6 +609,31 @@ async function computeBalance(user) {
   return { earned: earned, redeemed: redeemed, available: Math.max(0, earned - redeemed) };
 }
 
+// Email subscribe proxy — keeps the Omnisend API key server-side only.
+// Rate-limited to one call per IP per 10 seconds to prevent abuse.
+const _subscribeCooldown = new Map();
+app.post('/subscribe', async (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const now = Date.now();
+  if (_subscribeCooldown.has(ip) && now - _subscribeCooldown.get(ip) < 10000) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
+  _subscribeCooldown.set(ip, now);
+  const { email, source } = req.body || {};
+  if (!email || !String(email).includes('@')) return res.status(400).json({ error: 'Invalid email' });
+  const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
+  const safeSource = String(source || 'website').replace(/[^a-z0-9_-]/gi, '').slice(0, 64);
+  if (!OMNISEND_API_KEY) return res.json({ ok: true });
+  try {
+    await fetch('https://api.omnisend.com/v3/contacts', {
+      method: 'POST',
+      headers: { 'X-API-KEY': OMNISEND_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: safeEmail, status: 'subscribed', statusDate: new Date().toISOString(), tags: [safeSource], sendWelcomeEmail: true }),
+    });
+  } catch (e) { /* best-effort */ }
+  res.json({ ok: true });
+});
+
 // Current user's loyalty balance (for the checkout redeem UI + profile).
 app.get('/loyalty', async (req, res) => {
   const user = await getUserFromToken(req);
@@ -757,12 +771,13 @@ app.get('/admin/orders-db', requireAdmin, async (req, res) => {
 const shippingRecords = new Map();
 
 // ── Admin auth middleware ────────────────────────────────────────────────────
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'XTC4279';
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 
 function requireAdmin(req, res, next) {
+  if (!ADMIN_TOKEN) return res.status(503).json({ error: 'Admin not configured' });
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (token !== ADMIN_TOKEN) return res.status(401).json({ error: 'Unauthorized' });
+  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'Unauthorized' });
   next();
 }
 
