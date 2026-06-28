@@ -3153,15 +3153,16 @@ textarea {
   .early-access-bar__inner { grid-template-columns: 1fr; min-height: auto; }
   .early-access-bar__left { padding: 56px 24px 40px; }
   .early-access-bar__image {
+    height: 360px;
     min-height: 360px;
     border-left: none;
     border-top: 1px solid transparent;
     border-image: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(179,102,255,0.2) 15%,
-      rgba(255,255,255,0.12) 40%,
-      rgba(179,102,255,0.3) 60%,
+      rgba(255,255,255,0.12) 15%,
+      rgba(255,255,255,0.22) 40%,
+      rgba(255,255,255,0.14) 60%,
       rgba(255,255,255,0.08) 82%,
       transparent 100%
     ) 1;
