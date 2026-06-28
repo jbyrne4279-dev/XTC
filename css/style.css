@@ -1839,6 +1839,15 @@ ul, ol { list-style: none; }
     0 4px 8px rgba(0,0,0,0.6);
 }
 
+@keyframes footer-logo-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+.footer-brand__logo img {
+  animation: footer-logo-pulse 4s ease-in-out infinite;
+}
+
 .footer-brand__tagline {
   font-size: var(--fs-micro);
   letter-spacing: 1.5px;
