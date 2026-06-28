@@ -2932,7 +2932,8 @@ textarea {
   height: 100%;
   gap: 3px;
   width: max-content;
-  animation: ea-scroll 30s linear infinite;
+  animation: ea-scroll 50s linear infinite;
+  cursor: default;
 }
 .ea-scroll-track img {
   height: 100%;
@@ -2943,10 +2944,11 @@ textarea {
   flex-shrink: 0;
   display: block;
   filter: brightness(0.82);
-  transition: filter 0.4s ease;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
-.ea-scroll-track:hover { animation-play-state: paused; }
-.ea-scroll-track img:hover { filter: brightness(1); }
+.early-access-bar__image:hover .ea-scroll-track { animation-play-state: paused; }
 .ea-ss26 {
   background: linear-gradient(90deg, #1a1a1a 0%, #666 28%, #111 45%, #888 60%, #333 75%, #555 90%, #1a1a1a 100%);
   background-size: 300% auto;
