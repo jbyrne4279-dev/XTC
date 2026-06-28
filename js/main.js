@@ -215,7 +215,14 @@ function initHero() {
 // shows it without any rotation. Add more entries to turn it back into a
 // rotating slideshow.
 const EARLY_ACCESS_IMAGES = [
-  'images/gallery/campaign-girl-black-polo-75.png',
+  'images/hero-1.jpg',
+  'images/polo-white-model-2.jpg',
+  'images/polo-black-model-3.jpg',
+  'images/polo-white-model-3.jpg',
+  'images/hero-2.jpg',
+  'images/polo-white-model-5.jpg',
+  'images/polo-black-model-4.jpg',
+  'images/editorial-1.jpg',
 ];
 
 function initEarlyAccessSlideshow() {
