@@ -61,21 +61,6 @@ function isPreorderProduct(productId) {
   return PREORDER_PRODUCTS.indexOf(productId) !== -1;
 }
 
-// Called after successful payment — sends decrement to server
-async function decrementStockServer(items) {
-  try {
-    const res = await fetch('/stock/decrement', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      _stockCache = data.stock;
-    }
-  } catch(e) { /* non-critical */ }
-}
-
 // Attach size stock badges to product page size buttons. For pre-order
 // products, out-of-stock sizes stay selectable and are marked "Pre-Order"
 // instead of being disabled.
