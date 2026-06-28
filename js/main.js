@@ -281,7 +281,7 @@ function initEarlyAccessSlideshow() {
 
   function resetAuto() {
     clearInterval(autoTimer);
-    autoTimer = setInterval(next, 4000);
+    autoTimer = setInterval(next, 2000);
   }
   resetAuto();
 

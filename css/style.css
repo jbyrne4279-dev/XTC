@@ -2825,7 +2825,7 @@ textarea {
 .early-access-bar__image img.ea-slide {
   transform: translateX(100%);
   filter: blur(12px);
-  transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), filter 0.75s ease, opacity 0.1s;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), filter 0.45s ease, opacity 0.1s;
   opacity: 1;
 }
 .early-access-bar__image img.ea-slide.active {
