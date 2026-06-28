@@ -3115,6 +3115,10 @@ textarea {
 .ea-success__check {
   stroke-dasharray: 40;
   stroke-dashoffset: 40;
+  stroke: #fff !important;
+}
+.ea-success__circle {
+  stroke: rgba(255,255,255,0.35) !important;
 }
 @keyframes ea-draw-check {
   to { stroke-dashoffset: 0; }
