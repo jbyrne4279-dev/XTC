@@ -2412,6 +2412,68 @@ ul, ol { list-style: none; }
   grid-template-columns: repeat(3, 1fr) !important;
 }
 
+/* ── War™ / Drop 02 — blood red branding ── */
+:root {
+  --war-red:        #990000;
+  --war-red-light:  #cc0000;
+  --war-red-dim:    rgba(153, 0, 0, 0.7);
+  --war-red-border: rgba(153, 0, 0, 0.4);
+  --war-red-bg:     rgba(153, 0, 0, 0.12);
+}
+
+.drop-war .fp-eyebrow,
+.drop-war .nr-drop-head__num {
+  color: var(--war-red-dim);
+}
+
+.drop-war .fp-card__badge {
+  background: var(--war-red-bg);
+  border-color: var(--war-red-border);
+  color: var(--war-red-light);
+}
+
+.drop-war .fp-card__atc--highlight {
+  background: var(--war-red-bg);
+  border-color: var(--war-red-border);
+  color: var(--war-red-light);
+}
+
+.drop-war .fp-card__atc--highlight:hover {
+  background: rgba(153, 0, 0, 0.25);
+  border-color: var(--war-red-light);
+}
+
+.drop-war .fp-size-picker__sizes .fp-size-btn.active,
+.drop-war .fp-size-picker__sizes .fp-size-btn:hover {
+  border-color: var(--war-red-light);
+  color: var(--war-red-light);
+}
+
+.drop-war .fp-card:hover {
+  border-color: var(--war-red-border);
+}
+
+.drop-war .fp-note .purple-shine,
+.drop-war .fp-note {
+  color: var(--war-red-dim);
+}
+
+/* War™ product page (pdp) overrides */
+.pdp-war .pdp-info__brand { color: var(--war-red-dim); }
+.pdp-war .pdp-atc {
+  background: var(--war-red) !important;
+  border-color: var(--war-red-light) !important;
+}
+.pdp-war .pdp-buy-now {
+  border-color: var(--war-red-border) !important;
+  color: var(--war-red-light) !important;
+}
+.pdp-war .pdp-preorder-note { color: var(--war-red-light) !important; }
+.pdp-war .pdp-size-btn.selected {
+  border-color: var(--war-red-light);
+  color: var(--war-red-light);
+}
+
 .coming-soon-card { opacity: 1; }
 .coming-soon-card:hover { border-color: rgba(179,102,255,0.2); }
 

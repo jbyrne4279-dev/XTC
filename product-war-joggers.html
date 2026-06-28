@@ -264,7 +264,7 @@
     .pdp-atc {
       width: 100%;
       padding: 18px 24px;
-      background: rgba(179,102,255,1);
+      background: rgba(153,0,0,1);
       border: none;
       color: #fff;
       font-family: inherit;
@@ -287,7 +287,7 @@
       width: 100%;
       padding: 16px 24px;
       background: transparent;
-      border: 1px solid rgba(179,102,255,0.4);
+      border: 1px solid rgba(153,0,0,0.4);
       color: #fff;
       font-family: inherit;
       font-size: 11px;
@@ -308,8 +308,8 @@
       padding: 1px;
       background: conic-gradient(from var(--pdp-buy-a),
         transparent 0%, transparent 55%,
-        rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
-        rgba(179,102,255,0.8) 91%, transparent 100%
+        rgba(100,30,200,0.6) 68%, rgba(153,0,0,1) 78%, rgba(220,170,255,1) 84%,
+        rgba(153,0,0,0.8) 91%, transparent 100%
       );
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -382,7 +382,7 @@
       background: linear-gradient(90deg,
         rgba(60,0,120,0.9)  0%,
         rgba(120,50,190,1) 40%,
-        rgba(179,102,255,1) 50%,
+        rgba(153,0,0,1) 50%,
         rgba(120,50,190,1) 60%,
         rgba(60,0,120,0.9) 100%
       );
@@ -516,7 +516,7 @@
   </div>
 
   <main>
-    <div class="pdp">
+    <div class="pdp pdp-war">
       <!-- Gallery -->
       <div class="pdp-gallery">
         <div class="pdp-gallery__main">
@@ -535,7 +535,7 @@
         <div class="pdp-info__price-row">
           <span class="pdp-info__price">£110</span>
         </div>
-        <p class="pdp-preorder-note" style="margin-top:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b366ff;">Pre-Order — Ships 21st July</p>
+        <p class="pdp-preorder-note" style="margin-top:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#cc0000;">Pre-Order — Ships 21st July</p>
 
         <div class="pdp-divider"></div>
 
@@ -692,11 +692,11 @@
           <div class="ea-success__icon">
             <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle class="ea-success__circle" cx="26" cy="26" r="24" stroke="url(#ea-grad)" stroke-width="1.5"/>
-              <polyline class="ea-success__check" points="14,27 22,35 38,18" stroke="#b366ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline class="ea-success__check" points="14,27 22,35 38,18" stroke="#cc0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <defs>
                 <linearGradient id="ea-grad" x1="2" y1="2" x2="50" y2="50" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#7a1fa2"/>
-                  <stop offset="100%" stop-color="#b366ff"/>
+                  <stop offset="0%" stop-color="#6b0000"/>
+                  <stop offset="100%" stop-color="#cc0000"/>
                 </linearGradient>
               </defs>
             </svg>
@@ -742,7 +742,7 @@
     canvas.width  = canvas.offsetWidth  || 400;
     canvas.height = canvas.offsetHeight || 300;
     var W = canvas.width, H = canvas.height;
-    var colors = ['#b366ff','#7a1fa2','#dca8ff','#ffffff','#9c3fe8'];
+    var colors = ['#cc0000','#6b0000','#dca8ff','#ffffff','#9c3fe8'];
     var particles = Array.from({length: 60}, function() {
       var angle = Math.random() * Math.PI * 2;
       var speed = 2.5 + Math.random() * 4;
