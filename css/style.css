@@ -2912,30 +2912,31 @@ textarea {
     transparent 100%
   ) 1;
 }
-.early-access-bar__image img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+/* Continuous scroll track — same animation as homepage gallery carousel */
+@keyframes ea-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ea-scroll-track {
+  display: flex;
   height: 100%;
+  gap: 3px;
+  width: max-content;
+  animation: ea-scroll 18s linear infinite;
+}
+.ea-scroll-track img {
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
+  flex-shrink: 0;
   display: block;
+  filter: brightness(0.82);
+  transition: filter 0.4s ease;
 }
-/* Slideshow: smooth swipe with motion blur */
-.early-access-bar__image img.ea-slide {
-  transform: translateX(100%);
-  filter: blur(12px);
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), filter 0.45s ease, opacity 0.1s;
-  opacity: 1;
-}
-.early-access-bar__image img.ea-slide.active {
-  transform: translateX(0);
-  filter: blur(0);
-}
-.early-access-bar__image img.ea-slide.ea-exit {
-  transform: translateX(-100%);
-  filter: blur(12px);
-}
+.ea-scroll-track:hover { animation-play-state: paused; }
+.ea-scroll-track img:hover { filter: brightness(1); }
 .ea-ss26 {
   background: linear-gradient(90deg, #7a1fa2 0%, #b366ff 35%, #4a0080 50%, #b366ff 65%, #7a1fa2 100%);
   background-size: 300% auto;

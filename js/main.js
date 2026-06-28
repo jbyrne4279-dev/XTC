@@ -229,88 +229,23 @@ function initEarlyAccessSlideshow() {
   const box = document.querySelector('.early-access-bar__image');
   if (!box || !EARLY_ACCESS_IMAGES.length) return;
 
-  // Build the slides directly and let the browser load them natively. (No JS
-  // preload gate — on mobile a stalled preload used to stop the slideshow from
-  // ever building.) Vertical page scrolling still works over the panel.
-  box.style.touchAction = 'pan-y';
   box.innerHTML = '';
-  const slides = EARLY_ACCESS_IMAGES.map((src, idx) => {
+
+  // Build a continuous horizontal scroll track (same as the gallery carousel).
+  // Duplicate the images for a seamless infinite loop.
+  const track = document.createElement('div');
+  track.className = 'ea-scroll-track';
+
+  [...EARLY_ACCESS_IMAGES, ...EARLY_ACCESS_IMAGES].forEach((src, idx) => {
     const img = document.createElement('img');
-    img.className = 'ea-slide' + (idx === 0 ? ' active' : '');
     img.src = src;
     img.alt = 'XTC';
-    img.loading = idx === 0 ? 'eager' : 'lazy';
+    img.loading = idx < EARLY_ACCESS_IMAGES.length ? 'eager' : 'lazy';
     img.draggable = false;
-    box.appendChild(img);
-    return img;
+    track.appendChild(img);
   });
 
-  if (slides.length <= 1) return;             // single image → no rotation
-  let cur = 0;
-  let autoTimer;
-
-  function goTo(nextIdx, direction) {
-    if (nextIdx === cur) return;
-    const incoming = slides[nextIdx];
-    const outgoing = slides[cur];
-    cur = nextIdx;
-
-    const enterFrom = direction === 1 ? 'translateX(100%)' : 'translateX(-100%)';
-    const exitTo    = direction === 1 ? 'translateX(-100%)' : 'translateX(100%)';
-
-    // Place the incoming slide just off-screen, instantly (no transition).
-    incoming.style.transition = 'none';
-    incoming.style.transform = enterFrom;
-    incoming.style.filter = 'blur(12px)';
-    incoming.offsetWidth; // force reflow so the next change animates
-
-    // Animate the incoming slide IN to centre, and the outgoing slide OUT.
-    incoming.style.transition = '';
-    incoming.classList.add('active');
-    incoming.style.transform = 'translateX(0)';
-    incoming.style.filter = 'blur(0)';
-
-    outgoing.classList.remove('active');
-    outgoing.style.transition = '';
-    outgoing.style.transform = exitTo;
-    outgoing.style.filter = 'blur(12px)';
-  }
-
-  function next() { goTo((cur + 1) % slides.length, 1); }
-  function prev() { goTo((cur - 1 + slides.length) % slides.length, -1); }
-
-  function resetAuto() {
-    clearInterval(autoTimer);
-    autoTimer = setInterval(next, 2000);
-  }
-  resetAuto();
-
-  // Drag / swipe support (pointer events — works for mouse + touch)
-  let dragStartX = null;
-  let dragging = false;
-
-  box.addEventListener('pointerdown', e => {
-    dragStartX = e.clientX;
-    dragging = false;
-  });
-
-  box.addEventListener('pointermove', e => {
-    if (dragStartX === null) return;
-    if (Math.abs(e.clientX - dragStartX) > 5) dragging = true;
-  });
-
-  box.addEventListener('pointerup', e => {
-    if (dragStartX === null) return;
-    const dx = e.clientX - dragStartX;
-    dragStartX = null;
-    if (!dragging) return;
-    if (Math.abs(dx) < 40) return;   // ignore tiny drags
-    if (dx < 0) { next(); } else { prev(); }
-    resetAuto();
-  });
-
-  box.addEventListener('pointercancel', () => { dragStartX = null; });
-  box.addEventListener('dragstart', e => e.preventDefault());
+  box.appendChild(track);
 }
 
 // ---- Init ----
