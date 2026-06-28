@@ -1877,7 +1877,7 @@ ul, ol { list-style: none; }
   transition: color var(--dur) var(--ease);
 }
 .footer-links a:hover {
-  color: var(--text-primary);
+  color: #b366ff;
 }
 
 .footer-bottom {
