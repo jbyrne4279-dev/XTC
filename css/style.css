@@ -2491,9 +2491,18 @@ ul, ol { list-style: none; }
   border-color: rgba(204,0,0,0.7);
 }
 
-.drop-war .fp-note .purple-shine,
-.drop-war .fp-note {
-  color: var(--war-red-dim);
+.drop-war .fp-note .purple-shine {
+  background: linear-gradient(90deg,
+    rgba(100,0,0,0.8)  0%,
+    rgba(204,0,0,1)   35%,
+    rgba(80,0,0,1)    50%,
+    rgba(204,0,0,1)   65%,
+    rgba(100,0,0,0.8) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* War™ product page (pdp) overrides */
