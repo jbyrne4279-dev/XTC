@@ -2422,6 +2422,8 @@ ul, ol { list-style: none; }
 }
 
 /* ── War™ / Drop 02 — blood red branding ── */
+/* Override --accent variable for War™ product pages */
+.pdp-war { --accent: #cc0000; }
 :root {
   --war-red:        #990000;
   --war-red-light:  #cc0000;
@@ -2460,6 +2462,33 @@ ul, ol { list-style: none; }
 
 .drop-war .fp-card:hover {
   border-color: var(--war-red-border);
+}
+
+/* War™ card outline / shine — override purple conic gradients with red */
+.drop-war .fp-card::before {
+  background: conic-gradient(from var(--circuit-a),
+    transparent 0%, transparent 60%,
+    rgba(100,0,0,0.6) 72%, rgba(204,0,0,1) 80%, rgba(255,100,100,0.8) 85%,
+    rgba(204,0,0,0.6) 92%, transparent 100%
+  );
+}
+.drop-war .fp-card::after {
+  background: conic-gradient(from var(--circuit-a),
+    transparent 0%, transparent 50%,
+    rgba(100,0,0,0.7) 65%, rgba(204,0,0,1) 75%, rgba(255,120,120,0.8) 82%,
+    rgba(204,0,0,0.6) 90%, transparent 100%
+  );
+}
+.drop-war .fp-card__atc::before {
+  background: conic-gradient(from var(--cta-a),
+    transparent 0%, transparent 55%,
+    rgba(100,0,0,0.6) 68%, rgba(204,0,0,1) 78%, rgba(255,100,100,0.7) 84%,
+    rgba(204,0,0,0.5) 91%, transparent 100%
+  );
+}
+.drop-war .fp-card__atc:hover {
+  background: rgba(153,0,0,0.2);
+  border-color: rgba(204,0,0,0.7);
 }
 
 .drop-war .fp-note .purple-shine,
