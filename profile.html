@@ -934,9 +934,11 @@
     }
     .footer-links ul { display: flex; flex-direction: column; gap: 10px; }
     .footer-links a { font-size: 14px; color: var(--text-2); transition: color var(--transition); }
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover, .footer-links a:active { color: var(--accent); }
     .footer-bottom { padding: 20px 0; }
-    .footer-copyright { font-size: 12px; color: var(--text-3); }
+    .footer-copyright { font-size: 12px; color: rgba(255,255,255,0.15); }
+    .footer-copy-sym { color: #cc0000; animation: copy-flash 3s ease-in-out infinite; }
+    @keyframes copy-flash { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -1211,7 +1213,7 @@
           <div class="footer-links"><h3 class="footer-links__heading">Help</h3><ul><li><a href="/contact">Contact Us</a></li><li><a href="/shipping">Shipping</a></li><li><a href="/returns">Returns</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li></ul></div>
         </div>
       </div>
-      <div class="footer-bottom"><p class="footer-copyright">© 2026 XTC. All rights reserved.</p></div>
+      <div class="footer-bottom"><p class="footer-copyright"><span class="footer-copy-sym">©</span> 2026 XTC. All rights reserved.</p></div>
     </div>
   </footer>
 

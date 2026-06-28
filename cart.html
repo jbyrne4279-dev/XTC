@@ -87,10 +87,10 @@
     }
     .cart-void__cta:hover { border-color: rgba(179,102,255,0.7); color: var(--accent); background: rgba(179,102,255,0.1); }
 
-    /* Recommended products (empty-state) */
+    /* Recommended products */
     .cart-recs {
       width: 100%;
-      max-width: 640px;
+      max-width: 960px;
       margin-top: 56px;
       padding-top: 44px;
       border-top: 1px solid rgba(255,255,255,0.1);
@@ -100,57 +100,23 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       color: rgba(255,255,255,0.5);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       text-align: center;
     }
     .cart-recs__grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
     }
-    .cart-rec {
-      display: block;
-      text-decoration: none;
-      background: #0d0d0d;
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: border-color 0.25s;
+    @media (max-width: 860px) {
+      .cart-recs__grid { grid-template-columns: repeat(2, 1fr); }
     }
-    .cart-rec:hover { border-color: rgba(179,102,255,0.5); }
-    .cart-rec__media {
-      aspect-ratio: 1 / 1;
-      overflow: hidden;
-      background: #0f0f0f;
-    }
-    .cart-rec__media img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.5s ease;
-    }
-    .cart-rec:hover .cart-rec__media img { transform: scale(1.05); }
-    .cart-rec__info {
-      display: flex;
-      align-items: center;
-      padding: 14px 16px;
-    }
-    .cart-rec__name {
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #fff;
-    }
-    /* Row variant (cart-with-items) — keep the same design as the empty state:
-       centered, 640px wide, two-column grid. */
     .cart-recs--row {
       grid-column: 1 / -1;
-      max-width: 640px;
+      max-width: 960px;
       margin: 56px auto 0;
       padding-top: 44px;
       border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .cart-recs--row .cart-recs__grid {
-      grid-template-columns: repeat(2, 1fr);
     }
 
     /* Cart split layout */
@@ -507,18 +473,79 @@
       <div class="cart-recs">
         <p class="cart-recs__heading">You May Also Like</p>
         <div class="cart-recs__grid">
-          <a href="/product-polo-black" class="cart-rec">
-            <div class="cart-rec__media"><img src="images/polo-black-flat.jpg" alt="XTC Polo [Black]" loading="lazy" /></div>
-            <div class="cart-rec__info">
-              <span class="cart-rec__name">Polo [Black]</span>
+
+          <article class="fp-card">
+            <a href="/product-polo-black" class="fp-card__media">
+              <img src="images/product-black-1.jpg" alt="XTC Polo [Black]" loading="lazy" />
+              <img class="fp-card__alt" src="images/polo-black-flat.jpg" alt="XTC Polo [Black]" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Limited</span>
+            <div class="fp-card__overlay"><a href="/product-polo-black" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-polo-black" class="fp-card__name">Polo [Black]</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£60</p>
+                <a href="/product-polo-black" class="fp-card__cta">View</a>
+              </div>
             </div>
-          </a>
-          <a href="/product-polo-white" class="cart-rec">
-            <div class="cart-rec__media"><img src="images/polo-white-flat.jpg" alt="XTC Polo [White]" loading="lazy" /></div>
-            <div class="cart-rec__info">
-              <span class="cart-rec__name">Polo [White]</span>
+          </article>
+
+          <article class="fp-card">
+            <a href="/product-polo-white" class="fp-card__media">
+              <img src="images/product-white-1.jpg" alt="XTC Polo [White]" loading="lazy" />
+              <img class="fp-card__alt" src="images/polo-white-flat.jpg" alt="XTC Polo [White]" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Limited</span>
+            <div class="fp-card__overlay"><a href="/product-polo-white" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-polo-white" class="fp-card__name">Polo [White]</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£60</p>
+                <a href="/product-polo-white" class="fp-card__cta">View</a>
+              </div>
             </div>
-          </a>
+          </article>
+
+          <article class="fp-card drop-war">
+            <a href="/product-war-zip" class="fp-card__media">
+              <img src="images/ZIP-HOODIE-XTC-FRONT.png" alt="War™ Zip Hoodie" loading="lazy" />
+              <img class="fp-card__alt" src="images/ZIP-HOODIE-BLACK-BACK.jpg" alt="War™ Zip back" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Pre-Order</span>
+            <div class="fp-card__overlay"><a href="/product-war-zip" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-war-zip" class="fp-card__name">War™ Zip</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£90</p>
+                <a href="/product-war-zip" class="fp-card__cta">View</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="fp-card drop-war">
+            <a href="/product-war-joggers" class="fp-card__media">
+              <img src="images/JOGGERS-XTC.jpg" alt="War™ Joggers" loading="lazy" />
+              <img class="fp-card__alt" src="images/JOGGERS-XTC-back.jpg" alt="War™ Joggers back" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Pre-Order</span>
+            <div class="fp-card__overlay"><a href="/product-war-joggers" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-war-joggers" class="fp-card__name">War™ Joggers</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£110</p>
+                <a href="/product-war-joggers" class="fp-card__cta">View</a>
+              </div>
+            </div>
+          </article>
+
         </div>
       </div>
     </div>
@@ -562,18 +589,79 @@
       <div class="cart-recs cart-recs--row">
         <p class="cart-recs__heading">You May Also Like</p>
         <div class="cart-recs__grid">
-          <a href="/product-polo-black" class="cart-rec">
-            <div class="cart-rec__media"><img src="images/polo-black-flat.jpg" alt="XTC Polo [Black]" loading="lazy" /></div>
-            <div class="cart-rec__info">
-              <span class="cart-rec__name">Polo [Black]</span>
+
+          <article class="fp-card">
+            <a href="/product-polo-black" class="fp-card__media">
+              <img src="images/product-black-1.jpg" alt="XTC Polo [Black]" loading="lazy" />
+              <img class="fp-card__alt" src="images/polo-black-flat.jpg" alt="XTC Polo [Black]" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Limited</span>
+            <div class="fp-card__overlay"><a href="/product-polo-black" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-polo-black" class="fp-card__name">Polo [Black]</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£60</p>
+                <a href="/product-polo-black" class="fp-card__cta">View</a>
+              </div>
             </div>
-          </a>
-          <a href="/product-polo-white" class="cart-rec">
-            <div class="cart-rec__media"><img src="images/polo-white-flat.jpg" alt="XTC Polo [White]" loading="lazy" /></div>
-            <div class="cart-rec__info">
-              <span class="cart-rec__name">Polo [White]</span>
+          </article>
+
+          <article class="fp-card">
+            <a href="/product-polo-white" class="fp-card__media">
+              <img src="images/product-white-1.jpg" alt="XTC Polo [White]" loading="lazy" />
+              <img class="fp-card__alt" src="images/polo-white-flat.jpg" alt="XTC Polo [White]" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Limited</span>
+            <div class="fp-card__overlay"><a href="/product-polo-white" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-polo-white" class="fp-card__name">Polo [White]</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£60</p>
+                <a href="/product-polo-white" class="fp-card__cta">View</a>
+              </div>
             </div>
-          </a>
+          </article>
+
+          <article class="fp-card drop-war">
+            <a href="/product-war-zip" class="fp-card__media">
+              <img src="images/ZIP-HOODIE-XTC-FRONT.png" alt="War™ Zip Hoodie" loading="lazy" />
+              <img class="fp-card__alt" src="images/ZIP-HOODIE-BLACK-BACK.jpg" alt="War™ Zip back" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Pre-Order</span>
+            <div class="fp-card__overlay"><a href="/product-war-zip" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-war-zip" class="fp-card__name">War™ Zip</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£90</p>
+                <a href="/product-war-zip" class="fp-card__cta">View</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="fp-card drop-war">
+            <a href="/product-war-joggers" class="fp-card__media">
+              <img src="images/JOGGERS-XTC.jpg" alt="War™ Joggers" loading="lazy" />
+              <img class="fp-card__alt" src="images/JOGGERS-XTC-back.jpg" alt="War™ Joggers back" loading="lazy" />
+            </a>
+            <span class="fp-card__badge">Pre-Order</span>
+            <div class="fp-card__overlay"><a href="/product-war-joggers" class="fp-card__overlay-btn">View</a></div>
+            <div class="fp-card__info">
+              <div class="fp-card__info-left">
+                <a href="/product-war-joggers" class="fp-card__name">War™ Joggers</a>
+              </div>
+              <div class="fp-card__info-right">
+                <p class="fp-card__price">£110</p>
+                <a href="/product-war-joggers" class="fp-card__cta">View</a>
+              </div>
+            </div>
+          </article>
+
         </div>
       </div>
     </div>
@@ -629,7 +717,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p class="footer-copyright">© 2026 XTC. All rights reserved.</p>
+        <p class="footer-copyright"><span class="footer-copy-sym">©</span> 2026 XTC. All rights reserved.</p>
       </div>
     </div>
 
