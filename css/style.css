@@ -2498,24 +2498,34 @@ ul, ol { list-style: none; }
   color: var(--war-red-light);
 }
 
-.drop-war .fp-card:hover {
+.drop-war .fp-card:hover,
+.fp-card.drop-war:hover {
   border-color: var(--war-red-border);
 }
 
 /* War™ card outline / shine — override purple conic gradients with red */
-.drop-war .fp-card::before {
+/* Covers both ancestor (.drop-war .fp-card) and same-element (.fp-card.drop-war) usage */
+.drop-war .fp-card::before,
+.fp-card.drop-war::before {
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 60%,
     rgba(100,0,0,0.6) 72%, rgba(204,0,0,1) 80%, rgba(255,100,100,0.8) 85%,
     rgba(204,0,0,0.6) 92%, transparent 100%
   );
 }
-.drop-war .fp-card::after {
+.drop-war .fp-card::after,
+.fp-card.drop-war::after {
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 50%,
     rgba(100,0,0,0.7) 65%, rgba(204,0,0,1) 75%, rgba(255,120,120,0.8) 82%,
     rgba(204,0,0,0.6) 90%, transparent 100%
   );
+}
+
+/* Slightly lighter media background so dark WAR product images are visible */
+.drop-war .fp-card__media,
+.fp-card.drop-war .fp-card__media {
+  background: #181818;
 }
 .drop-war .fp-card__atc::before {
   background: conic-gradient(from var(--cta-a),
