@@ -7,6 +7,12 @@
   <title>XTC Clothing — Limited Drops. Never Restocked.</title>
   <meta name="description" content="XTC Clothing — premium heavyweight streetwear. Limited drops, never restocked. Shop the Original Members Polo and register for SS26 early access." />
   <link rel="canonical" href="https://xtcclothing.com/" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="XTC Clothing" />
+  <link rel="apple-touch-icon" href="/images/icon-192.png" />
   <meta property="og:title" content="XTC Clothing — Limited Drops. Never Restocked." />
   <meta property="og:description" content="XTC Clothing — premium heavyweight streetwear. Limited drops, never restocked. Shop the Original Members Polo and register for SS26 early access." />
   <meta property="og:image" content="https://xtcclothing.com/images/polo-black-flat.jpg" />
@@ -17,26 +23,34 @@
   <meta name="twitter:description" content="Premium heavyweight streetwear. Limited drops, never restocked." />
   <meta name="twitter:image" content="https://xtcclothing.com/images/polo-black-flat.jpg" />
   <script type="application/ld+json">
+[
   {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
     "name": "XTC Clothing",
     "url": "https://xtcclothing.com",
-    "logo": "https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png",
-    "image": "https://xtcclothing.com/images/polo-black-flat.jpg",
+    "logo": "https://xtcclothing.com/images/icon-512.png",
     "description": "Premium heavyweight streetwear. Limited drops, never restocked.",
-    "sameAs": [
-      "https://instagram.com/xtc.rip",
-      "https://tiktok.com/@xtc.rip"
-    ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "customer support",
-      "url": "https://xtcclothing.com/contact",
-      "availableLanguage": "English"
+    "sameAs": ["https://www.instagram.com/xtcclothing", "https://www.tiktok.com/@xtcclothing"],
+    "contactPoint": { "@type": "ContactPoint", "contactType": "customer service", "email": "hello@xtcclothing.com", "availableLanguage": "English" },
+    "address": { "@type": "PostalAddress", "addressCountry": "GB" },
+    "priceRange": "£30–£110",
+    "currenciesAccepted": "GBP",
+    "paymentAccepted": "Credit Card, Debit Card"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "XTC Clothing",
+    "url": "https://xtcclothing.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": { "@type": "EntryPoint", "urlTemplate": "https://xtcclothing.com/new-releases?q={search_term_string}" },
+      "query-input": "required name=search_term_string"
     }
   }
-  </script>
+]
+</script>
   <link rel="stylesheet" href="css/style.css" />
   <style>
     /* Size picker popup */

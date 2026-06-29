@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-confirmed
+Disallow: /profile
+
+Sitemap: https://xtcclothing.com/sitemap.xml
