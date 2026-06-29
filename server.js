@@ -20,10 +20,7 @@ const PRODUCTS = {
   'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
 };
 
-// Products whose out-of-stock sizes can still be pre-ordered (charged now,
-// shipped 21 July) instead of being blocked at checkout. Keep in sync with
-// PREORDER_PRODUCTS in js/stock.js.
-const PREORDER_PRODUCTS = new Set(['polo-black', 'polo-white']);
+const PREORDER_PRODUCTS = new Set();
 
 // Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
 const POINT_VALUE_PENCE = 5;

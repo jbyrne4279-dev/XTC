@@ -926,7 +926,7 @@
       function showStockNote() {
         var q = typeof getSizeStock === 'function' ? getSizeStock('polo-black', size) : 0;
         note.className = 'pdp-stock-note';
-        if (q <= 0) { note.textContent = 'Out of stock — pre-order, ships 21 July'; note.classList.add('pdp-stock-note--pre'); }
+        if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--pre'); }
         else if (q <= 3) { note.textContent = q + ' left in this size — Ready to ship'; note.classList.add('pdp-stock-note--low'); }
         else { note.textContent = q + ' available — Ready to ship'; note.classList.add('pdp-stock-note--ok'); }
       }

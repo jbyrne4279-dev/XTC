@@ -54,9 +54,7 @@ function getSizeStock(productId, size) {
   return (getStockForProduct(productId)[size.toUpperCase()] || 0);
 }
 
-// Products whose out-of-stock sizes can still be PRE-ORDERED (charged now,
-// shipped 21 July) rather than being blocked. Keep in sync with the server.
-const PREORDER_PRODUCTS = ['polo-black', 'polo-white'];
+const PREORDER_PRODUCTS = [];
 function isPreorderProduct(productId) {
   return PREORDER_PRODUCTS.indexOf(productId) !== -1;
 }

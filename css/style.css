@@ -121,10 +121,17 @@ ul, ol { list-style: none; }
   padding-right: 80px;
   color: rgba(255,255,255,0.4);
 }
-/* "Free Delivery" only — solid purple (no shine animation) */
+/* "Free Delivery" — same black/white shine as MEMBERS ONLY */
 .announcement-bar__track span .ad-free {
   padding-right: 0;
-  color: rgba(160,80,255,1);
+  background: linear-gradient(90deg, #1a1a1a 0%, #666 28%, #111 45%, #888 60%, #333 75%, #555 90%, #1a1a1a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ea-shine 4s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 -1px 0 rgba(0,0,0,0.9));
 }
 
 /* Size button selected — green circuit animation */
