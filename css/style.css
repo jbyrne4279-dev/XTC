@@ -129,7 +129,7 @@ ul, ol { list-style: none; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ea-shine 4s linear infinite;
+  animation: ea-shine 8s linear infinite;
   text-shadow: none;
   filter: drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 -1px 0 rgba(0,0,0,0.9));
 }
@@ -3017,7 +3017,7 @@ textarea {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ea-shine 4s linear infinite;
+  animation: ea-shine 8s linear infinite;
   text-shadow: none;
   filter: drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 -1px 0 rgba(0,0,0,0.9));
 }
