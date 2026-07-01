@@ -811,9 +811,15 @@
     updateTotals(subtotal);
   }
 
+  function getShipping(subtotal) {
+    const country = (document.getElementById('coCountry') && document.getElementById('coCountry').value) || 'GB';
+    if (country && country !== 'GB') return 9.99;
+    return subtotal >= 80 ? 0 : 4.99;
+  }
+
   function updateTotals(subtotal) {
     if (subtotal === undefined) subtotal = getCartSubtotal();
-    const shipping = subtotal >= 80 ? 0 : 4.99;
+    const shipping = getShipping(subtotal);
 
     // Calculate discount
     let discountAmount = 0;
@@ -840,7 +846,7 @@
     total = total - redeemValue;
 
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
-    document.getElementById('coShipping').textContent = shipping === 0 ? 'Free' : '£4.99';
+    document.getElementById('coShipping').textContent = shipping === 0 ? 'Free' : '£' + shipping.toFixed(2);
     document.getElementById('coTotal').textContent = '£' + total.toFixed(2);
 
     const discountRow = document.getElementById('coDiscountRow');
@@ -1034,7 +1040,7 @@
 
   function calcTotalPence() {
     const subtotal = getCartSubtotal();
-    const shipping = subtotal >= 80 ? 0 : 4.99;
+    const shipping = getShipping(subtotal);
     let discount = 0;
     if (_promo) {
       if (_promo.type === 'percent') discount = subtotal * (_promo.value / 100);
@@ -1314,6 +1320,7 @@
       wrap.classList.add('has-flag');
       input.setCustomValidity('');
       if (!opts.silent) touched = true;
+      updateTotals();
       return true;
     }
     function clearSelection() { hidden.value = ''; delete hidden.dataset.name; wrap.classList.remove('has-flag'); }
