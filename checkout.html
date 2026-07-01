@@ -1037,6 +1037,7 @@
   let _elements = null;
   let _intentId = null;
   let _formListenerAttached = false;
+  let _intentGen = 0; // generation counter so stale intent responses never overwrite a newer one
 
   function calcTotalPence() {
     const subtotal = getCartSubtotal();
@@ -1050,6 +1051,7 @@
   }
 
   async function mountStripeElements(clientSecret) {
+    if (!clientSecret) return; // stale — a newer intent already took over
     // Unmount existing if reinitialising
     if (_elements) {
       try { _elements.getElement('payment')?.unmount(); } catch {}
@@ -1163,6 +1165,8 @@
   }
 
   async function createPaymentIntent() {
+    _intentGen++;
+    const myGen = _intentGen;
     const totalPence = calcTotalPence();
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     const cartSummary = cart.map(i => i.qty + 'x ' + i.name + (i.size ? ' (' + i.size + ')' : '')).join(', ');
@@ -1185,6 +1189,8 @@
       }
       throw new Error(data.error || 'Failed to create payment intent');
     }
+    // Discard this response if a newer intent creation has already started
+    if (myGen !== _intentGen) return null;
     _intentId = data.intentId || null;
     // Reconcile the displayed total with the server's actual charge
     if (typeof data.finalAmount === 'number') {
@@ -1321,6 +1327,7 @@
       input.setCustomValidity('');
       if (!opts.silent) touched = true;
       updateTotals();
+      reinitPayment();
       return true;
     }
     function clearSelection() { hidden.value = ''; delete hidden.dataset.name; wrap.classList.remove('has-flag'); }
