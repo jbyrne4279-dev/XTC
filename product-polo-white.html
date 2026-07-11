@@ -943,8 +943,8 @@
         var q = typeof getSizeStock === 'function' ? getSizeStock('polo-white', size) : 0;
         note.className = 'pdp-stock-note';
         if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--pre'); }
-        else if (q <= 3) { note.textContent = q + ' left in this size — Ready to ship'; note.classList.add('pdp-stock-note--low'); }
-        else { note.textContent = q + ' available — Ready to ship'; note.classList.add('pdp-stock-note--ok'); }
+        else if (q <= 3) { note.textContent = q + ' left in this size'; note.classList.add('pdp-stock-note--low'); }
+        else { note.textContent = q + ' available'; note.classList.add('pdp-stock-note--ok'); }
       }
       showStockNote();
       if (typeof refreshStock === 'function') {

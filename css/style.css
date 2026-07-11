@@ -2483,7 +2483,7 @@ ul, ol { list-style: none; }
 }
 
 .drop-war .fp-card__badge {
-  background: var(--war-red-bg);
+  background: #1a0000;
   border-color: var(--war-red-border);
   color: var(--war-red-light);
 }
