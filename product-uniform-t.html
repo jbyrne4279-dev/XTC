@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Uniform T — XTC Clothing | Pre-Order</title>
   <meta name="description" content="The XTC Uniform T. 100% cotton, oversized fit, washed black, embroidered logo. SS26 pre-order — ships 21 July. £30." />
+  <meta name="keywords" content="XTC Uniform T, War collection t-shirt, oversized washed black tee, SS26 pre-order, XTC Clothing, embroidered logo tee, limited streetwear UK" />
   <link rel="canonical" href="https://xtcclothing.com/product-uniform-t" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0a0a0a" />
@@ -28,9 +29,9 @@
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "XTC Uniform T",
-    "description": "100% cotton oversized tee. Washed black, embroidered logo. SS26 War™ collection. £30.",
+    "description": "100% cotton oversized tee. Washed black, embroidered XTC logo. SS26 War™ collection. Limited run of 10 per size.",
     "brand": { "@type": "Brand", "name": "XTC Clothing" },
-    "image": ["https://xtcclothing.com/images/uniform-t-1.jpg","https://xtcclothing.com/images/uniform-t-2.jpg"],
+    "image": ["https://xtcclothing.com/images/T-SHIRT-XTC.jpg"],
     "url": "https://xtcclothing.com/product-uniform-t",
     "sku": "XTC-UNIFORM-T",
     "color": "Washed Black",
@@ -40,7 +41,19 @@
       "url": "https://xtcclothing.com/product-uniform-t",
       "priceCurrency": "GBP",
       "price": "30.00",
-      "availability": "https://schema.org/InStock",
+      "availability": "https://schema.org/PreOrder",
+      "availabilityStarts": "2025-07-21",
+      "priceValidUntil": "2025-12-31",
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": { "@type": "MonetaryAmount", "currency": "GBP", "value": "0" },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 3, "unitCode": "DAY" },
+          "transitTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 3, "unitCode": "DAY" }
+        },
+        "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "GB" }
+      },
       "seller": { "@type": "Organization", "name": "XTC Clothing" }
     }
   },
@@ -647,7 +660,7 @@
       <p class="recs-eyebrow">You May Also Like</p>
       <div class="recs-grid reveal-group">
 
-        <article class="product-card">
+        <article class="product-card product-card--war">
           <a href="/product-war-zip" class="product-card__media">
             <img src="images/ZIP-HOODIE-XTC-FRONT.png" alt="WAR&trade; ZIP" loading="lazy" />
             <img class="product-card__media-alt" src="images/ZIP-HOODIE-BLACK-BACK.jpg" alt="WAR&trade; ZIP alt" loading="lazy" />
@@ -662,7 +675,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card product-card--war">
           <a href="/product-war-joggers" class="product-card__media">
             <img src="images/JOGGERS-XTC.jpg" alt="WAR&trade; JOGGERS" loading="lazy" />
             <img class="product-card__media-alt" src="images/JOGGERS-XTC-back.jpg" alt="WAR&trade; JOGGERS alt" loading="lazy" />
