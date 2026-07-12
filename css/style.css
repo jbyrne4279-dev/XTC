@@ -121,10 +121,16 @@ ul, ol { list-style: none; }
   padding-right: 80px;
   color: rgba(255,255,255,0.4);
 }
-/* "Free Delivery" — same black/white shine as MEMBERS ONLY */
+/* "Free Delivery" — purple shine */
 .announcement-bar__track span .ad-free {
   padding-right: 0;
-  background: linear-gradient(90deg, #1a1a1a 0%, #666 28%, #111 45%, #888 60%, #333 75%, #555 90%, #1a1a1a 100%);
+  background: linear-gradient(90deg,
+    rgba(100,40,160,0.8)  0%,
+    rgba(160,80,255,1)   35%,
+    rgba(80,20,120,1)    50%,
+    rgba(160,80,255,1)   65%,
+    rgba(100,40,160,0.8) 100%
+  );
   background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2335,7 +2341,7 @@ ul, ol { list-style: none; }
   color: var(--text-secondary);
   transition: color 0.2s;
 }
-.footer-links a:hover { color: var(--text-primary); }
+.footer-links a:hover { color: #b366ff; }
 
 /* ── Footer base ── */
 .footer-bottom {
