@@ -238,30 +238,10 @@
 
   <!-- War Collection Early Access -->
   <section class="war-hero" aria-label="War Collection early access">
-    <video class="war-hero__media" id="warHeroVideo" autoplay muted playsinline poster="images/ZIP-HOODIE-WAR.png">
+    <video class="war-hero__media" id="warHeroVideo" autoplay muted loop playsinline poster="images/ZIP-HOODIE-WAR.png">
       <source src="images/war-collection-hero.mp4" type="video/mp4" />
     </video>
     <div class="war-hero__overlay"></div>
-    <div class="war-hero__content">
-      <div class="war-hero__countdown" id="warCountdown" aria-label="Countdown to drop">
-        <div class="war-hero__cd-unit">
-          <span class="war-hero__cd-num" id="warCdDays">00</span>
-          <span class="war-hero__cd-label">Days</span>
-        </div>
-        <div class="war-hero__cd-unit">
-          <span class="war-hero__cd-num" id="warCdHours">00</span>
-          <span class="war-hero__cd-label">Hours</span>
-        </div>
-        <div class="war-hero__cd-unit">
-          <span class="war-hero__cd-num" id="warCdMins">00</span>
-          <span class="war-hero__cd-label">Min</span>
-        </div>
-        <div class="war-hero__cd-unit">
-          <span class="war-hero__cd-num" id="warCdSecs">00</span>
-          <span class="war-hero__cd-label">Sec</span>
-        </div>
-      </div>
-    </div>
   </section>
 
   <!-- War Collection Early Access Modal -->
@@ -283,48 +263,6 @@
   </div>
 
   <script>
-  // War Collection countdown — fixed 30-day target, not a rolling per-visit timer
-  (function() {
-    var target = new Date('2026-08-12T09:00:00Z').getTime();
-    var elDays = document.getElementById('warCdDays');
-    var elHours = document.getElementById('warCdHours');
-    var elMins = document.getElementById('warCdMins');
-    var elSecs = document.getElementById('warCdSecs');
-    if (!elDays) return;
-    function pad(n) { return String(n).padStart(2, '0'); }
-    function tick() {
-      var diff = target - Date.now();
-      if (diff < 0) diff = 0;
-      var days = Math.floor(diff / 86400000);
-      var hours = Math.floor((diff % 86400000) / 3600000);
-      var mins = Math.floor((diff % 3600000) / 60000);
-      var secs = Math.floor((diff % 60000) / 1000);
-      elDays.textContent = pad(days);
-      elHours.textContent = pad(hours);
-      elMins.textContent = pad(mins);
-      elSecs.textContent = pad(secs);
-    }
-    tick();
-    setInterval(tick, 1000);
-  })();
-
-  // Countdown stays hidden until the hero video finishes playing (or fails to
-  // load, so it still appears even before a real video file is in place).
-  (function() {
-    var video = document.getElementById('warHeroVideo');
-    var countdown = document.getElementById('warCountdown');
-    if (!video || !countdown) return;
-    var revealed = false;
-    function reveal() {
-      if (revealed) return;
-      revealed = true;
-      countdown.classList.add('show');
-    }
-    video.addEventListener('ended', reveal);
-    video.addEventListener('error', reveal);
-    setTimeout(reveal, 8000);
-  })();
-
   function openWarEarlyAccessModal() {
     document.getElementById('weaForm').reset();
     document.getElementById('weaForm').style.display = '';
