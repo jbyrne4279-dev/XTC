@@ -315,8 +315,7 @@
       gap: 12px;
     }
     .pdp-atc:hover { opacity: 0.85; }
-    .pdp-size-guide-section .pdp-acc-trigger { pointer-events: none; }
-    #sizeContent table td { color: var(--accent); }
+    #sizeGuidePanel table td { color: var(--accent); }
     .pdp-buy-now {
       width: 100%;
       padding: 16px 24px;
@@ -354,78 +353,6 @@
     }
     .pdp-buy-now:hover { background: rgba(153,0,0,0.15); border-color: rgba(204,0,0,0.9); }
 
-    /* Accordion */
-    .pdp-accordion { border-top: 1px solid var(--border); }
-    .pdp-acc-trigger {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 20px 0;
-      background: none;
-      border: none;
-      border-bottom: 1px solid var(--border);
-      color: rgba(255,255,255,0.45);
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-align: left;
-      transition: color 0.2s;
-    }
-    .pdp-acc-trigger:hover { color: #fff; }
-    .pdp-acc-trigger svg { flex-shrink: 0; transition: transform 0.25s; }
-    .pdp-acc-trigger.open svg { transform: rotate(180deg); }
-    .pdp-acc-content {
-      display: none;
-      padding: 20px 0 28px;
-      border-bottom: 1px solid var(--border);
-    }
-    .pdp-acc-content.open { display: block; }
-    .pdp-acc-content p,
-    .pdp-acc-content li {
-      font-size: 13px;
-      color: rgba(255,255,255,0.4);
-      line-height: 1.8;
-      letter-spacing: 0.3px;
-    }
-    .pdp-acc-content ul { padding-left: 16px; list-style: disc; }
-    .pdp-acc-content table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-    .pdp-acc-content th, .pdp-acc-content td {
-      padding: 10px 12px;
-      text-align: left;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      border: 1px solid var(--border);
-      color: rgba(255,255,255,0.4);
-    }
-    @keyframes pdp-th-shine {
-      0%   { background-position: -200% center; }
-      100% { background-position: 200% center; }
-    }
-    .pdp-acc-content th {
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      background: linear-gradient(90deg,
-        rgba(60,0,0,0.9)  0%,
-        rgba(160,0,0,1) 40%,
-        rgba(153,0,0,1) 50%,
-        rgba(160,0,0,1) 60%,
-        rgba(60,0,0,0.9) 100%
-      );
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: pdp-th-shine 6s linear infinite;
-    }
 
     /* Trust strip */
     .pdp-trust {
@@ -452,7 +379,7 @@
       .pdp-gallery__thumbs { max-width: 100%; }
       .pdp-info { padding: 32px 24px; max-width: 100%; }
       .pdp-crumb { padding: 12px 24px; max-width: 100%; box-sizing: border-box; }
-      .pdp-acc-content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .pdp-size-guide-panel table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .pdp-trust { max-width: 100%; }
     }
     @media (max-width: 680px) {
@@ -466,7 +393,8 @@
       .pdp-size-btn { width: 48px; height: 48px; font-size: 11px; }
       .pdp-atc { font-size: 10px; letter-spacing: 2px; padding: 16px; margin-top: 16px; box-sizing: border-box; }
       .pdp-buy-now { font-size: 10px; letter-spacing: 2px; padding: 14px; box-sizing: border-box; }
-      .pdp-accordion { max-width: 100%; overflow: hidden; }
+      .pdp-tabs { max-width: 100%; overflow: hidden; }
+      .pdp-tabs__nav { gap: 20px; overflow-x: auto; }
     }
     .pdp-gallery__main { user-select: none; }
     .pdp-gallery__main img { pointer-events: none; }
@@ -575,7 +503,7 @@
 
         <!-- Size -->
         <div>
-          <p class="pdp-section-label">Size</p>
+          <p class="pdp-section-label"><span>Size</span><button type="button" class="pdp-size-guide" id="sizeGuideToggle">Size Guide</button></p>
           <div class="pdp-sizes" id="sizeButtons">
             <button class="pdp-size-btn" data-size="S">S</button>
             <button class="pdp-size-btn" data-size="M">M</button>
@@ -583,6 +511,17 @@
           </div>
           <p class="pdp-size-error" id="sizeError">Please select a size.</p>
           <p class="pdp-stock-note" id="stockNote"></p>
+          <div class="pdp-size-guide-panel" id="sizeGuidePanel">
+            <p style="margin-bottom:12px;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:1px;">All measurements in centimetres (cm).</p>
+            <table>
+              <thead><tr><th>Size</th><th>Waist</th><th>Hip</th><th>Inseam</th></tr></thead>
+              <tbody>
+                <tr><td>S</td><td>72</td><td>100</td><td>55</td></tr>
+                <tr><td>M</td><td>76</td><td>104</td><td>57</td></tr>
+                <tr><td>L</td><td>80</td><td>108</td><td>59</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- ATC -->
@@ -593,28 +532,15 @@
           Buy Now
         </button>
 
-        <!-- Accordions -->
-        <div class="pdp-accordion" style="margin-top:32px;">
-          <div class="pdp-size-guide-section">
-            <p class="pdp-acc-trigger open" style="cursor:default;">Size Guide</p>
-            <div class="pdp-acc-content open" id="sizeContent">
-              <p style="margin-bottom:12px;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:1px;">All measurements in centimetres (cm).</p>
-              <table>
-                <thead><tr><th>Size</th><th>Waist</th><th>Hip</th><th>Inseam</th></tr></thead>
-                <tbody>
-                  <tr><td>S</td><td>72</td><td>100</td><td>55</td></tr>
-                  <tr><td>M</td><td>76</td><td>104</td><td>57</td></tr>
-                  <tr><td>L</td><td>80</td><td>108</td><td>59</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Tabs -->
+        <div class="pdp-tabs" style="margin-top:32px;">
+          <div class="pdp-tabs__nav">
+            <button class="pdp-tab active" data-tab="descContent">Description</button>
+            <button class="pdp-tab" data-tab="shipContent">Shipping</button>
+            <button class="pdp-tab" data-tab="returnContent">Returns</button>
           </div>
 
-          <button class="pdp-acc-trigger" data-target="descContent">
-            Description
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-          </button>
-          <div class="pdp-acc-content" id="descContent">
+          <div class="pdp-tab-panel active" id="descContent">
             <p>The War™ Joggers. Heavyweight 400gsm French terry cotton, relaxed wide-leg silhouette with custom drawstrings.</p>
             <ul style="margin-top:12px;">
               <li>400gsm French terry cotton</li>
@@ -624,32 +550,23 @@
               <li>Only 100 made across the War™ Collection</li>
               <li>SS26 pre-order — ships 21 July 2026</li>
             </ul>
+            <p style="margin-top:16px;">Care: Machine wash cold, do not bleach, tumble dry low, iron on low heat.</p>
           </div>
 
-          <button class="pdp-acc-trigger" data-target="shipContent">
-            Shipping &amp; Returns
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-          </button>
-          <div class="pdp-acc-content" id="shipContent">
+          <div class="pdp-tab-panel" id="shipContent">
             <ul>
               <li>Pre-order — dispatches from 21 July 2026</li>
               <li>Free UK shipping on orders over £80</li>
               <li>Standard UK delivery: 3–5 working days</li>
               <li>International shipping available at checkout</li>
-              <li>Returns accepted within 14 days of delivery</li>
             </ul>
           </div>
 
-          <button class="pdp-acc-trigger" data-target="careContent">
-            Care Instructions
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-          </button>
-          <div class="pdp-acc-content" id="careContent">
+          <div class="pdp-tab-panel" id="returnContent">
             <ul>
-              <li>Machine wash cold</li>
-              <li>Do not bleach</li>
-              <li>Tumble dry low</li>
-              <li>Iron on low heat</li>
+              <li>Returns accepted within 14 days of delivery</li>
+              <li>Items must be unworn, unwashed, with tags attached</li>
+              <li>See our <a href="/returns" style="color:var(--accent);">Returns policy</a> for full details</li>
             </ul>
           </div>
         </div>
@@ -926,16 +843,22 @@
     document.addEventListener('DOMContentLoaded', function() {
       if (typeof applyStockToBadges === 'function') applyStockToBadges('war-joggers');
     });
-    // Accordion
-    document.querySelectorAll('.pdp-acc-trigger').forEach(trigger => {
-      trigger.addEventListener('click', () => {
-        const id = trigger.dataset.target;
-        const content = document.getElementById(id);
-        const isOpen = trigger.classList.contains('open');
-        trigger.classList.toggle('open', !isOpen);
-        content.classList.toggle('open', !isOpen);
+    // Tabs
+    document.querySelectorAll('.pdp-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.pdp-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pdp-tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
       });
     });
+    // Size guide
+    var sizeGuideToggle = document.getElementById('sizeGuideToggle');
+    if (sizeGuideToggle) {
+      sizeGuideToggle.addEventListener('click', () => {
+        document.getElementById('sizeGuidePanel').classList.toggle('open');
+      });
+    }
 
 
     // Size selection

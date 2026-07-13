@@ -194,6 +194,69 @@ ul, ol { list-style: none; }
   color: #fff !important;
 }
 
+/* PDP tabs (Description / Shipping / Returns) */
+.pdp-tabs { border-top: 1px solid var(--border); }
+.pdp-tabs__nav {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.pdp-tab {
+  padding: 18px 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(255,255,255,0.35);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  margin-bottom: -1px;
+}
+.pdp-tab:hover { color: rgba(255,255,255,0.65); }
+.pdp-tab.active { color: #fff; border-bottom-color: var(--accent); }
+.pdp-tab-panel { display: none; padding: 24px 0 8px; }
+.pdp-tab-panel.active { display: block; }
+.pdp-tab-panel p,
+.pdp-tab-panel li {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.8;
+  letter-spacing: 0.3px;
+}
+.pdp-tab-panel ul { padding-left: 16px; list-style: disc; }
+.pdp-tab-panel ul + p,
+.pdp-tab-panel p + p { margin-top: 12px; }
+
+/* Size guide inline panel (toggled from the Size label) */
+.pdp-size-guide-panel {
+  display: none;
+  margin: 12px 0 4px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.pdp-size-guide-panel.open { display: block; }
+.pdp-size-guide-panel table { width: 100%; border-collapse: collapse; }
+.pdp-size-guide-panel th,
+.pdp-size-guide-panel td {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  border: 1px solid var(--border);
+  color: rgba(255,255,255,0.4);
+}
+.pdp-size-guide-panel th {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 @keyframes marquee-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
