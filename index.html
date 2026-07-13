@@ -245,6 +245,108 @@
     <div class="hero-prog"><div class="hero-prog__bar" id="heroProgressBar"></div></div>
   </section>
 
+  <!-- War Collection Early Access -->
+  <section class="war-hero" aria-label="War Collection early access">
+    <video class="war-hero__media" autoplay muted loop playsinline poster="images/ZIP-HOODIE-WAR.png">
+      <source src="images/war-collection-hero.mp4" type="video/mp4" />
+    </video>
+    <div class="war-hero__overlay"></div>
+    <div class="war-hero__content">
+      <h1 class="war-hero__title">War&trade; Collection</h1>
+      <div class="war-hero__countdown" id="warCountdown" aria-label="Countdown to drop">
+        <div class="war-hero__cd-unit">
+          <span class="war-hero__cd-num" id="warCdDays">00</span>
+          <span class="war-hero__cd-label">Days</span>
+        </div>
+        <div class="war-hero__cd-unit">
+          <span class="war-hero__cd-num" id="warCdHours">00</span>
+          <span class="war-hero__cd-label">Hours</span>
+        </div>
+        <div class="war-hero__cd-unit">
+          <span class="war-hero__cd-num" id="warCdMins">00</span>
+          <span class="war-hero__cd-label">Min</span>
+        </div>
+        <div class="war-hero__cd-unit">
+          <span class="war-hero__cd-num" id="warCdSecs">00</span>
+          <span class="war-hero__cd-label">Sec</span>
+        </div>
+      </div>
+      <button type="button" class="war-hero__btn" onclick="openWarEarlyAccessModal()">Early Access</button>
+    </div>
+  </section>
+
+  <!-- War Collection Early Access Modal -->
+  <div class="wea-modal" id="warEarlyAccessModal" role="dialog" aria-modal="true" aria-labelledby="weaModalTitle">
+    <div class="wea-modal__box">
+      <button type="button" class="wea-modal__close" onclick="closeWarEarlyAccessModal()" aria-label="Close">×</button>
+      <p class="wea-modal__eyebrow">Early Access</p>
+      <h3 class="wea-modal__title" id="weaModalTitle">War&trade; Collection</h3>
+      <p class="wea-modal__sub">Be the first to know when the drop goes live.</p>
+      <form id="weaForm" onsubmit="submitWarEarlyAccess(event)">
+        <label class="wea-modal__label" for="weaEmail">Email Address</label>
+        <input class="wea-modal__input" id="weaEmail" type="email" placeholder="your@email.com" autocomplete="email" required />
+        <label class="wea-modal__label" for="weaPhone">Phone Number</label>
+        <input class="wea-modal__input" id="weaPhone" type="tel" placeholder="+44 7700 900000" autocomplete="tel" required />
+        <button class="wea-modal__submit" type="submit">Notify Me</button>
+      </form>
+      <p class="wea-modal__confirm" id="weaConfirm">You're on the list. We'll notify you the moment War&trade; goes live.</p>
+    </div>
+  </div>
+
+  <script>
+  // War Collection countdown — fixed 30-day target, not a rolling per-visit timer
+  (function() {
+    var target = new Date('2026-08-12T09:00:00Z').getTime();
+    var elDays = document.getElementById('warCdDays');
+    var elHours = document.getElementById('warCdHours');
+    var elMins = document.getElementById('warCdMins');
+    var elSecs = document.getElementById('warCdSecs');
+    if (!elDays) return;
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      var diff = target - Date.now();
+      if (diff < 0) diff = 0;
+      var days = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins = Math.floor((diff % 3600000) / 60000);
+      var secs = Math.floor((diff % 60000) / 1000);
+      elDays.textContent = pad(days);
+      elHours.textContent = pad(hours);
+      elMins.textContent = pad(mins);
+      elSecs.textContent = pad(secs);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  function openWarEarlyAccessModal() {
+    document.getElementById('weaForm').reset();
+    document.getElementById('weaForm').style.display = '';
+    document.getElementById('weaConfirm').classList.remove('show');
+    document.getElementById('warEarlyAccessModal').classList.add('open');
+  }
+  function closeWarEarlyAccessModal() {
+    document.getElementById('warEarlyAccessModal').classList.remove('open');
+  }
+  function submitWarEarlyAccess(e) {
+    e.preventDefault();
+    var email = document.getElementById('weaEmail').value.trim();
+    var phone = document.getElementById('weaPhone').value.trim();
+    if (!email || !phone) return;
+    if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'war-collection-early-access');
+    if (phone && window.omnisend) omnisend.push(['identifyContact', { email: email, phone: phone }]);
+    if (typeof xtcEvent === 'function') xtcEvent('sign_up', { method: 'war_collection_early_access' });
+    document.getElementById('weaForm').style.display = 'none';
+    document.getElementById('weaConfirm').classList.add('show');
+  }
+  document.getElementById('warEarlyAccessModal').addEventListener('click', function(e) {
+    if (e.target === this) closeWarEarlyAccessModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeWarEarlyAccessModal();
+  });
+  </script>
+
   <!-- Featured Products -->
   <section class="featured-products reveal">
     <canvas id="smokeCanvas" aria-hidden="true"></canvas>
