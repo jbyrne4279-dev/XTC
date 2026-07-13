@@ -248,6 +248,140 @@ function initEarlyAccessSlideshow() {
   box.appendChild(track);
 }
 
+// ---- Cart Drawer ----
+
+function cdGetDrawer() {
+  let el = document.getElementById('cartDrawer');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'cartDrawer';
+  el.innerHTML = `
+    <div class="cd-backdrop"></div>
+    <div class="cd-panel" role="dialog" aria-modal="true" aria-label="Shopping bag">
+      <div class="cd-header">
+        <p class="cd-header__title">Your Bag (<span id="cdCount">0</span>)</p>
+        <button class="cd-close" id="cdClose" aria-label="Close bag">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="cd-body" id="cdBody"></div>
+      <div class="cd-footer" id="cdFooter" style="display:none;">
+        <div class="cd-subtotal">
+          <span class="cd-subtotal__label">Subtotal</span>
+          <span class="cd-subtotal__value" id="cdSubtotal">£0.00</span>
+        </div>
+        <p class="cd-shipping-note">Free UK shipping on orders over £80. Taxes and shipping calculated at checkout.</p>
+        <div class="cd-actions">
+          <a class="cd-checkout-btn" href="/checkout">Checkout</a>
+          <a class="cd-view-cart-btn" href="/cart">View Bag</a>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  el.querySelector('.cd-backdrop').addEventListener('click', closeCartDrawer);
+  el.querySelector('#cdClose').addEventListener('click', closeCartDrawer);
+  return el;
+}
+
+function cdParsePrice(str) {
+  const n = parseFloat(String(str).replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function renderCartDrawer() {
+  const drawer = cdGetDrawer();
+  const cart = getCart();
+  const body = drawer.querySelector('#cdBody');
+  const footer = drawer.querySelector('#cdFooter');
+  const countEl = drawer.querySelector('#cdCount');
+  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  countEl.textContent = totalQty;
+
+  if (cart.length === 0) {
+    body.innerHTML = `
+      <div class="cd-empty">
+        <p class="cd-empty__text">Your bag is empty</p>
+        <button class="cd-empty__btn" onclick="closeCartDrawer()">Continue Shopping</button>
+      </div>`;
+    footer.style.display = 'none';
+    return;
+  }
+
+  footer.style.display = 'block';
+  body.innerHTML = cart.map((item, i) => {
+    const dashIdx = item.name.lastIndexOf(' — ');
+    const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+    const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
+    return `
+      <div class="cd-item">
+        <img class="cd-item__img" src="${item.img}" alt="${displayName}" loading="lazy" onerror="this.style.background='rgba(255,255,255,0.04)'" />
+        <div class="cd-item__body">
+          <div class="cd-item__top">
+            <div>
+              <p class="cd-item__name">${displayName}</p>
+              ${variant ? `<p class="cd-item__variant">${variant}</p>` : ''}
+            </div>
+            <p class="cd-item__price">${item.price}</p>
+          </div>
+          <div class="cd-item__bottom">
+            <div class="cd-qty">
+              <button class="cd-qty__btn" onclick="cdUpdateQty(${i},-1)" aria-label="Decrease quantity">−</button>
+              <span class="cd-qty__val">${item.qty}</span>
+              <button class="cd-qty__btn" onclick="cdUpdateQty(${i},1)" aria-label="Increase quantity">+</button>
+            </div>
+            <button class="cd-item__remove" onclick="cdRemoveItem(${i})">Remove</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
+  drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
+}
+
+function cdUpdateQty(index, delta) {
+  const cart = getCart();
+  const item = cart[index];
+  if (!item) return;
+  item.qty = Math.max(1, Math.min(10, item.qty + delta));
+  saveCart(cart);
+  updateCartCount();
+  renderCartDrawer();
+}
+
+function cdRemoveItem(index) {
+  const cart = getCart();
+  cart.splice(index, 1);
+  saveCart(cart);
+  updateCartCount();
+  renderCartDrawer();
+}
+
+function openCartDrawer() {
+  renderCartDrawer();
+  cdGetDrawer().classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  drawer.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function initCartDrawer() {
+  document.querySelectorAll('a[href="/cart"][aria-label="Cart"]').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      openCartDrawer();
+    });
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeCartDrawer();
+  });
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -255,4 +389,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavDrawer();
   initHero();
   initEarlyAccessSlideshow();
+  initCartDrawer();
 });
