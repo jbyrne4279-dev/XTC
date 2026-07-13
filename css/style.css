@@ -3654,5 +3654,8 @@ textarea {
   margin-top: 2px;
 }
 @media (max-width: 480px) {
-  .cd-panel { width: 100%; max-width: 100%; }
+  .cd-panel { width: 88%; max-width: 360px; }
+  .cd-header { padding: 20px 20px; }
+  .cd-body { padding: 8px 20px; }
+  .cd-footer { padding: 18px 20px 22px; }
 }
