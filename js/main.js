@@ -87,30 +87,15 @@ function initHero() {
   const next     = document.getElementById('heroNext');
   const countEl  = document.getElementById('heroCountCurrent');
   const progressBar = document.getElementById('heroProgressBar');
-  const eyebrow  = document.getElementById('heroEyebrow');
-  const title    = document.getElementById('heroTitle');
-  const cta      = document.getElementById('heroCta');
   if (!slides.length) return;
 
-  // Each slide carries its own product link via data-product ("black" | "white")
-  // in index.html, so slides can be reordered/added/removed there with nothing to
-  // change here. The total count below is derived from the number of slides.
-  const PRODUCT_HREF = { white: '/product-polo-white', black: '/product-polo-black' };
   const totalEl = document.getElementById('heroCountTotal');
   if (totalEl) totalEl.textContent = slides.length;
 
-  const COPY_ELS = [eyebrow, title, document.querySelector('.hero-bar__right')].filter(Boolean);
   let current = 0;
   let timer = null;
 
   function pad(n) { return String(n).padStart(2, '0'); }
-
-  function animateIn() {
-    COPY_ELS.forEach(el => el.classList.remove('in'));
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      COPY_ELS.forEach(el => el.classList.add('in'));
-    }));
-  }
 
   function startProgress() {
     if (!progressBar) return;
@@ -127,13 +112,8 @@ function initHero() {
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active');
 
-    const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
-    if (eyebrow) eyebrow.textContent = 'Original Members';
-    if (title)   title.innerHTML = '';
-    if (cta)     cta.href = PRODUCT_HREF[product];
     if (countEl) countEl.textContent = pad(current + 1);
 
-    animateIn();
     startProgress();
   }
 
@@ -145,15 +125,10 @@ function initHero() {
   prev && prev.addEventListener('click', () => { goTo(current - 1); startTimer(); });
   next && next.addEventListener('click', () => { goTo(current + 1); startTimer(); });
 
-  // Click hero to visit product page
+  // Swipe to browse slides
   let touchStartX = 0;
   const heroEl = document.querySelector('.hero');
   if (heroEl) {
-    heroEl.addEventListener('click', e => {
-      if (e.target.closest('button, a')) return;
-      const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
-      window.location.href = PRODUCT_HREF[product];
-    });
     heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
     heroEl.addEventListener('touchend', e => {
       const diff = touchStartX - e.changedTouches[0].clientX;
@@ -163,7 +138,6 @@ function initHero() {
 
   // Init
   slides[0].classList.add('active');
-  animateIn();
   startProgress();
   startTimer();
 }
