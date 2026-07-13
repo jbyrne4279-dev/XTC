@@ -281,6 +281,65 @@
     }
     .co-secure svg { opacity: 0.3; }
 
+    .co-express-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .co-section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .co-section-head .co-section-title { margin-bottom: 0; }
+    .co-signin-link {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .co-signin-link:hover { color: #fff; }
+    .co-payment-note {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.3px;
+      margin-top: -20px;
+      margin-bottom: 20px;
+    }
+    .co-shipping-placeholder {
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.3);
+      padding: 4px 0;
+    }
+    .co-shipping-method {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid rgba(179,102,255,0.5);
+      background: rgba(179,102,255,0.06);
+      border-radius: 2px;
+    }
+    .co-shipping-method.show { display: flex; }
+    .co-shipping-method__left { display: flex; align-items: center; gap: 12px; }
+    .co-shipping-method__radio {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 5px solid var(--accent);
+      background: #fff;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .co-shipping-method__name { font-size: 13px; color: #fff; letter-spacing: 0.3px; }
+    .co-shipping-method__sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .co-shipping-method__price { font-size: 13px; color: #fff; letter-spacing: 0.5px; }
+
     /* ── Right: order summary ── */
     .co-summary-col {
       background: rgba(255,255,255,0.02);
@@ -585,18 +644,43 @@
 
 
     <form id="checkoutForm">
-      <p class="co-step-label">Step 1 of 2</p>
-      <h2 class="co-section-title">Contact & Delivery</h2>
+
+      <!-- Express Checkout -->
+      <div id="expressCheckoutWrap" style="display:none;">
+        <p class="co-express-label">Express Checkout</p>
+        <div id="express-checkout-element"></div>
+        <div class="co-or-divider"><span>OR</span></div>
+      </div>
+
+      <div class="co-section-head">
+        <h2 class="co-section-title">Contact</h2>
+        <a href="/profile" class="co-signin-link">Sign in</a>
+      </div>
 
       <div class="co-box">
         <div class="co-fieldset">
-          <div class="co-field">
+          <div class="co-field co-field--span2">
             <label for="coEmail">Email</label>
             <input type="email" id="coEmail" placeholder="your@email.com" required />
           </div>
-          <div class="co-field">
-            <label for="coPhone">Phone</label>
-            <input type="tel" id="coPhone" placeholder="+44 7700 900000" required />
+        </div>
+      </div>
+
+      <h2 class="co-section-title">Delivery</h2>
+
+      <div class="co-box">
+        <div class="co-fieldset">
+          <div class="co-field co-field--span2">
+            <label for="coCountryInput">Country/Region</label>
+            <div class="co-country" id="coCountryWrap">
+              <img class="co-country__flag" id="coCountryFlag" alt="" />
+              <input type="text" id="coCountryInput" class="co-country__input" placeholder="Start typing your country…"
+                     autocomplete="off" autocapitalize="off" spellcheck="false"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCountryList" required />
+              <svg class="co-country__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              <input type="hidden" id="coCountry" />
+              <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
+            </div>
           </div>
           <div class="co-field">
             <label for="coFirstName">First Name</label>
@@ -619,32 +703,32 @@
             <input type="text" id="coPostcode" placeholder="EC1A 1BB" required />
           </div>
           <div class="co-field co-field--span2">
-            <label for="coCountryInput">Country</label>
-            <div class="co-country" id="coCountryWrap">
-              <img class="co-country__flag" id="coCountryFlag" alt="" />
-              <input type="text" id="coCountryInput" class="co-country__input" placeholder="Start typing your country…"
-                     autocomplete="off" autocapitalize="off" spellcheck="false"
-                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCountryList" required />
-              <svg class="co-country__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-              <input type="hidden" id="coCountry" />
-              <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
-            </div>
+            <label for="coPhone">Phone</label>
+            <input type="tel" id="coPhone" placeholder="+44 7700 900000" required />
           </div>
         </div>
       </div>
 
-      <hr class="co-divider" />
-
-      <p class="co-step-label">Step 2 of 2</p>
-      <h2 class="co-section-title">Payment</h2>
+      <h2 class="co-section-title">Shipping Method</h2>
 
       <div class="co-box">
-        <!-- Apple Pay / Google Pay -->
-        <div id="expressCheckoutWrap" style="display:none;">
-          <div id="express-checkout-element"></div>
-          <div class="co-or-divider"><span>or pay by card</span></div>
+        <p class="co-shipping-placeholder" id="coShippingPlaceholder">Enter your shipping address to view available shipping methods.</p>
+        <div class="co-shipping-method" id="coShippingMethod">
+          <div class="co-shipping-method__left">
+            <span class="co-shipping-method__radio"></span>
+            <div>
+              <p class="co-shipping-method__name" id="coShippingMethodName">Standard Shipping</p>
+              <p class="co-shipping-method__sub">3–5 working days</p>
+            </div>
+          </div>
+          <span class="co-shipping-method__price" id="coShippingMethodPrice">Free</span>
         </div>
+      </div>
 
+      <h2 class="co-section-title">Payment</h2>
+      <p class="co-payment-note">All transactions are secure and encrypted.</p>
+
+      <div class="co-box">
         <div class="co-field" style="margin-bottom:8px;">
           <label>Payment</label>
           <div id="payment-element"></div>
@@ -817,9 +901,26 @@
     return subtotal >= 80 ? 0 : 4.99;
   }
 
+  function updateShippingMethodPanel(shipping) {
+    const country = document.getElementById('coCountry');
+    const placeholder = document.getElementById('coShippingPlaceholder');
+    const method = document.getElementById('coShippingMethod');
+    if (!placeholder || !method) return;
+    if (!country || !country.value) {
+      placeholder.style.display = 'block';
+      method.classList.remove('show');
+      return;
+    }
+    placeholder.style.display = 'none';
+    method.classList.add('show');
+    document.getElementById('coShippingMethodName').textContent = country.value === 'GB' ? 'Standard Shipping' : 'International Shipping';
+    document.getElementById('coShippingMethodPrice').textContent = shipping === 0 ? 'Free' : '£' + shipping.toFixed(2);
+  }
+
   function updateTotals(subtotal) {
     if (subtotal === undefined) subtotal = getCartSubtotal();
     const shipping = getShipping(subtotal);
+    updateShippingMethodPanel(shipping);
 
     // Calculate discount
     let discountAmount = 0;
