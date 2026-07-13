@@ -345,6 +345,30 @@
       animation: cta-nr-spin 3s linear infinite; pointer-events: none;
     }
     .nr-card__cta:hover { background: rgba(179,102,255,0.12); border-color: rgba(179,102,255,0.7); }
+
+    /* War Collection — red theme */
+    .nr-card--war::before {
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 60%,
+        rgba(80,0,0,0.6) 72%, rgba(204,0,0,1) 80%, rgba(255,120,120,1) 85%,
+        rgba(204,0,0,0.8) 92%, transparent 100%);
+    }
+    .nr-card--war::after {
+      background: conic-gradient(from var(--nr-a),
+        transparent 0%, transparent 50%,
+        rgba(80,0,0,0.7) 65%, rgba(204,0,0,1) 75%, rgba(255,150,150,1) 82%,
+        rgba(204,0,0,0.8) 90%, transparent 100%);
+    }
+    .nr-card--war:hover { border-color: rgba(204,0,0,0.3); }
+    .nr-card--war .nr-card__drop { color: rgba(204,0,0,0.75); }
+    .nr-card--war .nr-card__cta { border-color: rgba(153,0,0,0.4); }
+    .nr-card--war .nr-card__cta::before {
+      background: conic-gradient(from var(--cta-nr-a),
+        transparent 0%, transparent 55%,
+        rgba(80,0,0,0.6) 68%, rgba(204,0,0,1) 78%, rgba(255,150,150,1) 84%,
+        rgba(204,0,0,0.8) 91%, transparent 100%);
+    }
+    .nr-card--war .nr-card__cta:hover { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.7); }
   </style>
   <script type="application/ld+json">
 { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://xtcclothing.com/" }, { "@type": "ListItem", "position": 2, "name": "Track Order", "item": "https://xtcclothing.com/track-order" } ] }
@@ -500,7 +524,7 @@
         </a>
 
         <!-- War Zip -->
-        <a href="/product-war-zip" class="nr-card" style="text-decoration:none;">
+        <a href="/product-war-zip" class="nr-card nr-card--war" style="text-decoration:none;">
           <div class="nr-card__media">
             <img src="images/ZIP-HOODIE-XTC-FRONT.png" alt="XTC War Zip" />
             <span class="nr-card__badge" style="background:#1a0000;border-color:rgba(153,0,0,0.5);color:#cc0000;">Pre-Order</span>
@@ -517,7 +541,7 @@
         </a>
 
         <!-- War Joggers -->
-        <a href="/product-war-joggers" class="nr-card" style="text-decoration:none;">
+        <a href="/product-war-joggers" class="nr-card nr-card--war" style="text-decoration:none;">
           <div class="nr-card__media">
             <img src="images/JOGGERS-XTC.jpg" alt="XTC War Joggers" />
             <span class="nr-card__badge" style="background:#1a0000;border-color:rgba(153,0,0,0.5);color:#cc0000;">Pre-Order</span>
@@ -534,7 +558,7 @@
         </a>
 
         <!-- Uniform T -->
-        <a href="/product-uniform-t" class="nr-card" style="text-decoration:none;">
+        <a href="/product-uniform-t" class="nr-card nr-card--war" style="text-decoration:none;">
           <div class="nr-card__media">
             <img src="images/T-SHIRT-XTC.jpg" alt="XTC Uniform T" />
             <span class="nr-card__badge" style="background:#1a0000;border-color:rgba(153,0,0,0.5);color:#cc0000;">Pre-Order</span>
