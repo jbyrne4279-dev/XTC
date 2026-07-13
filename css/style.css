@@ -3077,9 +3077,6 @@ textarea {
   user-select: none;
   -webkit-user-drag: none;
 }
-@media (hover: hover) {
-  .early-access-bar__image:hover .ea-scroll-track { animation-play-state: paused; }
-}
 .ea-ss26 {
   background: linear-gradient(90deg, #1a1a1a 0%, #666 28%, #111 45%, #888 60%, #333 75%, #555 90%, #1a1a1a 100%);
   background-size: 300% auto;
