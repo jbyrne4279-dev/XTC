@@ -220,66 +220,70 @@
     }
 
     /* Form fields */
-    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
-    .cf-group { margin-bottom: 28px; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    .cf-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
     .cf-label {
       display: block;
       font-size: 10px;
-      letter-spacing: 2.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 12px;
+      color: rgba(255,255,255,0.6);
     }
     .cf-input, .cf-select, .cf-textarea {
       width: 100%;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 2px;
       color: #fff;
       font-family: inherit;
       font-size: 14px;
       letter-spacing: 0.5px;
-      padding: 12px 0;
+      padding: 14px 16px;
       outline: none;
-      transition: border-color 0.25s;
+      transition: border-color 0.2s;
       box-sizing: border-box;
       appearance: none;
     }
-    .cf-input::placeholder, .cf-textarea::placeholder { color: rgba(255,255,255,0.12); }
+    .cf-input::placeholder, .cf-textarea::placeholder { color: rgba(255,255,255,0.2); }
     .cf-input:focus, .cf-select:focus, .cf-textarea:focus { border-color: var(--accent); }
     .cf-select { cursor: pointer; }
-    .cf-select option { background: #111; color: #fff; }
+    .cf-select option { background: #141414; color: #fff; }
     .cf-textarea { resize: none; min-height: 80px; line-height: 1.6; }
     .cf-btn {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 12px;
       width: 100%;
-      padding: 18px 0;
-      background: transparent;
+      padding: 18px;
+      background: rgba(179,102,255,1);
       border: none;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
       color: #fff;
       font-family: inherit;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 3px;
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 8px;
-      transition: border-color 0.25s, color 0.25s;
+      transition: opacity 0.2s;
     }
-    .cf-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cf-btn:hover { opacity: 0.85; }
     .cf-btn__arrow {
-      width: 30px; height: 30px;
-      border: 1px solid currentColor;
+      width: 26px; height: 26px;
+      border: 1px solid rgba(255,255,255,0.6);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
-      transition: transform 0.25s;
+      transition: transform 0.25s, border-color 0.25s;
     }
-    .cf-btn:hover .cf-btn__arrow { transform: translateX(4px); }
+    .cf-btn:hover .cf-btn__arrow { transform: translateX(4px); border-color: #fff; }
     /* Collapse form out */
     .cf-out {
       animation: cf-collapse 0.36s cubic-bezier(0.4,0,1,1) forwards;
