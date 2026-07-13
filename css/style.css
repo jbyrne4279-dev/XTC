@@ -71,7 +71,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
   text-rendering: optimizeLegibility;
 }
 
@@ -267,8 +267,8 @@ ul, ol { list-style: none; }
    HEADER
    ============================================ */
 .site-header {
-  position: relative;
-  top: auto;
+  position: sticky;
+  top: 43px;
   z-index: 100;
   background: rgba(10,10,10,0.85);
   backdrop-filter: blur(20px);
