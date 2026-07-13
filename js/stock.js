@@ -54,34 +54,21 @@ function getSizeStock(productId, size) {
   return (getStockForProduct(productId)[size.toUpperCase()] || 0);
 }
 
-const PREORDER_PRODUCTS = [];
-function isPreorderProduct(productId) {
-  return PREORDER_PRODUCTS.indexOf(productId) !== -1;
-}
-
-// Attach size stock badges to product page size buttons. For pre-order
-// products, out-of-stock sizes stay selectable and are marked "Pre-Order"
-// instead of being disabled.
+// Attach size stock badges to product page size buttons. Out-of-stock sizes
+// are always disabled — no size can be purchased ahead of real stock.
 async function applyStockToBadges(productId) {
   await loadStock();
-  const preorder = isPreorderProduct(productId);
   const btns = document.querySelectorAll('[data-size]');
   btns.forEach(btn => {
     const size = btn.dataset.size;
     const qty = getSizeStock(productId, size);
-    btn.classList.remove('size-btn--oos', 'size-btn--preorder');
+    btn.classList.remove('size-btn--oos');
     btn.disabled = false;
     btn.removeAttribute('data-stock-label');
     if (qty === 0) {
-      if (preorder) {
-        // No data-stock-label here — it triggers the amber low-stock border.
-        btn.classList.add('size-btn--preorder');
-        btn.title = 'Out of stock — pre-order, ships 21 July';
-      } else {
-        btn.classList.add('size-btn--oos');
-        btn.disabled = true;
-        btn.title = 'Out of stock';
-      }
+      btn.classList.add('size-btn--oos');
+      btn.disabled = true;
+      btn.title = 'Out of stock';
     } else if (qty <= 3) {
       btn.setAttribute('data-stock-label', `${qty} left`);
     }

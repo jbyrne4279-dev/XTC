@@ -488,14 +488,6 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
-    .fp-size-picker__note {
-      margin: 12px 0 0;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(179,102,255,0.8);
-      line-height: 1.5;
-    }
 
     /* ── Desktop layout polish (desktop only) ──
        Cards reuse the home page .fp-grid which has full-bleed side padding;
@@ -517,7 +509,6 @@
     .drop-war .nr-drop-head__tag { color: rgba(204,0,0,0.9); border-color: rgba(153,0,0,0.35); }
     .drop-war .fp-size-picker { border-color: rgba(153,0,0,0.25); }
     .drop-war .fp-sp-btn:hover:not(:disabled):not(.fp-sp-btn--selected) { border-color: rgba(204,0,0,0.5); background: rgba(153,0,0,0.08); }
-    .drop-war .fp-size-picker__note { color: rgba(204,0,0,0.8); }
     .nr-modal__eye { color: rgba(204,0,0,0.7); }
     .nr-modal__input:focus { border-color: rgba(153,0,0,0.4); }
     .nr-modal__btn { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); }
@@ -624,7 +615,7 @@
         <a href="/" class="nav-primary">Home</a>
         <a href="/new-releases" class="nav-primary">New Releases</a>
         <a href="/track-order" class="nav-primary">Track Order</a>
-        <a href="/cart" class="nav-primary">Cart (<span id="drawerCartCount">0</span>)</a>
+        <a href="/checkout" class="nav-primary">Checkout</a>
         <a href="/gallery">Gallery</a>
         <a href="/profile">Account</a>
         <a href="/contact">Contact</a>
@@ -923,7 +914,7 @@
             <ul>
               <li><a href="/profile">My Profile</a></li>
               <li><a href="/track-order">Track Order</a></li>
-              <li><a href="/cart">Cart</a></li>
+              <li><a href="/checkout">Checkout</a></li>
             </ul>
           </div>
           <div class="footer-links">
@@ -993,24 +984,15 @@
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
       const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
-      const preorder = (typeof isPreorderProduct === 'function') && isPreorderProduct(productId);
-      let hasPre = false;
       sizesEl.innerHTML = (sizeList || SIZES).map(s => {
         const qty = stock[s] || 0;
         const oos = qty === 0;
-        if (oos && preorder) { hasPre = true; return '<button class="fp-sp-btn fp-sp-btn--preorder" data-size="' + s + '" data-preorder="1">' + s + '</button>'; }
         return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
       }).join('');
       sizesEl.dataset.product = productId;
       sizesEl.dataset.name = name;
       sizesEl.dataset.price = price;
       sizesEl.dataset.img = img;
-
-      // Pre-order note element — hidden until a pre-order size is selected.
-      let note = picker.querySelector('.fp-size-picker__note');
-      if (!note) { note = document.createElement('p'); note.className = 'fp-size-picker__note'; picker.appendChild(note); }
-      note.textContent = '';
-      note.style.display = 'none';
 
       picker.classList.add('open');
     };
@@ -1028,21 +1010,13 @@
       if (!sizesEl) return;
       sizesEl.querySelectorAll('.fp-sp-btn').forEach(b => b.classList.remove('fp-sp-btn--selected'));
       btn.classList.add('fp-sp-btn--selected');
-      const pre = btn.dataset.preorder === '1';
-      // Show the pre-order note only when a pre-order size is selected
-      const pkr = btn.closest('.fp-size-picker');
-      const noteEl = pkr && pkr.querySelector('.fp-size-picker__note');
-      if (noteEl) {
-        if (pre) { noteEl.textContent = 'Pre-order now, ships 21 July'; noteEl.style.display = ''; }
-        else { noteEl.style.display = 'none'; }
-      }
       setTimeout(function () {
         const d = sizesEl.dataset;
         document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
         if (typeof addToCart === 'function') {
-          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size + (pre ? ' · Pre-Order' : ''), d.price, d.img, 1);
+          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size, d.price, d.img, 1);
         }
-      }, pre ? 950 : 180);
+      }, 180);
     });
   })();
   </script>

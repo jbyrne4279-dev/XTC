@@ -446,7 +446,7 @@
         <a href="/" class="nav-primary">Home</a>
         <a href="/new-releases" class="nav-primary">New Releases</a>
         <a href="/track-order" class="nav-primary">Track Order</a>
-        <a href="/cart" class="nav-primary">Cart (<span id="drawerCartCount">0</span>)</a>
+        <a href="/checkout" class="nav-primary">Checkout</a>
         <a href="/gallery">Gallery</a>
         <a href="/profile">Account</a>
         <a href="/contact">Contact</a>
@@ -784,7 +784,7 @@
             <ul>
               <li><a href="/profile">My Profile</a></li>
               <li><a href="/track-order">Track Order</a></li>
-              <li><a href="/cart">Cart</a></li>
+              <li><a href="/checkout">Checkout</a></li>
             </ul>
           </div>
           <div class="footer-links">
@@ -934,8 +934,7 @@
         return;
       }
       const size = selected.dataset.size;
-      const isPre = typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && typeof isPreorderProduct === 'function' && isPreorderProduct(id);
-      const fullName = name + ' — ' + size + (isPre ? ' · Pre-Order' : '');
+      const fullName = name + ' — ' + size;
       addToCart(id + '-' + size.toLowerCase(), fullName, price, img, qty);
     }
     function buyNowFromPage(id, name, price, img) {
@@ -947,13 +946,12 @@
       }
       const size = selected.dataset.size;
       const fullId = id + '-' + size.toLowerCase();
-      const isPre = typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && typeof isPreorderProduct === 'function' && isPreorderProduct(id);
-      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0 && !isPre) {
+      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0) {
         document.getElementById('sizeError').textContent = 'This size is out of stock.';
         document.getElementById('sizeError').classList.add('show');
         return;
       }
-      const fullName = name + ' — ' + size + (isPre ? ' · Pre-Order' : '');
+      const fullName = name + ' — ' + size;
       const cart = getCart();
       const existing = cart.find(item => item.id === fullId);
       if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price, img, qty: 1 }); }

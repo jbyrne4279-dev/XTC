@@ -29,8 +29,7 @@ function addToCart(id, name, price, img, quantity = 1) {
     const size = parts[parts.length - 1].toUpperCase();
     const productId = parts.slice(0, -1).join('-');
     const inStock = getSizeStock(productId, size);
-    const canPreorder = typeof isPreorderProduct === 'function' && isPreorderProduct(productId);
-    if (inStock <= 0 && !canPreorder) {
+    if (inStock <= 0) {
       showToast('Sorry, ' + name + ' is out of stock.');
       return;
     }
@@ -45,48 +44,7 @@ function addToCart(id, name, price, img, quantity = 1) {
   }
   saveCart(cart);
   updateCartCount();
-  showBagConfirm(name, price, img);
-}
-
-function showBagConfirm(name, price, img) {
-  let overlay = document.getElementById('bagConfirm');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'bagConfirm';
-    overlay.innerHTML = `
-      <div class="bag-confirm__backdrop"></div>
-      <div class="bag-confirm__box">
-        <div class="bag-confirm__ring">
-          <svg class="bag-confirm__check" viewBox="0 0 52 52" fill="none">
-            <circle cx="26" cy="26" r="24" stroke="rgba(179,102,255,0.4)" stroke-width="1.5"/>
-            <path class="bag-confirm__check-path" d="M15 26l8 8 14-14" stroke="#b366ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="bag-confirm__label">Added to Cart</p>
-        <div class="bag-confirm__meta">
-          <p class="bag-confirm__name" id="bagConfirmName"></p>
-          <p class="bag-confirm__size" id="bagConfirmSize"></p>
-        </div>
-        <p class="bag-confirm__price" id="bagConfirmPrice"></p>
-      </div>`;
-    document.body.appendChild(overlay);
-    overlay.querySelector('.bag-confirm__backdrop').addEventListener('click', hideBagConfirm);
-  }
-  overlay.classList.remove('active');
-  const parts = name.split(' — ');
-  document.getElementById('bagConfirmName').textContent = parts[0];
-  document.getElementById('bagConfirmSize').textContent = parts[1] ? 'Size ' + parts[1] : '';
-  document.getElementById('bagConfirmPrice').textContent = price;
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    overlay.classList.add('active');
-  }));
-  if (window._bagConfirmTimer) clearTimeout(window._bagConfirmTimer);
-  window._bagConfirmTimer = setTimeout(hideBagConfirm, 1800);
-}
-
-function hideBagConfirm() {
-  const overlay = document.getElementById('bagConfirm');
-  if (overlay) overlay.classList.remove('active');
+  openCartDrawer();
 }
 
 // ---- Toast ----
@@ -271,15 +229,18 @@ function cdGetDrawer() {
           <span class="cd-subtotal__value" id="cdSubtotal">£0.00</span>
         </div>
         <p class="cd-shipping-note">Free UK shipping on orders over £80. Taxes and shipping calculated at checkout.</p>
+        <p class="cd-oos-warning" id="cdOosWarning" style="display:none;">Remove out-of-stock items to check out.</p>
         <div class="cd-actions">
-          <a class="cd-checkout-btn" href="/checkout">Checkout</a>
-          <a class="cd-view-cart-btn" href="/cart">View Bag</a>
+          <a class="cd-checkout-btn" href="/checkout" id="cdCheckoutBtn">Checkout</a>
         </div>
       </div>
     </div>`;
   document.body.appendChild(el);
   el.querySelector('.cd-backdrop').addEventListener('click', closeCartDrawer);
   el.querySelector('#cdClose').addEventListener('click', closeCartDrawer);
+  el.querySelector('#cdCheckoutBtn').addEventListener('click', function(e) {
+    if (this.classList.contains('cd-checkout-btn--disabled')) e.preventDefault();
+  });
   return el;
 }
 
@@ -308,18 +269,30 @@ function renderCartDrawer() {
   }
 
   footer.style.display = 'block';
+  let hasOos = false;
   body.innerHTML = cart.map((item, i) => {
     const dashIdx = item.name.lastIndexOf(' — ');
     const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
     const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
+
+    // id format is "productid-size", e.g. "polo-black-m" — the same convention
+    // addToCart() uses for its own stock guard.
+    const idParts = item.id.split('-');
+    const size = (idParts[idParts.length - 1] || '').toUpperCase();
+    const productId = idParts.slice(0, -1).join('-');
+    const inStock = typeof getSizeStock === 'function' ? getSizeStock(productId, size) : 1;
+    const oos = inStock <= 0;
+    if (oos) hasOos = true;
+
     return `
-      <div class="cd-item">
+      <div class="cd-item${oos ? ' cd-item--oos' : ''}">
         <img class="cd-item__img" src="${item.img}" alt="${displayName}" loading="lazy" onerror="this.style.background='rgba(255,255,255,0.04)'" />
         <div class="cd-item__body">
           <div class="cd-item__top">
             <div>
               <p class="cd-item__name">${displayName}</p>
               ${variant ? `<p class="cd-item__variant">${variant}</p>` : ''}
+              ${oos ? `<p class="cd-item__oos-label">Out of stock</p>` : ''}
             </div>
             <p class="cd-item__price">${item.price}</p>
           </div>
@@ -337,6 +310,12 @@ function renderCartDrawer() {
 
   const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
+
+  const oosWarning = drawer.querySelector('#cdOosWarning');
+  const checkoutBtn = drawer.querySelector('#cdCheckoutBtn');
+  oosWarning.style.display = hasOos ? 'block' : 'none';
+  checkoutBtn.classList.toggle('cd-checkout-btn--disabled', hasOos);
+  checkoutBtn.setAttribute('aria-disabled', hasOos ? 'true' : 'false');
 }
 
 function cdUpdateQty(index, delta) {

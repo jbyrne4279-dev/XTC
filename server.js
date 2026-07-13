@@ -20,8 +20,6 @@ const PRODUCTS = {
   'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
 };
 
-const PREORDER_PRODUCTS = new Set();
-
 // Loyalty: 1 point earned per £1 spent; each point redeems for 5 pence (100 pts = £5).
 const POINT_VALUE_PENCE = 5;
 
@@ -298,13 +296,11 @@ app.post('/create-payment-intent', async (req, res) => {
   const { amount, promoCode, cartSummary, cartItems, redeemPoints } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
 
-  // Stock check — reject if out of stock, EXCEPT pre-order products whose
-  // out-of-stock sizes are sold as pre-orders (charged now, shipped 21 July).
+  // Stock check — reject if out of stock.
   if (Array.isArray(cartItems) && cartItems.length) {
     const stock = await getStock();
     if (!stock) return res.status(500).json({ error: 'Could not load stock' });
     for (const { productId, size, qty = 1 } of cartItems) {
-      if (PREORDER_PRODUCTS.has(productId)) continue;
       const sizeKey = (size || '').toUpperCase();
       const available = (stock[productId] && stock[productId][sizeKey]) || 0;
       if (available < qty) {
@@ -927,6 +923,12 @@ app.post('/admin/refund', requireAdmin, async (req, res) => {
   }
 });
 
+
+// The standalone cart page was removed — the cart now lives in the slide-out
+// drawer, and any old /cart links go straight to checkout.
+app.get('/cart', (req, res) => {
+  res.redirect('/checkout');
+});
 
 // ── SEO: sitemap + robots ────────────────────────────────────────────────────
 app.get('/sitemap.xml', (req, res) => {

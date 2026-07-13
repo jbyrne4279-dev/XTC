@@ -617,7 +617,7 @@
         <a href="/" class="nav-primary">Home</a>
         <a href="/new-releases" class="nav-primary">New Releases</a>
         <a href="/track-order" class="nav-primary">Track Order</a>
-        <a href="/cart" class="nav-primary">Cart (<span id="drawerCartCount">0</span>)</a>
+        <a href="/checkout" class="nav-primary">Checkout</a>
         <a href="/gallery">Gallery</a>
         <a href="/profile">Account</a>
         <a href="/contact">Contact</a>
@@ -874,14 +874,14 @@
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     cart.splice(index, 1);
     localStorage.setItem('xtc-cart', JSON.stringify(cart));
-    if (!cart.length) { window.location.href = '/cart'; return; }
+    if (!cart.length) { window.location.href = '/new-releases'; return; }
     renderSummary();
     reinitPayment();
   };
 
   function renderSummary() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    if (!cart.length) { window.location.href = '/cart'; return; }
+    if (!cart.length) { window.location.href = '/new-releases'; return; }
     const itemsEl = document.getElementById('coItems');
     let subtotal = 0;
     itemsEl.innerHTML = cart.map((item, i) => {
@@ -1285,7 +1285,9 @@
     const data = await res.json();
     if (!res.ok) {
       if (data.outOfStock) {
-        window.location.href = '/cart?oos=1';
+        const errEl = document.getElementById('payment-errors');
+        if (errEl) errEl.textContent = 'One or more items in your bag are no longer available. Please review your bag.';
+        if (typeof openCartDrawer === 'function') openCartDrawer();
         throw new Error(data.error);
       }
       throw new Error(data.error || 'Failed to create payment intent');
