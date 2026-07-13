@@ -6,6 +6,15 @@ const { createClient } = require('@supabase/supabase-js');
 const ws = require('ws');
 
 const app = express();
+
+// War™ Collection is hidden for now — block these product pages entirely
+// (registered before express.static so it takes priority over the file on disk).
+const HIDDEN_PRODUCTS = new Set(['war-zip', 'war-joggers', 'uniform-t']);
+const HIDDEN_PRODUCT_PAGES = ['/product-war-zip', '/product-war-joggers', '/product-uniform-t'];
+app.get(HIDDEN_PRODUCT_PAGES, (req, res) => {
+  res.status(404).type('text/plain').send('Not found');
+});
+
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
@@ -209,7 +218,17 @@ seedStock();
 // Public: read all stock
 app.get('/stock', async (req, res) => {
   const stock = await getStock();
-  res.json({ stock });
+  // Report the hidden War™ products as fully out of stock so any stale cart
+  // entry (added before the hide, or via cached page) gets flagged and
+  // blocked from checkout by the existing out-of-stock UI, without touching
+  // the underlying stock data itself.
+  const reported = { ...stock };
+  for (const id of HIDDEN_PRODUCTS) {
+    if (reported[id]) {
+      reported[id] = Object.fromEntries(Object.keys(reported[id]).map(size => [size, 0]));
+    }
+  }
+  res.json({ stock: reported });
 });
 
 // Decrement stock for a list of { productId, size, qty } items.
@@ -295,6 +314,12 @@ app.post('/validate-promo', (req, res) => {
 app.post('/create-payment-intent', async (req, res) => {
   const { amount, promoCode, cartSummary, cartItems, redeemPoints } = req.body;
   if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
+
+  // War™ Collection is hidden for now — reject even if an item somehow made
+  // it into someone's cart before/around the hide.
+  if (Array.isArray(cartItems) && cartItems.some(i => HIDDEN_PRODUCTS.has(i.productId))) {
+    return res.status(400).json({ error: 'One or more items in your bag are no longer available.', outOfStock: true });
+  }
 
   // Stock check — reject if out of stock.
   if (Array.isArray(cartItems) && cartItems.length) {

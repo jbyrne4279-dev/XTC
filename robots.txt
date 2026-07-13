@@ -4,5 +4,8 @@ Disallow: /admin
 Disallow: /checkout
 Disallow: /order-confirmed
 Disallow: /profile
+Disallow: /product-war-zip
+Disallow: /product-war-joggers
+Disallow: /product-uniform-t
 
 Sitemap: https://xtcclothing.com/sitemap.xml

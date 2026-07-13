@@ -43,23 +43,6 @@
     <priority>0.8</priority>
   </url>
 
-  <url>
-    <loc>https://xtcclothing.com/product-war-zip</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://xtcclothing.com/product-war-joggers</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://xtcclothing.com/product-uniform-t</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
 
   <url>
     <loc>https://xtcclothing.com/collections</loc>
