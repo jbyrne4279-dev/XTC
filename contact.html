@@ -132,17 +132,23 @@
       max-width: 340px;
     }
     .ct-links { display: flex; flex-direction: column; }
+    .ct-link-item { border-top: 1px solid rgba(255,255,255,0.06); }
+    .ct-link-item:last-child { border-bottom: 1px solid rgba(255,255,255,0.06); }
     .ct-link {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       padding: 18px 0;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      background: none;
+      border: none;
       text-decoration: none;
       color: #fff;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
       transition: color 0.2s;
     }
-    .ct-link:last-child { border-bottom: 1px solid rgba(255,255,255,0.06); }
     .ct-link:hover { color: var(--accent); }
     .ct-link__left { display: flex; flex-direction: column; gap: 4px; }
     .ct-link__title {
@@ -163,7 +169,35 @@
       color: rgba(255,255,255,0.15);
       transition: transform 0.25s, color 0.2s;
     }
-    .ct-link:hover .ct-link__arrow { color: var(--accent); transform: translateX(4px); }
+    .ct-link:hover .ct-link__arrow { color: var(--accent); }
+    .ct-link[aria-expanded="true"] .ct-link__arrow { color: var(--accent); transform: rotate(90deg); }
+    .ct-link__panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .ct-link__panel.open { max-height: 240px; }
+    .ct-link__panel-inner { padding: 0 0 20px; }
+    .ct-link__panel p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.8;
+      letter-spacing: 0.3px;
+      margin-bottom: 12px;
+    }
+    .ct-link__panel-cta {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(179,102,255,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.2s;
+    }
+    .ct-link__panel-cta:hover { border-color: var(--accent); }
     .ct-info-card__foot {
       margin-top: 40px;
       padding-top: 28px;
@@ -484,27 +518,51 @@
           <p class="ct-info-card__label">How Can We Help</p>
           <p class="ct-info-card__body">Whether it's an order question, sizing advice, a return, or something else — we're here and we reply fast.</p>
           <div class="ct-links">
-            <a href="/track-order" class="ct-link">
-              <div class="ct-link__left">
-                <span class="ct-link__title">Track Your Order</span>
-                <span class="ct-link__sub">Check your delivery status</span>
+            <div class="ct-link-item">
+              <button type="button" class="ct-link" aria-expanded="false" data-target="ctPanelTrack" onclick="toggleCtLink(this)">
+                <div class="ct-link__left">
+                  <span class="ct-link__title">Track Your Order</span>
+                  <span class="ct-link__sub">Check your delivery status</span>
+                </div>
+                <span class="ct-link__arrow">→</span>
+              </button>
+              <div class="ct-link__panel" id="ctPanelTrack">
+                <div class="ct-link__panel-inner">
+                  <p>Enter your order number and email on the Track Order page for real-time delivery status — or check your confirmation email for the carrier's tracking link.</p>
+                  <a href="/track-order" class="ct-link__panel-cta">Go to Track Order →</a>
+                </div>
               </div>
-              <span class="ct-link__arrow">→</span>
-            </a>
-            <a href="/returns" class="ct-link">
-              <div class="ct-link__left">
-                <span class="ct-link__title">Returns &amp; Refunds</span>
-                <span class="ct-link__sub">View our returns policy</span>
+            </div>
+            <div class="ct-link-item">
+              <button type="button" class="ct-link" aria-expanded="false" data-target="ctPanelReturns" onclick="toggleCtLink(this)">
+                <div class="ct-link__left">
+                  <span class="ct-link__title">Returns &amp; Refunds</span>
+                  <span class="ct-link__sub">View our returns policy</span>
+                </div>
+                <span class="ct-link__arrow">→</span>
+              </button>
+              <div class="ct-link__panel" id="ctPanelReturns">
+                <div class="ct-link__panel-inner">
+                  <p>Returns are accepted within 14 days of delivery. Items must be unworn, unwashed, and in original condition with tags attached. Email us with your order number to start a return.</p>
+                  <a href="/returns" class="ct-link__panel-cta">View full Returns policy →</a>
+                </div>
               </div>
-              <span class="ct-link__arrow">→</span>
-            </a>
-            <a href="/shipping" class="ct-link">
-              <div class="ct-link__left">
-                <span class="ct-link__title">Shipping Info</span>
-                <span class="ct-link__sub">Delivery times and costs</span>
+            </div>
+            <div class="ct-link-item">
+              <button type="button" class="ct-link" aria-expanded="false" data-target="ctPanelShipping" onclick="toggleCtLink(this)">
+                <div class="ct-link__left">
+                  <span class="ct-link__title">Shipping Info</span>
+                  <span class="ct-link__sub">Delivery times and costs</span>
+                </div>
+                <span class="ct-link__arrow">→</span>
+              </button>
+              <div class="ct-link__panel" id="ctPanelShipping">
+                <div class="ct-link__panel-inner">
+                  <p>UK standard delivery takes 3–5 working days (free over £80, otherwise £4.99). International delivery takes 7–14 working days. Free UK shipping is applied automatically at checkout.</p>
+                  <a href="/shipping" class="ct-link__panel-cta">View full Shipping info →</a>
+                </div>
               </div>
-              <span class="ct-link__arrow">→</span>
-            </a>
+            </div>
           </div>
         </div>
         <div class="ct-info-card__foot">
@@ -562,6 +620,16 @@
     </div>
   </section>
   <script>
+  function toggleCtLink(btn) {
+    var panel = document.getElementById(btn.dataset.target);
+    var isOpen = btn.getAttribute('aria-expanded') === 'true';
+    document.querySelectorAll('.ct-link').forEach(function(b) { b.setAttribute('aria-expanded', 'false'); });
+    document.querySelectorAll('.ct-link__panel').forEach(function(p) { p.classList.remove('open'); });
+    if (!isOpen) {
+      btn.setAttribute('aria-expanded', 'true');
+      panel.classList.add('open');
+    }
+  }
   function earlyAccessSubmit(e) {
     e.preventDefault();
     var email = document.getElementById('earlyAccessEmail').value.trim();
