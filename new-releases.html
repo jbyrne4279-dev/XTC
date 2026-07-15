@@ -528,8 +528,9 @@
     .fp-color-swatch--black { background: #0a0a0a; }
     .fp-color-swatch--white { background: #f5f5f5; }
     /* One merged Polo card (color picker replaces the old Black/White pair) —
-       center it instead of stretching across the 2-column grid. */
-    #nrPoloGrid { grid-template-columns: minmax(0, 460px); justify-content: center; }
+       keep it narrow instead of stretching across the 2-column grid,
+       left-aligned under the drop heading. */
+    #nrPoloGrid { grid-template-columns: minmax(0, 460px); justify-content: start; }
 
     /* ── Desktop layout polish (desktop only) ──
        Cards reuse the home page .fp-grid which has full-bleed side padding;
@@ -687,7 +688,7 @@
         <span class="fp-card__badge">Limited Edition</span>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
-            <a href="/product-polo-black" class="fp-card__name" id="fpPoloNameLink">Polo [Black]</a>
+            <a href="/product-polo-black" class="fp-card__name" id="fpPoloNameLink">Polo</a>
             <p class="fp-card__sub">100% Piqué Cotton</p>
           </div>
           <div class="fp-card__info-right">
@@ -928,12 +929,12 @@
       black: {
         productId: 'polo-black', label: 'Black', name: 'POLO [BLACK]', price: '£60.00',
         img: 'images/polo-black-flat.jpg', media: 'images/product-black-1.jpg', mediaAlt: 'images/product-black-2.jpg',
-        url: '/product-polo-black', title: 'Polo [Black]'
+        url: '/product-polo-black'
       },
       white: {
         productId: 'polo-white', label: 'White', name: 'POLO [WHITE]', price: '£60.00',
         img: 'images/polo-white-flat.jpg', media: 'images/product-white-1.jpg', mediaAlt: 'images/product-white-2.jpg',
-        url: '/product-polo-white', title: 'Polo [White]'
+        url: '/product-polo-white'
       }
     };
     let homePoloColor = 'black';
@@ -982,7 +983,7 @@
       if (mediaLink) mediaLink.href = color.url;
       if (imgMain) { imgMain.src = color.media; imgMain.alt = 'XTC Original Members Polo ' + color.label + ' — front'; }
       if (imgAlt) { imgAlt.src = color.mediaAlt; imgAlt.alt = 'XTC Original Members Polo ' + color.label + ' — alt'; }
-      if (nameLink) { nameLink.textContent = color.title; nameLink.href = color.url; }
+      if (nameLink) nameLink.href = color.url;
     }
 
     document.addEventListener('click', function (e) {
