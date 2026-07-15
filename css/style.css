@@ -1965,28 +1965,28 @@ ul, ol { list-style: none; }
   text-transform: uppercase;
   color: var(--text-secondary);
   transition: color var(--dur) var(--ease);
-  animation: footer-wave-glimmer 3s ease-in-out infinite;
+  animation: footer-wave-glimmer 6s ease-in-out infinite;
 }
 
 /* Traveling wave — each link across Shop / Account / Help lights up in reading
-   order, one at a time, then loops. Delay step (0.25s) is chosen so the sweep
+   order, one at a time, then loops. Delay step (0.5s) is chosen so the sweep
    never fully stops: item 12 is still fading as item 1 begins its next pass. */
 @keyframes footer-wave-glimmer {
-  0%, 92%, 100% { color: var(--text-secondary); text-shadow: none; }
-  4% { color: #fff; text-shadow: 0 0 6px rgba(179,102,255,0.9), 0 0 16px rgba(179,102,255,0.5); }
+  0%, 90%, 100% { color: var(--text-secondary); text-shadow: none; }
+  6% { color: #fff; text-shadow: 0 0 6px rgba(90,20,140,0.95), 0 0 18px rgba(90,20,140,0.6); }
 }
 .footer-links:nth-of-type(1) li:nth-child(1) a { animation-delay: 0s; }
-.footer-links:nth-of-type(1) li:nth-child(2) a { animation-delay: 0.25s; }
-.footer-links:nth-of-type(1) li:nth-child(3) a { animation-delay: 0.5s; }
-.footer-links:nth-of-type(1) li:nth-child(4) a { animation-delay: 0.75s; }
-.footer-links:nth-of-type(2) li:nth-child(1) a { animation-delay: 1s; }
-.footer-links:nth-of-type(2) li:nth-child(2) a { animation-delay: 1.25s; }
-.footer-links:nth-of-type(2) li:nth-child(3) a { animation-delay: 1.5s; }
-.footer-links:nth-of-type(3) li:nth-child(1) a { animation-delay: 1.75s; }
-.footer-links:nth-of-type(3) li:nth-child(2) a { animation-delay: 2s; }
-.footer-links:nth-of-type(3) li:nth-child(3) a { animation-delay: 2.25s; }
-.footer-links:nth-of-type(3) li:nth-child(4) a { animation-delay: 2.5s; }
-.footer-links:nth-of-type(3) li:nth-child(5) a { animation-delay: 2.75s; }
+.footer-links:nth-of-type(1) li:nth-child(2) a { animation-delay: 0.5s; }
+.footer-links:nth-of-type(1) li:nth-child(3) a { animation-delay: 1s; }
+.footer-links:nth-of-type(1) li:nth-child(4) a { animation-delay: 1.5s; }
+.footer-links:nth-of-type(2) li:nth-child(1) a { animation-delay: 2s; }
+.footer-links:nth-of-type(2) li:nth-child(2) a { animation-delay: 2.5s; }
+.footer-links:nth-of-type(2) li:nth-child(3) a { animation-delay: 3s; }
+.footer-links:nth-of-type(3) li:nth-child(1) a { animation-delay: 3.5s; }
+.footer-links:nth-of-type(3) li:nth-child(2) a { animation-delay: 4s; }
+.footer-links:nth-of-type(3) li:nth-child(3) a { animation-delay: 4.5s; }
+.footer-links:nth-of-type(3) li:nth-child(4) a { animation-delay: 5s; }
+.footer-links:nth-of-type(3) li:nth-child(5) a { animation-delay: 5.5s; }
 .footer-links a:hover,
 .footer-links a:active {
   color: #b366ff;
