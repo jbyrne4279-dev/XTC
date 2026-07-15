@@ -485,6 +485,51 @@
       color: rgba(34,197,94,0.9);
       background: rgba(34,197,94,0.08);
     }
+    .fp-size-picker__label--size { margin-top: 16px; }
+    .fp-size-picker__colors {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .fp-color-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px 6px 6px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .fp-color-btn:hover:not(.selected) {
+      border-color: rgba(179,102,255,0.5);
+      background: rgba(179,102,255,0.08);
+    }
+    .fp-color-btn.selected {
+      color: #fff !important;
+      background: rgba(34,197,94,0.06) !important;
+      border-color: rgba(34,197,94,0.8) !important;
+      outline: none !important;
+      animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    .fp-color-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .fp-color-swatch--black { background: #0a0a0a; }
+    .fp-color-swatch--white { background: #f5f5f5; }
+    /* One merged Polo card (color picker replaces the old Black/White pair) —
+       center it instead of stretching across the 2-column grid. */
+    #nrPoloGrid { grid-template-columns: minmax(0, 460px); justify-content: center; }
 
     /* ── Desktop layout polish (desktop only) ──
        Cards reuse the home page .fp-grid which has full-bleed side padding;
@@ -631,49 +676,35 @@
       <span class="nr-drop-head__num">Drop 01</span>
       <h2 class="nr-drop-head__name">Original Members</h2>
     </div>
-    <div class="fp-grid reveal-group" style="margin-bottom:64px;">
+    <div class="fp-grid reveal-group" id="nrPoloGrid" style="margin-bottom:64px;">
 
-      <!-- Product: POLO [BLACK] -->
+      <!-- Product: POLO (color-selectable) -->
       <article class="fp-card">
-        <a href="/product-polo-black" class="fp-card__media">
-          <img src="images/product-black-1.jpg" alt="XTC Original Members Polo Black — front" loading="lazy" />
-          <img class="fp-card__alt" src="images/product-black-2.jpg" alt="XTC Original Members Polo Black — alt" loading="lazy" />
+        <a href="/product-polo-black" class="fp-card__media" id="fpPoloMediaLink">
+          <img id="fpPoloImgMain" src="images/product-black-1.jpg" alt="XTC Original Members Polo Black — front" loading="lazy" />
+          <img class="fp-card__alt" id="fpPoloImgAlt" src="images/product-black-2.jpg" alt="XTC Original Members Polo Black — alt" loading="lazy" />
         </a>
         <span class="fp-card__badge">Limited Edition</span>
         <div class="fp-card__info">
           <div class="fp-card__info-left">
-            <a href="/product-polo-black" class="fp-card__name">Polo [Black]</a>
+            <a href="/product-polo-black" class="fp-card__name" id="fpPoloNameLink">Polo [Black]</a>
             <p class="fp-card__sub">100% Piqué Cotton</p>
           </div>
           <div class="fp-card__info-right">
             <p class="fp-card__price">£60</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg',['S','M','L'])">Add to Bag</button>
-            <div class="fp-size-picker" id="picker-polo-black">
-              <p class="fp-size-picker__label">Select Size</p>
-              <div class="fp-size-picker__sizes" id="picker-polo-black-sizes"></div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- Product: POLO [WHITE] -->
-      <article class="fp-card">
-        <a href="/product-polo-white" class="fp-card__media">
-          <img src="images/product-white-1.jpg" alt="XTC Original Members Polo White — front" loading="lazy" />
-          <img class="fp-card__alt" src="images/product-white-2.jpg" alt="XTC Original Members Polo White — alt" loading="lazy" />
-        </a>
-        <span class="fp-card__badge">Limited Edition</span>
-        <div class="fp-card__info">
-          <div class="fp-card__info-left">
-            <a href="/product-polo-white" class="fp-card__name">Polo [White]</a>
-            <p class="fp-card__sub">100% Piqué Cotton</p>
-          </div>
-          <div class="fp-card__info-right">
-            <p class="fp-card__price">£60</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-white','POLO [WHITE]','£60.00','images/polo-white-flat.jpg',['S','M','L'])">Add to Bag</button>
-            <div class="fp-size-picker" id="picker-polo-white">
-              <p class="fp-size-picker__label">Select Size</p>
-              <div class="fp-size-picker__sizes" id="picker-polo-white-sizes"></div>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo">
+              <p class="fp-size-picker__label">Select Color</p>
+              <div class="fp-size-picker__colors" id="picker-polo-colors">
+                <button type="button" class="fp-color-btn selected" data-color="black" aria-pressed="true">
+                  <span class="fp-color-swatch fp-color-swatch--black"></span>Black
+                </button>
+                <button type="button" class="fp-color-btn" data-color="white" aria-pressed="false">
+                  <span class="fp-color-swatch fp-color-swatch--white"></span>White
+                </button>
+              </div>
+              <p class="fp-size-picker__label fp-size-picker__label--size">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-sizes"></div>
             </div>
           </div>
         </div>
@@ -886,37 +917,98 @@
     });
   </script>
 
-  <!-- Product card size picker — same logic as the home page -->
+  <!-- Product card color + size picker — same logic as the home page -->
   <script>
   (function () {
     const SIZES = ['S','M','L','XL','XXL'];
 
-    window.openSizePicker = function (btn, productId, name, price, img, sizeList) {
-      const picker = document.getElementById('picker-' + productId);
-      const sizesEl = document.getElementById('picker-' + productId + '-sizes');
+    // The Polo card sells two colors from one tile; Add to Bag makes the
+    // shopper choose both before it'll add anything to the cart.
+    const HOME_POLO_COLORS = {
+      black: {
+        productId: 'polo-black', label: 'Black', name: 'POLO [BLACK]', price: '£60.00',
+        img: 'images/polo-black-flat.jpg', media: 'images/product-black-1.jpg', mediaAlt: 'images/product-black-2.jpg',
+        url: '/product-polo-black', title: 'Polo [Black]'
+      },
+      white: {
+        productId: 'polo-white', label: 'White', name: 'POLO [WHITE]', price: '£60.00',
+        img: 'images/polo-white-flat.jpg', media: 'images/product-white-1.jpg', mediaAlt: 'images/product-white-2.jpg',
+        url: '/product-polo-white', title: 'Polo [White]'
+      }
+    };
+    let homePoloColor = 'black';
+
+    window.openSizePicker = function (btn, pickerId, sizeList) {
+      const picker = document.getElementById('picker-' + pickerId);
+      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
       if (!picker || !sizesEl) return;
 
       if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
-      const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(productId) : {};
-      sizesEl.innerHTML = (sizeList || SIZES).map(s => {
+      sizesEl.dataset.sizeList = JSON.stringify(sizeList || SIZES);
+      renderPickerSizes(pickerId);
+      picker.classList.add('open');
+    };
+
+    // Rebuilds the size buttons for whichever color is currently selected —
+    // called on open and again whenever the color pill changes, since stock
+    // (and out-of-stock state) differs per color.
+    function renderPickerSizes(pickerId) {
+      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+      if (!sizesEl) return;
+      const sizeList = JSON.parse(sizesEl.dataset.sizeList || '[]');
+      const color = HOME_POLO_COLORS[homePoloColor];
+      const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(color.productId) : {};
+      sizesEl.innerHTML = sizeList.map(function (s) {
         const qty = stock[s] || 0;
         const oos = qty === 0;
         return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
       }).join('');
-      sizesEl.dataset.product = productId;
-      sizesEl.dataset.name = name;
-      sizesEl.dataset.price = price;
-      sizesEl.dataset.img = img;
+      sizesEl.dataset.product = color.productId;
+      sizesEl.dataset.name = color.name;
+      sizesEl.dataset.price = color.price;
+      sizesEl.dataset.img = color.img;
+    }
 
-      picker.classList.add('open');
-    };
+    // Updates the card's photo, name and link to match the selected color —
+    // so the tile always reflects what Add to Bag would actually add.
+    function updatePoloCardVisuals() {
+      const color = HOME_POLO_COLORS[homePoloColor];
+      const mediaLink = document.getElementById('fpPoloMediaLink');
+      const imgMain = document.getElementById('fpPoloImgMain');
+      const imgAlt = document.getElementById('fpPoloImgAlt');
+      const nameLink = document.getElementById('fpPoloNameLink');
+      if (mediaLink) mediaLink.href = color.url;
+      if (imgMain) { imgMain.src = color.media; imgMain.alt = 'XTC Original Members Polo ' + color.label + ' — front'; }
+      if (imgAlt) { imgAlt.src = color.mediaAlt; imgAlt.alt = 'XTC Original Members Polo ' + color.label + ' — alt'; }
+      if (nameLink) { nameLink.textContent = color.title; nameLink.href = color.url; }
+    }
 
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
         document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
       }
+    });
+
+    // Delegated click on color pills inside any picker
+    document.addEventListener('click', function (e) {
+      const cbtn = e.target.closest('.fp-color-btn');
+      if (!cbtn) return;
+      const key = cbtn.dataset.color;
+      if (key === homePoloColor) return;
+      homePoloColor = key;
+      document.querySelectorAll('.fp-color-btn').forEach(function (b) {
+        const sel = b.dataset.color === key;
+        b.classList.toggle('selected', sel);
+        b.setAttribute('aria-pressed', sel ? 'true' : 'false');
+      });
+      updatePoloCardVisuals();
+      // Any size chosen for the previous color doesn't carry stock guarantees
+      // for this one — re-render (which drops any prior selection) per open picker.
+      document.querySelectorAll('.fp-size-picker.open .fp-size-picker__sizes').forEach(function (sizesEl) {
+        renderPickerSizes(sizesEl.id.replace('picker-', '').replace('-sizes', ''));
+      });
     });
 
     document.addEventListener('click', function (e) {
