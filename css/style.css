@@ -167,6 +167,13 @@ ul, ol { list-style: none; }
   animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
 
+/* Click feedback pulse — same pop as Size/Color selection, but momentary
+   (no held glow) since Add to Cart / Buy Now aren't toggled/selected state. */
+.pdp-atc.click-pop,
+.pdp-buy-now.click-pop {
+  animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
 /* Size button out-of-stock state */
 .pdp-size-btn.size-btn--oos,
 .pdp-bundle-size-btn.size-btn--oos,

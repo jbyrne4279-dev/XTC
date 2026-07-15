@@ -47,6 +47,16 @@ function addToCart(id, name, price, img, quantity = 1) {
   openCartDrawer();
 }
 
+// ---- Click feedback pulse on Add to Cart / Buy Now (same pop as Size/Color) ----
+
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.pdp-atc, .pdp-buy-now');
+  if (!btn) return;
+  btn.classList.remove('click-pop');
+  void btn.offsetWidth; // restart the animation even on rapid repeat clicks
+  btn.classList.add('click-pop');
+});
+
 // ---- Toast ----
 
 let toastTimer = null;
