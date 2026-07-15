@@ -250,6 +250,52 @@
     .pdp-stock-note--pre { color: rgba(179,102,255,0.85); }
     .pdp-size-btn.size-btn--oos { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
 
+    /* Color selector */
+    .pdp-colors {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .pdp-color-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px 8px 8px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.45);
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pdp-color-btn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+    .pdp-color-btn.selected { border-color: var(--accent); color: #fff; }
+    .pdp-color-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .pdp-color-swatch--black { background: #0a0a0a; }
+    .pdp-color-swatch--white { background: #f5f5f5; }
+    .pdp-color-btn.selected .pdp-color-swatch { box-shadow: 0 0 0 2px rgba(179,102,255,0.5); }
+    .pdp-color-btn.color-btn--oos { opacity: 0.4; cursor: not-allowed; }
+    .pdp-color-btn.color-btn--oos .pdp-color-name::after { content: ' — Sold out'; }
+    .pdp-color-btn.color-btn--oos:hover { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
+    .pdp-color-error {
+      display: none;
+      font-size: 11px;
+      color: rgba(255,100,100,0.7);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .pdp-color-error.show { display: block; }
+
     /* Quantity */
     .pdp-qty {
       display: flex;
@@ -460,7 +506,7 @@
     <span>/</span>
     <a href="/new-releases">New Releases</a>
     <span>/</span>
-    <span class="pdp-crumb__current">Polo [Black]</span>
+    <span class="pdp-crumb__current" id="crumbCurrent">Polo [Black]</span>
   </div>
 
   <main>
@@ -487,7 +533,7 @@
       <!-- Info -->
       <div class="pdp-info">
         <p class="pdp-info__brand">LIMITED EDITION</p>
-        <h1 class="pdp-info__title">Polo [Black]</h1>
+        <h1 class="pdp-info__title" id="productTitle">Polo [Black]</h1>
         <div class="pdp-info__price-row">
           <span class="pdp-info__price">£60</span>
         </div>
@@ -517,11 +563,27 @@
           </div>
         </div>
 
+        <!-- Color -->
+        <div>
+          <p class="pdp-section-label"><span>Color</span></p>
+          <div class="pdp-colors" id="colorButtons">
+            <button type="button" class="pdp-color-btn selected" data-color="black" aria-pressed="true">
+              <span class="pdp-color-swatch pdp-color-swatch--black"></span>
+              <span class="pdp-color-name">Black</span>
+            </button>
+            <button type="button" class="pdp-color-btn" data-color="white" aria-pressed="false">
+              <span class="pdp-color-swatch pdp-color-swatch--white"></span>
+              <span class="pdp-color-name">White</span>
+            </button>
+          </div>
+          <p class="pdp-color-error" id="colorError">This color is currently sold out.</p>
+        </div>
+
         <!-- ATC -->
-        <button class="pdp-atc" id="addToCartBtn" onclick="addToCartFromPage('polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">
+        <button class="pdp-atc" id="addToCartBtn" onclick="addToCartFromPage()">
           Add to Cart
         </button>
-        <button class="pdp-buy-now" onclick="buyNowFromPage('polo-black','POLO [BLACK]','£60.00','images/polo-black-flat.jpg')">
+        <button class="pdp-buy-now" onclick="buyNowFromPage()">
           Buy Now
         </button>
 
@@ -573,16 +635,16 @@
       <div class="recs-grid reveal-group">
 
         <article class="product-card">
-          <a href="/product-polo-white" class="product-card__media">
-            <img src="images/polo-white-flat.jpg" alt="POLO [WHITE]" loading="lazy" />
-            <img class="product-card__media-alt" src="images/polo-white-model-3.jpg" alt="POLO [WHITE] on model" loading="lazy" />
+          <a href="/product-polo-white" class="product-card__media" id="recsCardMediaLink">
+            <img src="images/polo-white-flat.jpg" alt="POLO [WHITE]" loading="lazy" id="recsCardImg" />
+            <img class="product-card__media-alt" src="images/polo-white-model-3.jpg" alt="POLO [WHITE] on model" loading="lazy" id="recsCardImgAlt" />
             <span class="product-card__badge">Limited</span>
           </a>
           <div class="product-card__info">
-            <a href="/product-polo-white" class="product-card__name">POLO [WHITE]</a>
+            <a href="/product-polo-white" class="product-card__name" id="recsCardName">POLO [WHITE]</a>
             <p class="product-card__price">£60.00 GBP</p>
             <div class="product-card__actions">
-              <a href="/product-polo-white" class="btn btn--primary btn--sm">View</a>
+              <a href="/product-polo-white" class="btn btn--primary btn--sm" id="recsCardView">View</a>
             </div>
           </div>
         </article>
@@ -786,9 +848,50 @@
   <script src="js/main.js"></script>
   <script src="js/analytics.js"></script>
   <script>
+    // Color variants — this page is the Black variant; White lives at /product-polo-white
+    // but is fully selectable here too. Stock is tracked independently per color+size
+    // in js/stock.js under the 'polo-black' / 'polo-white' product ids.
+    const COLORS = {
+      black: {
+        productId: 'polo-black', label: 'Black', name: 'POLO [BLACK]', price: '£60.00',
+        title: 'Polo [Black]', url: '/product-polo-black',
+        flat: 'images/polo-black-flat.jpg', modelImg: 'images/polo-black-model-3.jpg',
+        gallery: [
+          'images/polo-black-flat.jpg','images/polo-black-model-2.jpg','images/polo-black-model-3.jpg',
+          'images/polo-black-model-4.jpg','images/polo-black-model-5.jpg','images/polo-black-model-6.jpg',
+          'images/polo-black-model-7.jpg','images/polo-black-model-8.jpg','images/polo-black-model-9.jpg',
+          'images/product-black-1.jpg'
+        ]
+      },
+      white: {
+        productId: 'polo-white', label: 'White', name: 'POLO [WHITE]', price: '£60.00',
+        title: 'Polo [White]', url: '/product-polo-white',
+        flat: 'images/polo-white-flat.jpg', modelImg: 'images/polo-white-model-3.jpg',
+        gallery: [
+          'images/polo-white-flat.jpg','images/polo-white-model-2.jpg','images/polo-white-model-3.jpg',
+          'images/polo-white-model-4.jpg','images/polo-white-model-5.jpg','images/polo-white-model-6.jpg',
+          'images/polo-white-model-7.jpg','images/polo-white-model-8.jpg','images/product-white-1.jpg'
+        ]
+      }
+    };
+    let selectedColor = 'black';
+
     document.addEventListener('DOMContentLoaded', function() {
-      if (typeof applyStockToBadges === 'function') applyStockToBadges('polo-black');
+      if (typeof applyStockToBadges === 'function') {
+        applyStockToBadges(COLORS[selectedColor].productId).then(refreshColorAvailability);
+      }
     });
+
+    // Disable/label any color whose total stock (across all sizes) is zero.
+    function refreshColorAvailability() {
+      if (typeof getTotalStock !== 'function') return;
+      document.querySelectorAll('.pdp-color-btn').forEach(function(btn) {
+        var key = btn.dataset.color;
+        var total = getTotalStock(COLORS[key].productId);
+        btn.classList.toggle('color-btn--oos', total <= 0);
+      });
+    }
+
     // Tabs
     document.querySelectorAll('.pdp-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -820,7 +923,7 @@
       note.className = 'pdp-stock-note';
       // Show from cache immediately, then refresh from Supabase
       function showStockNote() {
-        var q = typeof getSizeStock === 'function' ? getSizeStock('polo-black', size) : 0;
+        var q = typeof getSizeStock === 'function' ? getSizeStock(COLORS[selectedColor].productId, size) : 0;
         note.className = 'pdp-stock-note';
         if (q <= 0) { note.textContent = 'Out of stock'; note.classList.add('pdp-stock-note--pre'); }
         else if (q <= 3) { note.textContent = q + ' left in this size'; note.classList.add('pdp-stock-note--low'); }
@@ -832,12 +935,73 @@
       }
     });
 
+    // Color selection
+    document.getElementById('colorButtons').addEventListener('click', function(e) {
+      const btn = e.target.closest('.pdp-color-btn');
+      if (!btn) return;
+      const key = btn.dataset.color;
+      if (key === selectedColor) return;
+      if (btn.classList.contains('color-btn--oos')) {
+        document.getElementById('colorError').classList.add('show');
+        return;
+      }
+      document.getElementById('colorError').classList.remove('show');
+      selectColor(key);
+    });
+
+    function selectColor(key) {
+      selectedColor = key;
+      const color = COLORS[key];
+
+      document.querySelectorAll('.pdp-color-btn').forEach(function(b) {
+        const isSelected = b.dataset.color === key;
+        b.classList.toggle('selected', isSelected);
+        b.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+      });
+
+      // Swap gallery to this color's images
+      buildGallery(color.gallery);
+
+      // A size chosen for the previous color doesn't carry stock guarantees
+      // for this one — clear it and re-apply per-size stock for the new color.
+      document.querySelectorAll('.pdp-size-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('sizeError').classList.remove('show');
+      const note = document.getElementById('stockNote');
+      if (note) { note.textContent = ''; note.className = 'pdp-stock-note'; }
+      if (typeof applyStockToBadges === 'function') {
+        applyStockToBadges(color.productId).then(refreshColorAvailability);
+      }
+
+      // Reflect the selected color in title / breadcrumb
+      const titleEl = document.getElementById('productTitle');
+      const crumbEl = document.getElementById('crumbCurrent');
+      if (titleEl) titleEl.textContent = color.title;
+      if (crumbEl) crumbEl.textContent = color.title;
+      mainImg.alt = 'XTC Original Members Polo ' + color.label;
+      document.title = document.title.replace(/Original Members Polo \[(Black|White)\]/, 'Original Members Polo [' + color.label + ']');
+
+      // Point "You May Also Like" at whichever color is NOT selected
+      const other = COLORS[key === 'black' ? 'white' : 'black'];
+      const recsLink = document.getElementById('recsCardMediaLink');
+      const recsImg = document.getElementById('recsCardImg');
+      const recsImgAlt = document.getElementById('recsCardImgAlt');
+      const recsName = document.getElementById('recsCardName');
+      const recsView = document.getElementById('recsCardView');
+      if (recsLink) recsLink.href = other.url;
+      if (recsImg) { recsImg.src = other.flat; recsImg.alt = other.name; }
+      if (recsImgAlt) { recsImgAlt.src = other.modelImg; recsImgAlt.alt = other.name + ' on model'; }
+      if (recsName) { recsName.textContent = other.name; recsName.href = other.url; }
+      if (recsView) recsView.href = other.url;
+    }
+
     const qty = 1;
 
     // Gallery — thumbnails, drag-to-swipe, 5s auto-rotate
-    const thumbs = Array.from(document.querySelectorAll('.pdp-gallery__thumb'));
     const mainImg = document.getElementById('mainImage');
+    const thumbsContainer = document.querySelector('.pdp-gallery__thumbs');
+    let thumbs = [];
     let currentIdx = 0;
+    let autoTimer = null;
 
     function goToSlide(idx, userTriggered) {
       currentIdx = (idx + thumbs.length) % thumbs.length;
@@ -849,13 +1013,28 @@
       }
     }
 
-    thumbs.forEach((thumb, i) => {
-      thumb.addEventListener('click', () => { goToSlide(i, true); resetTimer(); });
-    });
-
     // Auto-rotate every 5s
-    let autoTimer = setInterval(() => goToSlide(currentIdx + 1, false), 5000);
-    function resetTimer() { clearInterval(autoTimer); autoTimer = setInterval(() => goToSlide(currentIdx + 1, false), 5000); }
+    function resetTimer() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => goToSlide(currentIdx + 1, false), 5000);
+    }
+
+    // (Re)builds the thumbnail strip for a given color's image set and rebinds
+    // click handlers — used on load and whenever the color selector changes.
+    function buildGallery(images) {
+      thumbsContainer.innerHTML = images.map((src, i) =>
+        '<button class="pdp-gallery__thumb' + (i === 0 ? ' active' : '') + '" data-src="' + src + '"><img src="' + src + '" alt="" loading="lazy"/></button>'
+      ).join('');
+      thumbs = Array.from(thumbsContainer.querySelectorAll('.pdp-gallery__thumb'));
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => { goToSlide(i, true); resetTimer(); });
+      });
+      currentIdx = 0;
+      mainImg.src = images[0];
+      resetTimer();
+    }
+
+    buildGallery(COLORS[selectedColor].gallery);
 
     // Drag / swipe on main image
     const galleryMain = document.querySelector('.pdp-gallery__main');
@@ -881,7 +1060,8 @@
 
     galleryMain.style.cursor = 'grab';
 
-    function addToCartFromPage(id, name, price, img) {
+    function addToCartFromPage() {
+      const color = COLORS[selectedColor];
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {
         document.getElementById('sizeError').classList.add('show');
@@ -889,10 +1069,11 @@
         return;
       }
       const size = selected.dataset.size;
-      const fullName = name + ' — ' + size;
-      addToCart(id + '-' + size.toLowerCase(), fullName, price, img, qty);
+      const fullName = color.name + ' — ' + size;
+      addToCart(color.productId + '-' + size.toLowerCase(), fullName, color.price, color.flat, qty);
     }
-    function buyNowFromPage(id, name, price, img) {
+    function buyNowFromPage() {
+      const color = COLORS[selectedColor];
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {
         document.getElementById('sizeError').classList.add('show');
@@ -900,16 +1081,16 @@
         return;
       }
       const size = selected.dataset.size;
-      const fullId = id + '-' + size.toLowerCase();
-      if (typeof getSizeStock === 'function' && getSizeStock(id, size) <= 0) {
+      const fullId = color.productId + '-' + size.toLowerCase();
+      if (typeof getSizeStock === 'function' && getSizeStock(color.productId, size) <= 0) {
         document.getElementById('sizeError').textContent = 'This size is out of stock.';
         document.getElementById('sizeError').classList.add('show');
         return;
       }
-      const fullName = name + ' — ' + size;
+      const fullName = color.name + ' — ' + size;
       const cart = getCart();
       const existing = cart.find(item => item.id === fullId);
-      if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price, img, qty: 1 }); }
+      if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price: color.price, img: color.flat, qty: 1 }); }
       saveCart(cart);
       window.location.href = '/checkout';
     }
