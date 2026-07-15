@@ -634,31 +634,6 @@
     </div>
   </main>
 
-  <!-- You May Also Like -->
-  <section class="recs-section">
-    <div class="container">
-      <p class="recs-eyebrow">You May Also Like</p>
-      <div class="recs-grid reveal-group">
-
-        <article class="product-card">
-          <a href="/product-polo-white" class="product-card__media" id="recsCardMediaLink">
-            <img src="images/polo-white-flat.jpg" alt="POLO [WHITE]" loading="lazy" id="recsCardImg" />
-            <img class="product-card__media-alt" src="images/polo-white-model-3.jpg" alt="POLO [WHITE] on model" loading="lazy" id="recsCardImgAlt" />
-            <span class="product-card__badge">Limited</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/product-polo-white" class="product-card__name" id="recsCardName">POLO [WHITE]</a>
-            <p class="product-card__price">£60.00 GBP</p>
-            <div class="product-card__actions">
-              <a href="/product-polo-white" class="btn btn--primary btn--sm" id="recsCardView">View</a>
-            </div>
-          </div>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
     <!-- Early Access Capture -->
   <section class="early-access-bar">
     <div class="early-access-bar__inner">
@@ -985,19 +960,6 @@
       if (crumbEl) crumbEl.textContent = color.title;
       mainImg.alt = 'XTC Original Members Polo ' + color.label;
       document.title = document.title.replace(/Original Members Polo \[(Black|White)\]/, 'Original Members Polo [' + color.label + ']');
-
-      // Point "You May Also Like" at whichever color is NOT selected
-      const other = COLORS[key === 'black' ? 'white' : 'black'];
-      const recsLink = document.getElementById('recsCardMediaLink');
-      const recsImg = document.getElementById('recsCardImg');
-      const recsImgAlt = document.getElementById('recsCardImgAlt');
-      const recsName = document.getElementById('recsCardName');
-      const recsView = document.getElementById('recsCardView');
-      if (recsLink) recsLink.href = other.url;
-      if (recsImg) { recsImg.src = other.flat; recsImg.alt = other.name; }
-      if (recsImgAlt) { recsImgAlt.src = other.modelImg; recsImgAlt.alt = other.name + ' on model'; }
-      if (recsName) { recsName.textContent = other.name; recsName.href = other.url; }
-      if (recsView) recsView.href = other.url;
     }
 
     const qty = 1;
