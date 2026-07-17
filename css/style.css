@@ -1980,7 +1980,7 @@ ul, ol { list-style: none; }
    never fully stops: item 12 is still fading as item 1 begins its next pass. */
 @keyframes footer-wave-glimmer {
   0%, 90%, 100% { color: var(--text-secondary); text-shadow: none; }
-  6% { color: #fff; text-shadow: 0 0 6px rgba(90,20,140,0.95), 0 0 18px rgba(90,20,140,0.6); }
+  6% { color: #5a148c; text-shadow: 0 0 6px rgba(90,20,140,0.95), 0 0 18px rgba(90,20,140,0.6); }
 }
 .footer-links:nth-of-type(1) li:nth-child(1) a { animation-delay: 0s; }
 .footer-links:nth-of-type(1) li:nth-child(2) a { animation-delay: 0.5s; }
