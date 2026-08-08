@@ -2969,7 +2969,7 @@ textarea {
   height: 100%;
   gap: 3px;
   width: max-content;
-  animation: ea-scroll 50s linear infinite;
+  animation: ea-scroll 90s linear infinite;
   cursor: default;
 }
 .ea-scroll-track img {
