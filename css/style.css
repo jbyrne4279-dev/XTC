@@ -181,10 +181,10 @@ ul, ol { list-style: none; }
 .sm-size-btn.size-btn--oos {
   cursor: not-allowed;
   pointer-events: none;
-  border-color: rgba(220, 38, 38, 0.7) !important;
-  color: rgba(255,100,100,0.6) !important;
-  background: rgba(220, 38, 38, 0.08) !important;
-  box-shadow: 0 0 10px rgba(220, 38, 38, 0.25), inset 0 0 8px rgba(220, 38, 38, 0.08) !important;
+  border-color: rgba(220, 38, 38, 1) !important;
+  color: rgba(220, 38, 38, 0.95) !important;
+  background: rgba(220, 38, 38, 0.16) !important;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.4), inset 0 0 8px rgba(220, 38, 38, 0.12) !important;
   position: relative;
 }
 /* Bundle + modal size buttons share the same pop */
@@ -3425,7 +3425,7 @@ textarea {
   padding: 16px;
   background: rgba(20, 20, 20, 1);
   border: none;
-  color: #000000;
+  color: #ffffff;
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
