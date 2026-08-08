@@ -100,7 +100,8 @@
       gap: 32px;
     }
     .header-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .header-logo img { height: 32px; width: auto; }
+    .header-logo img { height: 32px; width: auto; filter: brightness(0); }
+    .footer-copy-logo { height: 18px; width: auto; filter: brightness(0); opacity: 0.55; flex-shrink: 0; }
     .header-logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
     .header-nav { display: flex; gap: 28px; flex: 1; }
     .header-nav a {
@@ -935,7 +936,7 @@
     .footer-links ul { display: flex; flex-direction: column; gap: 10px; }
     .footer-links a { font-size: 14px; color: var(--text-2); transition: color var(--transition); }
     .footer-links a:hover, .footer-links a:active { color: var(--accent); }
-    .footer-bottom { padding: 20px 0; }
+    .footer-bottom { padding: 20px 0; display: flex; align-items: center; gap: 12px; }
     .footer-copyright { font-size: 12px; color: rgba(0, 0, 0, 0.15); }
     .footer-copy-sym { color: #cc0000; animation: copy-flash 3s ease-in-out infinite; }
     @keyframes copy-flash { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
