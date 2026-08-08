@@ -20,6 +20,10 @@ function updateCartCount() {
   document.querySelectorAll('#cartCount, #drawerCartCount').forEach(el => {
     el.textContent = total;
   });
+  // Fade the header basket in and out while it holds items.
+  document.querySelectorAll('a[aria-label="Cart"]').forEach(el => {
+    el.classList.toggle('cart-active', total > 0);
+  });
 }
 
 function addToCart(id, name, price, img, quantity = 1) {

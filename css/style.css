@@ -372,6 +372,18 @@ ul, ol { list-style: none; }
   letter-spacing: 0;
 }
 
+/* When the basket has items, gently fade the cart icon in and out to draw the eye */
+@keyframes cart-attention {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+a[aria-label="Cart"].cart-active {
+  animation: cart-attention 2.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  a[aria-label="Cart"].cart-active { animation: none; }
+}
+
 /* Mobile hamburger — lives inside .header-actions, hidden on desktop */
 .header-menu-toggle {
   display: none;
