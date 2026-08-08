@@ -472,6 +472,14 @@ ul, ol { list-style: none; }
 .hero-half { position: relative; overflow: hidden; }
 .hero-half--white { border-left: 1px solid rgba(255,255,255,0.35); }
 
+/* Mobile: collapse the split — halves overlap full-width and the JS runs a
+   single combined slideshow (one image at a time, not the two-up split). */
+@media (max-width: 768px) {
+  .hero--split { display: block; }
+  .hero-half { position: absolute; inset: 0; }
+  .hero-half--white { border-left: none; }
+}
+
 .hero-slide__bg {
   width: 100%;
   height: 100%;

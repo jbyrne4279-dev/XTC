@@ -126,95 +126,97 @@ function initHero() {
     }));
   }
 
-  // ---- Split hero: two independent columns — black polos (left) / white (right).
-  // Both columns advance together on one shared 5s timer; clicking a column opens
-  // that colour's product page. Falls back to the single-stack slideshow below.
-  const halves = heroEl.querySelectorAll('.hero-half');
-  if (halves.length >= 2) {
-    const groups = [...halves]
-      .map(h => ({
-        slides: h.querySelectorAll('.hero-slide'),
-        product: h.dataset.product === 'white' ? 'white' : 'black',
-        el: h,
-      }))
-      .filter(g => g.slides.length);
-    const maxLen = Math.max(...groups.map(g => g.slides.length));
-    if (totalEl) totalEl.textContent = maxLen;
-    let step = 0;
+  // Hero images. On desktop (> 768px) the hero is a two-up split — black polos
+  // (left half) and white polos (right half) advance together. On mobile the two
+  // halves overlap full-width (see CSS) and we run ONE combined slideshow, a
+  // single image at a time. We rebuild when crossing the breakpoint.
+  const halves    = [...heroEl.querySelectorAll('.hero-half')];
+  const allSlides = [...heroEl.querySelectorAll('.hero-slide')];
+  if (!allSlides.length) return;
+  const mq = window.matchMedia('(max-width: 768px)');
 
-    function show(n) {
-      step = ((n % maxLen) + maxLen) % maxLen;
-      groups.forEach(g => {
-        g.slides.forEach(sl => sl.classList.remove('active'));
-        g.slides[step % g.slides.length].classList.add('active');
-      });
-      if (eyebrow) eyebrow.textContent = 'Original Members';
-      if (title)   title.innerHTML = '';
-      if (countEl) countEl.textContent = pad(step + 1);
-      animateIn();
-      startProgress();
-    }
-    function startTimer() {
-      clearInterval(timer);
-      timer = setInterval(() => show(step + 1), 5000);
-    }
+  function clearActive() { allSlides.forEach(s => s.classList.remove('active')); }
 
-    prev && prev.addEventListener('click', e => { e.stopPropagation(); show(step - 1); startTimer(); });
-    next && next.addEventListener('click', e => { e.stopPropagation(); show(step + 1); startTimer(); });
-
-    groups.forEach(g => g.el.addEventListener('click', e => {
-      if (e.target.closest('button, a')) return;
-      window.location.href = PRODUCT_HREF[g.product];
-    }));
-    if (cta) cta.href = '/new-releases';
-
-    show(0);
-    startTimer();
-    return;
-  }
-
-  // ---- Fallback: single-stack slideshow ----
-  const slides = heroEl.querySelectorAll('.hero-slide');
-  if (!slides.length) return;
-  if (totalEl) totalEl.textContent = slides.length;
-  let current = 0;
-
-  function goTo(n) {
-    slides[current].classList.remove('active');
-    current = (n + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
+  function paint(i) {
     if (eyebrow) eyebrow.textContent = 'Original Members';
     if (title)   title.innerHTML = '';
-    if (cta)     cta.href = PRODUCT_HREF[product];
-    if (countEl) countEl.textContent = pad(current + 1);
+    if (countEl) countEl.textContent = pad(i + 1);
     animateIn();
     startProgress();
   }
-  function startTimer() {
-    clearInterval(timer);
-    timer = setInterval(() => goTo(current + 1), 5000);
+
+  // Desktop: synced split across both halves.
+  function makeDesktop() {
+    const groups = halves
+      .map(h => [...h.querySelectorAll('.hero-slide')])
+      .filter(s => s.length);
+    const len = Math.max(...groups.map(g => g.length), 1);
+    if (totalEl) totalEl.textContent = len;
+    let step = 0;
+    function show(n) {
+      step = ((n % len) + len) % len;
+      clearActive();
+      groups.forEach(g => g[step % g.length].classList.add('active'));
+      paint(step);
+    }
+    return { show, first: () => show(0), next: () => show(step + 1), prev: () => show(step - 1) };
   }
 
-  prev && prev.addEventListener('click', () => { goTo(current - 1); startTimer(); });
-  next && next.addEventListener('click', () => { goTo(current + 1); startTimer(); });
+  // Mobile: one combined slideshow across every slide.
+  function makeMobile() {
+    const len = allSlides.length;
+    if (totalEl) totalEl.textContent = len;
+    let idx = 0;
+    function show(n) {
+      idx = ((n % len) + len) % len;
+      clearActive();
+      allSlides[idx].classList.add('active');
+      paint(idx);
+    }
+    return { show, first: () => show(0), next: () => show(idx + 1), prev: () => show(idx - 1) };
+  }
 
-  let touchStartX = 0;
+  let ctrl = null;
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => ctrl && ctrl.next(), 5000);
+  }
+  function build() {
+    clearInterval(timer);
+    clearActive();
+    ctrl = (mq.matches && halves.length >= 2) ? makeMobile() : makeDesktop();
+    ctrl.first();
+    startTimer();
+  }
+
+  // Product link for a hero click: on mobile use the visible (active) slide's
+  // half; on desktop use the half that was clicked.
+  function productForClick(e) {
+    let half = mq.matches
+      ? (heroEl.querySelector('.hero-slide.active') || null)?.closest('.hero-half')
+      : e.target.closest('.hero-half');
+    if (!half) half = heroEl.querySelector('.hero-slide.active')?.closest('.hero-half');
+    return half && half.dataset.product === 'white' ? 'white' : 'black';
+  }
+
+  prev && prev.addEventListener('click', e => { e.stopPropagation(); ctrl && ctrl.prev(); startTimer(); });
+  next && next.addEventListener('click', e => { e.stopPropagation(); ctrl && ctrl.next(); startTimer(); });
+  if (cta) cta.href = '/new-releases';
+
   heroEl.addEventListener('click', e => {
     if (e.target.closest('button, a')) return;
-    const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
-    window.location.href = PRODUCT_HREF[product];
+    window.location.href = PRODUCT_HREF[productForClick(e)];
   });
+  let touchStartX = 0;
   heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
   heroEl.addEventListener('touchend', e => {
     const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); startTimer(); }
+    if (ctrl && Math.abs(diff) > 40) { (diff > 0 ? ctrl.next() : ctrl.prev()); startTimer(); }
   }, { passive: true });
 
-  slides[0].classList.add('active');
-  animateIn();
-  startProgress();
-  startTimer();
+  if (mq.addEventListener) mq.addEventListener('change', build);
+  else if (mq.addListener) mq.addListener(build);
+  build();
 }
 
 // ---- Members Only image (right side of the sign-up form) ----
