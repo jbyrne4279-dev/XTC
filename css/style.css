@@ -2349,6 +2349,15 @@ a[aria-label="Cart"].cart-active {
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.18);
 }
+/* Small brand mark sitting next to the copyright line */
+.footer-bottom { justify-content: flex-start; }
+.footer-copy-logo {
+  height: 18px;
+  width: auto;
+  filter: brightness(0);
+  opacity: 0.55;
+  flex-shrink: 0;
+}
 .footer-socials {
   display: flex;
   gap: 12px;
