@@ -18,6 +18,9 @@ app.get(HIDDEN_PRODUCT_PAGES, (req, res) => {
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+// Serve /.well-known (e.g. Apple Pay domain-association file for Stripe Apple Pay).
+// express.static ignores dotfiles by default, so mount it explicitly.
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { dotfiles: 'allow' }));
 app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 const PRODUCTS = {

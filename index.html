@@ -216,9 +216,9 @@
         </a>
         <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
           <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-            <line x1="0" y1="1" x2="22" y2="1" stroke="white" stroke-width="2"/>
-            <line x1="0" y1="8" x2="22" y2="8" stroke="white" stroke-width="2"/>
-            <line x1="0" y1="15" x2="22" y2="15" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="1" x2="22" y2="1" stroke="#111111" stroke-width="2"/>
+            <line x1="0" y1="8" x2="22" y2="8" stroke="#111111" stroke-width="2"/>
+            <line x1="0" y1="15" x2="22" y2="15" stroke="#111111" stroke-width="2"/>
           </svg>
         </button>
       </div>
@@ -248,15 +248,19 @@
   </div>
 
   <!-- Hero -->
-  <section class="hero" aria-label="Featured collection">
-    <div class="hero-slide active" data-product="black"><img class="hero-slide__bg" src="images/hero-1.jpg" alt="XTC" loading="eager"/></div>
-    <div class="hero-slide" data-product="white"><img class="hero-slide__bg" src="images/polo-white-model-2.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="black"><img class="hero-slide__bg" src="images/polo-black-model-3.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="white"><img class="hero-slide__bg" src="images/polo-white-model-3.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="black"><img class="hero-slide__bg" src="images/hero-2.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="white"><img class="hero-slide__bg" src="images/polo-white-model-5.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="black"><img class="hero-slide__bg" src="images/polo-black-model-4.jpg" alt="XTC" loading="lazy"/></div>
-    <div class="hero-slide" data-product="black"><img class="hero-slide__bg" src="images/editorial-1.jpg" alt="XTC" loading="lazy"/></div>
+  <section class="hero hero--split" aria-label="Featured collection">
+    <div class="hero-half hero-half--black" data-product="black" aria-label="Black polo">
+      <div class="hero-slide active"><img class="hero-slide__bg" src="images/hero-1.jpg" alt="XTC Original Members Polo — Black" loading="eager"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/polo-black-model-3.jpg" alt="XTC Original Members Polo — Black" loading="lazy"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/hero-2.jpg" alt="XTC Original Members Polo — Black" loading="lazy"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/polo-black-model-4.jpg" alt="XTC Original Members Polo — Black" loading="lazy"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/editorial-1.jpg" alt="XTC Original Members Polo — Black" loading="lazy"/></div>
+    </div>
+    <div class="hero-half hero-half--white" data-product="white" aria-label="White polo">
+      <div class="hero-slide active"><img class="hero-slide__bg" src="images/polo-white-model-2.jpg" alt="XTC Original Members Polo — White" loading="eager"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/polo-white-model-3.jpg" alt="XTC Original Members Polo — White" loading="lazy"/></div>
+      <div class="hero-slide"><img class="hero-slide__bg" src="images/polo-white-model-5.jpg" alt="XTC Original Members Polo — White" loading="lazy"/></div>
+    </div>
     <div class="hero-grad"></div>
     <div class="hero-bar">
       <div class="hero-bar__left">

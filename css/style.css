@@ -467,6 +467,11 @@ ul, ol { list-style: none; }
 }
 .hero-slide.active { opacity: 1; }
 
+/* Split hero — black polos (left half) / white polos (right half) */
+.hero--split { display: grid; grid-template-columns: 1fr 1fr; }
+.hero-half { position: relative; overflow: hidden; }
+.hero-half--white { border-left: 1px solid rgba(255,255,255,0.35); }
+
 .hero-slide__bg {
   width: 100%;
   height: 100%;

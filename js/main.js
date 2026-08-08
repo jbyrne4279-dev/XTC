@@ -92,28 +92,22 @@ function initNavDrawer() {
 // ---- Hero Slideshow (premium editorial) ----
 
 function initHero() {
-  const slides   = document.querySelectorAll('.hero-slide');
-  const prev     = document.getElementById('heroPrev');
-  const next     = document.getElementById('heroNext');
-  const countEl  = document.getElementById('heroCountCurrent');
-  const progressBar = document.getElementById('heroProgressBar');
-  const eyebrow  = document.getElementById('heroEyebrow');
-  const title    = document.getElementById('heroTitle');
-  const cta      = document.getElementById('heroCta');
-  if (!slides.length) return;
+  const heroEl = document.querySelector('.hero');
+  if (!heroEl) return;
 
-  // Each slide carries its own product link via data-product ("black" | "white")
-  // in index.html, so slides can be reordered/added/removed there with nothing to
-  // change here. The total count below is derived from the number of slides.
+  const prev        = document.getElementById('heroPrev');
+  const next        = document.getElementById('heroNext');
+  const countEl     = document.getElementById('heroCountCurrent');
+  const totalEl     = document.getElementById('heroCountTotal');
+  const progressBar = document.getElementById('heroProgressBar');
+  const eyebrow     = document.getElementById('heroEyebrow');
+  const title       = document.getElementById('heroTitle');
+  const cta         = document.getElementById('heroCta');
   const PRODUCT_HREF = { white: '/product-polo-white', black: '/product-polo-black' };
-  const totalEl = document.getElementById('heroCountTotal');
-  if (totalEl) totalEl.textContent = slides.length;
 
   const COPY_ELS = [eyebrow, title, document.querySelector('.hero-bar__right')].filter(Boolean);
-  let current = 0;
   let timer = null;
-
-  function pad(n) { return String(n).padStart(2, '0'); }
+  const pad = n => String(n).padStart(2, '0');
 
   function animateIn() {
     COPY_ELS.forEach(el => el.classList.remove('in'));
@@ -132,21 +126,71 @@ function initHero() {
     }));
   }
 
+  // ---- Split hero: two independent columns — black polos (left) / white (right).
+  // Both columns advance together on one shared 5s timer; clicking a column opens
+  // that colour's product page. Falls back to the single-stack slideshow below.
+  const halves = heroEl.querySelectorAll('.hero-half');
+  if (halves.length >= 2) {
+    const groups = [...halves]
+      .map(h => ({
+        slides: h.querySelectorAll('.hero-slide'),
+        product: h.dataset.product === 'white' ? 'white' : 'black',
+        el: h,
+      }))
+      .filter(g => g.slides.length);
+    const maxLen = Math.max(...groups.map(g => g.slides.length));
+    if (totalEl) totalEl.textContent = maxLen;
+    let step = 0;
+
+    function show(n) {
+      step = ((n % maxLen) + maxLen) % maxLen;
+      groups.forEach(g => {
+        g.slides.forEach(sl => sl.classList.remove('active'));
+        g.slides[step % g.slides.length].classList.add('active');
+      });
+      if (eyebrow) eyebrow.textContent = 'Original Members';
+      if (title)   title.innerHTML = '';
+      if (countEl) countEl.textContent = pad(step + 1);
+      animateIn();
+      startProgress();
+    }
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => show(step + 1), 5000);
+    }
+
+    prev && prev.addEventListener('click', e => { e.stopPropagation(); show(step - 1); startTimer(); });
+    next && next.addEventListener('click', e => { e.stopPropagation(); show(step + 1); startTimer(); });
+
+    groups.forEach(g => g.el.addEventListener('click', e => {
+      if (e.target.closest('button, a')) return;
+      window.location.href = PRODUCT_HREF[g.product];
+    }));
+    if (cta) cta.href = '/new-releases';
+
+    show(0);
+    startTimer();
+    return;
+  }
+
+  // ---- Fallback: single-stack slideshow ----
+  const slides = heroEl.querySelectorAll('.hero-slide');
+  if (!slides.length) return;
+  if (totalEl) totalEl.textContent = slides.length;
+  let current = 0;
+
   function goTo(n) {
     slides[current].classList.remove('active');
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active');
-
     const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
     if (eyebrow) eyebrow.textContent = 'Original Members';
     if (title)   title.innerHTML = '';
     if (cta)     cta.href = PRODUCT_HREF[product];
     if (countEl) countEl.textContent = pad(current + 1);
-
     animateIn();
     startProgress();
   }
-
   function startTimer() {
     clearInterval(timer);
     timer = setInterval(() => goTo(current + 1), 5000);
@@ -155,23 +199,18 @@ function initHero() {
   prev && prev.addEventListener('click', () => { goTo(current - 1); startTimer(); });
   next && next.addEventListener('click', () => { goTo(current + 1); startTimer(); });
 
-  // Click hero to visit product page
   let touchStartX = 0;
-  const heroEl = document.querySelector('.hero');
-  if (heroEl) {
-    heroEl.addEventListener('click', e => {
-      if (e.target.closest('button, a')) return;
-      const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
-      window.location.href = PRODUCT_HREF[product];
-    });
-    heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    heroEl.addEventListener('touchend', e => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); startTimer(); }
-    }, { passive: true });
-  }
+  heroEl.addEventListener('click', e => {
+    if (e.target.closest('button, a')) return;
+    const product = slides[current].dataset.product === 'white' ? 'white' : 'black';
+    window.location.href = PRODUCT_HREF[product];
+  });
+  heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  heroEl.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); startTimer(); }
+  }, { passive: true });
 
-  // Init
   slides[0].classList.add('active');
   animateIn();
   startProgress();
