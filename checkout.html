@@ -27,7 +27,7 @@
       margin-bottom: 48px;
     }
     .co-logo img { height: 26px; width: auto; opacity: 0.85; }
-    .co-logo-text { font-size: 18px; letter-spacing: 5px; text-transform: uppercase; font-weight: 300; color: #fff; }
+    .co-logo-text { font-size: 18px; letter-spacing: 5px; text-transform: uppercase; font-weight: 300; color: #000000; }
 
     .co-step-label {
       font-size: 10px;
@@ -61,13 +61,13 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.6);
+      color: rgba(0, 0, 0, 0.6);
     }
     .co-field input, .co-field select {
-      background: rgba(255,255,255,0.03);
+      background: rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border);
       border-radius: 2px;
-      color: #fff;
+      color: #000000;
       font-family: inherit;
       font-size: 14px;
       padding: 14px 16px;
@@ -76,18 +76,18 @@
       appearance: none;
     }
     .co-field input:focus, .co-field select:focus { border-color: var(--accent); }
-    .co-field input::placeholder { color: rgba(255,255,255,0.2); }
-    .co-field select option { background: #141414; color: #fff; }
-    .co-field select:invalid { color: rgba(255,255,255,0.3); }
+    .co-field input::placeholder { color: rgba(0, 0, 0, 0.2); }
+    .co-field select option { background: #ebebeb; color: #000000; }
+    .co-field select:invalid { color: rgba(0, 0, 0, 0.3); }
 
     /* Apple-style searchable country picker */
     .co-country { position: relative; }
     .co-country__input {
       width: 100%;
-      background: rgba(255,255,255,0.03);
+      background: rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border);
       border-radius: 2px;
-      color: #fff;
+      color: #000000;
       font-family: inherit;
       font-size: 14px;
       padding: 14px 40px 14px 16px;
@@ -96,7 +96,7 @@
     }
     .co-country.has-flag .co-country__input { padding-left: 46px; }
     .co-country__input:focus { border-color: var(--accent); }
-    .co-country__input::placeholder { color: rgba(255,255,255,0.2); }
+    .co-country__input::placeholder { color: rgba(0, 0, 0, 0.2); }
     .co-country__flag {
       position: absolute;
       left: 16px;
@@ -107,7 +107,7 @@
       object-fit: cover;
       border-radius: 2px;
       display: none;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
       z-index: 1;
     }
     .co-country.has-flag .co-country__flag { display: block; }
@@ -116,7 +116,7 @@
       right: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(255,255,255,0.35);
+      color: rgba(0, 0, 0, 0.35);
       pointer-events: none;
       transition: transform 0.2s ease;
     }
@@ -129,8 +129,8 @@
       max-height: 280px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      background: #16161a;
-      border: 1px solid rgba(255,255,255,0.12);
+      background: #e9e9e5;
+      border: 1px solid rgba(0, 0, 0, 0.12);
       border-radius: 12px;
       box-shadow: 0 24px 60px rgba(0,0,0,0.55);
       padding: 6px;
@@ -148,15 +148,15 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      color: rgba(255,255,255,0.85);
+      color: rgba(0, 0, 0, 0.85);
       transition: background 0.12s;
     }
-    .co-country__opt img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(255,255,255,0.08); }
+    .co-country__opt img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08); }
     .co-country__opt[aria-selected="true"],
-    .co-country__opt.active { background: rgba(179,102,255,0.16); color: #fff; }
-    .co-country__opt:hover { background: rgba(255,255,255,0.06); }
-    .co-country__opt .co-country__code { margin-left: auto; font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.3); }
-    .co-country__empty { padding: 14px 12px; font-size: 13px; color: rgba(255,255,255,0.35); text-align: center; }
+    .co-country__opt.active { background: rgba(0, 0, 0, 0.16); color: #000000; }
+    .co-country__opt:hover { background: rgba(0, 0, 0, 0.06); }
+    .co-country__opt .co-country__code { margin-left: auto; font-size: 11px; letter-spacing: 1px; color: rgba(0, 0, 0, 0.3); }
+    .co-country__empty { padding: 14px 12px; font-size: 13px; color: rgba(0, 0, 0, 0.35); text-align: center; }
 
     /* Spinning purple outline boxes */
     @property --co-box-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
@@ -165,7 +165,7 @@
       position: relative;
       padding: 28px;
       margin-bottom: 28px;
-      background: rgba(255,255,255,0.02);
+      background: rgba(0, 0, 0, 0.02);
     }
     .co-box::before {
       content: '';
@@ -175,7 +175,7 @@
       padding: 1px;
       background: conic-gradient(from var(--co-box-a),
         transparent 0deg,
-        rgba(179,102,255,0.9) 60deg,
+        rgba(0, 0, 0, 0.9) 60deg,
         transparent 120deg);
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
@@ -186,7 +186,7 @@
 
     /* Stripe Payment Element container */
     #payment-element {
-      background: rgba(255,255,255,0.03);
+      background: rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border);
       border-radius: 2px;
       padding: 14px 16px;
@@ -210,7 +210,7 @@
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.2);
+      color: rgba(0, 0, 0, 0.2);
     }
     .co-or-divider::before, .co-or-divider::after {
       content: '';
@@ -234,8 +234,8 @@
 
     .co-submit {
       width: 100%;
-      background: #7c3aed;
-      color: #fff;
+      background: #141414;
+      color: #ffffff;
       border: none;
       font-family: inherit;
       font-size: 11px;
@@ -256,8 +256,8 @@
       padding: 2px;
       background: conic-gradient(from var(--co-btn-a),
         transparent 0%, transparent 55%,
-        rgba(150,90,230,0.7) 68%, rgba(200,160,255,1) 78%, rgba(200,160,255,1) 84%,
-        rgba(150,90,230,0.8) 91%, transparent 100%
+        rgba(0, 0, 0, 0.7) 68%, rgba(42, 42, 42, 1) 78%, rgba(42, 42, 42, 1) 84%,
+        rgba(0, 0, 0, 0.8) 91%, transparent 100%
       );
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -277,7 +277,7 @@
       font-size: 10px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.2);
+      color: rgba(0, 0, 0, 0.2);
     }
     .co-secure svg { opacity: 0.3; }
 
@@ -285,7 +285,7 @@
       font-size: 10px;
       letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.35);
+      color: rgba(0, 0, 0, 0.35);
       margin-bottom: 14px;
       text-align: center;
     }
@@ -303,10 +303,10 @@
       text-decoration: underline;
       text-underline-offset: 3px;
     }
-    .co-signin-link:hover { color: #fff; }
+    .co-signin-link:hover { color: #000000; }
     .co-payment-note {
       font-size: 11px;
-      color: rgba(255,255,255,0.35);
+      color: rgba(0, 0, 0, 0.35);
       letter-spacing: 0.3px;
       margin-top: -20px;
       margin-bottom: 20px;
@@ -314,7 +314,7 @@
     .co-shipping-placeholder {
       font-size: 12px;
       letter-spacing: 0.5px;
-      color: rgba(255,255,255,0.3);
+      color: rgba(0, 0, 0, 0.3);
       padding: 4px 0;
     }
     .co-shipping-method {
@@ -322,8 +322,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px;
-      border: 1px solid rgba(179,102,255,0.5);
-      background: rgba(179,102,255,0.06);
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.06);
       border-radius: 2px;
     }
     .co-shipping-method.show { display: flex; }
@@ -332,24 +332,24 @@
       width: 16px; height: 16px;
       border-radius: 50%;
       border: 5px solid var(--accent);
-      background: #fff;
+      background: #ffffff;
       flex-shrink: 0;
       box-sizing: border-box;
     }
-    .co-shipping-method__name { font-size: 13px; color: #fff; letter-spacing: 0.3px; }
-    .co-shipping-method__sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-    .co-shipping-method__price { font-size: 13px; color: #fff; letter-spacing: 0.5px; }
+    .co-shipping-method__name { font-size: 13px; color: #000000; letter-spacing: 0.3px; }
+    .co-shipping-method__sub { font-size: 11px; color: rgba(0, 0, 0, 0.35); margin-top: 2px; }
+    .co-shipping-method__price { font-size: 13px; color: #000000; letter-spacing: 0.5px; }
 
     /* ── Right: order summary ── */
     .co-summary-col {
-      background: rgba(255,255,255,0.02);
+      background: rgba(0, 0, 0, 0.02);
       padding: 80px 48px 80px 48px;
     }
     .co-summary-title {
       font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.35);
+      color: rgba(0, 0, 0, 0.35);
       margin-bottom: 32px;
     }
     .co-item {
@@ -368,7 +368,7 @@
     .co-item__img-placeholder {
       width: 64px;
       height: 64px;
-      background: rgba(255,255,255,0.04);
+      background: rgba(0, 0, 0, 0.04);
       border: 1px solid var(--border);
       flex-shrink: 0;
     }
@@ -387,7 +387,7 @@
     .co-item__remove {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.15);
+      color: rgba(0, 0, 0, 0.15);
       font-family: inherit;
       font-size: 9px;
       letter-spacing: 1.5px;
@@ -396,10 +396,10 @@
       padding: 0;
       transition: color 0.2s;
     }
-    .co-item__remove:hover { color: rgba(255,255,255,0.4); }
+    .co-item__remove:hover { color: rgba(0, 0, 0, 0.4); }
     .co-item__meta span {
       font-size: 11px;
-      color: rgba(255,255,255,0.3);
+      color: rgba(0, 0, 0, 0.3);
       letter-spacing: 0.5px;
     }
     .co-item__price {
@@ -417,14 +417,14 @@
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      color: rgba(255,255,255,0.4);
+      color: rgba(0, 0, 0, 0.4);
       margin-bottom: 12px;
       letter-spacing: 0.5px;
     }
     .co-total-row--grand {
       font-size: 16px;
       font-weight: 300;
-      color: #fff;
+      color: #000000;
       letter-spacing: 1px;
       margin-top: 16px;
       padding-top: 16px;
@@ -440,13 +440,13 @@
       gap: 10px;
       margin-bottom: 20px;
       padding: 12px 14px;
-      border: 1px solid rgba(179,102,255,0.3);
+      border: 1px solid rgba(0, 0, 0, 0.3);
       border-radius: 2px;
-      background: rgba(179,102,255,0.06);
+      background: rgba(0, 0, 0, 0.06);
       cursor: pointer;
       font-size: 12px;
       letter-spacing: 0.5px;
-      color: rgba(255,255,255,0.75);
+      color: rgba(0, 0, 0, 0.75);
     }
     .co-redeem input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
     .co-redeem #coRedeemLabel { color: var(--accent); }
@@ -467,10 +467,10 @@
     }
     .co-promo input {
       flex: 1;
-      background: rgba(255,255,255,0.03);
+      background: rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border);
       border-radius: 2px;
-      color: #fff;
+      color: #000000;
       font-family: inherit;
       font-size: 13px;
       padding: 11px 14px;
@@ -480,12 +480,12 @@
       transition: border-color 0.2s;
     }
     .co-promo input:focus { border-color: var(--accent); }
-    .co-promo input::placeholder { text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.2); }
+    .co-promo input::placeholder { text-transform: none; letter-spacing: 0; color: rgba(0, 0, 0, 0.2); }
     .co-promo button {
       background: transparent;
       border: 1px solid var(--border);
       border-radius: 2px;
-      color: rgba(255,255,255,0.6);
+      color: rgba(0, 0, 0, 0.6);
       font-family: inherit;
       font-size: 10px;
       letter-spacing: 2px;
@@ -495,7 +495,7 @@
       transition: border-color 0.2s, color 0.2s;
       white-space: nowrap;
     }
-    .co-promo button:hover { border-color: var(--accent); color: #fff; }
+    .co-promo button:hover { border-color: var(--accent); color: #000000; }
     .co-promo-msg {
       font-size: 11px;
       letter-spacing: 0.5px;
@@ -535,7 +535,7 @@
     }
     .co-success__sub {
       font-size: 13px;
-      color: rgba(255,255,255,0.4);
+      color: rgba(0, 0, 0, 0.4);
       max-width: 400px;
       line-height: 1.8;
     }
@@ -813,9 +813,9 @@
   const APPEARANCE = {
     theme: 'night',
     variables: {
-      colorPrimary: 'rgb(179,102,255)',
-      colorBackground: '#111111',
-      colorText: '#ffffff',
+      colorPrimary: 'rgb(20, 20, 20)',
+      colorBackground: '#eeeeee',
+      colorText: '#000000',
       colorDanger: '#ee0055',
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
       borderRadius: '2px',

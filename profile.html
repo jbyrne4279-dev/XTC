@@ -13,17 +13,17 @@
     /* ── Reset & Root ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0a0a0a;
-      --bg-2: #111;
-      --bg-3: #161616;
-      --border: rgba(255,255,255,0.06);
-      --border-2: rgba(255,255,255,0.1);
-      --accent: #b366ff;
-      --accent-dim: rgba(179,102,255,0.15);
-      --accent-hover: #c77fff;
-      --text: #fff;
-      --text-2: rgba(255,255,255,0.55);
-      --text-3: rgba(255,255,255,0.35);
+      --bg: #f5f5f5;
+      --bg-2: #eeeeee;
+      --bg-3: #e9e9e9;
+      --border: rgba(0, 0, 0, 0.06);
+      --border-2: rgba(0, 0, 0, 0.1);
+      --accent: #141414;
+      --accent-dim: rgba(0, 0, 0, 0.15);
+      --accent-hover: #2a2a2a;
+      --text: #000000;
+      --text-2: rgba(0, 0, 0, 0.55);
+      --text-3: rgba(0, 0, 0, 0.35);
       --red: #ff4d4d;
       --green: #4dff91;
       --radius: 12px;
@@ -67,7 +67,7 @@
     /* "Free Delivery" only — solid purple (no shine animation) */
     .announcement-bar__track span .ad-free {
       padding: 0;
-      color: rgba(160,80,255,1);
+      color: rgba(20, 20, 20, 1);
     }
     @keyframes purple-shine-move {
       0%   { background-position: -200% center; }
@@ -85,7 +85,7 @@
       z-index: 100;
     }
     .site-header {
-      background: rgba(10,10,10,0.92);
+      background: rgba(245, 245, 245, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
@@ -130,7 +130,7 @@
       top: -6px;
       right: -8px;
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       font-size: 10px;
       font-weight: 700;
       min-width: 16px;
@@ -302,7 +302,7 @@
       text-transform: uppercase;
       transition: background var(--transition), border-color var(--transition);
     }
-    .btn-google:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+    .btn-google:hover { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.2); }
     .btn-google svg { flex-shrink: 0; }
 
     /* Divider */
@@ -348,7 +348,7 @@
     }
     .auth-tab.active {
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
     }
     .auth-tab:not(.active):hover { color: var(--text); }
 
@@ -396,7 +396,7 @@
       width: 100%;
       padding: 15px 20px;
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       border-radius: 2px;
       font-size: 11px;
       font-weight: 600;
@@ -517,7 +517,7 @@
       justify-content: center;
       font-size: 18px;
       font-weight: 800;
-      color: #fff;
+      color: #ffffff;
       flex-shrink: 0;
       letter-spacing: -0.02em;
       cursor: pointer;
@@ -575,7 +575,7 @@
       flex-shrink: 0;
       transition: border-color var(--transition), color var(--transition);
     }
-    .btn-signout:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+    .btn-signout:hover { border-color: rgba(0, 0, 0, 0.3); color: var(--text); }
 
     /* Stats row */
     .dash-stats {
@@ -592,7 +592,7 @@
       text-align: center;
       transition: border-color var(--transition);
     }
-    .stat-card:hover { border-color: rgba(179,102,255,0.4); }
+    .stat-card:hover { border-color: rgba(0, 0, 0, 0.4); }
     .stat-value {
       font-size: 30px;
       font-weight: 200;
@@ -726,14 +726,14 @@
       border-radius: 10px;
       transition: background 0.15s;
     }
-    .order-product:hover { background: rgba(255,255,255,0.045); }
+    .order-product:hover { background: rgba(0, 0, 0, 0.045); }
     .order-product__img {
       width: 52px;
       height: 52px;
       flex-shrink: 0;
       object-fit: cover;
       border-radius: 8px;
-      background: rgba(255,255,255,0.04);
+      background: rgba(0, 0, 0, 0.04);
       border: 1px solid var(--border);
     }
     .order-product__info { min-width: 0; flex: 1; }
@@ -759,8 +759,8 @@
 
     /* Loyalty card */
     .loyalty-card {
-      background: linear-gradient(135deg, rgba(179,102,255,0.2) 0%, rgba(179,102,255,0.05) 100%);
-      border: 1px solid rgba(179,102,255,0.3);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.3);
       border-radius: var(--radius);
       padding: 20px 22px;
       margin-bottom: 32px;
@@ -793,14 +793,14 @@
     }
     .loyalty-bar-wrap {
       margin-top: 14px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(0, 0, 0, 0.08);
       border-radius: 99px;
       height: 6px;
       overflow: hidden;
     }
     .loyalty-bar {
       height: 100%;
-      background: var(--accent);
+      background: var(--accent); color: #ffffff;
       border-radius: 99px;
       transition: width 0.6s ease;
     }
@@ -858,7 +858,7 @@
     .dialog-actions button { flex: 1; padding: 11px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; }
     .btn-cancel { background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2); transition: color var(--transition); }
     .btn-cancel:hover { color: var(--text); }
-    .btn-delete { background: var(--red); color: #fff; }
+    .btn-delete { background: var(--red); color: #000000; }
     .btn-delete:hover { background: #ff6b6b; }
 
     /* Save row */
@@ -869,7 +869,7 @@
     }
     .btn-save {
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       border-radius: var(--radius-sm);
       padding: 10px 24px;
       font-size: 13px;
@@ -936,7 +936,7 @@
     .footer-links a { font-size: 14px; color: var(--text-2); transition: color var(--transition); }
     .footer-links a:hover, .footer-links a:active { color: var(--accent); }
     .footer-bottom { padding: 20px 0; }
-    .footer-copyright { font-size: 12px; color: rgba(255,255,255,0.15); }
+    .footer-copyright { font-size: 12px; color: rgba(0, 0, 0, 0.15); }
     .footer-copy-sym { color: #cc0000; animation: copy-flash 3s ease-in-out infinite; }
     @keyframes copy-flash { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
   </style>
@@ -1006,7 +1006,7 @@
 
         <!-- Google -->
         <button class="btn-google" id="googleBtn" type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#141414" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
           Continue with Google
         </button>
 
@@ -1114,7 +1114,7 @@
       <div class="loyalty-card">
         <div class="loyalty-card-head">
           <span class="loyalty-label">XTC Rewards</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b366ff" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <div class="loyalty-points"><span id="loyaltyPoints">0</span> <span>pts</span></div>
         <div class="loyalty-note">100 pts = £5 off your next order</div>
@@ -1694,7 +1694,7 @@
       }
       // Brief highlight so the live change is noticed
       item.style.transition = 'background 0.5s ease';
-      item.style.background = 'rgba(179,102,255,0.10)';
+      item.style.background = 'rgba(0, 0, 0, 0.10)';
       setTimeout(function () { item.style.background = ''; }, 1400);
     }
 
