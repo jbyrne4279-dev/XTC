@@ -2275,12 +2275,15 @@ ul, ol { list-style: none; }
 /* ── Footer main ── */
 .footer-top {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--sp-16);
+  grid-template-columns: 1fr;
+  gap: var(--sp-12);
   padding: 72px 0 56px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 0;
 }
+/* Link columns on top, brand block (logo / tagline / socials) at the bottom. */
+.footer-top .footer-links-grid { order: 1; }
+.footer-top .footer-brand { order: 2; }
 .footer-brand__logo {
   font-size: 40px;
   letter-spacing: 8px;
