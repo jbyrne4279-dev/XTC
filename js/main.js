@@ -418,10 +418,91 @@ function initCartDrawer() {
 
 // ---- Init ----
 
+// ---- Text scramble reveal (first visit only) ----
+// On the first page load of a session, briefly scramble every piece of text
+// and let it "decode" into place. Runs once (guarded by sessionStorage).
+class TextScramble {
+  constructor(el) {
+    this.el = el;
+    this.chars = '!<>-_\\/[]{}—=+*^?#01';
+    this.update = this.update.bind(this);
+  }
+  setText(newText) {
+    const oldText = this.el.textContent;
+    const length = Math.max(oldText.length, newText.length);
+    const promise = new Promise((resolve) => (this.resolve = resolve));
+    this.queue = [];
+    for (let i = 0; i < length; i++) {
+      const from = oldText[i] || '';
+      const to = newText[i] || '';
+      const start = Math.floor(Math.random() * 30);
+      const end = start + 12 + Math.floor(Math.random() * 24);
+      this.queue.push({ from, to, start, end, char: null });
+    }
+    cancelAnimationFrame(this.frameRequest);
+    this.frame = 0;
+    this.update();
+    return promise;
+  }
+  update() {
+    let output = '';
+    let complete = 0;
+    for (let i = 0; i < this.queue.length; i++) {
+      let { from, to, start, end, char } = this.queue[i];
+      if (this.frame >= end) {
+        complete++;
+        output += to;
+      } else if (this.frame >= start) {
+        if (!char || Math.random() < 0.28) {
+          char = this.chars[Math.floor(Math.random() * this.chars.length)];
+          this.queue[i].char = char;
+        }
+        output += `<span class="scramble-char">${char}</span>`;
+      } else {
+        output += from;
+      }
+    }
+    this.el.innerHTML = output;
+    if (complete === this.queue.length) {
+      this.el.textContent = this.queue.map((q) => q.to).join('');
+      this.resolve();
+    } else {
+      this.frameRequest = requestAnimationFrame(this.update);
+      this.frame++;
+    }
+  }
+}
+
+function initTextScramble() {
+  try {
+    if (sessionStorage.getItem('xtc_scrambled')) return;
+    sessionStorage.setItem('xtc_scrambled', '1');
+  } catch (e) { /* private mode — just run it */ }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'SVG', 'PATH', 'IMG', 'INPUT', 'TEXTAREA', 'CANVAS']);
+  const els = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,li,button,label,figcaption,th,td,strong,em,blockquote')]
+    .filter((el) => {
+      if (SKIP.has(el.tagName)) return false;
+      if (el.children.length) return false;              // leaf text only — keep nested markup intact
+      const t = el.textContent;
+      if (!t || !t.trim() || t.length > 120) return false; // skip empty / very long copy
+      if (el.closest('svg')) return false;
+      return true;
+    });
+
+  els.forEach((el, idx) => {
+    const text = el.textContent;
+    const fx = new TextScramble(el);
+    setTimeout(() => fx.setText(text), Math.min(idx * 12, 700));
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
   initNavDrawer();
   initHero();
   initEarlyAccessSlideshow();
   initCartDrawer();
+  initTextScramble();
 });
