@@ -3021,7 +3021,7 @@ textarea {
 .ea-scroll-track {
   display: flex;
   height: 100%;
-  gap: 3px;
+  gap: 0;
   width: max-content;
   animation: ea-scroll 90s linear infinite;
   cursor: default;
