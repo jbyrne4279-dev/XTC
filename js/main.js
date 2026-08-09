@@ -474,10 +474,7 @@ class TextScramble {
 }
 
 function initTextScramble() {
-  try {
-    if (sessionStorage.getItem('xtc_scrambled')) return;
-    sessionStorage.setItem('xtc_scrambled', '1');
-  } catch (e) { /* private mode — just run it */ }
+  // Runs on every page load. Skipped only for reduced-motion users.
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'SVG', 'PATH', 'IMG', 'INPUT', 'TEXTAREA', 'CANVAS']);
