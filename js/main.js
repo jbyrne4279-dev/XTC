@@ -258,7 +258,32 @@ function initEarlyAccessSlideshow() {
     track.appendChild(img);
   });
 
-  box.appendChild(track);
+  // Native horizontal-scroll viewport so users can swipe it left/right on
+  // mobile; JS gently auto-advances it and pauses while the user interacts.
+  const viewport = document.createElement('div');
+  viewport.className = 'ea-scroll-viewport';
+  viewport.appendChild(track);
+  box.appendChild(viewport);
+
+  let paused = false, resumeTimer = null;
+  function pause() { paused = true; clearTimeout(resumeTimer); }
+  function resumeSoon() { clearTimeout(resumeTimer); resumeTimer = setTimeout(() => { paused = false; }, 2500); }
+
+  function step() {
+    if (!paused) {
+      const half = track.scrollWidth / 2; // images are duplicated once
+      viewport.scrollLeft += 0.5;
+      if (half > 0 && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+
+  ['pointerdown', 'touchstart', 'mousedown', 'wheel'].forEach(ev =>
+    viewport.addEventListener(ev, pause, { passive: true }));
+  ['pointerup', 'touchend', 'mouseup', 'mouseleave'].forEach(ev =>
+    viewport.addEventListener(ev, resumeSoon, { passive: true }));
+  viewport.addEventListener('scroll', () => { if (!paused) return; resumeSoon(); }, { passive: true });
 }
 
 // ---- Cart Drawer ----

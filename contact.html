@@ -79,7 +79,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+      align-self: start;
     }
     .ct-form-card::before {
       content: '';
@@ -295,7 +296,7 @@
 
     /* Success panel */
     .cf-sent {
-      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px;
+      display: none; flex-direction: column; align-items: center; text-align: center; gap: 18px;
       opacity: 0; transform: translateY(20px) scale(0.96); pointer-events: none;
     }
     .cf-sent--visible {
@@ -805,6 +806,7 @@
         label.style.display = 'none';
         form.style.display  = 'none';
         document.getElementById('cfSentName').textContent = firstName ? 'Thanks, ' + firstName + '.' : '';
+        sent.style.display = 'flex';
         sent.classList.add('cf-sent--visible');
         cfParticleBurst();
       }, 360);
