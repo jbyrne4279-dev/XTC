@@ -193,6 +193,20 @@ ul, ol { list-style: none; }
   box-shadow: 0 0 10px rgba(220, 38, 38, 0.4), inset 0 0 8px rgba(220, 38, 38, 0.12) !important;
   position: relative;
 }
+/* Sold out: cross the size out with an X (replaces the old strikethrough).
+   Two thin diagonals in the button's own colour (red), corner to corner. */
+.pdp-size-btn.size-btn--oos::after,
+.pdp-bundle-size-btn.size-btn--oos::after,
+.pdp-bundle-size-btn:disabled::after,
+.sm-size-btn.size-btn--oos::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to bottom right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px));
+}
 /* Bundle + modal size buttons share the same pop */
 .pdp-bundle-size-btn.selected,
 .sm-size-btn.sm-selected {
