@@ -245,7 +245,7 @@
       position: fixed;
       inset: 0;
       z-index: 150;                 /* above page content, below the nav bar */
-      background: #000;
+      background: transparent;      /* pure overlay — hero images stay visible behind */
       opacity: 1;
       transition: opacity 0.9s ease;
     }
@@ -265,9 +265,10 @@
     var canvas = document.getElementById('matrix-canvas');
     var ctx = canvas.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var fontSize = 16, W, H, cols, drops, speeds;
+    var fontSize = 16, W, H, cols, drops, speeds, chars;
     // Katakana + digits + a few latin/XTC glyphs for the rain.
     var CHARS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓ0123456789XTC';
+    function randChar() { return CHARS.charAt(Math.floor(Math.random() * CHARS.length)); }
 
     function resize() {
       W = window.innerWidth; H = window.innerHeight;
@@ -277,9 +278,11 @@
       cols = Math.ceil(W / fontSize);
       drops = new Array(cols);
       speeds = new Array(cols);
+      chars = new Array(cols);
       for (var i = 0; i < cols; i++) {
         drops[i] = Math.random() * -(H / fontSize);   // staggered start above the top
-        speeds[i] = 0.35 + Math.random() * 0.5;        // gentle + varied = snow-like drift
+        speeds[i] = 0.12 + Math.random() * 0.22;       // slow + varied = gentle, floating drift
+        chars[i] = randChar();
       }
       ctx.font = fontSize + 'px monospace';
       ctx.textBaseline = 'top';
@@ -290,18 +293,26 @@
     var running = true;
     function draw() {
       if (!running) return;
-      // Low-alpha wash each frame = long, smooth trails (soft, floating feel).
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.10)';
+      // Fade existing glyphs toward TRANSPARENT (not black), so the hero images
+      // behind stay fully visible — this is a pure overlay. Low alpha = long,
+      // smooth trails.
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.055)';
       ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+      // Soft dark halo so the white glyphs read over light areas of the hero too.
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';   // white rain
       for (var i = 0; i < cols; i++) {
-        var ch = CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+        if (Math.random() < 0.08) chars[i] = randChar();  // occasional flicker, not every frame
         var y = drops[i] * fontSize;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';   // white rain
-        ctx.fillText(ch, i * fontSize, y);
+        ctx.fillText(chars[i], i * fontSize, y);
         drops[i] += speeds[i];
-        if (y > H && Math.random() > 0.975) {           // recycle column from the top
+        if (y > H && Math.random() > 0.985) {           // recycle column from the top
           drops[i] = Math.random() * -20;
-          speeds[i] = 0.35 + Math.random() * 0.5;
+          speeds[i] = 0.12 + Math.random() * 0.22;
         }
       }
       requestAnimationFrame(draw);
@@ -316,7 +327,7 @@
         window.removeEventListener('resize', resize);
         if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
       }, 1000);   // just past the 0.9s CSS fade
-    }, 2600);
+    }, 3200);
   })();
   </script>
 
