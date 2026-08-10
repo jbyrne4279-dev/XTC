@@ -832,7 +832,7 @@
     const COLORS = {
       black: {
         productId: 'polo-black', label: 'Black', name: 'POLO [BLACK]', price: '£60.00',
-        title: 'Polo [Black]', url: '/product-polo-black',
+        title: 'Polo', url: '/product-polo-black',
         flat: 'images/polo-black-flat.jpg', modelImg: 'images/polo-black-model-3.jpg',
         gallery: [
           'images/polo-black-flat.jpg','images/polo-black-model-2.jpg','images/polo-black-model-3.jpg',
@@ -843,7 +843,7 @@
       },
       white: {
         productId: 'polo-white', label: 'White', name: 'POLO [WHITE]', price: '£60.00',
-        title: 'Polo [White]', url: '/product-polo-white',
+        title: 'Polo', url: '/product-polo-white',
         flat: 'images/polo-white-flat.jpg', modelImg: 'images/polo-white-model-3.jpg',
         gallery: [
           'images/polo-white-flat.jpg','images/polo-white-model-2.jpg','images/polo-white-model-3.jpg',
@@ -954,7 +954,7 @@
       const titleEl = document.getElementById('productTitle');
       const crumbEl = document.getElementById('crumbCurrent');
       if (titleEl) titleEl.textContent = color.title;
-      if (crumbEl) crumbEl.textContent = color.title;
+      if (crumbEl) crumbEl.textContent = 'Polo [' + color.label + ']';
       mainImg.alt = 'XTC Original Members Polo ' + color.label;
       document.title = document.title.replace(/Original Members Polo \[(Black|White)\]/, 'Original Members Polo [' + color.label + ']');
     }
