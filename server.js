@@ -1025,7 +1025,7 @@ app.get('/drop.ics', (req, res) => {
     'DTSTART:' + START,
     'DTEND:' + END,
     'SUMMARY:XTC — SS26 Drop Goes Live',
-    'DESCRIPTION:The XTC SS26 drop is live. Shop now at https://xtcclothing.com',
+    'DESCRIPTION:⚠️ To save this reminder\\, tap the SHARE icon (top-left) then "Add to Calendar" — do NOT tap the ✓ tick (top-right)\\, it can close without saving.\\n\\nThe XTC SS26 drop is live. Shop now at https://xtcclothing.com',
     'URL:https://xtcclothing.com',
     'LOCATION:xtcclothing.com',
     'BEGIN:VALARM',
