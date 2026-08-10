@@ -640,9 +640,25 @@ async function computeBalance(user) {
   return { earned: earned, redeemed: redeemed, available: Math.max(0, earned - redeemed) };
 }
 
-// Email subscribe proxy — keeps the Omnisend API key server-side only.
-// Rate-limited to one call per IP per 10 seconds to prevent abuse.
+// Email / phone subscribe proxy — keeps the Omnisend API key server-side only.
+// Accepts an email, a phone, or both. Rate-limited to one call per IP per 10s.
 const _subscribeCooldown = new Map();
+
+// Normalise a phone number to E.164 for Omnisend (SMS requires it). UK-first:
+// a leading 0 is treated as a UK local number (+44); otherwise we keep an
+// existing country code (or assume one is included).
+function toE164(input) {
+  if (!input) return '';
+  const raw = String(input).trim();
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  let e164;
+  if (raw.charAt(0) === '+') e164 = '+' + digits;
+  else if (digits.charAt(0) === '0') e164 = '+44' + digits.replace(/^0+/, '');
+  else e164 = '+' + digits;
+  return e164.length >= 9 && e164.length <= 16 ? e164 : '';
+}
+
 app.post('/subscribe', async (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
   const now = Date.now();
@@ -650,17 +666,38 @@ app.post('/subscribe', async (req, res) => {
     return res.status(429).json({ error: 'Too many requests' });
   }
   _subscribeCooldown.set(ip, now);
-  const { email, source } = req.body || {};
-  if (!email || !String(email).includes('@')) return res.status(400).json({ error: 'Invalid email' });
-  const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
+  const { email, phone, source } = req.body || {};
+  const hasEmail = email && String(email).includes('@');
+  const safePhone = toE164(phone);
+  if (!hasEmail && !safePhone) return res.status(400).json({ error: 'Invalid email or phone' });
   const safeSource = String(source || 'website').replace(/[^a-z0-9_-]/gi, '').slice(0, 64);
   if (!OMNISEND_API_KEY) return res.json({ ok: true });
+  const now2 = new Date().toISOString();
   try {
-    await fetch('https://api.omnisend.com/v3/contacts', {
-      method: 'POST',
-      headers: { 'X-API-KEY': OMNISEND_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: safeEmail, status: 'subscribed', statusDate: new Date().toISOString(), tags: [safeSource], sendWelcomeEmail: true }),
-    });
+    // Email contact — unchanged from the original behaviour.
+    if (hasEmail) {
+      const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
+      await fetch('https://api.omnisend.com/v3/contacts', {
+        method: 'POST',
+        headers: { 'X-API-KEY': OMNISEND_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: safeEmail, status: 'subscribed', statusDate: now2, tags: [safeSource], sendWelcomeEmail: true }),
+      });
+    }
+    // Phone contact — subscribe to the SMS channel (Omnisend v3 identifiers).
+    if (safePhone) {
+      await fetch('https://api.omnisend.com/v3/contacts', {
+        method: 'POST',
+        headers: { 'X-API-KEY': OMNISEND_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifiers: [{
+            type: 'phone',
+            id: safePhone,
+            channels: { sms: { status: 'subscribed', statusDate: now2 } },
+          }],
+          tags: [safeSource],
+        }),
+      });
+    }
   } catch (e) { /* best-effort */ }
   res.json({ ok: true });
 });
