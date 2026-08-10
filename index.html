@@ -235,8 +235,9 @@
     </div>
   </header></div>
 
-  <!-- Matrix Rain intro — white glyphs on load, sits UNDER the nav bar
-       (.sticky-top is z-index 200), then gently fades out to reveal the page. -->
+  <!-- Matrix intro — a white screen running the same light-grey slow-motion
+       matrix as the /password page, then fades out to reveal the home page.
+       Sits UNDER the nav bar (.sticky-top is z-index 200). -->
   <div id="matrix-intro" aria-hidden="true">
     <canvas id="matrix-canvas"></canvas>
   </div>
@@ -245,7 +246,7 @@
       position: fixed;
       inset: 0;
       z-index: 150;                 /* above page content, below the nav bar */
-      background: transparent;      /* pure overlay — hero images stay visible behind */
+      background: #ffffff;          /* white intro screen (matches password page) */
       opacity: 1;
       transition: opacity 0.9s ease;
     }
@@ -265,8 +266,7 @@
     var canvas = document.getElementById('matrix-canvas');
     var ctx = canvas.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var fontSize = 14, W, H, cols, drops, speeds, chars;
-    // Katakana + digits + a few latin/XTC glyphs for the rain.
+    var fontSize = 16, W, H, cols, drops, speeds, chars, lastRow;
     var CHARS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓ0123456789XTC';
     function randChar() { return CHARS.charAt(Math.floor(Math.random() * CHARS.length)); }
 
@@ -279,10 +279,12 @@
       drops = new Array(cols);
       speeds = new Array(cols);
       chars = new Array(cols);
+      lastRow = new Array(cols);
       for (var i = 0; i < cols; i++) {
-        drops[i] = Math.random() * -(H / fontSize);   // staggered start above the top
-        speeds[i] = 0.12 + Math.random() * 0.22;       // slow + varied = gentle, floating drift
+        drops[i] = Math.random() * (H / fontSize);   // scattered across the screen
+        speeds[i] = 0.06 + Math.random() * 0.12;      // slow motion
         chars[i] = randChar();
+        lastRow[i] = null;                            // null → first frame paints each column
       }
       ctx.font = fontSize + 'px monospace';
       ctx.textBaseline = 'top';
@@ -293,27 +295,24 @@
     var running = true;
     function draw() {
       if (!running) return;
-      // Fade existing glyphs toward TRANSPARENT (not black), so the hero images
-      // behind stay fully visible — this is a pure overlay. Low alpha = long,
-      // smooth trails.
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';   // lower alpha = longer trails = denser field
+      // Same style as /password: light-grey glyphs on white, slow-motion, rising,
+      // grid-snapped and drawn ONCE per cell so they stay light grey (never stack
+      // up to black), with a soft white-wash trail.
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'source-over';
-      // Crisp glyphs: thin dark outline + solid white fill so they read over both
-      // light and dark parts of the hero WITHOUT the blurry shadow smear.
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';   // white rain
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';   // light grey glyphs
       for (var i = 0; i < cols; i++) {
-        if (Math.random() < 0.08) chars[i] = randChar();  // occasional flicker, not every frame
-        var x = i * fontSize, y = drops[i] * fontSize;
-        ctx.strokeText(chars[i], x, y);
-        ctx.fillText(chars[i], x, y);
-        drops[i] += speeds[i];
-        if (y > H && Math.random() > 0.985) {           // recycle column from the top
-          drops[i] = Math.random() * -20;
-          speeds[i] = 0.12 + Math.random() * 0.22;
+        var row = Math.floor(drops[i]);
+        if (row !== lastRow[i]) {
+          chars[i] = randChar();
+          lastRow[i] = row;
+          if (row >= 0 && row * fontSize <= H) ctx.fillText(chars[i], i * fontSize, row * fontSize);
+        }
+        drops[i] -= speeds[i];                          // rise upward, slowly
+        if (row < 0 && Math.random() > 0.98) {          // recycle from the bottom
+          drops[i] = H / fontSize;
+          speeds[i] = 0.06 + Math.random() * 0.12;
+          lastRow[i] = null;
         }
       }
       requestAnimationFrame(draw);
