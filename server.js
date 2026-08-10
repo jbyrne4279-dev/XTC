@@ -1005,6 +1005,43 @@ app.get('/cart', (req, res) => {
   res.redirect('/checkout');
 });
 
+// ── Launch reminder calendar file (used by the "Remind Me" button on the
+//    /password launch page). A calendar event is the only web-supported way to
+//    give someone a launch alert — iOS/Safari can't open the Clock/alarm app.
+//    Event + alarm fire at 18:00 UK on 1 Oct 2026 (BST = UTC+1 -> 17:00Z).
+app.get('/drop.ics', (req, res) => {
+  const START = '20261001T170000Z';
+  const END   = '20261001T180000Z';
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//XTC Clothing//SS26 Drop//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:xtc-ss26-drop-20261001@xtcclothing.com',
+    'DTSTAMP:' + stamp,
+    'DTSTART:' + START,
+    'DTEND:' + END,
+    'SUMMARY:XTC — SS26 Drop Goes Live',
+    'DESCRIPTION:The XTC SS26 drop is live. Shop now at https://xtcclothing.com',
+    'URL:https://xtcclothing.com',
+    'LOCATION:xtcclothing.com',
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:XTC SS26 Drop is live',
+    'TRIGGER;VALUE=DATE-TIME:' + START,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+    '',
+  ].join('\r\n');
+  res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="xtc-ss26-drop.ics"');
+  res.send(ics);
+});
+
 // ── SEO: sitemap + robots ────────────────────────────────────────────────────
 app.get('/sitemap.xml', (req, res) => {
   res.sendFile(path.join(__dirname, 'sitemap.xml'));
