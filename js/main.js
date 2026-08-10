@@ -205,7 +205,7 @@ function initHero() {
 
   prev && prev.addEventListener('click', e => { e.stopPropagation(); ctrl && ctrl.prev(); startTimer(); });
   next && next.addEventListener('click', e => { e.stopPropagation(); ctrl && ctrl.next(); startTimer(); });
-  if (cta) cta.href = '/new-releases';
+  if (cta) cta.href = '/original-members-polo';
 
   heroEl.addEventListener('click', e => {
     if (e.target.closest('button, a')) return;
