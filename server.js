@@ -1053,5 +1053,15 @@ app.get('/robots.txt', (req, res) => {
   );
 });
 
+// Catch-all 404 — must be last, after all routes and express.static. Serve the
+// themed 404 page for browser navigations; plain text for asset/API misses.
+app.use((req, res) => {
+  if (req.method === 'GET' && req.accepts('html')) {
+    res.status(404).sendFile(path.join(__dirname, '404.html'));
+  } else {
+    res.status(404).type('text/plain').send('Not found');
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`XTC server running on port ${PORT}`));
