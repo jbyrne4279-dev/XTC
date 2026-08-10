@@ -203,6 +203,7 @@ ul, ol { list-style: none; }
   position: absolute;
   inset: 0;
   pointer-events: none;
+  opacity: 0.6;
   background:
     linear-gradient(to top right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px)),
     linear-gradient(to bottom right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px));
