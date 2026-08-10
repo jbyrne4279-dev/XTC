@@ -7,5 +7,6 @@ Disallow: /profile
 Disallow: /product-war-zip
 Disallow: /product-war-joggers
 Disallow: /product-uniform-t
+Disallow: /password
 
 Sitemap: https://xtcclothing.com/sitemap.xml

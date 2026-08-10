@@ -1049,7 +1049,7 @@ app.get('/sitemap.xml', (req, res) => {
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(
-    'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /order-confirmed\nDisallow: /profile\n\nSitemap: https://xtcclothing.com/sitemap.xml\n'
+    'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /order-confirmed\nDisallow: /profile\nDisallow: /product-war-zip\nDisallow: /product-war-joggers\nDisallow: /product-uniform-t\nDisallow: /password\n\nSitemap: https://xtcclothing.com/sitemap.xml\n'
   );
 });
 
