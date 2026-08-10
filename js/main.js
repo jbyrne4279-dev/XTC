@@ -107,7 +107,7 @@ function initHero() {
   const eyebrow     = document.getElementById('heroEyebrow');
   const title       = document.getElementById('heroTitle');
   const cta         = document.getElementById('heroCta');
-  const PRODUCT_HREF = { white: '/product-polo-white', black: '/product-polo-black' };
+  const PRODUCT_HREF = { white: '/original-members-polo?color=white', black: '/original-members-polo?color=black' };
 
   const COPY_ELS = [eyebrow, title, document.querySelector('.hero-bar__right')].filter(Boolean);
   let timer = null;

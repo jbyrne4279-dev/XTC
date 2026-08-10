@@ -15,6 +15,16 @@ app.get(HIDDEN_PRODUCT_PAGES, (req, res) => {
   res.status(404).type('text/plain').send('Not found');
 });
 
+// The Black and White polos were merged into one product page
+// (/original-members-polo) with an in-page colour switcher. Permanently redirect
+// the old per-colour slugs — and their .html forms — to the consolidated page,
+// preserving the chosen colour via ?color= so shoppers land on the right variant.
+// Registered before express.static so it wins over any cached/legacy file.
+app.get(['/product-polo-black', '/product-polo-black.html'], (req, res) =>
+  res.redirect(301, '/original-members-polo?color=black'));
+app.get(['/product-polo-white', '/product-polo-white.html'], (req, res) =>
+  res.redirect(301, '/original-members-polo?color=white'));
+
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
