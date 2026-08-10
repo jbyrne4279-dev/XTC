@@ -1164,8 +1164,16 @@
     _elements = stripe.elements({ clientSecret, appearance: APPEARANCE, loader: 'auto', paymentMethodOrder: ['card'] });
 
     const expressCheckout = _elements.create('expressCheckout', {
+      // Which wallets may appear in the express row. Each only renders when the
+      // shopper's browser/account actually supports it:
+      //   applePay  — Safari on Apple devices only (Apple restriction, never Chrome/Windows)
+      //   googlePay — Chrome/Android signed into Google with a saved card
+      //   link      — Stripe Link: cross-browser one-tap, incl. Chrome on Windows
+      // (Requires Google Pay + Link to be enabled in the Stripe Dashboard.)
+      paymentMethods: { applePay: 'auto', googlePay: 'auto', link: 'auto' },
       buttonType: { applePay: 'buy', googlePay: 'buy' },
       buttonTheme: { applePay: 'black', googlePay: 'white' },
+      buttonHeight: 48,
     });
     expressCheckout.mount('#express-checkout-element');
     expressCheckout.on('ready', ({ availablePaymentMethods }) => {
