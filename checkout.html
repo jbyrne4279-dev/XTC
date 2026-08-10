@@ -718,7 +718,7 @@
             <span class="co-shipping-method__radio"></span>
             <div>
               <p class="co-shipping-method__name" id="coShippingMethodName">Standard Shipping</p>
-              <p class="co-shipping-method__sub">1–2 working days (UK) · 5–14 (international)</p>
+              <p class="co-shipping-method__sub" id="coShippingMethodSub">1–2 working days</p>
             </div>
           </div>
           <span class="co-shipping-method__price" id="coShippingMethodPrice">Free</span>
@@ -914,6 +914,13 @@
     placeholder.style.display = 'none';
     method.classList.add('show');
     document.getElementById('coShippingMethodName').textContent = country.value === 'GB' ? 'Standard Shipping' : 'International Shipping';
+    // Delivery estimate by destination: UK 1–2, US 7–14, rest of world 5–7.
+    var subEl = document.getElementById('coShippingMethodSub');
+    if (subEl) {
+      subEl.textContent = country.value === 'GB' ? '1–2 working days'
+                        : country.value === 'US' ? '7–14 working days'
+                        : '5–7 working days';
+    }
     document.getElementById('coShippingMethodPrice').textContent = shipping === 0 ? 'Free' : '£' + shipping.toFixed(2);
   }
 
