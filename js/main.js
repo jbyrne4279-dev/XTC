@@ -455,6 +455,11 @@ class TextScramble {
   setText(newText) {
     const oldText = this.el.textContent;
     const length = Math.max(oldText.length, newText.length);
+    // Freeze the element's rendered box before scrambling. The substitute glyphs
+    // shown mid-animation have different widths than the real text, so without
+    // this the element (and everything around it) would reflow/resize while the
+    // effect plays. Released in _unlock() once the text settles.
+    this._lock();
     const promise = new Promise((resolve) => (this.resolve = resolve));
     this.queue = [];
     for (let i = 0; i < length; i++) {
@@ -468,6 +473,33 @@ class TextScramble {
     this.frame = 0;
     this.update();
     return promise;
+  }
+  // Pin the element to its current (final-text) size so scramble frames can't
+  // change the layout. Inline elements are promoted to inline-block so width/
+  // height take effect; overflow is hidden so a temporarily wider/taller frame
+  // is clipped rather than pushing the page around.
+  _lock() {
+    if (this._locked) return;
+    const cs = window.getComputedStyle(this.el);
+    const rect = this.el.getBoundingClientRect();
+    if (!rect.width && !rect.height) return; // not rendered — nothing to pin
+    this._prevStyle = this.el.getAttribute('style');
+    if (cs.display === 'inline') this.el.style.display = 'inline-block';
+    this.el.style.width = Math.ceil(rect.width) + 'px';
+    this.el.style.height = Math.ceil(rect.height) + 'px';
+    this.el.style.overflow = 'hidden';
+    // Single-line elements (nav links, tabs, buttons, headings) must not wrap
+    // when a scramble frame is a little wider — keep them on one line and clip.
+    // Multi-line copy keeps wrapping; the pinned height clips any extra line.
+    const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3 || 20;
+    if (rect.height <= lh * 1.6) this.el.style.whiteSpace = 'nowrap';
+    this._locked = true;
+  }
+  _unlock() {
+    if (!this._locked) return;
+    if (this._prevStyle == null) this.el.removeAttribute('style');
+    else this.el.setAttribute('style', this._prevStyle);
+    this._locked = false;
   }
   update() {
     let output = '';
@@ -490,6 +522,7 @@ class TextScramble {
     this.el.innerHTML = output;
     if (complete === this.queue.length) {
       this.el.textContent = this.queue.map((q) => q.to).join('');
+      this._unlock();
       this.resolve();
     } else {
       this.frameRequest = requestAnimationFrame(this.update);
