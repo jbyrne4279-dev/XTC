@@ -35,7 +35,9 @@
     .pdp-crumb a { color: rgba(0, 0, 0, 0.2); transition: color 0.2s; }
     .pdp-crumb a:hover { color: rgba(0, 0, 0, 0.5); }
     .pdp-crumb span { color: rgba(0, 0, 0, 0.05); }
-    .pdp-crumb__current { color: rgba(0, 0, 0, 0.5); }
+    .pdp-crumb__current { color: rgba(0, 0, 0, 0.85); animation: crumb-attention 2.6s ease-in-out infinite; }
+    @keyframes crumb-attention { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @media (prefers-reduced-motion: reduce) { .pdp-crumb__current { animation: none; } }
 
     .pdp {
       display: grid;
@@ -49,7 +51,7 @@
       top: 64px;
       align-self: start;
       border-right: 1px solid var(--border);
-      aspect-ratio: 3/4;
+      aspect-ratio: 1/1;
       background: #fafafa;
       display: flex;
       align-items: center;
