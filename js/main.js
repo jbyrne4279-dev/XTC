@@ -532,8 +532,10 @@ class TextScramble {
 }
 
 function initTextScramble() {
-  // Runs on every page load. Skipped only for reduced-motion users.
+  // Runs on every page load. Skipped for reduced-motion users, and for any page
+  // that opts out with <body data-no-scramble> (e.g. checkout).
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (document.body && document.body.hasAttribute('data-no-scramble')) return;
 
   const SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'SVG', 'PATH', 'IMG', 'INPUT', 'TEXTAREA', 'CANVAS']);
   const els = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,li,button,label,figcaption,th,td,strong,em,blockquote')]
