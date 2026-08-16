@@ -553,14 +553,14 @@
 
   <div class="sticky-top"><div class="announcement-bar">
     <div class="announcement-bar__track">
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
-      <span><span class="ad-free">Free Delivery</span> On Orders Over £80 &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
+      <span><span class="ad-free">Free Delivery</span> On All UK Orders &nbsp;&nbsp;&nbsp; </span>
     </div>
   </div></div>
 
@@ -886,7 +886,7 @@
   function getShipping(subtotal) {
     const country = (document.getElementById('coCountry') && document.getElementById('coCountry').value) || 'GB';
     if (country && country !== 'GB') return 9.99;
-    return subtotal >= 80 ? 0 : 4.99;
+    return 0;
   }
 
   function updateShippingMethodPanel(shipping) {
