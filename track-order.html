@@ -73,27 +73,11 @@
     .to-box {
       width: 100%;
       max-width: 480px;
-      background: rgba(245, 245, 245, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: #f2f2f2;
       border: 1px solid rgba(0, 0, 0, 0.15);
-      border-radius: 6px;
-      padding: 48px 48px 40px;
+      padding: 48px 48px 52px;
       position: relative;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.12);
     }
-    .to-box__icon {
-      width: 44px;
-      height: 44px;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .to-box__icon svg { width: 20px; height: 20px; }
     .to-box::before {
       content: '';
       position: absolute;
@@ -121,48 +105,9 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       color: rgba(0, 0, 0, 0.3);
-      margin-bottom: 8px;
+      margin-bottom: 36px;
       text-align: center;
     }
-    .to-box__subtitle {
-      font-size: 11px;
-      letter-spacing: 0.5px;
-      color: rgba(0, 0, 0, 0.4);
-      margin-bottom: 32px;
-      text-align: center;
-      line-height: 1.6;
-    }
-    .to-trust {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-      font-size: 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.35);
-    }
-    .to-trust svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.6; }
-    .to-trust-badges {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
-    }
-    .to-trust-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.3);
-    }
-    .to-trust-badge svg { width: 14px; height: 14px; opacity: 0.55; }
     .to-field {
       margin-bottom: 28px;
     }
@@ -198,7 +143,7 @@
       background: #141414;
       color: #ffffff;
       border: none;
-      border-radius: 4px;
+      border-radius: 2px;
       font-family: inherit;
       font-size: 11px;
       letter-spacing: 3px;
@@ -252,18 +197,7 @@
       gap: 16px;
       margin-bottom: 20px;
       align-items: flex-start;
-      position: relative;
     }
-    .to-step:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      left: 3px;
-      top: 16px;
-      width: 1px;
-      height: calc(100% + 4px);
-      background: rgba(0, 0, 0, 0.1);
-    }
-    .to-step--done:not(:last-child)::before { background: #141414; }
     .to-step__dot {
       width: 8px;
       height: 8px;
@@ -271,10 +205,8 @@
       background: rgba(0, 0, 0, 0.15);
       margin-top: 4px;
       flex-shrink: 0;
-      position: relative;
-      z-index: 1;
     }
-    .to-step--done .to-step__dot { background: #141414; }
+    .to-step--done .to-step__dot { background: #f2f2f2; }
     .to-step--active .to-step__dot { background: var(--accent); color: #ffffff; box-shadow: 0 0 8px var(--accent); }
     .to-step__label {
       font-size: 11px;
@@ -639,11 +571,6 @@
     <img class="to-hero__slide" src="images/hero-4.jpg" alt="XTC Clothing" />
     <div class="to-hero__overlay">
       <div class="to-box">
-        <div class="to-box__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        </div>
-        <p class="to-box__title">Order Tracking</p>
-        <p class="to-box__subtitle">Enter your order number and the email used at checkout to see your delivery status.</p>
         <form id="trackForm" onsubmit="handleTrack(event)">
           <div class="to-field">
             <label for="orderInput">Order Number</label>
@@ -655,21 +582,7 @@
           </div>
           <button type="submit" class="to-btn" id="trackBtn">Track Order</button>
           <p class="to-error" id="trackError"></p>
-          <p class="to-trust">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Your information is encrypted and never shared
-          </p>
         </form>
-        <div class="to-trust-badges">
-          <span class="to-trust-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
-            Secure Lookup
-          </span>
-          <span class="to-trust-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Real-Time Status
-          </span>
-        </div>
 
         <div class="to-result" id="trackResult">
           <p class="to-result__status" id="resultStatus">In Transit</p>
