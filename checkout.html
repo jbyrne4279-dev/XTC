@@ -1193,7 +1193,10 @@
     const paymentElement = _elements.create('payment', {
       fields: { billingDetails: 'auto' },
       layout: 'tabs',
-      wallets: { applePay: 'never', googlePay: 'never' },
+      // link: 'never' suppresses Stripe Link's "save my information" prompt
+      // after card entry — confusing here since the checkout already has the
+      // shopper's details (and, for signed-in users, its own account).
+      wallets: { applePay: 'never', googlePay: 'never', link: 'never' },
     });
     paymentElement.mount('#payment-element');
 
