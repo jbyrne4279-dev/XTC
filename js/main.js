@@ -402,7 +402,8 @@ function cdUpdateQty(index, delta) {
   const cart = getCart();
   const item = cart[index];
   if (!item) return;
-  item.qty = Math.max(1, Math.min(10, item.qty + delta));
+  if (item.qty + delta < 1) { cdRemoveItem(index); return; }
+  item.qty = Math.min(10, item.qty + delta);
   saveCart(cart);
   updateCartCount();
   renderCartDrawer();
