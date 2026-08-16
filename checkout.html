@@ -599,13 +599,9 @@
               <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
             </div>
           </div>
-          <div class="co-field">
-            <label for="coFirstName">First Name</label>
-            <input type="text" id="coFirstName" placeholder="James" required />
-          </div>
-          <div class="co-field">
-            <label for="coLastName">Last Name</label>
-            <input type="text" id="coLastName" placeholder="Byrne" required />
+          <div class="co-field co-field--span2">
+            <label for="coName">Name</label>
+            <input type="text" id="coName" placeholder="James Byrne" required />
           </div>
           <div class="co-field co-field--span2">
             <label for="coEmail">Email</label>
@@ -927,7 +923,7 @@
           id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId, cartItems: cartItems,
           phone: document.getElementById('coPhone').value.trim(),
           country: (document.getElementById('coCountry').dataset.name || document.getElementById('coCountry').value).trim(),
-          name: (document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value).trim(),
+          name: document.getElementById('coName').value.trim(),
           address: document.getElementById('coAddress').value.trim(),
           city: document.getElementById('coCity').value.trim(),
           postcode: document.getElementById('coPostcode').value.trim(),
@@ -1022,7 +1018,7 @@
         btn.textContent = 'Processing…';
         document.getElementById('payment-errors').textContent = '';
 
-        const _name = (document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value).trim();
+        const _name = document.getElementById('coName').value.trim();
         const _email = document.getElementById('coEmail').value;
         const _phone = document.getElementById('coPhone').value;
         const _address = document.getElementById('coAddress').value;
