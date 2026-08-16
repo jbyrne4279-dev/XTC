@@ -296,14 +296,6 @@
       margin-bottom: 32px;
     }
     .co-section-head .co-section-title { margin-bottom: 0; }
-    .co-signin-link {
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: var(--accent);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-    .co-signin-link:hover { color: #000000; }
     .co-payment-note {
       font-size: 11px;
       color: rgba(0, 0, 0, 0.35);
@@ -432,33 +424,6 @@
     }
     .co-total-row--discount { color: rgba(34,197,94,0.9); }
 
-    /* Loyalty redeem toggle */
-    .co-redeem {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      padding: 12px 14px;
-      border: 1px solid rgba(0, 0, 0, 0.3);
-      border-radius: 2px;
-      background: rgba(0, 0, 0, 0.06);
-      cursor: pointer;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      color: rgba(0, 0, 0, 0.75);
-    }
-    .co-redeem input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
-    .co-redeem #coRedeemLabel { color: var(--accent); }
-    .co-redeem-tick {
-      color: var(--accent);
-      opacity: 0;
-      transform: scale(0.6);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      flex-shrink: 0;
-    }
-    .co-redeem input:checked ~ .co-redeem-tick { opacity: 1; transform: scale(1); }
-
     /* Promo code input */
     .co-promo {
       display: flex;
@@ -579,12 +544,6 @@
         <a href="/contact">Contact</a>
       </nav>
       <div class="header-actions">
-        <a href="/profile" aria-label="Account">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </a>
         <a href="/cart" aria-label="Cart">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -619,7 +578,6 @@
         <a href="/track-order" class="nav-primary">Track Order</a>
         <a href="/checkout" class="nav-primary">Checkout</a>
         <a href="/gallery">Gallery</a>
-        <a href="/profile">Account</a>
         <a href="/contact">Contact</a>
       </nav>
     </div>
@@ -654,7 +612,6 @@
 
       <div class="co-section-head">
         <h2 class="co-section-title">Contact</h2>
-        <a href="/profile" class="co-signin-link">Sign in</a>
       </div>
 
       <div class="co-box">
@@ -761,13 +718,6 @@
     </div>
     <p class="co-promo-msg" id="promoMsg"></p>
 
-    <!-- Loyalty redemption (shown only when signed in with points) -->
-    <label class="co-redeem" id="coRedeemWrap" style="display:none;">
-      <input type="checkbox" id="coRedeemCheck" />
-      <svg class="co-redeem-tick" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-      <span id="coRedeemLabel">Use points</span>
-    </label>
-
     <div class="co-totals">
       <div class="co-total-row">
         <span>Subtotal</span>
@@ -776,10 +726,6 @@
       <div class="co-total-row co-total-row--discount" id="coDiscountRow" style="display:none;">
         <span id="coDiscountLabel">Discount</span>
         <span id="coDiscountAmount">—</span>
-      </div>
-      <div class="co-total-row co-total-row--discount" id="coRedeemRow" style="display:none;">
-        <span>Points redeemed</span>
-        <span id="coRedeemAmount">—</span>
       </div>
       <div class="co-total-row">
         <span>Shipping</span>
@@ -796,8 +742,6 @@
 
 <script src="js/stock.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-config.js"></script>
 <script src="js/main.js"></script>
 <script src="js/omnisend-config.js"></script>
 <script>
@@ -825,33 +769,6 @@
 
   // Active promo state
   let _promo = null; // { type, value, description, code }
-
-  // ── Loyalty redemption state (best-effort; never blocks checkout) ──
-  // Shared client from js/supabase-config.js — must not create a separate
-  // instance here: two independent clients writing the same localStorage
-  // session key race each other and can wipe out a valid session, logging
-  // the user out on navigation.
-  const _sb = window._supabase || null;
-  let _loyaltyToken = null;
-  let _loyaltyAvailable = 0;
-  let _redeemPoints = 0;
-
-  async function loadLoyalty() {
-    if (!_sb) return;
-    try {
-      const { data } = await _sb.auth.getSession();
-      const token = data && data.session && data.session.access_token;
-      if (!token) return;
-      _loyaltyToken = token;
-      const res = await fetch('/loyalty', { headers: { Authorization: 'Bearer ' + token } });
-      if (!res.ok) return;
-      const bal = await res.json();
-      _loyaltyAvailable = Math.max(0, parseInt(bal.available, 10) || 0);
-      const wrap = document.getElementById('coRedeemWrap');
-      if (wrap) wrap.style.display = _loyaltyAvailable > 0 ? 'flex' : 'none';
-      updateTotals();
-    } catch (e) { /* loyalty is best-effort; never block checkout */ }
-  }
 
   function getCartSubtotal() {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
@@ -930,17 +847,6 @@
     const afterDiscount = subtotal - discountAmount;
     let total = afterDiscount + shipping;
 
-    // Loyalty redemption (1 pt = 5 pence — 100 pts = £5), capped to the balance and
-    // so the charge stays >= £0.30 (Stripe minimum). Server re-validates on its side.
-    const POINT_VALUE_PENCE = 5;
-    const redeemCheck = document.getElementById('coRedeemCheck');
-    const maxPence = Math.max(0, Math.round(total * 100) - 30);
-    const cap = Math.min(_loyaltyAvailable, Math.floor(maxPence / POINT_VALUE_PENCE));
-    const redeemPoints = (redeemCheck && redeemCheck.checked && cap > 0) ? cap : 0;
-    _redeemPoints = redeemPoints;
-    const redeemValue = redeemPoints * POINT_VALUE_PENCE / 100;
-    total = total - redeemValue;
-
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
     document.getElementById('coShipping').textContent = shipping === 0 ? 'Free' : '£' + shipping.toFixed(2);
     document.getElementById('coTotal').textContent = '£' + total.toFixed(2);
@@ -952,19 +858,6 @@
       document.getElementById('coDiscountAmount').textContent = '−£' + discountAmount.toFixed(2);
     } else {
       discountRow.style.display = 'none';
-    }
-
-    // Redeem label (current usable cap) + redemption row
-    const lbl = document.getElementById('coRedeemLabel');
-    if (lbl) lbl.textContent = 'Use ' + cap + ' points (−£' + (cap * POINT_VALUE_PENCE / 100).toFixed(2) + ')';
-    const redeemRow = document.getElementById('coRedeemRow');
-    if (redeemRow) {
-      if (redeemPoints > 0) {
-        redeemRow.style.display = 'flex';
-        document.getElementById('coRedeemAmount').textContent = '−£' + redeemValue.toFixed(2);
-      } else {
-        redeemRow.style.display = 'none';
-      }
     }
   }
 
@@ -1098,14 +991,10 @@
     });
     orders[orderId] = { id: orderId, number: orderId, email, items: cart, total: totalValue, date: new Date().toISOString(), status: 'Processing' };
     localStorage.setItem('xtc-orders', JSON.stringify(orders));
-    // Persist to the account (server) so the order syncs across devices and shows
-    // on the customer's profile, AND decrements stock (idempotently, server-side).
-    // intentId lets the server record redeemed points from the PaymentIntent
-    // metadata; the token links the order to the account. keepalive so it still
-    // completes after the redirect below.
+    // Persist the order server-side (idempotently) so stock decrements and
+    // tracking works. keepalive so it still completes after the redirect below.
     try {
       const orderHeaders = { 'Content-Type': 'application/json' };
-      if (_loyaltyToken) orderHeaders['Authorization'] = 'Bearer ' + _loyaltyToken;
       fetch('/orders', {
         method: 'POST',
         headers: orderHeaders,
@@ -1282,11 +1171,10 @@
       return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: i.qty };
     });
     const headers = { 'Content-Type': 'application/json' };
-    if (_loyaltyToken) headers['Authorization'] = 'Bearer ' + _loyaltyToken;
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems, redeemPoints: _redeemPoints }),
+      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -1340,23 +1228,12 @@
 
     if (typeof xtcEvent === 'function') xtcEvent('begin_checkout', { currency: 'GBP', value: getCartSubtotal() });
 
-    // Loyalty redeem toggle — recompute totals and re-create the intent so the
-    // server applies/records the redemption.
-    const redeemCheck = document.getElementById('coRedeemCheck');
-    if (redeemCheck) redeemCheck.addEventListener('change', async function () {
-      updateTotals();
-      try { await reinitPayment(); } catch (e) {}
-    });
-
     try {
       const clientSecret = await createPaymentIntent();
       await mountStripeElements(clientSecret);
     } catch {
       document.getElementById('payment-errors').textContent = 'Failed to initialise payment. Please refresh.';
     }
-
-    // Load the signed-in user's points balance (best-effort, after payment is up)
-    loadLoyalty();
   }
 
   if (document.readyState === 'loading') {
