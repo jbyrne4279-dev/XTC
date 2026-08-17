@@ -383,6 +383,13 @@
       color: rgba(0, 0, 0, 0.3);
       letter-spacing: 0.5px;
     }
+    .co-item__variant {
+      font-size: 10px;
+      color: rgba(0, 0, 0, 0.25);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
     .co-item__price {
       font-size: 13px;
       letter-spacing: 0.5px;
@@ -757,7 +764,10 @@
       const img = item.img
         ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" />`
         : `<div class="co-item__img-placeholder"></div>`;
-      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${item.name}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p></div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
+      const dashIdx = item.name.lastIndexOf(' — ');
+      const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+      const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
+      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">${variant}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
     updateTotals(subtotal);
   }

@@ -371,16 +371,18 @@ function renderCartDrawer() {
           <div class="cd-item__top">
             <div>
               <p class="cd-item__name">${displayName}</p>
-              ${variant ? `<p class="cd-item__variant">${variant}</p>` : ''}
               ${oos ? `<p class="cd-item__oos-label">Out of stock</p>` : ''}
             </div>
             <p class="cd-item__price">${item.price}</p>
           </div>
           <div class="cd-item__bottom">
-            <div class="cd-qty">
-              <button class="cd-qty__btn" onclick="cdUpdateQty(${i},-1)" aria-label="Decrease quantity">−</button>
-              <span class="cd-qty__val">${item.qty}</span>
-              <button class="cd-qty__btn" onclick="cdUpdateQty(${i},1)" aria-label="Increase quantity">+</button>
+            <div class="cd-qty-wrap">
+              <div class="cd-qty">
+                <button class="cd-qty__btn" onclick="cdUpdateQty(${i},-1)" aria-label="Decrease quantity">−</button>
+                <span class="cd-qty__val">${item.qty}</span>
+                <button class="cd-qty__btn" onclick="cdUpdateQty(${i},1)" aria-label="Increase quantity">+</button>
+              </div>
+              ${variant ? `<p class="cd-item__variant">${variant}</p>` : ''}
             </div>
             <button class="cd-item__remove" onclick="cdRemoveItem(${i})">Remove</button>
           </div>
