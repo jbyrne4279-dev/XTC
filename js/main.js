@@ -382,7 +382,7 @@ function renderCartDrawer() {
                 <span class="cd-qty__val">${item.qty}</span>
                 <button class="cd-qty__btn" onclick="cdUpdateQty(${i},1)" aria-label="Increase quantity">+</button>
               </div>
-              ${variant ? `<p class="cd-item__variant">${variant}</p>` : ''}
+              ${variant ? `<p class="cd-item__variant">Size: ${variant}</p>` : ''}
             </div>
             <button class="cd-item__remove" onclick="cdRemoveItem(${i})">Remove</button>
           </div>

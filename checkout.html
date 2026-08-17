@@ -767,7 +767,7 @@
       const dashIdx = item.name.lastIndexOf(' — ');
       const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
       const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
-      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">${variant}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
+      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">Size: ${variant}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
     updateTotals(subtotal);
   }
