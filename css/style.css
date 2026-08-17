@@ -3433,6 +3433,60 @@ textarea {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
+.cd-item__variant strong {
+  color: #000000;
+  font-weight: 700;
+}
+.cd-size-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cd-size-change-wrap {
+  position: relative;
+}
+.cd-size-change {
+  height: 20px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.4);
+  font-family: inherit;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cd-size-change:hover { color: #000000; border-color: rgba(0, 0, 0, 0.25); }
+.cd-size-picker {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #eeeeee;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  padding: 6px;
+  gap: 4px;
+  z-index: 50;
+  white-space: nowrap;
+}
+.cd-size-picker.open { display: flex; }
+.cd-size-picker__btn {
+  width: 26px; height: 26px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: #000000;
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.cd-size-picker__btn:hover { border-color: rgba(0, 0, 0, 0.5); background: rgba(0, 0, 0, 0.08); }
 .cd-qty {
   display: flex;
   align-items: center;

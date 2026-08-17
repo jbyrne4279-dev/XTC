@@ -348,6 +348,8 @@ function renderCartDrawer() {
     return;
   }
 
+  const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL'];
+
   footer.style.display = 'block';
   let hasOos = false;
   body.innerHTML = cart.map((item, i) => {
@@ -363,6 +365,11 @@ function renderCartDrawer() {
     const inStock = typeof getSizeStock === 'function' ? getSizeStock(productId, size) : 1;
     const oos = inStock <= 0;
     if (oos) hasOos = true;
+
+    // Other in-stock sizes for this product, so "Change" only shows when
+    // there's actually somewhere else to change to.
+    const stockForProduct = typeof getStockForProduct === 'function' ? getStockForProduct(productId) : {};
+    const otherSizes = SIZE_ORDER.filter(s => s !== size && (stockForProduct[s] || 0) > 0);
 
     return `
       <div class="cd-item${oos ? ' cd-item--oos' : ''}">
@@ -382,7 +389,17 @@ function renderCartDrawer() {
                 <span class="cd-qty__val">${item.qty}</span>
                 <button class="cd-qty__btn" onclick="cdUpdateQty(${i},1)" aria-label="Increase quantity">+</button>
               </div>
-              ${variant ? `<p class="cd-item__variant">Size: ${variant}</p>` : ''}
+              ${variant ? `
+              <div class="cd-size-row">
+                <p class="cd-item__variant">Size: <strong>${variant}</strong></p>
+                ${otherSizes.length ? `
+                <div class="cd-size-change-wrap">
+                  <button class="cd-size-change" onclick="cdToggleSizePicker(event,${i})">Change</button>
+                  <div class="cd-size-picker" id="cdSizePicker-${i}">
+                    ${otherSizes.map(s => `<button class="cd-size-picker__btn" onclick="cdChangeSize(${i},'${s}')">${s}</button>`).join('')}
+                  </div>
+                </div>` : ''}
+              </div>` : ''}
             </div>
             <button class="cd-item__remove" onclick="cdRemoveItem(${i})">Remove</button>
           </div>
@@ -414,6 +431,49 @@ function cdUpdateQty(index, delta) {
 function cdRemoveItem(index) {
   const cart = getCart();
   cart.splice(index, 1);
+  saveCart(cart);
+  updateCartCount();
+  renderCartDrawer();
+}
+
+function cdToggleSizePicker(event, index) {
+  event.stopPropagation();
+  const picker = document.getElementById('cdSizePicker-' + index);
+  if (!picker) return;
+  const isOpen = picker.classList.contains('open');
+  document.querySelectorAll('.cd-size-picker.open').forEach(p => p.classList.remove('open'));
+  if (!isOpen) picker.classList.add('open');
+}
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.cd-size-change-wrap')) {
+    document.querySelectorAll('.cd-size-picker.open').forEach(p => p.classList.remove('open'));
+  }
+});
+
+function cdChangeSize(index, newSize) {
+  const cart = getCart();
+  const item = cart[index];
+  if (!item) return;
+
+  const idParts = item.id.split('-');
+  const productId = idParts.slice(0, -1).join('-');
+  const newId = productId + '-' + newSize.toLowerCase();
+
+  const dashIdx = item.name.lastIndexOf(' — ');
+  const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+
+  // If another line already has this product/size, merge quantities into it
+  // instead of creating a duplicate line.
+  const existingIdx = cart.findIndex((c, i) => i !== index && c.id === newId);
+  if (existingIdx !== -1) {
+    cart[existingIdx].qty = Math.min(10, cart[existingIdx].qty + item.qty);
+    cart.splice(index, 1);
+  } else {
+    item.id = newId;
+    item.name = displayName + ' — ' + newSize;
+  }
+
   saveCart(cart);
   updateCartCount();
   renderCartDrawer();
