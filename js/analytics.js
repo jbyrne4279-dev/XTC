@@ -30,6 +30,81 @@ function metaTrack(eventName, params) {
   if (window.fbq && META_PIXEL_ID) { try { fbq('track', eventName, params || {}); } catch (e) {} }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   SERVER-SIDE ANALYTICS (powers the admin Analytics tab)
+   One session id per browser session (sessionStorage), sent with every event
+   so the server can compute real sessions/bounce-rate/session-time/funnel
+   across all visitors — not just this browser.
+   ───────────────────────────────────────────────────────────────────────── */
+function xtcSessionId() {
+  try {
+    var id = sessionStorage.getItem('xtc-session-id');
+    if (!id) {
+      id = 'sx' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem('xtc-session-id', id);
+    }
+    return id;
+  } catch (e) {
+    return 'sx-nostore';
+  }
+}
+
+function xtcTrackServer(eventType, meta) {
+  try {
+    var payload = JSON.stringify({
+      session_id: xtcSessionId(),
+      event_type: eventType,
+      path: location.pathname,
+      referrer: document.referrer || '',
+      meta: meta || {},
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/analytics/event', new Blob([payload], { type: 'application/json' }));
+    } else {
+      fetch('/analytics/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(function () {});
+    }
+  } catch (e) { /* analytics must never break the page */ }
+}
+
+(function () {
+  var isNewSession = false;
+  try { isNewSession = !sessionStorage.getItem('xtc-session-id'); } catch (e) {}
+  xtcSessionId(); // ensure it exists before either event below
+  if (isNewSession) {
+    xtcTrackServer('session_start', { landing_path: location.pathname });
+  }
+  xtcTrackServer('pageview', {});
+
+  // Time spent on this page — sent once, on the first signal that the user is
+  // leaving (tab hidden / navigating away / closing).
+  var _pageStart = Date.now();
+  var _durationSent = false;
+  function sendDuration() {
+    if (_durationSent) return;
+    _durationSent = true;
+    xtcTrackServer('pageview_end', { duration: Date.now() - _pageStart });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') sendDuration();
+  });
+  window.addEventListener('pagehide', sendDuration);
+})();
+
+// Bug flags — real JS errors and unhandled promise rejections, surfaced in
+// the admin Analytics tab so problems on the live site don't go unnoticed.
+window.addEventListener('error', function (e) {
+  xtcTrackServer('error', {
+    message: String(e.message || 'Unknown error').slice(0, 500),
+    source: e.filename || '',
+    lineno: e.lineno || 0,
+  });
+});
+window.addEventListener('unhandledrejection', function (e) {
+  var reason = e.reason;
+  var msg = (reason && reason.message) ? reason.message : String(reason);
+  xtcTrackServer('error', { message: ('Unhandled rejection: ' + msg).slice(0, 500) });
+});
+
 // Safe gtag wrapper (fires even if GA4 blocks)
 function xtcEvent(eventName, params) {
   if (typeof gtag === 'function') {
@@ -49,6 +124,11 @@ function xtcEvent(eventName, params) {
   }
   if (eventName === 'begin_checkout') {
     metaTrack('InitiateCheckout', { currency: 'GBP', value: (params && params.value) || 0 });
+  }
+  // Forward funnel events to the server so the admin Analytics tab reflects
+  // real cross-visitor behaviour (bounce rate, funnel, abandoned checkouts).
+  if (['add_to_cart', 'begin_checkout', 'purchase', 'sign_up'].indexOf(eventName) !== -1) {
+    xtcTrackServer(eventName, { value: (params && params.value) || 0, currency: (params && params.currency) || 'GBP' });
   }
   // Also track locally for admin dashboard
   const key = 'xtc-analytics';

@@ -116,6 +116,25 @@
     .chart-box__title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
     canvas { width: 100%; }
 
+    /* Analytics: grid of line-chart tiles */
+    .chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
+    @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+
+    .range-tabs { display: flex; gap: 4px; }
+
+    /* Funnel */
+    .funnel { background: var(--bg2); border: 1px solid var(--border); padding: 24px; margin-bottom: 32px; }
+    .funnel-step { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.04); }
+    .funnel-step:last-child { border-bottom: none; }
+    .funnel-step__label { flex: 0 0 160px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); }
+    .funnel-step__value { flex: 0 0 60px; font-size: 18px; font-weight: 500; }
+    .funnel-step__pct { flex: 1; text-align: right; font-size: 11px; color: var(--muted); }
+    @media (max-width: 700px) {
+      .funnel-step { flex-wrap: wrap; }
+      .funnel-step__label { flex: 1 0 100%; }
+      .funnel-step__pct { flex: 1 0 100%; text-align: left; margin-top: 4px; }
+    }
+
     /* Tables */
     .table-box { background: var(--bg2); border: 1px solid var(--border); margin-bottom: 24px; }
     .table-box__header {
@@ -695,26 +714,74 @@
 
     <!-- ── ANALYTICS ── -->
     <div class="page" id="page-analytics">
-      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
         <div>
           <h1 class="page-title">Analytics</h1>
-          <p class="page-sub">On-site tracking — 90 day history</p>
+          <p class="page-sub" id="analyticsSub">Real visitor tracking, server-side</p>
         </div>
-        <a href="https://analytics.google.com" target="_blank" class="btn-sm">Google Analytics ↗</a>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="range-tabs" id="analyticsRangeTabs">
+            <button class="filter-tab" data-days="7" onclick="setAnalyticsRange(7)">7D</button>
+            <button class="filter-tab active" data-days="30" onclick="setAnalyticsRange(30)">30D</button>
+            <button class="filter-tab" data-days="90" onclick="setAnalyticsRange(90)">90D</button>
+          </div>
+          <a href="https://analytics.google.com" target="_blank" class="btn-sm">Google Analytics ↗</a>
+        </div>
       </div>
+
       <div class="stat-grid" id="analyticsStats"></div>
-      <div class="chart-row" style="grid-template-columns:1fr;">
+
+      <div class="chart-grid">
         <div class="chart-box">
-          <p class="chart-box__title">Daily Pageviews — Last 30 Days</p>
-          <canvas id="analyticsChart" height="140"></canvas>
+          <p class="chart-box__title">Sessions</p>
+          <canvas id="sessionsChart" height="140"></canvas>
+        </div>
+        <div class="chart-box">
+          <p class="chart-box__title">Bounce Rate</p>
+          <canvas id="bounceChart" height="140"></canvas>
+        </div>
+        <div class="chart-box">
+          <p class="chart-box__title">Avg. Session Time</p>
+          <canvas id="durationChart" height="140"></canvas>
+        </div>
+        <div class="chart-box">
+          <p class="chart-box__title">Revenue</p>
+          <canvas id="revenueChart" height="140"></canvas>
         </div>
       </div>
-      <div class="table-box">
+
+      <div class="funnel">
+        <p class="chart-box__title" style="margin-bottom:16px;">Conversion Funnel</p>
+        <div id="funnelBox"></div>
+      </div>
+
+      <div class="chart-row" style="grid-template-columns:1fr 1fr;">
+        <div class="table-box" style="margin-bottom:0;">
+          <div class="table-box__header"><span class="table-box__title">Top Paths</span></div>
+          <table>
+            <thead><tr><th>Path</th><th>Pageviews</th></tr></thead>
+            <tbody id="topPathsBody"></tbody>
+          </table>
+        </div>
+        <div class="table-box" style="margin-bottom:0;">
+          <div class="table-box__header">
+            <span class="table-box__title">Bug Flags — Recent Errors</span>
+          </div>
+          <table>
+            <thead><tr><th>Message</th><th>Path</th><th>When</th></tr></thead>
+            <tbody id="errorsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-box" style="margin-top:24px;">
         <div class="table-box__header"><span class="table-box__title">Daily Breakdown</span></div>
+        <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>Date</th><th>Pageviews</th><th>Add to Cart</th><th>Checkouts</th><th>Purchases</th><th>Revenue</th><th>Conv. Rate</th></tr></thead>
+          <thead><tr><th>Date</th><th>Sessions</th><th>Pageviews</th><th>Bounce Rate</th><th>Avg. Time</th><th>Add to Cart</th><th>Checkouts</th><th>Abandoned</th><th>Purchases</th><th>Revenue</th><th>Conv. Rate</th></tr></thead>
           <tbody id="analyticsTableBody"></tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -790,7 +857,7 @@
         <div class="settings-row">
           <div>
             <p class="settings-row__label">Clear Analytics Data</p>
-            <p class="settings-row__sub">Reset all locally tracked analytics (GA4 data is unaffected)</p>
+            <p class="settings-row__sub">Resets this browser's local fallback numbers only — real visitor data on the server (and GA4) is unaffected</p>
           </div>
           <button class="btn-sm btn-sm--danger" onclick="clearAnalytics()">Clear Analytics</button>
         </div>
@@ -1499,39 +1566,110 @@ function renderStockAlerts() {
   if (el) el.innerHTML = alerts.length ? '<div class="alert alert--warn" style="margin-bottom:20px;">&#66777788; ' + alerts.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '';
 }
 
-/* ─────────── ANALYTICS ─────────── */
+/* ─────────── ANALYTICS (server-backed, real visitors) ─────────── */
+// Legacy per-browser fallback — still written by js/analytics.js, used only
+// if the server summary can't be reached (e.g. ADMIN_TOKEN not set yet).
 function getAnalytics() {
   try { return JSON.parse(localStorage.getItem('xtc-analytics') || '{}'); }
   catch(e) { return {}; }
 }
 
-function renderAnalytics() {
-  const data = getAnalytics();
-  const keys = Object.keys(data).sort().slice(-30);
-  const totals = keys.reduce((acc, k) => {
-    acc.pageviews  += data[k].pageviews  || 0;
-    acc.addToCart  += data[k].addToCart  || 0;
-    acc.checkouts  += data[k].checkouts  || 0;
-    acc.purchases  += data[k].purchases  || 0;
-    acc.revenue    += data[k].revenue    || 0;
-    return acc;
-  }, { pageviews:0, addToCart:0, checkouts:0, purchases:0, revenue:0 });
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
 
-  const convRate = totals.pageviews ? ((totals.purchases / totals.pageviews) * 100).toFixed(1) : '0.0';
+function formatDuration(sec) {
+  sec = Math.max(0, sec || 0);
+  const m = Math.floor(sec / 60), s = Math.round(sec % 60);
+  return m ? (m + 'm ' + s + 's') : (s + 's');
+}
+
+let _analyticsRangeDays = 30;
+function setAnalyticsRange(days) {
+  _analyticsRangeDays = days;
+  document.querySelectorAll('#analyticsRangeTabs .filter-tab').forEach(function (b) {
+    b.classList.toggle('active', parseInt(b.dataset.days, 10) === days);
+  });
+  renderAnalytics();
+}
+
+function statCard(label, value, sub) {
+  return '<div class="stat-card"><p class="stat-card__label">' + escapeHtml(label) + '</p><p class="stat-card__value">' + value + '</p><p class="stat-card__delta">' + escapeHtml(sub || '') + '</p></div>';
+}
+
+function renderFunnel(f) {
+  const steps = [
+    { label: 'Sessions', value: f.sessions },
+    { label: 'Added to Cart', value: f.addToCart },
+    { label: 'Began Checkout', value: f.checkouts },
+    { label: 'Purchased', value: f.purchases },
+  ];
+  return steps.map(function (s, i) {
+    const pctOfTotal = f.sessions ? Math.round((s.value / f.sessions) * 1000) / 10 : 0;
+    const pctOfPrev = (i > 0 && steps[i - 1].value) ? Math.round((s.value / steps[i - 1].value) * 1000) / 10 : null;
+    return '<div class="funnel-step">' +
+      '<p class="funnel-step__label">' + s.label + '</p>' +
+      '<p class="funnel-step__value">' + s.value.toLocaleString() + '</p>' +
+      '<p class="funnel-step__pct">' + pctOfTotal + '% of sessions' + (pctOfPrev != null ? ' &middot; ' + pctOfPrev + '% of previous step' : '') + '</p>' +
+    '</div>';
+  }).join('');
+}
+
+let _analyticsData = null;
+async function renderAnalytics() {
+  let data;
+  try {
+    data = await adminFetch('/admin/analytics/summary?days=' + _analyticsRangeDays);
+  } catch (e) {
+    document.getElementById('analyticsSub').textContent = 'Could not load server analytics: ' + e.message;
+    // Fall back to the old per-browser localStorage numbers so the page isn't empty.
+    const local = getAnalytics();
+    const keys = Object.keys(local).sort().slice(-_analyticsRangeDays);
+    document.getElementById('analyticsStats').innerHTML =
+      statCard('Pageviews (this browser only)', keys.reduce((s,k)=>s+(local[k].pageviews||0),0), 'Set ADMIN_TOKEN + run db/analytics.sql for real data');
+    document.getElementById('analyticsTableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:40px;">' + escapeHtml(e.message) + '</td></tr>';
+    ['sessionsChart','bounceChart','durationChart','revenueChart'].forEach(id => drawLineChart(id, [], [], '#141414'));
+    document.getElementById('funnelBox').innerHTML = '';
+    document.getElementById('topPathsBody').innerHTML = '';
+    document.getElementById('errorsBody').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('analyticsSub').textContent = 'Real visitor tracking, server-side — last ' + _analyticsRangeDays + ' days';
+
+  const t = data.totals;
   document.getElementById('analyticsStats').innerHTML =
-    '<div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">' + totals.pageviews.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Add to Cart</p><p class="stat-card__value">' + totals.addToCart.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Purchases</p><p class="stat-card__value">' + totals.purchases.toLocaleString() + '</p><p class="stat-card__delta">Last 30 days</p></div>' +
-    '<div class="stat-card"><p class="stat-card__label">Conv. Rate</p><p class="stat-card__value">' + convRate + '%</p><p class="stat-card__delta">Visits → Orders</p></div>';
+    statCard('Sessions', t.sessions.toLocaleString(), 'Last ' + _analyticsRangeDays + ' days') +
+    statCard('Bounce Rate', t.bounceRate + '%', 'Single page, no engagement') +
+    statCard('Avg. Session Time', formatDuration(t.avgDuration), 'Time on site') +
+    statCard('Abandoned Checkouts', t.abandonedCheckouts.toLocaleString(), 'Started, never finished') +
+    statCard('Conversion Rate', t.conversionRate + '%', 'Sessions → Purchases') +
+    statCard('Revenue', '£' + t.revenue.toFixed(2), 'Last ' + _analyticsRangeDays + ' days');
 
-  const tbody = document.getElementById('analyticsTableBody');
-  tbody.innerHTML = [...keys].reverse().map(k => {
-    const d = data[k];
-    const cr = d.pageviews ? ((d.purchases/d.pageviews)*100).toFixed(1) : '0.0';
-    return '<tr><td>' + k + '</td><td>' + (d.pageviews||0) + '</td><td>' + (d.addToCart||0) + '</td><td>' + (d.checkouts||0) + '</td><td>' + (d.purchases||0) + '</td><td>£' + (d.revenue||0).toFixed(2) + '</td><td>' + cr + '%</td></tr>';
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">No analytics data yet — visit the site to start tracking</td></tr>';
+  const labels = data.series.map(r => r.date.slice(5));
+  drawLineChart('sessionsChart', labels, data.series.map(r => r.sessions), '#141414');
+  drawLineChart('bounceChart', labels, data.series.map(r => r.bounceRate), '#c0392b', { fmt: v => Math.round(v) + '%' });
+  drawLineChart('durationChart', labels, data.series.map(r => r.avgDuration), '#2563eb', { fmt: v => Math.round(v) + 's' });
+  drawLineChart('revenueChart', labels, data.series.map(r => r.revenue), '#16a34a', { fmt: v => '£' + Math.round(v) });
 
-  drawBarChart('analyticsChart', keys.map(k => k.slice(5)), keys.map(k => data[k].pageviews || 0), '#141414');
+  document.getElementById('funnelBox').innerHTML = renderFunnel(data.funnel);
+
+  document.getElementById('topPathsBody').innerHTML = data.topPaths.map(p =>
+    '<tr><td>' + escapeHtml(p.path || '/') + '</td><td>' + p.count.toLocaleString() + '</td></tr>'
+  ).join('') || '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:24px;">No pageviews yet</td></tr>';
+
+  document.getElementById('errorsBody').innerHTML = data.errors.map(e =>
+    '<tr><td style="font-size:11px;">' + escapeHtml((e.message || '').slice(0, 140)) + '</td><td style="font-size:11px;">' + escapeHtml(e.path || '') + '</td><td style="font-size:11px;white-space:nowrap;">' + new Date(e.ts).toLocaleString('en-GB') + '</td></tr>'
+  ).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px;">No errors recorded</td></tr>';
+
+  document.getElementById('analyticsTableBody').innerHTML = data.series.slice().reverse().map(r => {
+    const cr = r.sessions ? ((r.purchases / r.sessions) * 100).toFixed(1) : '0.0';
+    return '<tr><td>' + r.date + '</td><td>' + r.sessions + '</td><td>' + r.pageviews + '</td><td>' + r.bounceRate + '%</td><td>' + formatDuration(r.avgDuration) + '</td><td>' + r.addToCart + '</td><td>' + r.checkouts + '</td><td>' + r.abandonedCheckouts + '</td><td>' + r.purchases + '</td><td>£' + r.revenue.toFixed(2) + '</td><td>' + cr + '%</td></tr>';
+  }).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:40px;">No analytics data yet — visit the site to start tracking</td></tr>';
+
+  _analyticsData = data;
 }
 
 /* ─────────── DASHBOARD ─────────── */
@@ -1550,6 +1688,13 @@ function renderDashboard() {
     '<div class="stat-card"><p class="stat-card__label">Total Orders</p><p class="stat-card__value">' + orders.length + '</p><p class="stat-card__delta">Local records</p></div>' +
     '<div class="stat-card"><p class="stat-card__label">Pageviews</p><p class="stat-card__value">' + totPV + '</p><p class="stat-card__delta">Last 7 days</p></div>' +
     '<div class="stat-card"><p class="stat-card__label">Units in Stock</p><p class="stat-card__value">' + totalUnits + '</p><p class="stat-card__delta' + (totalUnits < 10 ? ' warn' : '') + '">Across all products</p></div>';
+
+  // Real cross-visitor pageviews from the server, if reachable — falls back
+  // to the per-browser localStorage series (drawn further down) otherwise.
+  adminFetch('/admin/analytics/summary?days=14').then(function (d) {
+    const labels = d.series.map(r => r.date.slice(5));
+    drawLineChart('pvChart', labels, d.series.map(r => r.pageviews), '#141414');
+  }).catch(function () { /* keep the localStorage-based chart drawn below */ });
 
   const threshold = getLowThreshold();
   const lowItems = [];
@@ -1589,7 +1734,7 @@ function renderDashboard() {
   });
 
   const last14 = Object.keys(data).sort().slice(-14);
-  drawBarChart('pvChart', last14.map(k=>k.slice(5)), last14.map(k=>(data[k]&&data[k].pageviews)||0), '#141414');
+  drawLineChart('pvChart', last14.map(k=>k.slice(5)), last14.map(k=>(data[k]&&data[k].pageviews)||0), '#141414');
   drawDoughnut('revChart', ['Polo Black','Polo White'],
     [orders.filter(o=>(o.items||[]).some(i=>i.id&&i.id.includes('black'))).length,
      orders.filter(o=>(o.items||[]).some(i=>i.id&&i.id.includes('white'))).length],
@@ -1597,37 +1742,63 @@ function renderDashboard() {
 }
 
 /* ─────────── CHARTS (pure canvas) ─────────── */
-function drawBarChart(id, labels, values, color) {
+function drawLineChart(id, labels, values, color, opts) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
+  opts = opts || {};
   const ctx = canvas.getContext('2d');
   const W = canvas.offsetWidth || 600;
-  const H = parseInt(canvas.getAttribute('height')) || 160;
+  const H = parseInt(canvas.getAttribute('height')) || 140;
   canvas.width = W; canvas.height = H;
-  ctx.clearRect(0,0,W,H);
-  const max = Math.max.apply(null, values.concat([1]));
-  const pad = { top:10, right:10, bottom:28, left:36 };
-  const bw = (W - pad.left - pad.right) / (labels.length || 1);
-  const bGap = bw * 0.25;
+  ctx.clearRect(0, 0, W, H);
+
+  const vals = values && values.length ? values : [0];
+  const max = Math.max.apply(null, vals.concat([1]));
+  const pad = { top: 14, right: 14, bottom: 24, left: 40 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+  const n = vals.length;
+  const stepX = n > 1 ? plotW / (n - 1) : 0;
+  const fmt = opts.fmt || function (v) { return Math.round(v); };
 
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)'; ctx.lineWidth = 1;
-  [0.25,0.5,0.75,1].forEach(function(t) {
-    const y = pad.top + (H - pad.top - pad.bottom) * (1-t);
-    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W-pad.right, y); ctx.stroke();
-    ctx.fillStyle='rgba(0, 0, 0, 0.2)'; ctx.font='9px Helvetica Neue'; ctx.textAlign='right';
-    ctx.fillText(Math.round(max*t), pad.left-4, y+3);
+  [0, 0.5, 1].forEach(function (t) {
+    const y = pad.top + plotH * (1 - t);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; ctx.font = '9px Helvetica Neue'; ctx.textAlign = 'right';
+    ctx.fillText(fmt(max * t), pad.left - 6, y + 3);
   });
 
-  values.forEach(function(v, i) {
-    const barH = ((v / max) * (H - pad.top - pad.bottom)) || 0;
-    const x = pad.left + i * bw + bGap/2;
-    const y = H - pad.bottom - barH;
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, bw - bGap, barH);
-    if (labels[i]) {
-      ctx.fillStyle='rgba(0, 0, 0, 0.25)'; ctx.font='9px Helvetica Neue'; ctx.textAlign='center';
-      ctx.fillText(labels[i], x + (bw-bGap)/2, H - pad.bottom + 12);
-    }
+  if (!n) return;
+  const pts = vals.map(function (v, i) {
+    return [pad.left + i * stepX, pad.top + plotH * (1 - (max ? v / max : 0))];
+  });
+
+  // filled area under the line
+  ctx.globalAlpha = 0.08;
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pad.top + plotH);
+  pts.forEach(function (p) { ctx.lineTo(p[0], p[1]); });
+  ctx.lineTo(pts[pts.length - 1][0], pad.top + plotH);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // line
+  ctx.beginPath();
+  pts.forEach(function (p, i) { i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); });
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+
+  // points
+  ctx.fillStyle = color;
+  pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 2.5, 0, Math.PI * 2); ctx.fill(); });
+
+  // x labels, thinned out so they don't overlap on wide ranges
+  const labelEvery = Math.max(1, Math.ceil(n / 8));
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; ctx.font = '9px Helvetica Neue'; ctx.textAlign = 'center';
+  labels.forEach(function (l, i) {
+    if (i % labelEvery === 0 || i === n - 1) ctx.fillText(l, pad.left + i * stepX, H - pad.bottom + 14);
   });
 }
 

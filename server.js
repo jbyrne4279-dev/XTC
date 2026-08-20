@@ -736,6 +736,172 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// ── Analytics: event ingest ───────────────────────────────────────────────────
+// Public, unauthenticated (called from every page via sendBeacon/fetch). Kept
+// deliberately lightweight and fire-and-forget: never throws, never blocks the
+// page. Loosely rate-limited per IP so it can't be used to flood the table.
+const ANALYTICS_EVENT_TYPES = new Set([
+  'session_start', 'pageview', 'pageview_end', 'add_to_cart', 'begin_checkout', 'purchase', 'sign_up', 'error',
+]);
+const _analyticsRate = new Map(); // ip -> { count, windowStart }
+function analyticsRateLimited(ip) {
+  const now = Date.now();
+  const entry = _analyticsRate.get(ip);
+  if (!entry || now - entry.windowStart > 10000) {
+    _analyticsRate.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+  entry.count++;
+  return entry.count > 80; // ~80 events / 10s / IP is generous for real browsing
+}
+app.post('/analytics/event', async (req, res) => {
+  res.status(204).end(); // always respond immediately — analytics must never slow the page down
+  try {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+    if (analyticsRateLimited(ip)) return;
+    const { session_id, event_type, path, referrer, meta } = req.body || {};
+    if (!session_id || !event_type || !ANALYTICS_EVENT_TYPES.has(event_type)) return;
+    await sb.from('analytics_events').insert({
+      session_id: String(session_id).slice(0, 64),
+      event_type,
+      path: String(path || '').slice(0, 300),
+      referrer: String(referrer || '').slice(0, 300),
+      meta: (meta && typeof meta === 'object') ? meta : {},
+    });
+  } catch (e) {
+    // swallow — analytics failures must never surface to the client
+  }
+});
+
+// ── Admin: Analytics summary ─────────────────────────────────────────────────
+// Aggregates raw events into daily series + totals + funnel + top paths + a
+// recent error log. Aggregation happens in JS after paging the raw rows in —
+// simplest thing that works for a store this size; revisit with a Postgres
+// view/materialised aggregate if event volume grows a lot.
+app.get('/admin/analytics/summary', requireAdmin, async (req, res) => {
+  try {
+    const days = Math.min(90, Math.max(1, parseInt(req.query.days, 10) || 30));
+    const since = new Date(Date.now() - days * 86400000).toISOString();
+
+    let events = [];
+    const pageSize = 1000;
+    for (let from = 0; from < 50000; from += pageSize) {
+      const { data, error } = await sb.from('analytics_events')
+        .select('session_id,event_type,path,referrer,meta,created_at')
+        .gte('created_at', since)
+        .order('created_at', { ascending: true })
+        .range(from, from + pageSize - 1);
+      if (error) {
+        return res.status(500).json({ error: error.message, hint: 'Run db/analytics.sql in the Supabase SQL editor to create the analytics_events table.' });
+      }
+      events = events.concat(data || []);
+      if (!data || data.length < pageSize) break;
+    }
+
+    const dayKey = ts => new Date(ts).toISOString().slice(0, 10);
+    const daily = {};    // date -> aggregation buckets
+    const sessions = {}; // session_id -> per-session rollup
+    const pathCounts = {};
+    const errors = [];
+
+    events.forEach(ev => {
+      const day = dayKey(ev.created_at);
+      if (!daily[day]) {
+        daily[day] = { sessionSet: new Set(), pageviews: 0, cartSet: new Set(), checkoutSet: new Set(), purchaseSet: new Set(), revenue: 0, durations: [] };
+      }
+      const d = daily[day];
+
+      if (!sessions[ev.session_id]) {
+        sessions[ev.session_id] = { pageviews: 0, hasCart: false, hasCheckout: false, hasPurchase: false, durations: [] };
+      }
+      const s = sessions[ev.session_id];
+
+      if (ev.event_type === 'session_start') d.sessionSet.add(ev.session_id);
+      if (ev.event_type === 'pageview') {
+        d.pageviews++;
+        s.pageviews++;
+        const p = ev.path || '/';
+        pathCounts[p] = (pathCounts[p] || 0) + 1;
+      }
+      if (ev.event_type === 'pageview_end' && ev.meta && typeof ev.meta.duration === 'number' && ev.meta.duration > 0 && ev.meta.duration < 3600000) {
+        s.durations.push(ev.meta.duration);
+        d.durations.push(ev.meta.duration);
+      }
+      if (ev.event_type === 'add_to_cart') { d.cartSet.add(ev.session_id); s.hasCart = true; }
+      if (ev.event_type === 'begin_checkout') { d.checkoutSet.add(ev.session_id); s.hasCheckout = true; }
+      if (ev.event_type === 'purchase') {
+        d.purchaseSet.add(ev.session_id);
+        s.hasPurchase = true;
+        d.revenue += Number(ev.meta && ev.meta.value) || 0;
+      }
+      if (ev.event_type === 'error') {
+        errors.push({ message: (ev.meta && ev.meta.message) || 'Unknown error', path: ev.path || '', session_id: ev.session_id, ts: ev.created_at });
+      }
+    });
+
+    const isBounced = s => s.pageviews <= 1 && !s.hasCart && !s.hasCheckout;
+
+    const dayList = Object.keys(daily).sort();
+    const series = dayList.map(day => {
+      const d = daily[day];
+      let bounced = 0;
+      d.sessionSet.forEach(sid => { if (sessions[sid] && isBounced(sessions[sid])) bounced++; });
+      const totalForDay = d.sessionSet.size;
+      const avgDuration = d.durations.length ? d.durations.reduce((a, b) => a + b, 0) / d.durations.length : 0;
+      const abandoned = Array.from(d.checkoutSet).filter(sid => !d.purchaseSet.has(sid)).length;
+      return {
+        date: day,
+        sessions: totalForDay,
+        pageviews: d.pageviews,
+        bounceRate: totalForDay ? Math.round((bounced / totalForDay) * 1000) / 10 : 0,
+        avgDuration: Math.round(avgDuration / 1000),
+        addToCart: d.cartSet.size,
+        checkouts: d.checkoutSet.size,
+        purchases: d.purchaseSet.size,
+        abandonedCheckouts: abandoned,
+        revenue: Math.round(d.revenue * 100) / 100,
+      };
+    });
+
+    const sessionList = Object.values(sessions);
+    const totalSessions = sessionList.length;
+    const totalBounced = sessionList.filter(isBounced).length;
+    const allDurations = sessionList.flatMap(s => s.durations);
+    const cartSessions = sessionList.filter(s => s.hasCart).length;
+    const checkoutSessions = sessionList.filter(s => s.hasCheckout).length;
+    const purchaseSessions = sessionList.filter(s => s.hasPurchase).length;
+    const abandonedTotal = sessionList.filter(s => s.hasCheckout && !s.hasPurchase).length;
+    const totalRevenue = series.reduce((a, r) => a + r.revenue, 0);
+
+    const topPaths = Object.entries(pathCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([path, count]) => ({ path, count }));
+
+    res.json({
+      days,
+      series,
+      totals: {
+        sessions: totalSessions,
+        pageviews: series.reduce((a, r) => a + r.pageviews, 0),
+        bounceRate: totalSessions ? Math.round((totalBounced / totalSessions) * 1000) / 10 : 0,
+        avgDuration: allDurations.length ? Math.round(allDurations.reduce((a, b) => a + b, 0) / allDurations.length / 1000) : 0,
+        addToCart: cartSessions,
+        checkouts: checkoutSessions,
+        purchases: purchaseSessions,
+        abandonedCheckouts: abandonedTotal,
+        revenue: Math.round(totalRevenue * 100) / 100,
+        conversionRate: totalSessions ? Math.round((purchaseSessions / totalSessions) * 1000) / 10 : 0,
+      },
+      funnel: { sessions: totalSessions, addToCart: cartSessions, checkouts: checkoutSessions, purchases: purchaseSessions },
+      topPaths,
+      errors: errors.slice(-50).reverse(),
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Admin: Orders ────────────────────────────────────────────────────────────
 app.get('/admin/orders', requireAdmin, async (req, res) => {
   try {
