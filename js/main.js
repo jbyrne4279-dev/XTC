@@ -512,4 +512,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initHero();
   initEarlyAccessSlideshow();
   initCartDrawer();
+  if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
 });
