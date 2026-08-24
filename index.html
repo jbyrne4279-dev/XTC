@@ -168,10 +168,6 @@
     }
     .fp-color-swatch--black { background: #0a0a0a; }
     .fp-color-swatch--white { background: #f5f5f5; }
-    /* One merged Polo card (color picker replaces the old Black/White pair) —
-       keep it narrow instead of stretching across the shared 2-column grid,
-       left-aligned under the "Original Members" heading. */
-    .fp-grid { grid-template-columns: minmax(0, 460px); justify-content: start; }
     /* War™ section — red overrides for size picker */
     .drop-war .fp-size-picker { border-color: rgba(153,0,0,0.25); }
     .drop-war .fp-sp-btn:hover:not(:disabled):not(.fp-sp-btn--selected) { border-color: rgba(204,0,0,0.5); background: rgba(153,0,0,0.08); }
@@ -391,53 +387,55 @@
     <canvas id="smokeCanvas" aria-hidden="true"></canvas>
     <div class="fp-header">
       <div>
-        <p class="fp-eyebrow">Exclusive Drop</p>
-        <h2 class="fp-title">Original Members</h2>
+        <p class="fp-eyebrow">Just Landed</p>
+        <h2 class="fp-title">New Releases</h2>
       </div>
-      <p class="fp-note"><span class="no-restock-shine">50 Units Released.</span> Never restocked.</p>
+      <p class="fp-note"><span class="no-restock-shine">Limited units.</span> Never restocked.</p>
     </div>
 
-    <div class="fp-grid reveal-group">
+    <div class="recs-grid fp-recs-grid reveal-group">
 
-      <!-- Product: POLO (color-selectable) -->
-      <article class="fp-card">
-        <a href="/original-members-polo?color=black" class="fp-card__media" id="fpPoloMediaLink">
-          <img
-            id="fpPoloImgMain"
-            src="images/product-black-1.jpg"
-            alt="XTC Original Members Polo Black — front"
-            loading="lazy"
-          />
-          <img
-            class="fp-card__alt"
-            id="fpPoloImgAlt"
-            src="images/product-black-2.jpg"
-            alt="XTC Original Members Polo Black — alt"
-            loading="lazy"
-          />
+      <article class="product-card product-card--war">
+        <a href="/product-war-zip" class="product-card__media">
+          <img src="images/ZIP-HOODIE-XTC-FRONT.png" alt="WAR&trade; ZIP" loading="lazy" />
+          <img class="product-card__media-alt" src="images/ZIP-HOODIE-BLACK-BACK.jpg" alt="WAR&trade; ZIP alt" loading="lazy" />
+          <span class="product-card__badge">Pre-Order</span>
         </a>
-        <span class="fp-card__badge">Limited Edition</span>
-        <div class="fp-card__info">
-          <div class="fp-card__info-left">
-            <a href="/original-members-polo?color=black" class="fp-card__name" id="fpPoloNameLink">Polo</a>
-            <p class="fp-card__sub">100% Piqué Cotton</p>
+        <div class="product-card__info">
+          <a href="/product-war-zip" class="product-card__name">WAR&trade; ZIP</a>
+          <p class="product-card__price">£90.00 GBP</p>
+          <div class="product-card__actions">
+            <a href="/product-war-zip" class="btn btn--primary btn--sm">View</a>
           </div>
-          <div class="fp-card__info-right">
-            <p class="fp-card__price">£60</p>
-            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo',['S','M','L'])">Add to Bag</button>
-            <div class="fp-size-picker" id="picker-polo">
-              <p class="fp-size-picker__label">Select Color</p>
-              <div class="fp-size-picker__colors" id="picker-polo-colors">
-                <button type="button" class="fp-color-btn selected" data-color="black" aria-pressed="true">
-                  <span class="fp-color-swatch fp-color-swatch--black"></span>Black
-                </button>
-                <button type="button" class="fp-color-btn" data-color="white" aria-pressed="false">
-                  <span class="fp-color-swatch fp-color-swatch--white"></span>White
-                </button>
-              </div>
-              <p class="fp-size-picker__label fp-size-picker__label--size">Select Size</p>
-              <div class="fp-size-picker__sizes" id="picker-polo-sizes"></div>
-            </div>
+        </div>
+      </article>
+
+      <article class="product-card product-card--war">
+        <a href="/product-war-joggers" class="product-card__media">
+          <img src="images/JOGGERS-XTC.jpg" alt="WAR&trade; JOGGERS" loading="lazy" />
+          <img class="product-card__media-alt" src="images/JOGGERS-XTC-back.jpg" alt="WAR&trade; JOGGERS alt" loading="lazy" />
+          <span class="product-card__badge">Pre-Order</span>
+        </a>
+        <div class="product-card__info">
+          <a href="/product-war-joggers" class="product-card__name">WAR&trade; JOGGERS</a>
+          <p class="product-card__price">£110.00 GBP</p>
+          <div class="product-card__actions">
+            <a href="/product-war-joggers" class="btn btn--primary btn--sm">View</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card product-card--war">
+        <a href="/product-uniform-t" class="product-card__media">
+          <img src="images/T-SHIRT-XTC.jpg" alt="UNIFORM T" loading="lazy" />
+          <img class="product-card__media-alt" src="images/T-SHIRT-XTC.jpg" alt="UNIFORM T alt" loading="lazy" />
+          <span class="product-card__badge">Pre-Order</span>
+        </a>
+        <div class="product-card__info">
+          <a href="/product-uniform-t" class="product-card__name">UNIFORM T</a>
+          <p class="product-card__price">£30.00 GBP</p>
+          <div class="product-card__actions">
+            <a href="/product-uniform-t" class="btn btn--primary btn--sm">View</a>
           </div>
         </div>
       </article>
