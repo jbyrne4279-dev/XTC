@@ -113,6 +113,12 @@
     input.dataset.phoneEnhanced = '1';
     ensureStyles();
 
+    // The picker already shows the dial code — drop it from the placeholder
+    // example too (e.g. "+44 7700 000000" -> "7700 000000").
+    if (input.placeholder) {
+      input.placeholder = input.placeholder.replace(/^\+\d+\s*/, '');
+    }
+
     var themeClass = themeClassFor(input);
     var wrapper = document.createElement('div');
     wrapper.className = 'phone-field ' + themeClass;
@@ -120,6 +126,14 @@
     input.parentNode.insertBefore(wrapper, input);
     input.classList.add('phone-field__input');
     applyInputBoxStyle(input, themeClass);
+
+    // The visible field only ever shows the local number (the picker already
+    // shows the code), but anything reading input.value — form submission,
+    // validation — should still get the full E.164-style number. Override
+    // the accessor rather than the displayed text so both stay true.
+    var nativeDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    function getRaw() { return nativeDesc.get.call(input); }
+    function setRaw(v) { nativeDesc.set.call(input, v); }
 
     var selected = countryByIso2('GB');
 
@@ -206,15 +220,31 @@
       else openPanel();
     }
 
+    // The country is already shown by the picker — the input only ever
+    // holds the local number, so strip a leading "+<code>" the user typed
+    // or pasted rather than duplicating it in both places. Only strips a
+    // code we can actually recognise (using its known digit length) —
+    // never guesses where an unrecognised code ends and the number begins.
+    function stripLeadingCode(raw) {
+      if (raw.charAt(0) !== '+') return raw;
+      var digits = raw.replace(/\D/g, '');
+      var match = matchCountryFromDigits(digits);
+      if (!match) return raw;
+      // Walk the original string (not a digits-only copy) so any spacing
+      // the user typed into the local number itself is preserved.
+      var need = match[1].length, i = 1; // skip the leading "+"
+      while (i < raw.length && need > 0) {
+        if (/\d/.test(raw[i])) need--;
+        i++;
+      }
+      return raw.slice(i).replace(/^[\s-]+/, '');
+    }
+
     function pick(country) {
       selected = country;
       renderToggle();
       closePanel();
-      var raw = input.value.trim();
-      var digits = raw.replace(/\D/g, '');
-      var existing = raw.charAt(0) === '+' ? matchCountryFromDigits(digits) : null;
-      if (existing) digits = digits.slice(existing[1].length);
-      input.value = '+' + country[1] + (digits ? ' ' + digits : ' ');
+      setRaw(stripLeadingCode(getRaw().trim()));
       input.focus();
     }
 
@@ -235,14 +265,28 @@
     input.addEventListener('blur', function () { wrapper.classList.remove('phone-field--focus'); });
 
     input.addEventListener('input', function () {
-      var raw = input.value.trim();
-      if (raw.charAt(0) !== '+') return;
+      var raw = getRaw();
+      if (raw.trim().charAt(0) !== '+') return;
       var digits = raw.replace(/\D/g, '');
       var match = matchCountryFromDigits(digits);
-      if (match && selected[0] !== match[0]) {
-        selected = match;
-        renderToggle();
+      if (match) {
+        if (selected[0] !== match[0]) { selected = match; renderToggle(); }
+        // Collapse the typed/pasted code into the picker instead of
+        // leaving it duplicated in the number field.
+        setRaw(stripLeadingCode(raw.trim()));
       }
+    });
+
+    // Anything reading input.value (form submission, validation) gets the
+    // full "+<code> <local number>" — only the on-screen field itself stays
+    // free of the duplicated code.
+    Object.defineProperty(input, 'value', {
+      configurable: true,
+      get: function () {
+        var local = getRaw().trim();
+        return local ? '+' + selected[1] + ' ' + local : '';
+      },
+      set: function (v) { setRaw(v); }
     });
   }
 
