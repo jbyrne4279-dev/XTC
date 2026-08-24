@@ -2101,7 +2101,7 @@ a[aria-label="Cart"].cart-active {
 /* ── Dark grey footer theme — overrides the light-theme defaults above so
    footer text/icons stay readable on a dark background. ── */
 .site-footer {
-  background: #2a2a2a;
+  background: #161616;
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 .site-footer::before {
