@@ -2098,6 +2098,62 @@ a[aria-label="Cart"].cart-active {
 .footer-social-link svg { width: 14px; height: 14px; fill: var(--text-secondary); }
 .footer-social-link:hover svg { fill: var(--text-primary); }
 
+/* ── Dark grey footer theme — overrides the light-theme defaults above so
+   footer text/icons stay readable on a dark background. ── */
+.site-footer {
+  background: #2a2a2a;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+.site-footer::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 5%,
+    rgba(255, 255, 255, 0.12) 15%,
+    rgba(255, 255, 255, 0.35) 30%,
+    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.06) 55%,
+    rgba(255, 255, 255, 0.25) 68%,
+    rgba(255, 255, 255, 0.14) 80%,
+    rgba(255, 255, 255, 0.04) 92%,
+    transparent 100%
+  );
+}
+.site-footer .footer-top { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.site-footer .footer-brand__logo,
+.site-footer .footer-links__heading {
+  color: #ffffff;
+}
+.site-footer .footer-brand__tagline,
+.site-footer .tagline-drop,
+.site-footer .tagline-never,
+.site-footer .footer-links a {
+  color: rgba(255, 255, 255, 0.55);
+}
+.site-footer .footer-links a:hover,
+.site-footer .footer-links a:active {
+  color: #ffffff;
+}
+@keyframes footer-wave-glimmer-light {
+  0%, 90%, 100% { color: rgba(255, 255, 255, 0.55); text-shadow: none; }
+  6% { color: #ffffff; text-shadow: none; }
+}
+.site-footer .footer-links a { animation-name: footer-wave-glimmer-light; }
+.site-footer .footer-copyright { color: rgba(255, 255, 255, 0.45); }
+.site-footer .footer-copy-logo { filter: brightness(0) invert(1); opacity: 0.7; }
+.site-footer .footer-club__legal { color: rgba(255, 255, 255, 0.35); }
+.site-footer .footer-club__confirm { color: #4ade80; }
+.site-footer .footer-social-link {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.site-footer .footer-social-link:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+}
+.site-footer .footer-social-link svg { fill: rgba(255, 255, 255, 0.55); }
+.site-footer .footer-social-link:hover svg { fill: #ffffff; }
+
 /* ============================================
    TOAST NOTIFICATION
    ============================================ */
