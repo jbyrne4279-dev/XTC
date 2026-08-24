@@ -76,7 +76,7 @@
       '.phone-field--generic.phone-field--focus{border-color:rgba(0,0,0,0.4);}' +
       '.phone-field__panel{position:absolute;top:calc(100% + 6px);left:0;width:260px;max-width:80vw;z-index:60;border-radius:4px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.35);display:none;}' +
       '.phone-field__panel--open{display:block;}' +
-      '.phone-field__search{width:100%;box-sizing:border-box;border:none;border-bottom:1px solid rgba(128,128,128,0.25);padding:10px 12px;font:inherit;font-size:13px;outline:none;background:transparent;color:inherit;}' +
+      '.phone-field__search{width:100%;box-sizing:border-box;border:none;border-bottom:1px solid rgba(128,128,128,0.25);padding:10px 12px;font:inherit;font-size:16px;outline:none;background:transparent;color:inherit;}' +
       '.phone-field__list{list-style:none;margin:0;padding:4px;max-height:220px;overflow-y:auto;}' +
       '.phone-field__opt{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:13px;cursor:pointer;border-radius:3px;}' +
       '.phone-field__opt-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
