@@ -36,11 +36,31 @@
     .info-cta-card p { font-size:14px; color:rgba(0, 0, 0, 0.35); line-height:1.9; margin-bottom:20px; }
     .info-cta-card a { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(0, 0, 0, 0.8); text-decoration:none; border-bottom:1px solid rgba(0, 0, 0, 0.3); padding-bottom:2px; }
     .info-cta-card a:hover { color:#141414; }
-    .info-step { display:flex; gap:24px; padding:24px 0; border-bottom:1px solid rgba(0, 0, 0, 0.05); align-items:flex-start; }
-    .info-step:first-child { border-top:1px solid rgba(0, 0, 0, 0.05); }
-    .info-step__num { font-size:10px; letter-spacing:3px; color:rgba(0, 0, 0, 0.5); font-weight:600; padding-top:2px; min-width:24px; }
-    .info-step__content p { font-size:14px; color:rgba(0, 0, 0, 0.35); line-height:1.9; margin:0; }
-    .info-step__title { font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; color:rgba(0, 0, 0, 0.7); margin-bottom:6px; }
+    .info-step { display:flex; gap:24px; padding:24px 20px; border-bottom:none; align-items:flex-start; margin-bottom:8px; background:#000000; }
+    .info-step:first-child { border-top:none; }
+    .info-step:nth-child(2) { background:#161616; }
+    .info-step:nth-child(3) { background:#1f1f1f; }
+    .info-step:nth-child(4) { background:#292929; }
+    .info-step:nth-child(n+5) { background:#333333; }
+    .info-step__num { font-size:10px; letter-spacing:3px; color:rgba(255, 255, 255, 0.55); font-weight:600; padding-top:2px; min-width:24px; }
+    .info-step__content p { font-size:14px; color:rgba(255, 255, 255, 0.65); line-height:1.9; margin:0; }
+    .info-step__title { font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; color:rgba(255, 255, 255, 0.9); margin-bottom:6px; }
+
+    /* Shaded list boxes — start black at the top, lighten with each item. */
+    .info-section ul li {
+      padding: 14px 18px;
+      margin-bottom: 6px;
+      border-bottom: none;
+      background: #000000;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .info-section ul li::before { color: rgba(255, 255, 255, 0.5); }
+    .info-section ul li:nth-child(2) { background: #161616; }
+    .info-section ul li:nth-child(3) { background: #1f1f1f; }
+    .info-section ul li:nth-child(4) { background: #292929; }
+    .info-section ul li:nth-child(5) { background: #333333; }
+    .info-section ul li:nth-child(n+6) { background: #3d3d3d; }
+
     @media (max-width:768px) { .info-header { padding:40px 24px 32px; } .info-body { padding:48px 24px 80px; } }
   </style>
   <script type="application/ld+json">
