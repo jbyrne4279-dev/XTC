@@ -2446,13 +2446,6 @@ a[aria-label="Cart"].cart-active {
   .recs-grid { grid-template-columns: 1fr; }
 }
 
-/* New Releases grid on the homepage (reuses .recs-grid, adds side padding
-   to match the section's fp-header alignment). */
-.fp-recs-grid { padding: 0 56px; }
-@media (max-width: 768px) {
-  .fp-recs-grid { padding: 0 20px; gap: 16px; }
-}
-
 /* ============================================
    COMING SOON SECTION
    ============================================ */
