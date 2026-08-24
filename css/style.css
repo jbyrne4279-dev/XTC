@@ -86,12 +86,6 @@ ul, ol { list-style: none; }
 ::-webkit-scrollbar-thumb { background: var(--accent-dim); }
 ::selection { background: rgba(0, 0, 0, 0.2); color: #000000; }
 
-/* Transient characters during the text scramble reveal — slight blur for motion */
-.scramble-char {
-  opacity: 0.45;
-  filter: blur(0.8px);
-}
-
 /* ---- Utility ---- */
 .container { width: 100%; max-width: var(--page-narrow); margin: 0 auto; padding: 0 var(--sp-6); }
 .container--wide { max-width: var(--page-width); }
