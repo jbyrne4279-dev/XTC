@@ -2128,28 +2128,33 @@ a[aria-label="Cart"].cart-active {
   );
 }
 .site-footer .footer-top { border-bottom-color: rgba(255, 255, 255, 0.12); }
+
+/* 3D engraved-stone look: light grey type with a dark drop shadow (depth)
+   plus a faint bright highlight on the opposite edge (bevel), so every word
+   and icon reads clearly against the textured background. */
 .site-footer .footer-brand__logo,
-.site-footer .footer-links__heading {
-  color: #ffffff;
-}
+.site-footer .footer-links__heading,
 .site-footer .footer-brand__tagline,
 .site-footer .tagline-drop,
 .site-footer .tagline-never,
-.site-footer .footer-links a {
-  color: rgba(255, 255, 255, 0.55);
+.site-footer .footer-links a,
+.site-footer .footer-copyright {
+  color: #cfcfcf;
+  text-shadow: -1px -1px 0 rgba(255,255,255,0.12), 1px 1px 1px rgba(0,0,0,0.9), 2px 2px 3px rgba(0,0,0,0.5);
 }
 .site-footer .footer-links a:hover,
 .site-footer .footer-links a:active {
   color: #ffffff;
 }
 @keyframes footer-wave-glimmer-light {
-  0%, 90%, 100% { color: rgba(255, 255, 255, 0.55); text-shadow: none; }
-  6% { color: #ffffff; text-shadow: none; }
+  0%, 90%, 100% { color: #cfcfcf; }
+  6% { color: #ffffff; }
 }
 .site-footer .footer-links a { animation-name: footer-wave-glimmer-light; }
-.site-footer .footer-copyright { color: rgba(255, 255, 255, 0.45); }
-.site-footer .footer-copy-logo { filter: brightness(0) invert(1); opacity: 0.7; }
-.site-footer .footer-club__legal { color: rgba(255, 255, 255, 0.35); }
+.site-footer .footer-copy-logo {
+  filter: brightness(0) invert(0.82) drop-shadow(-1px -1px 0 rgba(255,255,255,0.1)) drop-shadow(1px 1px 1px rgba(0,0,0,0.9));
+}
+.site-footer .footer-club__legal { color: rgba(207, 207, 207, 0.7); text-shadow: 1px 1px 1px rgba(0,0,0,0.8); }
 .site-footer .footer-club__confirm { color: #4ade80; }
 .site-footer .footer-social-link {
   background: rgba(255, 255, 255, 0.06);
@@ -2159,7 +2164,10 @@ a[aria-label="Cart"].cart-active {
   border-color: rgba(255, 255, 255, 0.4);
   background: rgba(255, 255, 255, 0.1);
 }
-.site-footer .footer-social-link svg { fill: rgba(255, 255, 255, 0.55); }
+.site-footer .footer-social-link svg {
+  fill: #cfcfcf;
+  filter: drop-shadow(-1px -1px 0 rgba(255,255,255,0.1)) drop-shadow(1px 1px 1px rgba(0,0,0,0.9));
+}
 .site-footer .footer-social-link:hover svg { fill: #ffffff; }
 
 /* ============================================
