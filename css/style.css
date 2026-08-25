@@ -3501,7 +3501,7 @@ textarea {
 }
 .cd-item__variant strong {
   color: #000000;
-  font-weight: 700;
+  font-weight: 400;
 }
 .cd-size-row {
   display: flex;
