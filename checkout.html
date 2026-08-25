@@ -184,14 +184,11 @@
       animation: co-box-spin 4s linear infinite;
     }
 
-    /* Stripe Payment Element container */
-    #payment-element {
-      background: rgba(0, 0, 0, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 14px 16px;
-      transition: border-color 0.2s;
-    }
+    /* Stripe Payment Element container — the element's own fields (styled via
+       APPEARANCE.rules above) already carry the same border/background/radius
+       as .co-field inputs, so this wrapper stays unstyled to avoid a box
+       inside a box. */
+    #payment-element { }
 
     #payment-errors {
       font-size: 12px;
@@ -726,14 +723,38 @@
   const PUBLISHABLE_KEY = 'pk_live_51Tj2gPQ5CiI50pbrjm7FWZeFAGo84AszFTgES8focLyR5lEoghq5cfyiAp3iGW0r3hifvmk5ZfxNGTIGX55lnK2h00JnzwGLjn';
 
   const APPEARANCE = {
-    theme: 'night',
+    theme: 'stripe',
     variables: {
       colorPrimary: 'rgb(20, 20, 20)',
-      colorBackground: '#eeeeee',
+      colorBackground: 'rgba(0, 0, 0, 0.03)',
       colorText: '#000000',
+      colorTextPlaceholder: 'rgba(0, 0, 0, 0.2)',
       colorDanger: '#ee0055',
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+      fontSizeBase: '14px',
       borderRadius: '2px',
+      spacingUnit: '4px',
+    },
+    rules: {
+      '.Input': {
+        border: '1px solid rgba(0, 0, 0, 0.08)',
+        boxShadow: 'none',
+        padding: '14px 16px',
+      },
+      '.Input:focus': {
+        border: '1px solid #000000',
+        boxShadow: 'none',
+      },
+      '.Tab': {
+        border: '1px solid rgba(0, 0, 0, 0.08)',
+        boxShadow: 'none',
+      },
+      '.Tab:hover': { border: '1px solid rgba(0, 0, 0, 0.2)' },
+      '.Tab--selected': {
+        border: '1px solid #000000',
+        boxShadow: 'none',
+      },
+      '.Label': { display: 'none' },
     }
   };
 
