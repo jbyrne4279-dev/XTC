@@ -907,6 +907,37 @@
     btn.textContent = 'Track Order';
   }
 
+  // Dev/demo helper — seeds a fake order into the localStorage fallback and
+  // auto-submits the form, so this page can be tested end-to-end (including
+  // on mobile, where there's no easy JS console) without touching real order
+  // data. Only runs when explicitly requested via ?seedDemo=1 — never fires
+  // for a normal visitor.
+  (function () {
+    if (new URLSearchParams(location.search).get('seedDemo') !== '1') return;
+    localStorage.setItem('xtc-orders', JSON.stringify({
+      'XTC000123': {
+        id: 'XTC000123',
+        email: 'test@xtcclothing.com',
+        status: 'Shipped',
+        tracking_number: '1234567890123',
+        carrier: 'Royal Mail',
+        total: 60.00,
+        name: 'Alex Test',
+        phone: '07762 326426',
+        address: '221B Baker Street',
+        city: 'London',
+        postcode: 'NW1 6XE',
+        country: 'United Kingdom',
+        items: [
+          { name: 'POLO [BLACK] — M', qty: 1, price: '£60.00', img: 'images/polo-black-flat.jpg' },
+        ],
+      },
+    }));
+    document.getElementById('orderInput').value = 'XTC000123';
+    document.getElementById('emailInput').value = 'test@xtcclothing.com';
+    document.getElementById('trackForm').dispatchEvent(new Event('submit', { cancelable: true }));
+  })();
+
   function trackingUrlTO(carrier, trackingNumber) {
     const t = encodeURIComponent(trackingNumber || '');
     if (carrier === 'Royal Mail') return 'https://www.royalmail.com/track-your-item#/tracking-results/' + t;
