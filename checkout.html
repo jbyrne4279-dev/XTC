@@ -610,18 +610,6 @@
       <div class="co-box">
         <div class="co-fieldset">
           <div class="co-field co-field--span2">
-            <label for="coCountryInput">Country/Region</label>
-            <div class="co-country" id="coCountryWrap">
-              <img class="co-country__flag" id="coCountryFlag" alt="" />
-              <input type="text" id="coCountryInput" class="co-country__input" placeholder="Start typing your country…"
-                     autocomplete="off" autocapitalize="off" spellcheck="false"
-                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCountryList" required />
-              <svg class="co-country__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-              <input type="hidden" id="coCountry" />
-              <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
-            </div>
-          </div>
-          <div class="co-field co-field--span2">
             <label for="coName">Name</label>
             <input type="text" id="coName" placeholder="James Byrne" required />
           </div>
@@ -644,6 +632,18 @@
           <div class="co-field">
             <label for="coPostcode">Postcode</label>
             <input type="text" id="coPostcode" placeholder="EC1A 1BB" required />
+          </div>
+          <div class="co-field co-field--span2">
+            <label for="coCountryInput">Country/Region</label>
+            <div class="co-country" id="coCountryWrap">
+              <img class="co-country__flag" id="coCountryFlag" alt="" />
+              <input type="text" id="coCountryInput" class="co-country__input" placeholder="Start typing your country…"
+                     autocomplete="off" autocapitalize="off" spellcheck="false"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCountryList" required />
+              <svg class="co-country__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              <input type="hidden" id="coCountry" />
+              <ul class="co-country__list" id="coCountryList" role="listbox"></ul>
+            </div>
           </div>
         </div>
       </div>
