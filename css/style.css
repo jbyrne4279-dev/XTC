@@ -2438,12 +2438,20 @@ a[aria-label="Cart"].cart-active {
 }
 /* Small brand mark sitting next to the copyright line */
 .footer-bottom { justify-content: flex-start; }
+@keyframes footer-logo-fade {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.75; }
+}
 .footer-copy-logo {
   height: 18px;
   width: auto;
   filter: brightness(0);
   opacity: 0.55;
   flex-shrink: 0;
+  animation: footer-logo-fade 4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-copy-logo { animation: none; }
 }
 .footer-socials {
   display: flex;
