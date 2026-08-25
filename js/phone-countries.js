@@ -60,8 +60,9 @@
     style.id = 'phone-field-styles';
     style.textContent =
       '.phone-field{position:relative;display:flex;align-items:stretch;width:100%;box-sizing:border-box;}' +
-      '.phone-field__toggle{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0 10px;white-space:nowrap;flex-shrink:0;}' +
+      '.phone-field__toggle{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0 12px;white-space:nowrap;flex-shrink:0;}' +
       '.phone-field__toggle:focus{outline:none;}' +
+      '.phone-field__flag{font-size:20px;line-height:1;}' +
       '.phone-field__chev{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;opacity:0.6;flex-shrink:0;}' +
       '.phone-field__divider{width:1px;align-self:stretch;margin:8px 0;background:currentColor;opacity:0.18;flex-shrink:0;}' +
       '.phone-field .phone-field__input{flex:1;min-width:0;border:none;background:transparent;box-shadow:none;}' +
@@ -74,7 +75,7 @@
       '.phone-field--light-box.phone-field--focus{border-color:rgba(0,0,0,0.6);background:#fff;}' +
       '.phone-field--generic{border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.03);border-radius:2px;color:#000;transition:border-color 0.2s;}' +
       '.phone-field--generic.phone-field--focus{border-color:rgba(0,0,0,0.4);}' +
-      '.phone-field__panel{position:absolute;top:calc(100% + 6px);left:0;width:260px;max-width:80vw;z-index:60;border-radius:4px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.35);display:none;}' +
+      '.phone-field__panel{position:absolute;top:calc(100% + 6px);right:0;width:260px;max-width:80vw;z-index:60;border-radius:4px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.35);display:none;}' +
       '.phone-field__panel--open{display:block;}' +
       '.phone-field__search{width:100%;box-sizing:border-box;border:none;border-bottom:1px solid rgba(128,128,128,0.25);padding:10px 12px;font:inherit;font-size:16px;outline:none;background:transparent;color:inherit;}' +
       '.phone-field__list{list-style:none;margin:0;padding:4px;max-height:220px;overflow-y:auto;}' +
@@ -101,9 +102,10 @@
     // border/background so only one rectangle shows, and match its
     // original padding so the merged box keeps the same proportions.
     var pad = { 'phone-field--dark': '16px 18px', 'phone-field--light-box': '11px 14px', 'phone-field--generic': '14px 16px' }[themeClass] || '12px 14px';
+    var v = pad.split(' ')[0], h = pad.split(' ')[1];
     input.style.border = 'none';
     input.style.background = 'transparent';
-    input.style.padding = pad.split(' ')[0] + ' ' + pad.split(' ')[1] + ' ' + pad.split(' ')[0] + ' 8px';
+    input.style.padding = v + ' 8px ' + v + ' ' + h;
     input.style.boxSizing = 'border-box';
     input.style.width = '100%';
   }
@@ -143,11 +145,10 @@
     toggle.setAttribute('aria-haspopup', 'listbox');
     toggle.setAttribute('aria-expanded', 'false');
     var flagSpan = document.createElement('span');
-    var dialSpan = document.createElement('span');
+    flagSpan.className = 'phone-field__flag';
     var chevSpan = document.createElement('span');
     chevSpan.className = 'phone-field__chev';
     toggle.appendChild(flagSpan);
-    toggle.appendChild(dialSpan);
     toggle.appendChild(chevSpan);
 
     var divider = document.createElement('span');
@@ -166,14 +167,14 @@
     panel.appendChild(search);
     panel.appendChild(list);
 
-    wrapper.appendChild(toggle);
-    wrapper.appendChild(divider);
     wrapper.appendChild(input);
+    wrapper.appendChild(divider);
+    wrapper.appendChild(toggle);
     wrapper.appendChild(panel);
 
     function renderToggle() {
       flagSpan.textContent = flagEmoji(selected[0]);
-      dialSpan.textContent = '+' + selected[1];
+      toggle.setAttribute('aria-label', selected[2] + ' +' + selected[1]);
     }
     renderToggle();
 
