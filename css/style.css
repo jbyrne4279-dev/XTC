@@ -971,7 +971,7 @@ a[aria-label="Cart"].cart-active {
    ============================================ */
 .featured-products {
   background: var(--bg);
-  padding: 80px 0 100px;
+  padding: 44px 0 100px;
   position: relative;
   overflow: hidden;
 }
