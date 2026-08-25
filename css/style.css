@@ -1280,7 +1280,7 @@ a[aria-label="Cart"].cart-active {
 
 @media (max-width: 768px) {
   .fp-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 0 24px 36px; }
-  .fp-grid { grid-template-columns: 1fr; padding: 0 24px; }
+  .fp-grid { grid-template-columns: 1fr; gap: 28px; padding: 0 24px; }
   .fp-card__info { flex-wrap: wrap; padding: 20px; }
 }
 
