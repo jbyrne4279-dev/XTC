@@ -17,7 +17,7 @@
   <meta property="og:description" content="Enter your order ID and email to check your delivery status." />
   <meta property="og:url" content="https://xtcclothing.com/track-order" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://xtcclothing.com/images/polo-black-flat.jpg" />
+  <meta property="og:image" content="https://xtcclothing.com/images/polo-black-flat.webp" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Track Your Order — XTC Clothing" />
   <meta name="twitter:description" content="Check your XTC Clothing delivery status." />
@@ -561,10 +561,7 @@
 
   <!-- Hero + floating form -->
   <section class="to-hero">
-    <img class="to-hero__slide active" src="images/hero-1.jpg" alt="XTC Clothing" />
-    <img class="to-hero__slide" src="images/hero-2.jpg" alt="XTC Clothing" />
-    <img class="to-hero__slide" src="images/hero-3.jpg" alt="XTC Clothing" />
-    <img class="to-hero__slide" src="images/hero-4.jpg" alt="XTC Clothing" />
+    <img class="to-hero__slide active" src="images/bullet-holes.webp" alt="XTC Clothing" />
     <div class="to-hero__overlay">
       <div class="to-box">
         <form id="trackForm" onsubmit="handleTrack(event)">
@@ -601,14 +598,14 @@
         <a href="/original-members-polo?color=black" class="fp-card__media" id="fpPoloMediaLink">
           <img
             id="fpPoloImgMain"
-            src="images/product-black-1.jpg"
+            src="images/product-black-1.webp"
             alt="XTC Original Members Polo Black — front"
             loading="lazy"
           />
           <img
             class="fp-card__alt"
             id="fpPoloImgAlt"
-            src="images/product-black-2.jpg"
+            src="images/product-black-2.webp"
             alt="XTC Original Members Polo Black — alt"
             loading="lazy"
           />
@@ -653,7 +650,7 @@
             <div class="early-access-bar__field">
               <label class="early-access-bar__label">PHONE NUMBER</label>
               <div class="early-access-bar__input-wrap">
-                <div class="early-access-bar__icon-box"><img class="early-access-bar__emblem" src="images/skull-emblem-icon.png?v=1787768208" alt="" /></div>
+                <div class="early-access-bar__icon-box"><img class="early-access-bar__emblem" src="images/skull-emblem-icon.webp?v=1787779103" alt="" /></div>
                 <input class="early-access-bar__input" type="tel" placeholder="07762 326 426" id="earlyAccessPhone" autocomplete="tel" required />
               </div>
             </div>
@@ -681,7 +678,7 @@
           <canvas class="ea-particles" id="eaParticles"></canvas>
         </div>
       </div>
-      <div class="early-access-bar__image"><img src="images/gallery/campaign-girl-black-polo-75.png" alt="XTC Polo" loading="lazy" /></div>
+      <div class="early-access-bar__image"><img src="images/gallery/campaign-girl-black-polo-75.webp" alt="XTC Polo" loading="lazy" /></div>
     </div>
   </section>
   <script>
@@ -799,7 +796,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <img class="footer-copy-logo" src="images/footer-logo.png" alt="XTC" onerror="this.style.display='none'" />
+        <img class="footer-copy-logo" src="images/footer-logo.webp" alt="XTC" onerror="this.style.display='none'" />
         <p class="footer-copyright">2026 XTC. All rights reserved <span class="footer-copy-sym">©</span></p>
       </div>
     </div>
@@ -932,7 +929,7 @@
         postcode: 'NW1 6XE',
         country: 'United Kingdom',
         items: [
-          { name: 'POLO [BLACK] — M', qty: 1, price: '£60.00', img: 'images/polo-black-flat.jpg' },
+          { name: 'POLO [BLACK] — M', qty: 1, price: '£60.00', img: 'images/polo-black-flat.webp' },
         ],
       },
     }));
@@ -959,11 +956,11 @@
   function receiptImg(it) {
     if (it && it.img) return it.img;
     const t = (((it && it.id) || '') + ' ' + ((it && it.name) || '')).toLowerCase();
-    if (t.includes('zip')) return 'images/ZIP-HOODIE-XTC-FRONT.png';
-    if (t.includes('jogger')) return 'images/JOGGERS-XTC.jpg';
-    if (t.includes('uniform')) return 'images/T-SHIRT-XTC.jpg';
-    if (t.includes('white')) return 'images/polo-white-flat.jpg';
-    if (t.includes('black')) return 'images/polo-black-flat.jpg';
+    if (t.includes('zip')) return 'images/ZIP-HOODIE-XTC-FRONT.webp';
+    if (t.includes('jogger')) return 'images/JOGGERS-XTC.webp';
+    if (t.includes('uniform')) return 'images/T-SHIRT-XTC.webp';
+    if (t.includes('white')) return 'images/polo-white-flat.webp';
+    if (t.includes('black')) return 'images/polo-black-flat.webp';
     return '';
   }
 
@@ -1113,12 +1110,12 @@
   const HOME_POLO_COLORS = {
     black: {
       productId: 'polo-black', label: 'Black', name: 'POLO [BLACK]', price: '£60.00',
-      img: 'images/polo-black-flat.jpg', media: 'images/product-black-1.jpg', mediaAlt: 'images/product-black-2.jpg',
+      img: 'images/polo-black-flat.webp', media: 'images/product-black-1.webp', mediaAlt: 'images/product-black-2.webp',
       url: '/original-members-polo?color=black'
     },
     white: {
       productId: 'polo-white', label: 'White', name: 'POLO [WHITE]', price: '£60.00',
-      img: 'images/polo-white-flat.jpg', media: 'images/product-white-1.jpg', mediaAlt: 'images/product-white-2.jpg',
+      img: 'images/polo-white-flat.webp', media: 'images/product-white-1.webp', mediaAlt: 'images/product-white-2.webp',
       url: '/original-members-polo?color=white'
     }
   };
