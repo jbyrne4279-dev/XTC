@@ -54,6 +54,7 @@
     style.id = 'phone-field-styles';
     style.textContent =
       '.phone-field{position:relative;display:flex;align-items:stretch;width:100%;box-sizing:border-box;}' +
+      '.phone-field__icon{flex-shrink:0;align-self:center;margin-left:16px;}' +
       '.phone-field__toggle{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0 12px;white-space:nowrap;flex-shrink:0;}' +
       '.phone-field__toggle:focus{outline:none;}' +
       '.phone-field__dial{font-size:13px;letter-spacing:0.5px;opacity:0.8;}' +
@@ -119,9 +120,24 @@
     var wrapper = document.createElement('div');
     wrapper.className = 'phone-field ' + themeClass;
 
+    // A leading icon (e.g. the skull emblem) sitting right before the input
+    // moves inside the wrapper as its first child, so it ends up inside the
+    // single bordered box instead of looking like its own separate square
+    // next to it.
+    var iconEl = input.previousElementSibling;
+    var hasIcon = iconEl && iconEl.tagName === 'IMG' && /emblem/.test(iconEl.className);
+
     input.parentNode.insertBefore(wrapper, input);
     input.classList.add('phone-field__input');
     applyInputBoxStyle(input, themeClass);
+    if (hasIcon) {
+      iconEl.classList.add('phone-field__icon');
+      wrapper.appendChild(iconEl);
+      // The icon now supplies the leading space the input's own left
+      // padding was there for — shrink it to match the right side so the
+      // icon-to-text gap isn't doubled up.
+      input.style.paddingLeft = input.style.paddingRight;
+    }
 
     // The visible field only ever shows the local number (the picker already
     // shows the code), but anything reading input.value — form submission,
