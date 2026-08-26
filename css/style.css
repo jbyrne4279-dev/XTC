@@ -3189,7 +3189,7 @@ textarea {
   justify-content: center;
 }
 .early-access-bar__emblem {
-  width: 18px;
+  width: 30px;
   height: auto;
   flex-shrink: 0;
   filter: brightness(0) invert(1);
