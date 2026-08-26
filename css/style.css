@@ -3199,15 +3199,20 @@ textarea {
 }
 .early-access-bar__input-wrap {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: stretch;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0 18px;
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
 }
 .early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
+.early-access-bar__icon-box {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .early-access-bar__emblem {
   width: 18px;
   height: auto;
