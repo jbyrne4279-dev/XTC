@@ -3197,21 +3197,38 @@ textarea {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
 }
-.early-access-bar__input {
-  background: transparent;
+.early-access-bar__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-  letter-spacing: 1px;
-  padding: 16px 18px;
-  outline: none;
+  padding: 0 18px;
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
 }
+.early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
+.early-access-bar__emblem {
+  width: 18px;
+  height: auto;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+.early-access-bar__input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 16px 0;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
 .early-access-bar__input::placeholder { color: rgba(255, 255, 255, 0.3); }
-.early-access-bar__input:focus { border-color: rgba(255, 255, 255, 0.5); }
 .early-access-bar__btn {
   width: 100%;
   padding: 18px 24px;
