@@ -33,12 +33,6 @@
   // Longest dial code first, so "+1876" (Jamaica) matches before "+1" (US/Canada).
   var BY_LONGEST_DIAL = PHONE_COUNTRIES.slice().sort(function (a, b) { return b[1].length - a[1].length; });
 
-  function flagEmoji(iso2) {
-    return String.fromCodePoint.apply(null, iso2.split('').map(function (c) {
-      return 127397 + c.charCodeAt(0);
-    }));
-  }
-
   function matchCountryFromDigits(digits) {
     for (var i = 0; i < BY_LONGEST_DIAL.length; i++) {
       var dial = BY_LONGEST_DIAL[i][1];
@@ -62,7 +56,7 @@
       '.phone-field{position:relative;display:flex;align-items:stretch;width:100%;box-sizing:border-box;}' +
       '.phone-field__toggle{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0 12px;white-space:nowrap;flex-shrink:0;}' +
       '.phone-field__toggle:focus{outline:none;}' +
-      '.phone-field__flag{font-size:20px;line-height:1;}' +
+      '.phone-field__dial{font-size:13px;letter-spacing:0.5px;opacity:0.8;}' +
       '.phone-field__chev{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;opacity:0.6;flex-shrink:0;}' +
       '.phone-field__divider{width:1px;align-self:stretch;margin:8px 0;background:currentColor;opacity:0.18;flex-shrink:0;}' +
       '.phone-field .phone-field__input{flex:1;min-width:0;border:none;background:transparent;box-shadow:none;}' +
@@ -144,11 +138,11 @@
     toggle.className = 'phone-field__toggle';
     toggle.setAttribute('aria-haspopup', 'listbox');
     toggle.setAttribute('aria-expanded', 'false');
-    var flagSpan = document.createElement('span');
-    flagSpan.className = 'phone-field__flag';
+    var dialSpan = document.createElement('span');
+    dialSpan.className = 'phone-field__dial';
     var chevSpan = document.createElement('span');
     chevSpan.className = 'phone-field__chev';
-    toggle.appendChild(flagSpan);
+    toggle.appendChild(dialSpan);
     toggle.appendChild(chevSpan);
 
     var divider = document.createElement('span');
@@ -173,7 +167,7 @@
     wrapper.appendChild(panel);
 
     function renderToggle() {
-      flagSpan.textContent = flagEmoji(selected[0]);
+      dialSpan.textContent = '+' + selected[1];
       toggle.setAttribute('aria-label', selected[2] + ' +' + selected[1]);
     }
     renderToggle();
@@ -197,7 +191,6 @@
         li.className = 'phone-field__opt' + (c[0] === selected[0] ? ' phone-field__opt--active' : '');
         li.setAttribute('role', 'option');
         li.innerHTML =
-          '<span>' + flagEmoji(c[0]) + '</span>' +
           '<span class="phone-field__opt-name">' + c[2] + '</span>' +
           '<span class="phone-field__opt-dial">+' + c[1] + '</span>';
         li.addEventListener('click', function () { pick(c); });
