@@ -101,9 +101,6 @@
       margin: 0 auto;
       padding: 72px 20px 100px;
     }
-    /* Tuck the product-card badge neatly inside the card here (it otherwise
-       hangs half-off the top edge and reads as displaced on this page). */
-    .col-grid-wrap .fp-card__badge { top: 14px; left: 14px; }
     /* Drop section header — clear, legible, well separated from the cards */
     .nr-drop-head { margin: 0 0 44px; }
     .nr-drop-head--spaced { margin-top: 88px; }
@@ -543,13 +540,7 @@
        inside this centred page that pushed the cards out of line with the
        label and floated them. Re-centre everything into one tidy column. */
     @media (min-width: 901px) {
-      .col-grid-wrap { max-width: 1080px; padding: 56px 40px 96px; }
-      .col-grid-wrap .fp-grid {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 820px;
-        gap: 32px;
-        padding: 0;               /* drop the home full-bleed inset so cards align with the label */
-      }
+      .col-grid-wrap { max-width: 1200px; padding: 56px 0 96px; }
       .nr-drop-label { margin-bottom: 28px; }
       .col-hero { padding-top: 48px; padding-bottom: 48px; }
     }
