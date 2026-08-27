@@ -3114,6 +3114,7 @@ textarea {
   cursor: grab;
 }
 .ea-scroll-track img {
+  position: static;
   height: 100%;
   width: auto;
   aspect-ratio: 1 / 1;
