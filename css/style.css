@@ -3187,12 +3187,6 @@ textarea {
   width: 100%;
   box-sizing: border-box;
 }
-/* No icon (e.g. the email field) — give the input its own left/right inset
-   instead of relying on the icon-box for spacing. */
-.early-access-bar__input-wrap--plain .early-access-bar__input {
-  padding-left: 16px;
-  padding-right: 16px;
-}
 .early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
 .early-access-bar__icon-box {
   width: 34px;
