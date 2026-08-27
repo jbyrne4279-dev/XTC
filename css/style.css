@@ -1936,7 +1936,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 .footer-inner {
-  max-width: var(--page-width);
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 var(--sp-8);
 }
@@ -2421,7 +2421,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   .footer-copyright { animation: none; }
 }
 /* Small brand mark sitting next to the copyright line */
-.footer-bottom { justify-content: flex-start; }
+.footer-bottom { justify-content: center; }
 .footer-copy-logo {
   height: 18px;
   width: auto;
