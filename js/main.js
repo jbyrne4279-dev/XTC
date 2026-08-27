@@ -228,14 +228,14 @@ function initHero() {
 // shows it without any rotation. Add more entries to turn it back into a
 // rotating slideshow.
 const EARLY_ACCESS_IMAGES = [
-  'images/hero-1.jpg',
-  'images/polo-white-model-2.jpg',
-  'images/polo-black-model-3.jpg',
-  'images/polo-white-model-3.jpg',
-  'images/hero-2.jpg',
-  'images/polo-white-model-5.jpg',
-  'images/polo-black-model-4.jpg',
-  'images/editorial-1.jpg',
+  'images/hero-1.webp',
+  'images/polo-white-model-2.webp',
+  'images/polo-black-model-3.webp',
+  'images/polo-white-model-3.webp',
+  'images/hero-2.webp',
+  'images/polo-white-model-5.webp',
+  'images/polo-black-model-4.webp',
+  'images/editorial-1.webp',
 ];
 
 function initEarlyAccessSlideshow() {
