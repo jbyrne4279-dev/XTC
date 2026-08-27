@@ -25,6 +25,7 @@ create table if not exists public.orders (
   address           text,                           -- street address
   city              text,                           -- city
   postcode          text,                           -- postcode / ZIP
+  notes             text,                           -- customer order note (checkout)
   updated_at        timestamptz default now(),
   created_at        timestamptz default now()
 );
@@ -41,6 +42,7 @@ alter table public.orders add column if not exists name              text;
 alter table public.orders add column if not exists address           text;
 alter table public.orders add column if not exists city              text;
 alter table public.orders add column if not exists postcode          text;
+alter table public.orders add column if not exists notes             text;
 
 create index if not exists orders_email_idx   on public.orders (lower(email));
 create index if not exists orders_user_id_idx on public.orders (user_id);

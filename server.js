@@ -656,6 +656,7 @@ async function saveOrder(order, opts) {
     if (order.address)  row.address  = String(order.address);
     if (order.city)     row.city     = String(order.city);
     if (order.postcode) row.postcode = String(order.postcode);
+    if (order.notes)    row.notes    = String(order.notes).slice(0, 1000);
     if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
     let { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
     // Graceful fallback: if columns don't exist yet, retry without the new fields
@@ -673,7 +674,7 @@ async function saveOrder(order, opts) {
 
 // Save an order placed via the custom checkout (called from checkout.html).
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source, cartItems, phone, country, name, address, city, postcode } = req.body || {};
+  const { id, email, items, total, status, source, cartItems, phone, country, name, address, city, postcode, notes } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
   const result = await saveOrder({
     id, email, items, total, status,
@@ -684,6 +685,7 @@ app.post('/orders', async (req, res) => {
     address: address || '',
     city: city || '',
     postcode: postcode || '',
+    notes: notes || '',
   });
   if (!result.ok) return res.status(500).json({ error: result.error });
 

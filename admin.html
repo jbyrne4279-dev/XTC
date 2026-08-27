@@ -1205,6 +1205,7 @@ async function renderOrders() {
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + dbAddrFull + '</div></div>' +
         '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
         (tracking ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + tracking + '</div></div>' : '') +
+        ((f && f.notes) ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER NOTE</div><div style="font-size:13px;">' + f.notes.replace(/</g, '&lt;') + '</div></div>' : '') +
         '</div></td></tr>';
     }).join('');
   } catch(e) {
@@ -1920,7 +1921,7 @@ function showToast(msg) {
   if (!t) {
     t = document.createElement('div');
     t.id = 'adminToast';
-    t.style.css?v=1787839018Text = 'position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);color:#000000;padding:12px 20px;font-size:12px;letter-spacing:1px;z-index:9999;transition:opacity 0.3s;';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);color:#000000;padding:12px 20px;font-size:12px;letter-spacing:1px;z-index:9999;transition:opacity 0.3s;';
     document.body.appendChild(t);
   }
   t.textContent = msg; t.style.opacity = '1';
