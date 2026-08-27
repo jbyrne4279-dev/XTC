@@ -2354,10 +2354,16 @@ a[aria-label="Cart"].cart-active .cart-count {
   padding: 24px 0;
   border-bottom: 1px solid var(--border);
   margin-bottom: 0;
+  text-align: center;
 }
 /* Link columns on top, brand block (logo / tagline / socials) at the bottom. */
 .footer-top .footer-links-grid { order: 1; }
-.footer-top .footer-brand { order: 2; }
+.footer-top .footer-brand {
+  order: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .footer-brand__logo {
   font-size: 40px;
   letter-spacing: 8px;
@@ -2387,7 +2393,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: var(--text-primary);
   margin-bottom: var(--sp-3);
 }
-.footer-links ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-links ul { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .footer-links a {
   font-size: 12px;
   letter-spacing: 1px;
