@@ -48,6 +48,23 @@
     return null;
   }
 
+  // Guess the visitor's country from their browser locale (e.g. "en-GB",
+  // "fr-FR") so the picker starts on their own country instead of always
+  // defaulting to the UK — the same trick most ecom checkout widgets use
+  // since there's no reliable way to detect a country from a local-format
+  // number alone (many countries share the same digit lengths/patterns).
+  function guessCountryFromLocale() {
+    var langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+    for (var i = 0; i < langs.length; i++) {
+      var region = (langs[i].split('-')[1] || '').toUpperCase();
+      if (region) {
+        var match = countryByIso2(region);
+        if (match) return match;
+      }
+    }
+    return null;
+  }
+
   function ensureStyles() {
     if (document.getElementById('phone-field-styles')) return;
     var style = document.createElement('style');
@@ -131,7 +148,7 @@
     function getRaw() { return nativeDesc.get.call(input); }
     function setRaw(v) { nativeDesc.set.call(input, v); }
 
-    var selected = countryByIso2('GB');
+    var selected = guessCountryFromLocale() || countryByIso2('GB');
 
     var toggle = document.createElement('button');
     toggle.type = 'button';
@@ -220,13 +237,18 @@
     // code we can actually recognise (using its known digit length) —
     // never guesses where an unrecognised code ends and the number begins.
     function stripLeadingCode(raw) {
-      if (raw.charAt(0) !== '+') return raw;
-      var digits = raw.replace(/\D/g, '');
-      var match = matchCountryFromDigits(digits);
+      // Accept either "+<code>" or the "00<code>" international-dialling
+      // prefix some people type instead.
+      var prefixLen = raw.charAt(0) === '+' ? 1 : (raw.slice(0, 2) === '00' ? 2 : 0);
+      if (!prefixLen) return raw;
+      // Digits AFTER the prefix — matchCountryFromDigits needs to see the
+      // dial code at the very start, not the "00" that precedes it.
+      var digitsAfterPrefix = raw.slice(prefixLen).replace(/\D/g, '');
+      var match = matchCountryFromDigits(digitsAfterPrefix);
       if (!match) return raw;
       // Walk the original string (not a digits-only copy) so any spacing
       // the user typed into the local number itself is preserved.
-      var need = match[1].length, i = 1; // skip the leading "+"
+      var need = match[1].length, i = prefixLen;
       while (i < raw.length && need > 0) {
         if (/\d/.test(raw[i])) need--;
         i++;
@@ -259,15 +281,16 @@
     input.addEventListener('blur', function () { wrapper.classList.remove('phone-field--focus'); });
 
     input.addEventListener('input', function () {
-      var raw = getRaw();
-      if (raw.trim().charAt(0) !== '+') return;
-      var digits = raw.replace(/\D/g, '');
+      var raw = getRaw().trim();
+      var prefixLen = raw.charAt(0) === '+' ? 1 : (raw.slice(0, 2) === '00' ? 2 : 0);
+      if (!prefixLen) return;
+      var digits = raw.slice(prefixLen).replace(/\D/g, '');
       var match = matchCountryFromDigits(digits);
       if (match) {
         if (selected[0] !== match[0]) { selected = match; renderToggle(); }
         // Collapse the typed/pasted code into the picker instead of
         // leaving it duplicated in the number field.
-        setRaw(stripLeadingCode(raw.trim()));
+        setRaw(stripLeadingCode(raw));
       }
     });
 
