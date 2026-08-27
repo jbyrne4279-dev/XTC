@@ -251,14 +251,179 @@ function initHero() {
 // shows it without any rotation. Add more entries to turn it back into a
 // rotating slideshow.
 const EARLY_ACCESS_IMAGES = [
-  'images/hero-1.webp',
-  'images/polo-white-model-2.webp',
-  'images/polo-black-model-3.webp',
-  'images/polo-white-model-3.webp',
-  'images/hero-2.webp',
-  'images/polo-white-model-5.webp',
-  'images/polo-black-model-4.webp',
-  'images/editorial-1.webp',
+  'images/gallery/campaign-4K-2.webp',
+  'images/gallery/campaign-4K-3.webp',
+  'images/gallery/campaign-4K-4.webp',
+  'images/gallery/campaign-4K-5.webp',
+  'images/gallery/campaign-asain-white-10.webp',
+  'images/gallery/campaign-asain-white-11.webp',
+  'images/gallery/campaign-asain-white-12.webp',
+  'images/gallery/campaign-asain-white-13.webp',
+  'images/gallery/campaign-asain-white-6.webp',
+  'images/gallery/campaign-asain-white-7.webp',
+  'images/gallery/campaign-asain-white-8.webp',
+  'images/gallery/campaign-asain-white-9.webp',
+  'images/gallery/campaign-ash-14.webp',
+  'images/gallery/campaign-ash-15.webp',
+  'images/gallery/campaign-ash-16.webp',
+  'images/gallery/campaign-ash-17.webp',
+  'images/gallery/campaign-ash-18.webp',
+  'images/gallery/campaign-ash-19.webp',
+  'images/gallery/campaign-ash-20.webp',
+  'images/gallery/campaign-ash-21.webp',
+  'images/gallery/campaign-ash-22.webp',
+  'images/gallery/campaign-ash-23.webp',
+  'images/gallery/campaign-ash-24.webp',
+  'images/gallery/campaign-ash-25.webp',
+  'images/gallery/campaign-ash-26.webp',
+  'images/gallery/campaign-ash-27.webp',
+  'images/gallery/campaign-ash-28.webp',
+  'images/gallery/campaign-ash-29.webp',
+  'images/gallery/campaign-ash-30.webp',
+  'images/gallery/campaign-ash-31.webp',
+  'images/gallery/campaign-ash-32.webp',
+  'images/gallery/campaign-ash-33.webp',
+  'images/gallery/campaign-ash-34.webp',
+  'images/gallery/campaign-ash-35.webp',
+  'images/gallery/campaign-ash-36.webp',
+  'images/gallery/campaign-ash-37.webp',
+  'images/gallery/campaign-ash-38.webp',
+  'images/gallery/campaign-ash-39.webp',
+  'images/gallery/campaign-ash-40.webp',
+  'images/gallery/campaign-ash-41.webp',
+  'images/gallery/campaign-ash-42.webp',
+  'images/gallery/campaign-black-white-43.webp',
+  'images/gallery/campaign-black-white-44.webp',
+  'images/gallery/campaign-black-white-45.webp',
+  'images/gallery/campaign-black-white-46.webp',
+  'images/gallery/campaign-black-white-47.webp',
+  'images/gallery/campaign-black-white-48.webp',
+  'images/gallery/campaign-black-white-49.webp',
+  'images/gallery/campaign-black-white-50.webp',
+  'images/gallery/campaign-black-white-51.webp',
+  'images/gallery/campaign-black-white-52.webp',
+  'images/gallery/campaign-black-white-53.webp',
+  'images/gallery/campaign-black-white-54.webp',
+  'images/gallery/campaign-black-white-55.webp',
+  'images/gallery/campaign-black-white-56.webp',
+  'images/gallery/campaign-black-white-57.webp',
+  'images/gallery/campaign-blakc-dread-58.webp',
+  'images/gallery/campaign-blakc-dread-59.webp',
+  'images/gallery/campaign-blakc-dread-60.webp',
+  'images/gallery/campaign-blakc-dread-61.webp',
+  'images/gallery/campaign-blakc-dread-62.webp',
+  'images/gallery/campaign-blakc-dread-63.webp',
+  'images/gallery/campaign-blakc-dread-64.webp',
+  'images/gallery/campaign-blakc-dread-65.webp',
+  'images/gallery/campaign-duo-66.webp',
+  'images/gallery/campaign-duo-67.webp',
+  'images/gallery/campaign-duo-68.webp',
+  'images/gallery/campaign-ghost-69.webp',
+  'images/gallery/campaign-ghost-70.webp',
+  'images/gallery/campaign-ghost-71.webp',
+  'images/gallery/campaign-ghost-72.webp',
+  'images/gallery/campaign-ghost-73.webp',
+  'images/gallery/campaign-ghost-74.webp',
+  'images/gallery/campaign-girl-black-polo-75.webp',
+  'images/gallery/campaign-girl-black-polo-76.webp',
+  'images/gallery/campaign-girl-black-polo-77.webp',
+  'images/gallery/campaign-girl-black-polo-78.webp',
+  'images/gallery/campaign-imz-79.webp',
+  'images/gallery/campaign-imz-80.webp',
+  'images/gallery/campaign-imz-81.webp',
+  'images/gallery/campaign-imz-82.webp',
+  'images/gallery/campaign-imz-83.webp',
+  'images/gallery/campaign-imz-84.webp',
+  'images/gallery/campaign-imz-85.webp',
+  'images/gallery/campaign-imz-86.webp',
+  'images/gallery/campaign-imz-87.webp',
+  'images/gallery/campaign-imz-88.webp',
+  'images/gallery/campaign-imz-89.webp',
+  'images/gallery/campaign-imz-90.webp',
+  'images/gallery/campaign-imz-91.webp',
+  'images/gallery/campaign-imz-92.webp',
+  'images/gallery/campaign-imz-93.webp',
+  'images/gallery/campaign-imz-94.webp',
+  'images/gallery/campaign-juvy-95.webp',
+  'images/gallery/campaign-juvy-96.webp',
+  'images/gallery/campaign-juvy-97.webp',
+  'images/gallery/campaign-juvy-98.webp',
+  'images/gallery/campaign-juvy-99.webp',
+  'images/gallery/campaign-ledby-100.webp',
+  'images/gallery/campaign-leski-101.webp',
+  'images/gallery/campaign-leski-102.webp',
+  'images/gallery/campaign-leski-103.webp',
+  'images/gallery/campaign-leski-104.webp',
+  'images/gallery/campaign-oopsie-105.webp',
+  'images/gallery/campaign-oopsie-106.webp',
+  'images/gallery/campaign-oopsie-107.webp',
+  'images/gallery/campaign-otis-108.webp',
+  'images/gallery/campaign-otis-109.webp',
+  'images/gallery/campaign-otis-110.webp',
+  'images/gallery/campaign-otis-111.webp',
+  'images/gallery/campaign-polo-112.webp',
+  'images/gallery/campaign-polo-113.webp',
+  'images/gallery/campaign-polo-114.webp',
+  'images/gallery/campaign-polo-115.webp',
+  'images/gallery/campaign-romy-116.webp',
+  'images/gallery/campaign-romy-117.webp',
+  'images/gallery/campaign-romy-118.webp',
+  'images/gallery/campaign-romy-119.webp',
+  'images/gallery/campaign-romy-120.webp',
+  'images/gallery/campaign-romy-121.webp',
+  'images/gallery/campaign-SHANIA-123.webp',
+  'images/gallery/campaign-SHANIA-124.webp',
+  'images/gallery/campaign-style-black-125.webp',
+  'images/gallery/campaign-style-black-126.webp',
+  'images/gallery/campaign-style-black-127.webp',
+  'images/gallery/campaign-style-black-128.webp',
+  'images/gallery/campaign-style-black-129.webp',
+  'images/gallery/campaign-style-black-130.webp',
+  'images/gallery/campaign-style-black-131.webp',
+  'images/gallery/campaign-style-black-132.webp',
+  'images/gallery/campaign-style-black-133.webp',
+  'images/gallery/campaign-style-black-134.webp',
+  'images/gallery/campaign-style-black-135.webp',
+  'images/gallery/campaign-style-black-136.webp',
+  'images/gallery/campaign-style-black-137.webp',
+  'images/gallery/campaign-style-black-138.webp',
+  'images/gallery/campaign-style-black-139.webp',
+  'images/gallery/campaign-style-black-140.webp',
+  'images/gallery/campaign-style-black-141.webp',
+  'images/gallery/campaign-style-black-142.webp',
+  'images/gallery/campaign-style-black-143.webp',
+  'images/gallery/campaign-style-black-144.webp',
+  'images/gallery/campaign-style-black-145.webp',
+  'images/gallery/campaign-style-black-146.webp',
+  'images/gallery/campaign-style-black-147.webp',
+  'images/gallery/campaign-style-black-148.webp',
+  'images/gallery/campaign-style-black-149.webp',
+  'images/gallery/campaign-style-black-150.webp',
+  'images/gallery/campaign-style-black-151.webp',
+  'images/gallery/campaign-style-black-152.webp',
+  'images/gallery/campaign-style-black-153.webp',
+  'images/gallery/campaign-style-black-154.webp',
+  'images/gallery/campaign-style-black-155.webp',
+  'images/gallery/campaign-style-black-156.webp',
+  'images/gallery/campaign-style-black-157.webp',
+  'images/gallery/campaign-style-black-158.webp',
+  'images/gallery/campaign-style-black-159.webp',
+  'images/gallery/campaign-style-black-160.webp',
+  'images/gallery/campaign-style-black-161.webp',
+  'images/gallery/campaign-style-black-162.webp',
+  'images/gallery/campaign-style-black-163.webp',
+  'images/gallery/campaign-style-black-164.webp',
+  'images/gallery/campaign-style-black-165.webp',
+  'images/gallery/campaign-style-black-166.webp',
+  'images/gallery/campaign-style-black-167.webp',
+  'images/gallery/campaign-style-black-168.webp',
+  'images/gallery/campaign-girl-black-polo-75.webp',
+  'images/gallery/campaign-white-polo-girl-170.webp',
+  'images/gallery/campaign-white-polo-girl-171.webp',
+  'images/gallery/campaign-white-polo-girl-172.webp',
+  'images/gallery/campaign-white-polo-girl-173.webp',
+  'images/gallery/campaign-XTC-META-CAMPAIGN-2026-1.webp',
+  'images/gallery/campaign-girl-black-polo-75.webp',
 ];
 
 function initEarlyAccessSlideshow() {
@@ -272,11 +437,14 @@ function initEarlyAccessSlideshow() {
   const track = document.createElement('div');
   track.className = 'ea-scroll-track';
 
+  // Only the first few need to load eagerly (what's actually visible on
+  // load) — with a full gallery's worth of images in the loop, eager-
+  // loading all of them would tank the page load.
   [...EARLY_ACCESS_IMAGES, ...EARLY_ACCESS_IMAGES].forEach((src, idx) => {
     const img = document.createElement('img');
     img.src = src;
     img.alt = 'XTC';
-    img.loading = idx < EARLY_ACCESS_IMAGES.length ? 'eager' : 'lazy';
+    img.loading = idx < 3 ? 'eager' : 'lazy';
     img.draggable = false;
     track.appendChild(img);
   });
@@ -289,14 +457,20 @@ function initEarlyAccessSlideshow() {
   box.appendChild(viewport);
 
   let paused = false, resumeTimer = null;
+  // scrollLeft rounds to whole pixels on write in most browsers, so
+  // accumulating a sub-1px-per-frame increment directly on it gets
+  // truncated back to 0 every frame and never moves. Track the exact
+  // position in JS instead and only write the rounded pixel value.
+  let pos = viewport.scrollLeft;
   function pause() { paused = true; clearTimeout(resumeTimer); }
   function resumeSoon() { clearTimeout(resumeTimer); resumeTimer = setTimeout(() => { paused = false; }, 2500); }
 
   function step() {
     if (!paused) {
       const half = track.scrollWidth / 2; // images are duplicated once
-      viewport.scrollLeft += 0.2;
-      if (half > 0 && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
+      pos += 0.2;
+      if (half > 0 && pos >= half) pos -= half;
+      viewport.scrollLeft = pos;
     }
     requestAnimationFrame(step);
   }
@@ -305,8 +479,8 @@ function initEarlyAccessSlideshow() {
   ['pointerdown', 'touchstart', 'mousedown', 'wheel'].forEach(ev =>
     viewport.addEventListener(ev, pause, { passive: true }));
   ['pointerup', 'touchend', 'mouseup', 'mouseleave'].forEach(ev =>
-    viewport.addEventListener(ev, resumeSoon, { passive: true }));
-  viewport.addEventListener('scroll', () => { if (!paused) return; resumeSoon(); }, { passive: true });
+    viewport.addEventListener(ev, () => { pos = viewport.scrollLeft; resumeSoon(); }, { passive: true }));
+  viewport.addEventListener('scroll', () => { if (!paused) return; pos = viewport.scrollLeft; resumeSoon(); }, { passive: true });
 }
 
 // ---- Cart Drawer ----

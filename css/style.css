@@ -3267,9 +3267,10 @@ textarea {
   font-size: 10px;
   letter-spacing: 0.5px;
   color: #ff6b6b;
-  margin-top: 8px;
-  min-height: 14px;
+  margin-top: 0;
+  min-height: 0;
 }
+.early-access-bar__err:not(:empty) { margin-top: 4px; }
 /* ── Form/text collapse out ──────────────────────────────────────────────── */
 .ea-form--out,
 .ea-text--out {
