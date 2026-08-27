@@ -3015,7 +3015,6 @@ textarea {
 .early-access-bar {
   border-top: none;
   background: #000000;
-  overflow: hidden;
   position: relative;
 }
 .early-access-bar::before,
