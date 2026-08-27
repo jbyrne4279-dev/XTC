@@ -464,33 +464,6 @@
     .co-promo-msg--ok  { color: rgba(34,197,94,0.9); }
     .co-promo-msg--err { color: rgba(220,38,38,0.9); }
 
-    /* Order notes */
-    .co-notes { margin-bottom: 24px; }
-    .co-notes__label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.4);
-      margin-bottom: 8px;
-    }
-    .co-notes__input {
-      width: 100%;
-      min-height: 64px;
-      resize: vertical;
-      background: rgba(0, 0, 0, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      color: #000000;
-      font-family: inherit;
-      font-size: 13px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color 0.2s;
-      box-sizing: border-box;
-    }
-    .co-notes__input:focus { border-color: var(--accent); }
-    .co-notes__input::placeholder { color: rgba(0, 0, 0, 0.2); }
 
     /* ── Success screen ── */
     .co-success {
@@ -717,12 +690,6 @@
       <button type="button" id="promoBtn" onclick="applyPromo()">Apply</button>
     </div>
     <p class="co-promo-msg" id="promoMsg"></p>
-
-    <!-- Order notes -->
-    <div class="co-notes">
-      <label class="co-notes__label" for="orderNotes">Order notes (optional)</label>
-      <textarea class="co-notes__input" id="orderNotes" maxlength="500" placeholder="Delivery instructions, gift message, etc."></textarea>
-    </div>
 
     <div class="co-totals">
       <div class="co-total-row">
@@ -1064,7 +1031,6 @@
           address: document.getElementById('coAddress').value.trim(),
           city: document.getElementById('coCity').value.trim(),
           postcode: document.getElementById('coPostcode').value.trim(),
-          notes: document.getElementById('orderNotes').value.trim(),
         })
       }).catch(function () {});
     } catch (e) {}
