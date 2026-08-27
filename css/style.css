@@ -3043,7 +3043,7 @@ textarea {
 .early-access-bar::after  { bottom: 0; }
 .early-access-bar__inner {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   min-height: 340px;
 }
 .early-access-bar__left {
