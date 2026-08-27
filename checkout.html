@@ -505,6 +505,12 @@
       .co-fieldset { grid-template-columns: 1fr; }
       .co-field--span2 { grid-column: span 1; }
     }
+
+    @media (max-width: 600px) {
+      .co-country__flag { display: none !important; }
+      .co-country.has-flag .co-country__input { padding-left: 16px; }
+      .co-country__opt img { display: none; }
+    }
   </style>
 </head>
 <body>
