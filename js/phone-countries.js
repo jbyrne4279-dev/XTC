@@ -54,7 +54,7 @@
     style.id = 'phone-field-styles';
     style.textContent =
       '.phone-field{position:relative;display:flex;align-items:stretch;width:100%;box-sizing:border-box;}' +
-      '.phone-field__toggle{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0 12px;white-space:nowrap;flex-shrink:0;}' +
+      '.phone-field__toggle{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:inherit;font-size:14px;color:inherit;padding:0 12px;white-space:nowrap;flex-shrink:0;}' +
       '.phone-field__toggle:focus{outline:none;}' +
       '.phone-field__dial{font-size:13px;letter-spacing:0.5px;opacity:0.8;}' +
       '.phone-field__chev{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;opacity:0.6;flex-shrink:0;}' +
