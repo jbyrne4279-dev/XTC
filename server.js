@@ -25,6 +25,12 @@ app.get(['/product-polo-black', '/product-polo-black.html'], (req, res) =>
 app.get(['/product-polo-white', '/product-polo-white.html'], (req, res) =>
   res.redirect(301, '/original-members-polo?color=white'));
 
+// /collections was a client-side meta-refresh shell pointing at /new-releases —
+// replaced with a real 301 so crawlers get a proper redirect instead of a
+// noindex page that never consolidates link equity.
+app.get(['/collections', '/collections.html'], (req, res) =>
+  res.redirect(301, '/new-releases'));
+
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
