@@ -295,7 +295,7 @@ function initEarlyAccessSlideshow() {
   function step() {
     if (!paused) {
       const half = track.scrollWidth / 2; // images are duplicated once
-      viewport.scrollLeft += 0.5;
+      viewport.scrollLeft += 0.2;
       if (half > 0 && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
     }
     requestAnimationFrame(step);
