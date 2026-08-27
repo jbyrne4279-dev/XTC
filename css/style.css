@@ -3161,6 +3161,9 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 0;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
 }
 .early-access-bar__fields {
   display: flex;
