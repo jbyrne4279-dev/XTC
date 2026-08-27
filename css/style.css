@@ -3044,7 +3044,7 @@ textarea {
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 170px;
+  height: 300px;
 }
 .early-access-bar__left {
   padding: 28px 32px;
