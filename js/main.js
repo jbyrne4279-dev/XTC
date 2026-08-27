@@ -414,7 +414,7 @@ function renderCartDrawer() {
               </div>
               ${variant ? `
               <div class="cd-size-row">
-                <p class="cd-item__variant"><strong>Size:</strong> ${variant}</p>
+                <p class="cd-item__variant">Size: ${variant}</p>
                 ${otherSizes.length ? `
                 <div class="cd-size-change-wrap">
                   <button class="cd-size-change" onclick="cdToggleSizePicker(event,${i})">Change</button>
