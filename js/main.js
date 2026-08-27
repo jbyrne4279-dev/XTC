@@ -256,7 +256,7 @@ const EARLY_ACCESS_IMAGES = [
   'images/gallery/campaign-juvy-95.webp',
   'images/gallery/campaign-4K-2.webp',
   'images/gallery/campaign-style-black-125.webp',
-  'images/gallery/campaign-romy-117.webp',
+  'images/gallery/campaign-polo-112.webp',
   'images/gallery/campaign-leski-101.webp',
   'images/gallery/campaign-girl-black-polo-75.webp',
   'images/gallery/campaign-otis-109.webp',
@@ -285,7 +285,7 @@ const EARLY_ACCESS_IMAGES = [
   'images/gallery/campaign-leski-104.webp',
   'images/gallery/campaign-romy-116.webp',
   'images/gallery/campaign-style-black-134.webp',
-  'images/gallery/campaign-white-polo-girl-172.webp',
+  'images/gallery/campaign-white-polo-girl-169.webp',
   'images/gallery/campaign-otis-108.webp',
   'images/gallery/campaign-style-black-155.webp',
   'images/gallery/campaign-ash-20.webp',
@@ -316,11 +316,11 @@ const EARLY_ACCESS_IMAGES = [
   'images/gallery/campaign-ash-26.webp',
   'images/gallery/campaign-SHANIA-124.webp',
   'images/gallery/campaign-ash-34.webp',
-  'images/gallery/campaign-white-polo-girl-173.webp',
   'images/gallery/campaign-blakc-dread-59.webp',
   'images/gallery/campaign-juvy-97.webp',
   'images/gallery/campaign-asain-white-9.webp',
-  'images/gallery/campaign-black-white-57.webp'
+  'images/gallery/campaign-black-white-57.webp',
+  'images/gallery/campaign-polo-113.webp'
 ];
 
 function initEarlyAccessSlideshow() {
