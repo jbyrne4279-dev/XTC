@@ -3044,15 +3044,15 @@ textarea {
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 340px;
+  min-height: 170px;
 }
 .early-access-bar__left {
-  padding: 56px 64px;
+  padding: 28px 32px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  gap: 20px;
+  gap: 10px;
 }
 .early-access-bar__image {
   position: relative;
@@ -3143,12 +3143,12 @@ textarea {
   100% { background-position: -100% center; }
 }
 .early-access-bar__heading {
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 200;
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   text-transform: uppercase;
   color: #ffffff;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   line-height: 1.2;
 }
 .early-access-bar__sub {
@@ -3162,7 +3162,7 @@ textarea {
   flex-direction: column;
   gap: 0;
   width: 100%;
-  max-width: 420px;
+  max-width: 300px;
   margin: 0 auto;
 }
 .early-access-bar__fields {
@@ -3198,14 +3198,14 @@ textarea {
 }
 .early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
 .early-access-bar__icon-box {
-  width: 44px;
+  width: 34px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .early-access-bar__emblem {
-  width: 26px;
+  width: 18px;
   height: auto;
   flex-shrink: 0;
   filter: brightness(0) invert(1);
@@ -3216,9 +3216,9 @@ textarea {
   border: none;
   color: #ffffff;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 12px;
   letter-spacing: 1px;
-  padding: 16px 0;
+  padding: 9px 0;
   outline: none;
   width: 100%;
   min-width: 0;
@@ -3227,7 +3227,7 @@ textarea {
 .early-access-bar__input::placeholder { color: rgba(255, 255, 255, 0.3); }
 .early-access-bar__btn {
   width: 100%;
-  padding: 16px 24px;
+  padding: 9px 24px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
@@ -3368,10 +3368,10 @@ textarea {
 }
 @media (max-width: 860px) {
   .early-access-bar__inner { grid-template-columns: 1fr; height: auto; min-height: auto; }
-  .early-access-bar__left { padding: 56px 24px 40px; }
+  .early-access-bar__left { padding: 32px 24px 24px; }
   .early-access-bar__image {
-    height: 360px;
-    min-height: 360px;
+    height: 180px;
+    min-height: 180px;
     border-left: none;
     border-top: 1px solid transparent;
     border-image: linear-gradient(
