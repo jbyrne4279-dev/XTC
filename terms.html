@@ -214,17 +214,15 @@
         <form class="early-access-bar__form" id="earlyAccessForm" onsubmit="earlyAccessSubmit(event)">
           <div class="early-access-bar__fields">
             <div class="early-access-bar__field">
-              <label class="early-access-bar__label">PHONE NUMBER</label>
               <div class="early-access-bar__input-wrap">
                 <div class="early-access-bar__icon-box"><img class="early-access-bar__emblem" src="images/skull-emblem-icon.webp?v=1787779103" alt="" /></div>
-                <input class="early-access-bar__input" type="tel" placeholder="07762 326 426" id="earlyAccessPhone" autocomplete="tel" required />
+                <input class="early-access-bar__input" type="tel" placeholder="07762 326 426" id="earlyAccessPhone" autocomplete="tel" aria-label="Phone number" required />
               </div>
               <p class="early-access-bar__err" id="earlyAccessErr"></p>
             </div>
             <div class="early-access-bar__field">
-              <label class="early-access-bar__label">EMAIL</label>
               <div class="early-access-bar__input-wrap early-access-bar__input-wrap--plain">
-                <input class="early-access-bar__input" type="email" placeholder="you@email.com" id="earlyAccessEmail" autocomplete="email" required />
+                <input class="early-access-bar__input" type="email" placeholder="you@email.com" id="earlyAccessEmail" autocomplete="email" aria-label="Email" required />
               </div>
             </div>
           </div>
