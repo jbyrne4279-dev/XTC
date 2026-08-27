@@ -84,7 +84,7 @@ ul, ol { list-style: none; }
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--accent-dim); }
-::selection { background: rgba(0, 0, 0, 0.2); color: #000000; }
+::selection { background: rgba(120, 120, 120, 0.4); }
 
 /* ---- Utility ---- */
 .container { width: 100%; max-width: var(--page-narrow); margin: 0 auto; padding: 0 var(--sp-6); }
@@ -3210,7 +3210,7 @@ textarea {
   font-family: inherit;
   font-size: 14px;
   letter-spacing: 1px;
-  padding: 14px 0;
+  padding: 14px 12px 14px 14px;
   outline: none;
   width: 100%;
   min-width: 0;
