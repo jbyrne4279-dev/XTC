@@ -3047,14 +3047,14 @@ textarea {
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 190px;
+  min-height: 200px;
 }
 .early-access-bar__left {
-  padding: 24px 56px;
+  padding: 16px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 14px;
+  gap: 8px;
 }
 .early-access-bar__image {
   position: relative;
@@ -3164,13 +3164,13 @@ textarea {
 .early-access-bar__fields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 .early-access-bar__field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 .early-access-bar__label {
   font-size: 9px;
@@ -3188,14 +3188,14 @@ textarea {
 }
 .early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
 .early-access-bar__icon-box {
-  width: 48px;
+  width: 44px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .early-access-bar__emblem {
-  width: 30px;
+  width: 26px;
   height: auto;
   flex-shrink: 0;
   filter: brightness(0) invert(1);
@@ -3208,7 +3208,7 @@ textarea {
   font-family: inherit;
   font-size: 13px;
   letter-spacing: 1px;
-  padding: 16px 0;
+  padding: 9px 0;
   outline: none;
   width: 100%;
   min-width: 0;
@@ -3217,7 +3217,7 @@ textarea {
 .early-access-bar__input::placeholder { color: rgba(255, 255, 255, 0.3); }
 .early-access-bar__btn {
   width: 100%;
-  padding: 12px 24px;
+  padding: 9px 24px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
