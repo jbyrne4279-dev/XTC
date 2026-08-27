@@ -3051,6 +3051,7 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
   gap: 20px;
 }
 .early-access-bar__image {
