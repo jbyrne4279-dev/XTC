@@ -3047,7 +3047,7 @@ textarea {
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  min-height: 320px;
+  height: 340px;
 }
 .early-access-bar__left {
   padding: 56px 64px;
@@ -3087,6 +3087,8 @@ textarea {
   z-index: 2;
 }
 .early-access-bar__image img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -3357,7 +3359,7 @@ textarea {
   pointer-events: none;
 }
 @media (max-width: 860px) {
-  .early-access-bar__inner { grid-template-columns: 1fr; min-height: auto; }
+  .early-access-bar__inner { grid-template-columns: 1fr; height: auto; min-height: auto; }
   .early-access-bar__left { padding: 56px 24px 40px; }
   .early-access-bar__image {
     height: 360px;
