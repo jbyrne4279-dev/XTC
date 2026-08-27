@@ -205,7 +205,14 @@ function initHero() {
     clearInterval(timer);
     clearActive();
     ctrl = (mq.matches && halves.length >= 2) ? makeMobile() : makeDesktop();
+    // Show the first slide instantly (no 1s opacity fade) — only the
+    // slideshow's later auto-advances should fade.
+    allSlides.forEach(s => { s.style.transition = 'none'; });
     ctrl.first();
+    void heroEl.offsetHeight; // flush the opacity change before re-enabling transitions
+    requestAnimationFrame(() => {
+      allSlides.forEach(s => { s.style.transition = ''; });
+    });
     startTimer();
   }
 
