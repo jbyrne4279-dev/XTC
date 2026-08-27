@@ -10,7 +10,8 @@ const app = express();
 // War™ Collection is hidden for now — block these product pages entirely
 // (registered before express.static so it takes priority over the file on disk).
 const HIDDEN_PRODUCTS = new Set(['war-zip', 'war-joggers', 'uniform-t']);
-const HIDDEN_PRODUCT_PAGES = ['/product-war-zip', '/product-war-joggers', '/product-uniform-t'];
+// Drop 02 Grey was never produced — no such variant exists.
+const HIDDEN_PRODUCT_PAGES = ['/product-war-zip', '/product-war-joggers', '/product-uniform-t', '/product-drop02-c'];
 app.get(HIDDEN_PRODUCT_PAGES, (req, res) => {
   res.status(404).type('text/plain').send('Not found');
 });
