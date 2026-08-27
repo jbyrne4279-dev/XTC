@@ -7,7 +7,7 @@
   <title>Checkout — XTC Clothing</title>
   <meta name="description" content="Secure checkout — XTC Clothing. Complete your order safely with Stripe." />
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="stylesheet" href="css/style.css?v=1787781816" />
+  <link rel="stylesheet" href="css/style.css?v=1787839018" />
   <style>
     body { background: var(--bg); color: var(--text-primary); }
 
@@ -762,7 +762,7 @@
 <script src="js/stock.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="js/phone-countries.js?v=1787767987"></script>
-  <script src="js/main.js?v=1787838735"></script>
+  <script src="js/main.js?v=1787839018"></script>
 <script src="js/omnisend-config.js"></script>
 <script>
 (function(){
@@ -837,7 +837,7 @@
       const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       subtotal += price * item.qty;
       const img = item.img
-        ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" />`
+        ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="xtcImgFallback(this)" />`
         : `<div class="co-item__img-placeholder"></div>`;
       const dashIdx = item.name.lastIndexOf(' — ');
       const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;

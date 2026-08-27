@@ -3,6 +3,22 @@
    Cart, nav drawer, hero slideshow, search, toast
    ============================================ */
 
+// Cart items store an image path in localStorage from whenever they were
+// added — a cart from before the site's jpg/png → webp switch can still
+// point at a file that no longer exists. Self-heal by retrying as .webp
+// once before giving up and hiding the broken image.
+function xtcImgFallback(el) {
+  var webp = el.src.replace(/\.(jpg|jpeg|png)(\?.*)?$/i, '.webp');
+  if (webp !== el.src && !el.dataset.xtcFallbackTried) {
+    el.dataset.xtcFallbackTried = '1';
+    el.src = webp;
+  } else {
+    el.onerror = null;
+    el.style.background = 'rgba(255,255,255,0.04)';
+    el.style.visibility = 'hidden';
+  }
+}
+
 // ---- Cart (localStorage) ----
 
 function getCart() {
@@ -373,7 +389,7 @@ function renderCartDrawer() {
 
     return `
       <div class="cd-item${oos ? ' cd-item--oos' : ''}">
-        <img class="cd-item__img" src="${item.img}" alt="${displayName}" loading="lazy" onerror="this.style.background='rgba(255,255,255,0.04)'" />
+        <img class="cd-item__img" src="${item.img}" alt="${displayName}" loading="lazy" onerror="xtcImgFallback(this)" />
         <div class="cd-item__body">
           <div class="cd-item__top">
             <div>

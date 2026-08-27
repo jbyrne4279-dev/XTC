@@ -22,7 +22,7 @@
   <meta name="twitter:title" content="Gallery — XTC Clothing" />
   <meta name="twitter:description" content="The XTC Original Members campaign — behind the brand." />
   <meta name="twitter:image" content="https://xtcclothing.com/images/polo-black-flat.webp" />
-  <link rel="stylesheet" href="css/style.css?v=1787781816" />
+  <link rel="stylesheet" href="css/style.css?v=1787839018" />
   <style>
     .gallery-header {
       display: flex;
@@ -1250,6 +1250,7 @@
                 <div class="early-access-bar__icon-box"><img class="early-access-bar__emblem" src="images/skull-emblem-icon.webp?v=1787779103" alt="" /></div>
                 <input class="early-access-bar__input" type="tel" placeholder="07762 326 426" id="earlyAccessPhone" autocomplete="tel" required />
               </div>
+              <p class="early-access-bar__err" id="earlyAccessErr"></p>
             </div>
           </div>
           <button class="early-access-bar__btn" type="submit">JOIN</button>
@@ -1281,8 +1282,15 @@
   <script>
   function earlyAccessSubmit(e) {
     e.preventDefault();
-    var phone = document.getElementById('earlyAccessPhone').value.trim();
-    if (!phone) return;
+    var phoneInput = document.getElementById('earlyAccessPhone');
+    var errEl = document.getElementById('earlyAccessErr');
+    var phone = phoneInput.value.trim();
+    var digits = phone.replace(/\D/g, '');
+    if (errEl) errEl.textContent = '';
+    if (digits.length < 7 || digits.length > 15) {
+      if (errEl) errEl.textContent = 'Please enter a valid phone number.';
+      return;
+    }
     if (window.omnisend) omnisend.push(['identifyContact', { phone: phone }]);
     fetch('/subscribe', {
       method: 'POST',
@@ -1401,7 +1409,7 @@
   <div id="toast" class="toast"></div>
   <script src="js/stock.js"></script>
   <script src="js/phone-countries.js?v=1787767987"></script>
-  <script src="js/main.js?v=1787838735"></script>
+  <script src="js/main.js?v=1787839018"></script>
   <script src="js/analytics.js"></script>
   <script>
   (function() {

@@ -7,7 +7,7 @@
   <title>Order Confirmed — XTC Clothing</title>
   <meta name="description" content="Your XTC Clothing order is confirmed. Thank you for your purchase." />
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="stylesheet" href="css/style.css?v=1787781816" />
+  <link rel="stylesheet" href="css/style.css?v=1787839018" />
   <style>
     body { background: #f5f5f5; }
 
@@ -344,7 +344,7 @@
 
   <!-- html2canvas for screenshot -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="js/main.js?v=1787838735"></script>
+  <script src="js/main.js?v=1787839018"></script>
   <script src="js/analytics.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -389,7 +389,7 @@
     // Build a single order-item row — shared by the server + localStorage paths
     function buildItemRow(img, name, meta, priceText) {
       const imgHtml = img
-        ? `<img class="oc-item-img" src="${img}" alt="${name}" crossorigin="anonymous" />`
+        ? `<img class="oc-item-img" src="${img}" alt="${name}" crossorigin="anonymous" onerror="xtcImgFallback(this)" />`
         : `<div class="oc-item-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">👕</div>`;
       return `<div class="oc-item">
         ${imgHtml}

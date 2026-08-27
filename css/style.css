@@ -3255,6 +3255,13 @@ textarea {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.3);
 }
+.early-access-bar__err {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: #ff6b6b;
+  margin-top: 8px;
+  min-height: 14px;
+}
 /* ── Form/text collapse out ──────────────────────────────────────────────── */
 .ea-form--out,
 .ea-text--out {
