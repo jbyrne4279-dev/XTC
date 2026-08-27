@@ -3165,7 +3165,7 @@ textarea {
 .early-access-bar__fields {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   margin-bottom: 12px;
 }
 .early-access-bar__field {
@@ -3194,6 +3194,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 .early-access-bar__emblem {
   width: 27px;

@@ -61,7 +61,7 @@
       '.phone-field__divider{width:1px;align-self:stretch;margin:8px 0;background:currentColor;opacity:0.18;flex-shrink:0;}' +
       '.phone-field .phone-field__input{flex:1;min-width:0;border:none;background:transparent;box-shadow:none;}' +
       '.phone-field .phone-field__input:focus{border:none;background:transparent;outline:none;}' +
-      '.phone-field--dark{border:1px solid rgba(255,255,255,0.2);color:#fff;transition:border-color 0.2s;}' +
+      '.phone-field--dark{border:1px solid rgba(255,255,255,0.2);border-left:none;color:#fff;transition:border-color 0.2s;}' +
       '.phone-field--dark.phone-field--focus{border-color:rgba(255,255,255,0.5);}' +
       '.phone-field--dark .phone-field__input{color:#fff;}' +
       '.phone-field--dark .phone-field__input::placeholder{color:rgba(255,255,255,0.3);}' +
