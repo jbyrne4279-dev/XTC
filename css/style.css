@@ -3167,7 +3167,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
 }
 .early-access-bar__field {
   display: flex;
