@@ -3165,7 +3165,7 @@ textarea {
 .early-access-bar__fields {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   margin-bottom: 12px;
 }
 .early-access-bar__field {
@@ -3189,14 +3189,14 @@ textarea {
 }
 .early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
 .early-access-bar__icon-box {
-  width: 34px;
+  width: 51px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .early-access-bar__emblem {
-  width: 18px;
+  width: 27px;
   height: auto;
   flex-shrink: 0;
   filter: brightness(0) invert(1);
@@ -3207,9 +3207,9 @@ textarea {
   border: none;
   color: #ffffff;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 1px;
-  padding: 9px 0;
+  padding: 14px 0;
   outline: none;
   width: 100%;
   min-width: 0;

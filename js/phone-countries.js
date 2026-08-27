@@ -95,7 +95,7 @@
     // The wrapper now owns the visible box; strip the input's own
     // border/background so only one rectangle shows, and match its
     // original padding so the merged box keeps the same proportions.
-    var pad = { 'phone-field--dark': '9px 18px', 'phone-field--light-box': '11px 14px', 'phone-field--generic': '14px 16px' }[themeClass] || '12px 14px';
+    var pad = { 'phone-field--dark': '14px 18px', 'phone-field--light-box': '11px 14px', 'phone-field--generic': '14px 16px' }[themeClass] || '12px 14px';
     var v = pad.split(' ')[0], h = pad.split(' ')[1];
     input.style.border = 'none';
     input.style.background = 'transparent';
