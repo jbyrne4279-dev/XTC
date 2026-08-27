@@ -3047,14 +3047,14 @@ textarea {
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 560px;
+  min-height: 380px;
 }
 .early-access-bar__left {
-  padding: 72px 64px;
+  padding: 48px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 36px;
+  gap: 24px;
 }
 .early-access-bar__image {
   position: relative;
