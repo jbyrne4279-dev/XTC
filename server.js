@@ -7,11 +7,9 @@ const ws = require('ws');
 
 const app = express();
 
-// War™ Collection is hidden for now — block these product pages entirely
-// (registered before express.static so it takes priority over the file on disk).
-const HIDDEN_PRODUCTS = new Set(['war-zip', 'war-joggers', 'uniform-t']);
 // Drop 02 Grey was never produced — no such variant exists.
-const HIDDEN_PRODUCT_PAGES = ['/product-war-zip', '/product-war-joggers', '/product-uniform-t', '/product-drop02-c'];
+const HIDDEN_PRODUCTS = new Set([]);
+const HIDDEN_PRODUCT_PAGES = ['/product-drop02-c'];
 app.get(HIDDEN_PRODUCT_PAGES, (req, res) => {
   res.status(404).type('text/plain').send('Not found');
 });
@@ -1134,7 +1132,7 @@ app.get('/sitemap.xml', (req, res) => {
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(
-    'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /order-confirmed\nDisallow: /product-war-zip\nDisallow: /product-war-joggers\nDisallow: /product-uniform-t\nDisallow: /password\n\nSitemap: https://xtcclothing.com/sitemap.xml\n'
+    'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /order-confirmed\nDisallow: /password\n\nSitemap: https://xtcclothing.com/sitemap.xml\n'
   );
 });
 
