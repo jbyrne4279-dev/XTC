@@ -479,10 +479,10 @@ a[aria-label="Cart"].cart-active .cart-count {
    ============================================ */
 .hero {
   position: relative;
-  height: 74vh;
-  height: 74dvh;
-  min-height: 420px;
-  max-height: 760px;
+  height: 88vh;
+  height: 88dvh;
+  min-height: 440px;
+  max-height: 920px;
   overflow: hidden;
   background: #f2f2f2;
   cursor: pointer;
