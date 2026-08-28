@@ -110,6 +110,13 @@ ul, ol { list-style: none; }
   top: 0;
   z-index: 200;
 }
+/* .sticky-top's only content is the safe-area-inset-top padding now that the
+   announcement bar is hidden — it had no background of its own, so that
+   notch/status-bar strip showed the white body through. Mobile only (this
+   padding is 0 on devices without a safe-area inset anyway). */
+@media (max-width: 768px) {
+  .sticky-top { background: #000000; }
+}
 .announcement-bar {
   /* Hidden for now — kept in markup/CSS to re-enable easily later. */
   display: none;
