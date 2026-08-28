@@ -64,6 +64,17 @@
 /* ---- Base ---- */
 html { font-size: 16px; scroll-behavior: smooth; overflow-x: clip; }
 
+/* iOS Safari only: the overscroll/rubber-band area above the sticky nav
+   (behind the status bar, when the page bounces past the top) shows the
+   <html> background through — was white, wanted black. Scoped to mobile
+   Safari via the -webkit-touch-callout feature check + a phone-width
+   query, so desktop Safari/other browsers are untouched. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    html { background: #000000; }
+  }
+}
+
 body {
   font-family: var(--font-base);
   background: var(--bg);
