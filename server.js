@@ -54,8 +54,21 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/subscribe',
   '/favicon.ico',
 ]);
+// Bypass: visit any URL with ?preview=<SITE_PREVIEW_KEY> once to drop a
+// cookie that skips the lock for that browser going forward (90 days).
+const SITE_PREVIEW_KEY = process.env.SITE_PREVIEW_KEY || '';
+const PREVIEW_COOKIE = 'xtc_preview';
 app.use((req, res, next) => {
   if (!SITE_LOCKED) return next();
+  if (SITE_PREVIEW_KEY && req.query.preview === SITE_PREVIEW_KEY) {
+    res.cookie(PREVIEW_COOKIE, SITE_PREVIEW_KEY, {
+      maxAge: 90 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    return next();
+  }
+  if (SITE_PREVIEW_KEY && readCookie(req, PREVIEW_COOKIE) === SITE_PREVIEW_KEY) return next();
   const p = req.path;
   if (SITE_LOCK_ALLOWLIST.has(p) || p.startsWith('/.well-known')) return next();
   return res.redirect(302, '/password');
