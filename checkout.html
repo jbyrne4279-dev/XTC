@@ -1085,23 +1085,6 @@
   let _formListenerAttached = false;
   let _intentGen = 0; // generation counter so stale intent responses never overwrite a newer one
 
-  function calcTotalPence() {
-    const subtotal = getCartSubtotal();
-    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
-    const { totalDiscount: bundleDiscount } = calcBundleDiscount(cart);
-    const afterBundle = subtotal - bundleDiscount;
-
-    let promoDiscount = 0;
-    if (_promo) {
-      if (_promo.type === 'percent') promoDiscount = afterBundle * (_promo.value / 100);
-      else if (_promo.type === 'fixed') promoDiscount = Math.min(_promo.value / 100, afterBundle);
-    }
-
-    const afterDiscount = afterBundle - promoDiscount;
-    const shipping = getShipping(afterDiscount);
-    return Math.round((afterDiscount + shipping) * 100);
-  }
-
   async function mountStripeElements(clientSecret) {
     if (!clientSecret) return; // stale — a newer intent already took over
     // Unmount existing if reinitialising
@@ -1230,18 +1213,18 @@
   async function createPaymentIntent() {
     _intentGen++;
     const myGen = _intentGen;
-    const totalPence = calcTotalPence();
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     const cartSummary = cart.map(i => i.qty + 'x ' + i.name + (i.size ? ' (' + i.size + ')' : '')).join(', ');
     const cartItems = cart.map(i => {
       const parts = i.id.split('-');
       return { productId: parts.slice(0, -1).join('-'), size: parts[parts.length - 1].toUpperCase(), qty: i.qty };
     });
+    const country = (document.getElementById('coCountry') && document.getElementById('coCountry').value) || 'GB';
     const headers = { 'Content-Type': 'application/json' };
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({ amount: totalPence, cartSummary, cartItems }),
+      body: JSON.stringify({ promoCode: _promo ? _promo.code : '', cartSummary, cartItems, country }),
     });
     const data = await res.json();
     if (!res.ok) {

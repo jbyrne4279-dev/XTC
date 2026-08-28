@@ -108,6 +108,37 @@ const PRODUCTS = {
   'uniform-t': { name: 'XTC Uniform T', amount: 4000 },
 };
 
+// Bundle deals — kept in sync with BUNDLES in js/main.js (the client's copy,
+// used only to *display* the discount). This is the source of truth for what
+// actually gets charged, computed in pence to match PRODUCTS.
+const BUNDLES = [
+  { label: 'War™ Zip + Joggers Bundle', productIds: ['war-zip', 'war-joggers'], bundlePrice: 20000 },
+];
+
+function calcBundleDiscountPence(cartItems) {
+  let totalDiscount = 0;
+  for (const bundle of BUNDLES) {
+    const qtyFor = pid => cartItems
+      .filter(i => i.productId === pid)
+      .reduce((s, i) => s + (parseInt(i.qty, 10) || 1), 0);
+    const pairCount = Math.min(...bundle.productIds.map(qtyFor));
+    if (pairCount > 0) {
+      const normalPrice = bundle.productIds.reduce((sum, pid) => sum + (PRODUCTS[pid] ? PRODUCTS[pid].amount : 0), 0);
+      totalDiscount += pairCount * (normalPrice - bundle.bundlePrice);
+    }
+  }
+  return totalDiscount;
+}
+
+// Shipping — kept in sync with checkout.html's UK_SHIPPING / UK_FREE_SHIPPING_THRESHOLD.
+const UK_SHIPPING_PENCE = 299;
+const UK_FREE_SHIPPING_THRESHOLD_PENCE = 8000;
+const INTL_SHIPPING_PENCE = 999;
+function getShippingPence(afterDiscountPence, country) {
+  if (country && country !== 'GB') return INTL_SHIPPING_PENCE;
+  return afterDiscountPence >= UK_FREE_SHIPPING_THRESHOLD_PENCE ? 0 : UK_SHIPPING_PENCE;
+}
+
 // ── Meta Conversions API (server-side Purchase) ──────────────────────────────
 // Sends the Purchase event straight from the server so conversions still track
 // when the browser pixel is blocked (ad blockers / iOS). Deduplicated with the
@@ -388,42 +419,59 @@ app.post('/validate-promo', (req, res) => {
 });
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, promoCode, cartSummary, cartItems } = req.body;
-  if (!amount || amount < 30) return res.status(400).json({ error: 'Invalid amount' });
+  const { promoCode, cartSummary, cartItems, country } = req.body;
+
+  if (!Array.isArray(cartItems) || !cartItems.length) {
+    return res.status(400).json({ error: 'Your bag is empty.' });
+  }
 
   // War™ Collection is hidden for now — reject even if an item somehow made
   // it into someone's cart before/around the hide.
-  if (Array.isArray(cartItems) && cartItems.some(i => HIDDEN_PRODUCTS.has(i.productId))) {
+  if (cartItems.some(i => HIDDEN_PRODUCTS.has(i.productId))) {
+    return res.status(400).json({ error: 'One or more items in your bag are no longer available.', outOfStock: true });
+  }
+
+  // Every line must be a real, priced catalogue item — never trust the client
+  // to have sent a valid product id.
+  if (cartItems.some(i => !PRODUCTS[i.productId])) {
     return res.status(400).json({ error: 'One or more items in your bag are no longer available.', outOfStock: true });
   }
 
   // Stock check — reject if out of stock.
-  if (Array.isArray(cartItems) && cartItems.length) {
-    const stock = await getStock();
-    if (!stock) return res.status(500).json({ error: 'Could not load stock' });
-    for (const { productId, size, qty = 1 } of cartItems) {
-      const sizeKey = (size || '').toUpperCase();
-      const available = (stock[productId] && stock[productId][sizeKey]) || 0;
-      if (available < qty) {
-        const label = `${productId} ${sizeKey}`;
-        return res.status(400).json({ error: `Sorry, "${label}" is out of stock or has insufficient quantity. Please update your cart.`, outOfStock: true });
-      }
+  const stock = await getStock();
+  if (!stock) return res.status(500).json({ error: 'Could not load stock' });
+  for (const { productId, size, qty = 1 } of cartItems) {
+    const sizeKey = (size || '').toUpperCase();
+    const available = (stock[productId] && stock[productId][sizeKey]) || 0;
+    if (available < qty) {
+      const label = `${productId} ${sizeKey}`;
+      return res.status(400).json({ error: `Sorry, "${label}" is out of stock or has insufficient quantity. Please update your cart.`, outOfStock: true });
     }
   }
 
-  let finalAmount = Math.round(amount);
+  // ── Price the order server-side ─────────────────────────────────────────
+  // The amount charged is always recomputed here from PRODUCTS/BUNDLES/
+  // PROMO_CODES — the client's own total is display-only and never trusted,
+  // so a tampered request can't change what's actually charged.
+  const subtotal = cartItems.reduce((sum, i) => sum + PRODUCTS[i.productId].amount * (parseInt(i.qty, 10) || 1), 0);
+  const bundleDiscount = calcBundleDiscountPence(cartItems);
+  const afterBundle = subtotal - bundleDiscount;
 
-  // Apply promo discount server-side so it can't be tampered with client-side
+  let promoDiscount = 0;
   if (promoCode) {
     const promo = PROMO_CODES[(promoCode || '').trim().toUpperCase()];
     if (promo && promo.active) {
       if (promo.type === 'percent') {
-        finalAmount = Math.round(finalAmount * (1 - promo.value / 100));
+        promoDiscount = Math.round(afterBundle * (promo.value / 100));
       } else if (promo.type === 'fixed') {
-        finalAmount = Math.max(30, finalAmount - promo.value);
+        promoDiscount = Math.min(promo.value, afterBundle);
       }
     }
   }
+
+  const afterDiscount = Math.max(0, afterBundle - promoDiscount);
+  const shipping = getShippingPence(afterDiscount, country);
+  const finalAmount = Math.max(30, afterDiscount + shipping);
 
   try {
     const intent = await stripe.paymentIntents.create({

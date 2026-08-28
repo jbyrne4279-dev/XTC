@@ -17,7 +17,10 @@ async function loadStock() {
     const res = await fetch('/stock');
     if (res.ok) {
       const data = await res.json();
-      _stockCache = data.stock;
+      // An empty object means the server couldn't read real stock (e.g. a
+      // database hiccup) — treat that the same as "unreachable" rather than
+      // caching it, or every product on the site would render as sold out.
+      if (data.stock && Object.keys(data.stock).length) _stockCache = data.stock;
     }
   } catch(e) {
     // Fall back to defaults if server unreachable
@@ -32,7 +35,7 @@ async function refreshStock() {
     const res = await fetch('/stock?t=' + Date.now());
     if (res.ok) {
       const data = await res.json();
-      _stockCache = data.stock;
+      if (data.stock && Object.keys(data.stock).length) _stockCache = data.stock;
     }
   } catch(e) { /* keep existing cache on network error */ }
   return _stockCache || DEFAULT_STOCK;

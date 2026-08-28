@@ -194,7 +194,17 @@ ul, ol { list-style: none; }
   animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-/* Size button out-of-stock state */
+/* Bundle + modal size buttons share the same pop */
+.pdp-bundle-size-btn.selected,
+.sm-size-btn.sm-selected {
+  border-color: rgba(34,197,94,0.8) !important;
+  color: #000000 !important;
+  background: rgba(34,197,94,0.06) !important;
+  animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+/* Size button out-of-stock state — declared after .selected so a button that
+   somehow ends up with both classes always reads as out-of-stock (red), never
+   selected (green). */
 .pdp-size-btn.size-btn--oos,
 .pdp-bundle-size-btn.size-btn--oos,
 .pdp-bundle-size-btn:disabled,
@@ -206,14 +216,6 @@ ul, ol { list-style: none; }
   background: rgba(220, 38, 38, 0.16) !important;
   box-shadow: 0 0 10px rgba(220, 38, 38, 0.4), inset 0 0 8px rgba(220, 38, 38, 0.12) !important;
   position: relative;
-}
-/* Bundle + modal size buttons share the same pop */
-.pdp-bundle-size-btn.selected,
-.sm-size-btn.sm-selected {
-  border-color: rgba(34,197,94,0.8) !important;
-  color: #000000 !important;
-  background: rgba(34,197,94,0.06) !important;
-  animation: sz-select-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
 
 .pdp-size-btn[data-stock-label] {
@@ -2616,10 +2618,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   background: rgba(0, 0, 0, 0.08);
 }
 .fp-sp-btn--oos {
-  border-color: rgba(220, 38, 38, 1);
-  color: rgba(220, 38, 38, 0.95);
-  background: rgba(220, 38, 38, 0.16);
+  border-color: rgba(220, 38, 38, 1) !important;
+  color: rgba(220, 38, 38, 0.95) !important;
+  background: rgba(220, 38, 38, 0.16) !important;
   cursor: not-allowed;
+  pointer-events: none;
 }
 .fp-sp-btn--selected {
   border-color: rgba(34,197,94,0.7);
