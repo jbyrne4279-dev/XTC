@@ -1435,7 +1435,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
-.no-restock-shine,
 .purple-shine {
   background: linear-gradient(90deg,
     rgba(0, 0, 0, 0.8)  0%,
@@ -1443,6 +1442,20 @@ a[aria-label="Cart"].cart-active .cart-count {
     rgba(0, 0, 0, 1)    50%,
     rgba(20, 20, 20, 1)   65%,
     rgba(0, 0, 0, 0.8) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: purple-shine-move 7s linear infinite;
+}
+.no-restock-shine {
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.5)  0%,
+    rgba(255, 255, 255, 1)   35%,
+    rgba(255, 255, 255, 1)    50%,
+    rgba(255, 255, 255, 1)   65%,
+    rgba(255, 255, 255, 0.5) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
