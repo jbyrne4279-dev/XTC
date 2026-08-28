@@ -478,6 +478,10 @@ function cdGetDrawer() {
           <span class="cd-bundle-row__label" id="cdBundleLabel">Bundle discount</span>
           <span class="cd-bundle-row__value" id="cdBundleAmount">£0.00</span>
         </div>
+        <div class="cd-subtotal cd-subtotal--total" id="cdTotalRow" style="display:none;">
+          <span class="cd-subtotal__label">Total</span>
+          <span class="cd-subtotal__value" id="cdTotal">£0.00</span>
+        </div>
         <p class="cd-shipping-note">Free UK shipping on orders over £80. Taxes and shipping calculated at checkout.</p>
         <p class="cd-oos-warning" id="cdOosWarning" style="display:none;">Remove out-of-stock items to check out.</p>
         <div class="cd-actions">
@@ -581,16 +585,25 @@ function renderCartDrawer() {
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
 
   const bundleRow = drawer.querySelector('#cdBundleRow');
+  const totalRow = drawer.querySelector('#cdTotalRow');
+  let bundleDiscount = 0;
   if (typeof calcBundleDiscount === 'function') {
-    const { totalDiscount: bundleDiscount, applied: bundlesApplied } = calcBundleDiscount(cart);
+    const result = calcBundleDiscount(cart);
+    bundleDiscount = result.totalDiscount;
     if (bundleDiscount > 0) {
       bundleRow.style.display = 'flex';
-      const labels = bundlesApplied.map(b => b.count > 1 ? b.label + ' ×' + b.count : b.label).join(', ');
+      const labels = result.applied.map(b => b.count > 1 ? b.label + ' ×' + b.count : b.label).join(', ');
       drawer.querySelector('#cdBundleLabel').textContent = labels;
       drawer.querySelector('#cdBundleAmount').textContent = '−£' + bundleDiscount.toFixed(2);
     } else {
       bundleRow.style.display = 'none';
     }
+  }
+  if (bundleDiscount > 0) {
+    totalRow.style.display = 'flex';
+    drawer.querySelector('#cdTotal').textContent = '£' + (subtotal - bundleDiscount).toFixed(2);
+  } else {
+    totalRow.style.display = 'none';
   }
 
   const oosWarning = drawer.querySelector('#cdOosWarning');

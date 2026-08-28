@@ -993,6 +993,22 @@ a[aria-label="Cart"].cart-active .cart-count {
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 80%);
   mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 80%);
 }
+.fp-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+.fp-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(245, 245, 245, 0.88);
+  pointer-events: none;
+}
 .fp-header,
 .fp-grid {
   position: relative;
@@ -2666,7 +2682,12 @@ a[aria-label="Cart"].cart-active .cart-count {
 .pdp-bundle__cta-price {
   font-size: 10px;
   font-weight: 300;
-  color: rgba(0, 0, 0, 0.4);
+  color: #000000;
+}
+.pdp-bundle__cta-price-was {
+  color: rgba(0, 0, 0, 0.3);
+  text-decoration: line-through;
+  margin-right: 4px;
 }
 .pdp-bundle__cta-add {
   flex-shrink: 0;
@@ -3849,6 +3870,14 @@ textarea {
   color: rgba(34,197,94,0.9);
   letter-spacing: 0.5px;
 }
+.cd-subtotal--total {
+  padding-top: 10px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.cd-subtotal--total .cd-subtotal__label { color: rgba(0, 0, 0, 0.6); }
+.cd-subtotal--total .cd-subtotal__value { font-weight: 500; }
 .cd-shipping-note {
   font-size: 10px;
   letter-spacing: 0.5px;
