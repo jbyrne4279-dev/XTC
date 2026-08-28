@@ -536,7 +536,14 @@
         <div class="pdp-bundle">
           <p class="pdp-bundle__label">Bundle &amp; Save</p>
           <p class="pdp-bundle__text">Add the War&trade; Joggers and pay <strong>£200</strong> for both, usually £230.</p>
-          <button class="pdp-bundle__btn" onclick="openSizePicker(this,'war-joggers',['S','M','L'])">Add War&trade; Joggers — £110</button>
+          <button class="pdp-bundle__cta" onclick="openSizePicker(this,'war-joggers',['S','M','L'])">
+            <img class="pdp-bundle__thumb" src="images/JOGGERS-XTC.webp" alt="War&trade; Joggers" />
+            <span class="pdp-bundle__cta-info">
+              <span class="pdp-bundle__cta-name">War&trade; Joggers</span>
+              <span class="pdp-bundle__cta-price">£110</span>
+            </span>
+            <span class="pdp-bundle__cta-add">Add</span>
+          </button>
           <div class="fp-size-picker" id="picker-war-joggers">
             <p class="fp-size-picker__label">Select Size</p>
             <div class="fp-size-picker__sizes" id="picker-war-joggers-sizes"></div>
