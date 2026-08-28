@@ -705,6 +705,10 @@
         <span>Subtotal</span>
         <span id="coSubtotal">—</span>
       </div>
+      <div class="co-total-row co-total-row--discount" id="coBundleRow" style="display:none;">
+        <span id="coBundleLabel">Bundle discount</span>
+        <span id="coBundleAmount">—</span>
+      </div>
       <div class="co-total-row co-total-row--discount" id="coDiscountRow" style="display:none;">
         <span id="coDiscountLabel">Discount</span>
         <span id="coDiscountAmount">—</span>
@@ -819,6 +823,42 @@
     return cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
   }
 
+  // ── Bundle deals ──────────────────────────────────────────────────────────
+  // Buy the War™ Zip and Joggers together and the pair drops to a flat £200
+  // (normally £120 + £110 = £230 — roughly 13% off). Detected automatically
+  // from the cart, no code needed. Add more bundles here as they're created.
+  const BUNDLES = [
+    {
+      label: 'War™ Zip + Joggers Bundle',
+      items: { 'war-zip': 120, 'war-joggers': 110 },
+      bundlePrice: 200,
+    },
+  ];
+
+  function cartProductId(id) {
+    const parts = id.split('-');
+    return parts.slice(0, -1).join('-');
+  }
+
+  function calcBundleDiscount(cart) {
+    let totalDiscount = 0;
+    const applied = [];
+    for (const bundle of BUNDLES) {
+      const productIds = Object.keys(bundle.items);
+      const qtyFor = pid => cart
+        .filter(i => cartProductId(i.id) === pid)
+        .reduce((s, i) => s + i.qty, 0);
+      const pairCount = Math.min(...productIds.map(qtyFor));
+      if (pairCount > 0) {
+        const normalPrice = Object.values(bundle.items).reduce((a, b) => a + b, 0);
+        const savingPerBundle = normalPrice - bundle.bundlePrice;
+        totalDiscount += pairCount * savingPerBundle;
+        applied.push({ label: bundle.label, count: pairCount, savingPerBundle });
+      }
+    }
+    return { totalDiscount, applied };
+  }
+
   window.removeFromCheckoutCart = function(index) {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
     cart.splice(index, 1);
@@ -860,19 +900,22 @@
 
   function updateTotals(subtotal) {
     if (subtotal === undefined) subtotal = getCartSubtotal();
-    const shipping = getShipping(subtotal);
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
 
-    // Calculate discount
-    let discountAmount = 0;
+    const { totalDiscount: bundleDiscount, applied: bundlesApplied } = calcBundleDiscount(cart);
+    const afterBundle = subtotal - bundleDiscount;
+
+    let promoDiscount = 0;
     if (_promo) {
       if (_promo.type === 'percent') {
-        discountAmount = subtotal * (_promo.value / 100);
+        promoDiscount = afterBundle * (_promo.value / 100);
       } else if (_promo.type === 'fixed') {
-        discountAmount = Math.min(_promo.value / 100, subtotal);
+        promoDiscount = Math.min(_promo.value / 100, afterBundle);
       }
     }
 
-    const afterDiscount = subtotal - discountAmount;
+    const afterDiscount = afterBundle - promoDiscount;
+    const shipping = getShipping(afterDiscount);
     let total = afterDiscount + shipping;
 
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
@@ -885,18 +928,28 @@
       if (shipping === 0) {
         noteEl.textContent = 'Free UK shipping applied.';
       } else {
-        const remaining = UK_FREE_SHIPPING_THRESHOLD - subtotal;
+        const remaining = UK_FREE_SHIPPING_THRESHOLD - afterDiscount;
         noteEl.textContent = 'Free UK shipping on orders over £' + UK_FREE_SHIPPING_THRESHOLD + ' — add £' + remaining.toFixed(2) + ' more to qualify.';
       }
     } else {
       noteEl.textContent = '';
     }
 
+    const bundleRow = document.getElementById('coBundleRow');
+    if (bundleDiscount > 0) {
+      bundleRow.style.display = 'flex';
+      const labels = bundlesApplied.map(b => b.count > 1 ? b.label + ' ×' + b.count : b.label).join(', ');
+      document.getElementById('coBundleLabel').textContent = labels;
+      document.getElementById('coBundleAmount').textContent = '−£' + bundleDiscount.toFixed(2);
+    } else {
+      bundleRow.style.display = 'none';
+    }
+
     const discountRow = document.getElementById('coDiscountRow');
-    if (_promo && discountAmount > 0) {
+    if (_promo && promoDiscount > 0) {
       discountRow.style.display = 'flex';
       document.getElementById('coDiscountLabel').textContent = _promo.description + ' (' + _promo.code + ')';
-      document.getElementById('coDiscountAmount').textContent = '−£' + discountAmount.toFixed(2);
+      document.getElementById('coDiscountAmount').textContent = '−£' + promoDiscount.toFixed(2);
     } else {
       discountRow.style.display = 'none';
     }
@@ -1067,13 +1120,19 @@
 
   function calcTotalPence() {
     const subtotal = getCartSubtotal();
-    const shipping = getShipping(subtotal);
-    let discount = 0;
+    const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');
+    const { totalDiscount: bundleDiscount } = calcBundleDiscount(cart);
+    const afterBundle = subtotal - bundleDiscount;
+
+    let promoDiscount = 0;
     if (_promo) {
-      if (_promo.type === 'percent') discount = subtotal * (_promo.value / 100);
-      else if (_promo.type === 'fixed') discount = Math.min(_promo.value / 100, subtotal);
+      if (_promo.type === 'percent') promoDiscount = afterBundle * (_promo.value / 100);
+      else if (_promo.type === 'fixed') promoDiscount = Math.min(_promo.value / 100, afterBundle);
     }
-    return Math.round((subtotal - discount + shipping) * 100);
+
+    const afterDiscount = afterBundle - promoDiscount;
+    const shipping = getShipping(afterDiscount);
+    return Math.round((afterDiscount + shipping) * 100);
   }
 
   async function mountStripeElements(clientSecret) {

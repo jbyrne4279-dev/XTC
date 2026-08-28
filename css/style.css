@@ -3658,6 +3658,8 @@ textarea {
 }
 .cd-size-change {
   height: 20px;
+  width: fit-content;
+  flex-shrink: 0;
   padding: 0 8px;
   display: flex;
   align-items: center;
@@ -3702,9 +3704,12 @@ textarea {
   display: flex;
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  width: fit-content;
 }
 .cd-qty__btn {
   width: 26px; height: 26px;
+  flex: 0 0 26px;
   background: transparent;
   border: none;
   color: rgba(0, 0, 0, 0.4);

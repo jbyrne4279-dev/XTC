@@ -105,7 +105,7 @@ const PRODUCTS = {
   // SS26 War Collection — pre-order (ships 21 July)
   'war-zip': { name: 'XTC War™ Zip', amount: 12000 },
   'war-joggers': { name: 'XTC War™ Joggers', amount: 11000 },
-  'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
+  'uniform-t': { name: 'XTC Uniform T', amount: 4000 },
 };
 
 // ── Meta Conversions API (server-side Purchase) ──────────────────────────────
