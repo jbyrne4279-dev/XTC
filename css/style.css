@@ -2572,7 +2572,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   gap: 12px;
 }
 .fp-grid--3 .fp-card__name { font-size: 14px; }
-.fp-grid--3 .fp-card__price { font-size: 17px; }
+.fp-grid--3 .fp-card__price { font-size: 13px; }
 .fp-grid--3 .fp-card__atc { padding: 10px 16px; font-size: 10px; }
 
 /* ── War™ / Drop 02 — blood red branding ── */
