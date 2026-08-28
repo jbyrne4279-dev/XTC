@@ -53,11 +53,33 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/js/omnisend-config.js',
   '/subscribe',
   '/favicon.ico',
+  '/unlock',
 ]);
 // Bypass: visit any URL with ?preview=<SITE_PREVIEW_KEY> once to drop a
 // cookie that skips the lock for that browser going forward (90 days).
 const SITE_PREVIEW_KEY = process.env.SITE_PREVIEW_KEY || '';
 const PREVIEW_COOKIE = 'xtc_preview';
+// Password entry on the /password page itself — same 90-day cookie bypass.
+const SITE_PASSWORD = process.env.SITE_PASSWORD || 'xtcwar';
+const UNLOCK_COOKIE = 'xtc_unlocked';
+function timingSafeEqualStr(a, b) {
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+app.post('/unlock', express.urlencoded({ extended: false }), (req, res) => {
+  const submitted = (req.body && req.body.password) || '';
+  if (SITE_PASSWORD && timingSafeEqualStr(submitted, SITE_PASSWORD)) {
+    res.cookie(UNLOCK_COOKIE, SITE_PASSWORD, {
+      maxAge: 90 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    return res.redirect(303, '/');
+  }
+  return res.redirect(303, '/password?error=1');
+});
 app.use((req, res, next) => {
   if (!SITE_LOCKED) return next();
   if (SITE_PREVIEW_KEY && req.query.preview === SITE_PREVIEW_KEY) {
@@ -69,6 +91,7 @@ app.use((req, res, next) => {
     return next();
   }
   if (SITE_PREVIEW_KEY && readCookie(req, PREVIEW_COOKIE) === SITE_PREVIEW_KEY) return next();
+  if (SITE_PASSWORD && readCookie(req, UNLOCK_COOKIE) === SITE_PASSWORD) return next();
   const p = req.path;
   if (SITE_LOCK_ALLOWLIST.has(p) || p.startsWith('/.well-known')) return next();
   return res.redirect(302, '/password');
