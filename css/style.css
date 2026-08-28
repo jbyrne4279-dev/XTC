@@ -2603,6 +2603,48 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 /* ============================================
+   BUNDLE & SAVE — product page cross-sell box
+   ============================================ */
+.pdp-bundle {
+  position: relative;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.02);
+}
+.pdp-bundle__text {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.7);
+  margin-bottom: 12px;
+}
+.pdp-bundle__text strong { color: #000000; }
+.pdp-bundle__btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  color: #000000;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.pdp-bundle__btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.7);
+}
+.pdp-bundle .fp-size-picker {
+  left: 0;
+  right: auto;
+  bottom: calc(100% + 8px);
+}
+
+/* ============================================
    YOU MAY ALSO LIKE — "XTC Clothing" recs header
    Shared by Track Order and every product page.
    ============================================ */
