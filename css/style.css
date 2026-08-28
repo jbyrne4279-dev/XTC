@@ -2603,45 +2603,52 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 /* ============================================
-   BUNDLE & SAVE — product page cross-sell box
+   BUNDLE & SAVE — product page cross-sell
+   Quiet, no fill/heavy weight — reads as part of
+   the page, not a promo banner bolted on.
    ============================================ */
 .pdp-bundle {
   position: relative;
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(0, 0, 0, 0.02);
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.pdp-bundle__label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
 }
 .pdp-bundle__text {
   font-size: 12px;
-  letter-spacing: 0.3px;
+  font-weight: 300;
+  letter-spacing: 0.2px;
   line-height: 1.6;
-  color: rgba(0, 0, 0, 0.7);
-  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 14px;
 }
-.pdp-bundle__text strong { color: #000000; }
+.pdp-bundle__text strong { font-weight: 400; color: #000000; }
 .pdp-bundle__btn {
-  width: 100%;
-  padding: 12px 16px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.4);
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   color: #000000;
   font-family: inherit;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  padding: 0 0 3px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: border-color 0.2s, opacity 0.2s;
 }
-.pdp-bundle__btn:hover {
-  background: rgba(0, 0, 0, 0.06);
-  border-color: rgba(0, 0, 0, 0.7);
-}
+.pdp-bundle__btn:hover { border-color: #000000; opacity: 0.7; }
 .pdp-bundle .fp-size-picker {
   left: 0;
   right: auto;
-  bottom: calc(100% + 8px);
+  bottom: auto;
+  top: calc(100% + 8px);
 }
 
 /* ============================================
