@@ -1002,6 +1002,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 56px 48px;
 }
 .fp-eyebrow {
@@ -1031,6 +1033,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 56px;
 }
 
