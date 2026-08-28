@@ -226,21 +226,19 @@
   </header></div>
 
   <!-- Matrix intro — a white screen running the same light-grey slow-motion
-       matrix as the /password page, then fades out to reveal the home page.
-       Sits UNDER the nav bar (.sticky-top is z-index 200). -->
-  <div id="matrix-intro" aria-hidden="true">
-    <canvas id="matrix-canvas"></canvas>
-  </div>
+       matrix as the /password page, then fades out. Confined to the hero
+       photo-slide section only (not the full page). -->
   <style>
     #matrix-intro {
-      position: fixed;
+      position: absolute;
       inset: 0;
-      z-index: 150;                 /* above page content, below the nav bar */
-      background: transparent;      /* see-through: the page loads/shows immediately behind it */
+      z-index: 1;                   /* above hero media, below .hero-bar (z-index 2) */
+      background: transparent;      /* see-through: the hero loads/shows immediately behind it */
       opacity: 1;
       transition: opacity 0.9s ease;
+      pointer-events: none;
     }
-    #matrix-intro.matrix-intro--hide { opacity: 0; pointer-events: none; }
+    #matrix-intro.matrix-intro--hide { opacity: 0; }
     #matrix-intro canvas { display: block; width: 100%; height: 100%; }
     @media (prefers-reduced-motion: reduce) { #matrix-intro { display: none; } }
   </style>
@@ -261,7 +259,8 @@
     function randChar() { return CHARS.charAt(Math.floor(Math.random() * CHARS.length)); }
 
     function resize() {
-      W = window.innerWidth; H = window.innerHeight;
+      var rect = wrap.getBoundingClientRect();
+      W = rect.width; H = rect.height;
       canvas.width = Math.floor(W * dpr);
       canvas.height = Math.floor(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -346,6 +345,9 @@
 
   <!-- Hero -->
   <section class="hero hero--split" aria-label="Featured collection">
+    <div id="matrix-intro" aria-hidden="true">
+      <canvas id="matrix-canvas"></canvas>
+    </div>
     <div class="hero-half hero-half--black" data-product="black" aria-label="Black polo">      <div class="hero-slide active"><img class="hero-slide__bg" src="images/hero-1.webp" alt="XTC Original Members Polo — Black" loading="eager"/></div>
       <div class="hero-slide"><img class="hero-slide__bg" src="images/gallery/campaign-leski-101.webp" alt="XTC Campaign" loading="lazy"/></div>
       <div class="hero-slide"><img class="hero-slide__bg" src="images/gallery/campaign-4K-4.webp" alt="XTC Campaign" loading="lazy"/></div>
