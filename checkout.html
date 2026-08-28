@@ -823,41 +823,8 @@
     return cart.reduce((s, i) => s + parseFloat((i.price||'0').replace(/[^0-9.]/g,'')) * i.qty, 0);
   }
 
-  // ── Bundle deals ──────────────────────────────────────────────────────────
-  // Buy the War™ Zip and Joggers together and the pair drops to a flat £200
-  // (normally £120 + £110 = £230 — roughly 13% off). Detected automatically
-  // from the cart, no code needed. Add more bundles here as they're created.
-  const BUNDLES = [
-    {
-      label: 'War™ Zip + Joggers Bundle',
-      items: { 'war-zip': 120, 'war-joggers': 110 },
-      bundlePrice: 200,
-    },
-  ];
-
-  function cartProductId(id) {
-    const parts = id.split('-');
-    return parts.slice(0, -1).join('-');
-  }
-
-  function calcBundleDiscount(cart) {
-    let totalDiscount = 0;
-    const applied = [];
-    for (const bundle of BUNDLES) {
-      const productIds = Object.keys(bundle.items);
-      const qtyFor = pid => cart
-        .filter(i => cartProductId(i.id) === pid)
-        .reduce((s, i) => s + i.qty, 0);
-      const pairCount = Math.min(...productIds.map(qtyFor));
-      if (pairCount > 0) {
-        const normalPrice = Object.values(bundle.items).reduce((a, b) => a + b, 0);
-        const savingPerBundle = normalPrice - bundle.bundlePrice;
-        totalDiscount += pairCount * savingPerBundle;
-        applied.push({ label: bundle.label, count: pairCount, savingPerBundle });
-      }
-    }
-    return { totalDiscount, applied };
-  }
+  // Bundle deal logic (BUNDLES, cartProductId, calcBundleDiscount) lives in
+  // js/main.js — shared with the cart drawer so both show the same discount.
 
   window.removeFromCheckoutCart = function(index) {
     const cart = JSON.parse(localStorage.getItem('xtc-cart') || '[]');

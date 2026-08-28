@@ -42,6 +42,44 @@ function updateCartCount() {
   });
 }
 
+// ── Bundle deals ────────────────────────────────────────────────────────────
+// Buy the War™ Zip and Joggers together and the pair drops to a flat £200
+// (normally £120 + £110 = £230 — roughly 13% off). Detected automatically
+// from the cart, no code needed. Shared by the cart drawer and checkout so
+// the discount shown in the bag always matches what's charged at checkout.
+// Add more bundles here as they're created.
+const BUNDLES = [
+  {
+    label: 'War™ Zip + Joggers Bundle',
+    items: { 'war-zip': 120, 'war-joggers': 110 },
+    bundlePrice: 200,
+  },
+];
+
+function cartProductId(id) {
+  const parts = id.split('-');
+  return parts.slice(0, -1).join('-');
+}
+
+function calcBundleDiscount(cart) {
+  let totalDiscount = 0;
+  const applied = [];
+  for (const bundle of BUNDLES) {
+    const productIds = Object.keys(bundle.items);
+    const qtyFor = pid => cart
+      .filter(i => cartProductId(i.id) === pid)
+      .reduce((s, i) => s + i.qty, 0);
+    const pairCount = Math.min(...productIds.map(qtyFor));
+    if (pairCount > 0) {
+      const normalPrice = Object.values(bundle.items).reduce((a, b) => a + b, 0);
+      const savingPerBundle = normalPrice - bundle.bundlePrice;
+      totalDiscount += pairCount * savingPerBundle;
+      applied.push({ label: bundle.label, count: pairCount, savingPerBundle });
+    }
+  }
+  return { totalDiscount, applied };
+}
+
 // Cart line ids are "polo-black-s", "polo-white-l", etc. — split off the
 // trailing size to look up real stock. Caps at 10 as a sane hard ceiling,
 // but never above what's actually in stock for that size.
@@ -416,6 +454,10 @@ function cdGetDrawer() {
           <span class="cd-subtotal__label">Subtotal</span>
           <span class="cd-subtotal__value" id="cdSubtotal">£0.00</span>
         </div>
+        <div class="cd-bundle-row" id="cdBundleRow" style="display:none;">
+          <span class="cd-bundle-row__label" id="cdBundleLabel">Bundle discount</span>
+          <span class="cd-bundle-row__value" id="cdBundleAmount">£0.00</span>
+        </div>
         <p class="cd-shipping-note">Free UK shipping on orders over £80. Taxes and shipping calculated at checkout.</p>
         <p class="cd-oos-warning" id="cdOosWarning" style="display:none;">Remove out-of-stock items to check out.</p>
         <div class="cd-actions">
@@ -517,6 +559,19 @@ function renderCartDrawer() {
 
   const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
+
+  const bundleRow = drawer.querySelector('#cdBundleRow');
+  if (typeof calcBundleDiscount === 'function') {
+    const { totalDiscount: bundleDiscount, applied: bundlesApplied } = calcBundleDiscount(cart);
+    if (bundleDiscount > 0) {
+      bundleRow.style.display = 'flex';
+      const labels = bundlesApplied.map(b => b.count > 1 ? b.label + ' ×' + b.count : b.label).join(', ');
+      drawer.querySelector('#cdBundleLabel').textContent = labels;
+      drawer.querySelector('#cdBundleAmount').textContent = '−£' + bundleDiscount.toFixed(2);
+    } else {
+      bundleRow.style.display = 'none';
+    }
+  }
 
   const oosWarning = drawer.querySelector('#cdOosWarning');
   const checkoutBtn = drawer.querySelector('#cdCheckoutBtn');
