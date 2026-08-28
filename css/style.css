@@ -1138,6 +1138,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   padding: 5px 12px;
   background: #f3f3f3;
 }
+.fp-card__badge--invert {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
 
 /* Hover overlay */
 .fp-card__overlay {
@@ -2359,7 +2364,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   grid-template-columns: 1fr;
   gap: var(--sp-6);
   padding: 24px 0;
-  border-bottom: 1px solid var(--border);
   margin-bottom: 0;
 }
 /* Link columns on top, brand block (logo / tagline / socials) at the bottom. */
