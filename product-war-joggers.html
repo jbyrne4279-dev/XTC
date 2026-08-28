@@ -578,72 +578,101 @@
   </main>
 
   <!-- You May Also Like -->
-  <section class="recs-section">
-    <div class="container">
-      <p class="recs-eyebrow">You May Also Like</p>
-      <div class="recs-grid reveal-group">
+  <section class="ymal-section">
+    <div class="ymal-head">
+      <p class="ymal-eyebrow">XTC Clothing</p>
+      <h2 class="ymal-title">You May Also Like</h2>
+    </div>
+    <div class="fp-grid fp-grid--3" style="justify-content:center;margin:0 auto;">
 
-        <article class="product-card product-card--war">
-          <a href="/product-war-zip" class="product-card__media">
-            <img src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="WAR&trade; ZIP" loading="lazy" />
-            <img class="product-card__media-alt" src="images/ZIP-HOODIE-BLACK-BACK.webp" alt="WAR&trade; ZIP alt" loading="lazy" />
-            <span class="product-card__badge">Pre-Order</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/product-war-zip" class="product-card__name">WAR&trade; ZIP</a>
-            <p class="product-card__price">£120.00 GBP</p>
-            <div class="product-card__actions">
-              <a href="/product-war-zip" class="btn btn--primary btn--sm">View</a>
+      <article class="fp-card">
+        <a href="/product-war-zip" class="fp-card__media">
+          <img src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="XTC War™ Zip — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/ZIP-HOODIE-BLACK-BACK.webp" alt="XTC War™ Zip — alt" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">New Release</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-war-zip" class="fp-card__name">War&trade; Zip</a>
+            <p class="fp-card__sub">400gsm French Terry Cotton</p>
+          <p class="fp-card__price">£120</p>
+            </div>
+          <div class="fp-card__info-right">
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-zip',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-zip">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-zip-sizes"></div>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="product-card product-card--war">
-          <a href="/product-uniform-t" class="product-card__media">
-            <img src="images/T-SHIRT-XTC.webp" alt="UNIFORM T" loading="lazy" />
-            <img class="product-card__media-alt" src="images/T-SHIRT-XTC.webp" alt="UNIFORM T alt" loading="lazy" />
-            <span class="product-card__badge">Pre-Order</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/product-uniform-t" class="product-card__name">UNIFORM T</a>
-            <p class="product-card__price">£30.00 GBP</p>
-            <div class="product-card__actions">
-              <a href="/product-uniform-t" class="btn btn--primary btn--sm">View</a>
+      <article class="fp-card">
+        <a href="/product-uniform-t" class="fp-card__media">
+          <img src="images/T-SHIRT-XTC.webp" alt="XTC Uniform T — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/T-SHIRT-XTC.webp" alt="XTC Uniform T — alt" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">New Release</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-uniform-t" class="fp-card__name">Uniform T</a>
+            <p class="fp-card__sub">100% Cotton</p>
+          <p class="fp-card__price">£30</p>
+            </div>
+          <div class="fp-card__info-right">
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'uniform-t',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-uniform-t">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-uniform-t-sizes"></div>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="product-card">
-          <a href="/original-members-polo?color=black" class="product-card__media">
-            <img src="images/product-black-1.webp" alt="POLO [BLACK]" loading="lazy" />
-            <img class="product-card__media-alt" src="images/polo-black-model-3.webp" alt="POLO [BLACK] on model" loading="lazy" />
-            <span class="product-card__badge">Limited</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/original-members-polo?color=black" class="product-card__name">POLO [BLACK]</a>
-            <p class="product-card__price">£60.00 GBP</p>
-            <div class="product-card__actions">
-              <a href="/original-members-polo?color=black" class="btn btn--primary btn--sm">View</a>
+      <article class="fp-card">
+        <a href="/original-members-polo?color=black" class="fp-card__media">
+          <img src="images/product-black-1.webp" alt="XTC Original Members Polo Black — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/product-black-2.webp" alt="XTC Original Members Polo Black — alt" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">Limited Edition</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/original-members-polo?color=black" class="fp-card__name">Polo</a>
+            <p class="fp-card__sub">100% Piqué Cotton</p>
+          <p class="fp-card__price">£60</p>
+            </div>
+          <div class="fp-card__info-right">
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-black',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-black">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-black-sizes"></div>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="product-card">
-          <a href="/original-members-polo?color=white" class="product-card__media">
-            <img src="images/polo-white-flat.webp" alt="POLO [WHITE]" loading="lazy" />
-            <img class="product-card__media-alt" src="images/polo-white-model-3.webp" alt="POLO [WHITE] on model" loading="lazy" />
-            <span class="product-card__badge">Limited</span>
-          </a>
-          <div class="product-card__info">
-            <a href="/original-members-polo?color=white" class="product-card__name">POLO [WHITE]</a>
-            <p class="product-card__price">£60.00 GBP</p>
-            <div class="product-card__actions">
-              <a href="/original-members-polo?color=white" class="btn btn--primary btn--sm">View</a>
+      <article class="fp-card">
+        <a href="/original-members-polo?color=white" class="fp-card__media">
+          <img src="images/product-white-1.webp" alt="XTC Original Members Polo White — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/product-white-2.webp" alt="XTC Original Members Polo White — alt" loading="lazy" />
+        </a>
+        <span class="fp-card__badge">Limited Edition</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/original-members-polo?color=white" class="fp-card__name">Polo</a>
+            <p class="fp-card__sub">100% Piqué Cotton</p>
+          <p class="fp-card__price">£60</p>
+            </div>
+          <div class="fp-card__info-right">
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'polo-white',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-polo-white">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-polo-white-sizes"></div>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
 
-      </div>
     </div>
   </section>
 
@@ -971,6 +1000,73 @@
         var t=document.getElementsByTagName("script")[0];
         t.parentNode.insertBefore(e,t)}();
 </script>
-  </body>
+    <!-- Product card size picker (You May Also Like) — same logic as home page -->
+  <script>
+  (function () {
+    const SIZES = ['S','M','L','XL','XXL'];
+    const POLO_PRODUCTS = {
+      'polo-black': { productId: 'polo-black', name: 'POLO [BLACK]', price: '£60.00', img: 'images/polo-black-flat.webp' },
+      'polo-white': { productId: 'polo-white', name: 'POLO [WHITE]', price: '£60.00', img: 'images/polo-white-flat.webp' },
+      'war-zip': { productId: 'war-zip', name: 'WAR™ ZIP', price: '£120.00', img: 'images/ZIP-HOODIE-XTC-FRONT.webp' },
+      'war-joggers': { productId: 'war-joggers', name: 'WAR™ JOGGERS', price: '£110.00', img: 'images/JOGGERS-XTC.webp' },
+      'uniform-t': { productId: 'uniform-t', name: 'UNIFORM T', price: '£30.00', img: 'images/T-SHIRT-XTC.webp' }
+    };
+
+    window.openSizePicker = function (btn, pickerId, sizeList) {
+      const picker = document.getElementById('picker-' + pickerId);
+      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+      if (!picker || !sizesEl) return;
+
+      if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
+      document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+
+      sizesEl.dataset.sizeList = JSON.stringify(sizeList || SIZES);
+      renderPickerSizes(pickerId);
+      picker.classList.add('open');
+    };
+
+    function renderPickerSizes(pickerId) {
+      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+      if (!sizesEl) return;
+      const sizeList = JSON.parse(sizesEl.dataset.sizeList || '[]');
+      const product = POLO_PRODUCTS[pickerId];
+      if (!product) return;
+      const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(product.productId) : {};
+      sizesEl.innerHTML = sizeList.map(function (s) {
+        const qty = stock[s] || 0;
+        const oos = qty === 0;
+        return '<button class="fp-sp-btn' + (oos ? ' fp-sp-btn--oos' : '') + '" data-size="' + s + '">' + s + '</button>';
+      }).join('');
+      sizesEl.dataset.product = product.productId;
+      sizesEl.dataset.name = product.name;
+      sizesEl.dataset.price = product.price;
+      sizesEl.dataset.img = product.img;
+    }
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
+        document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.fp-sp-btn');
+      if (!btn || btn.classList.contains('fp-sp-btn--oos')) return;
+      const sizesEl = btn.closest('.fp-size-picker__sizes');
+      if (!sizesEl) return;
+      sizesEl.querySelectorAll('.fp-sp-btn').forEach(b => b.classList.remove('fp-sp-btn--selected'));
+      btn.classList.add('fp-sp-btn--selected');
+      setTimeout(function () {
+        const d = sizesEl.dataset;
+        document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+        if (typeof addToCart === 'function') {
+          addToCart(d.product + '-' + btn.dataset.size.toLowerCase(), d.name + ' — ' + btn.dataset.size, d.price, d.img, 1);
+        }
+      }, 180);
+    });
+  })();
+  </script>
+
+</body>
 </html>
 
