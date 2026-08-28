@@ -207,21 +207,6 @@ ul, ol { list-style: none; }
   box-shadow: 0 0 10px rgba(220, 38, 38, 0.4), inset 0 0 8px rgba(220, 38, 38, 0.12) !important;
   position: relative;
 }
-/* Sold out: cross the size out with an X (replaces the old strikethrough).
-   Two thin diagonals in the button's own colour (red), corner to corner. */
-.pdp-size-btn.size-btn--oos::after,
-.pdp-bundle-size-btn.size-btn--oos::after,
-.pdp-bundle-size-btn:disabled::after,
-.sm-size-btn.size-btn--oos::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.6;
-  background:
-    linear-gradient(to top right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px)),
-    linear-gradient(to bottom right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px));
-}
 /* Bundle + modal size buttons share the same pop */
 .pdp-bundle-size-btn.selected,
 .sm-size-btn.sm-selected {
@@ -2631,20 +2616,10 @@ a[aria-label="Cart"].cart-active .cart-count {
   background: rgba(0, 0, 0, 0.08);
 }
 .fp-sp-btn--oos {
-  border-color: rgba(239,68,68,0.5);
-  color: rgba(239,68,68,0.6);
+  border-color: rgba(220, 38, 38, 1);
+  color: rgba(220, 38, 38, 0.95);
+  background: rgba(220, 38, 38, 0.16);
   cursor: not-allowed;
-  position: relative;
-}
-.fp-sp-btn--oos::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.6;
-  background:
-    linear-gradient(to top right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px)),
-    linear-gradient(to bottom right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px));
 }
 .fp-sp-btn--selected {
   border-color: rgba(34,197,94,0.7);
