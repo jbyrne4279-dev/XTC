@@ -2731,11 +2731,16 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
 }
-.pdp-bundle .fp-size-picker {
+.pdp-bundle__cta-wrap {
+  position: relative;
+}
+.pdp-bundle__cta-wrap .fp-size-picker {
   left: 0;
   right: auto;
   bottom: auto;
   top: calc(100% + 8px);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 /* Locked until the shopper has added this page's own product to the bag —
    otherwise "adding the bundle" wouldn't actually get them the bundle price. */
