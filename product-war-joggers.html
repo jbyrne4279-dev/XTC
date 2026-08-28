@@ -1010,7 +1010,7 @@
     }
     function pdpBundleAdd(btn, pickerId, sizeList, domId) {
       if (!pdpBundleUnlocked()) {
-        if (typeof showToast === 'function') showToast('Add the ' + PDP_OWN_PRODUCT.label + ' to your bag first to unlock the bundle price.');
+        if (typeof showToast === 'function') showToast('Add the ' + PDP_OWN_PRODUCT.label + ' to your bag first.');
         return;
       }
       openSizePicker(btn, pickerId, sizeList, domId);

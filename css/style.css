@@ -2206,6 +2206,22 @@ a[aria-label="Cart"].cart-active .cart-count {
   white-space: nowrap;
   backdrop-filter: blur(10px);
 }
+@media (max-width: 560px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    transform: translateY(20px);
+    white-space: normal;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 11px 18px;
+    line-height: 1.5;
+  }
+  .toast.show { transform: translateY(0); }
+}
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
