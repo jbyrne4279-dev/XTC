@@ -103,7 +103,7 @@ const PRODUCTS = {
   'polo-black': { name: 'XTC Polo [Black]', amount: 6000 },
   'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
   // SS26 War Collection — pre-order (ships 21 July)
-  'war-zip': { name: 'XTC War™ Zip', amount: 9000 },
+  'war-zip': { name: 'XTC War™ Zip', amount: 12000 },
   'war-joggers': { name: 'XTC War™ Joggers', amount: 11000 },
   'uniform-t': { name: 'XTC Uniform T', amount: 3000 },
 };
