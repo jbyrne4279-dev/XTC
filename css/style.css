@@ -2671,9 +2671,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-grid--3 .fp-card__price { font-size: 12px; }
 .fp-grid--3 .fp-card__atc { padding: 9px 14px; font-size: 9.5px; }
 
-/* ── War™ / Drop 02 — blood red branding ── */
-/* Override --accent variable for War™ product pages */
-.pdp-war { --accent: #cc0000; }
+/* ── War™ / Drop 02 ── */
 :root {
   --war-red:        #990000;
   --war-red-light:  #cc0000;
@@ -2771,21 +2769,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   -webkit-text-fill-color: transparent;
 }
 
-/* War™ product page (pdp) overrides */
-.pdp-war .pdp-info__brand { color: var(--war-red-dim); }
-.pdp-war .pdp-atc {
-  background: var(--war-red) !important;
-  border-color: var(--war-red-light) !important;
-}
-.pdp-war .pdp-buy-now {
-  border-color: var(--war-red-border) !important;
-  color: var(--war-red-light) !important;
-}
-.pdp-war .pdp-preorder-note { color: var(--war-red-light) !important; }
-.pdp-war .pdp-size-btn.selected {
-  border-color: var(--war-red-light);
-  color: var(--war-red-light);
-}
+/* War™ product page (pdp) — black theme, same as the rest of the site.
+   .pdp-war is kept as a hook on the markup but no longer overrides colour. */
 
 .coming-soon-card { opacity: 0.75; }
 .coming-soon-card:hover { opacity: 1; border-color: rgba(0, 0, 0, 0.2); }
