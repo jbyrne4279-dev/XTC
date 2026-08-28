@@ -2193,9 +2193,9 @@ a[aria-label="Cart"].cart-active .cart-count {
   bottom: var(--sp-8);
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(242, 242, 242, 0.96);
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  color: var(--text-secondary);
+  background: rgba(17, 17, 17, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
   padding: 13px 28px;
   font-size: var(--fs-xs);
   letter-spacing: 1.5px;
