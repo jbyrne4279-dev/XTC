@@ -991,14 +991,11 @@ a[aria-label="Cart"].cart-active .cart-count {
    FEATURED PRODUCTS — HOMEPAGE
    ============================================ */
 .featured-products {
-  background: #000000;
+  background: var(--bg);
   padding: 44px 0 100px;
   position: relative;
   overflow: hidden;
 }
-.featured-products .fp-eyebrow { color: rgba(255, 255, 255, 0.6); }
-.featured-products .fp-title { color: #ffffff; }
-.featured-products .fp-note { color: rgba(255, 255, 255, 0.3); }
 /* Home: when two product sections stack (Original Members + War), integrate
    them into one even-flowing block instead of a large doubled gap. */
 .featured-products:has(+ .featured-products) { padding-bottom: 64px; }
@@ -1013,6 +1010,22 @@ a[aria-label="Cart"].cart-active .cart-count {
   opacity: 0.55;
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 80%);
   mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 80%);
+}
+.fp-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+.fp-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(245, 245, 245, 0.88);
+  pointer-events: none;
 }
 .fp-header,
 .fp-grid {
@@ -1435,6 +1448,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+.no-restock-shine,
 .purple-shine {
   background: linear-gradient(90deg,
     rgba(0, 0, 0, 0.8)  0%,
@@ -1442,20 +1456,6 @@ a[aria-label="Cart"].cart-active .cart-count {
     rgba(0, 0, 0, 1)    50%,
     rgba(20, 20, 20, 1)   65%,
     rgba(0, 0, 0, 0.8) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: purple-shine-move 7s linear infinite;
-}
-.no-restock-shine {
-  background: linear-gradient(90deg,
-    rgba(255, 255, 255, 0.5)  0%,
-    rgba(255, 255, 255, 1)   35%,
-    rgba(255, 255, 255, 1)    50%,
-    rgba(255, 255, 255, 1)   65%,
-    rgba(255, 255, 255, 0.5) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
