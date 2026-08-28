@@ -100,6 +100,8 @@ ul, ol { list-style: none; }
   z-index: 200;
 }
 .announcement-bar {
+  /* Hidden for now — kept in markup/CSS to re-enable easily later. */
+  display: none;
   background: var(--bg-2);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
