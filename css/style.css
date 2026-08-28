@@ -226,22 +226,22 @@ ul, ol { list-style: none; }
 
 .pdp-size-btn[data-stock-label] {
   border-color: rgba(245,158,11,0.5) !important;
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
-/* PDP tabs (Description / Shipping / Returns) */
-.pdp-tabs { border-top: 1px solid var(--border); }
+/* PDP tabs (Description / Shipping / Returns) — black panel theme */
+.pdp-tabs { border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .pdp-tabs__nav {
   display: flex;
   gap: 32px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .pdp-tab {
   padding: 18px 0;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.4);
   font-family: inherit;
   font-size: 11px;
   font-weight: 500;
@@ -251,14 +251,14 @@ ul, ol { list-style: none; }
   transition: color 0.2s, border-color 0.2s;
   margin-bottom: -1px;
 }
-.pdp-tab:hover { color: rgba(0, 0, 0, 0.65); }
-.pdp-tab.active { color: #000000; border-bottom-color: var(--accent); }
+.pdp-tab:hover { color: rgba(255, 255, 255, 0.75); }
+.pdp-tab.active { color: #ffffff; border-bottom-color: #ffffff; }
 .pdp-tab-panel { display: none; padding: 24px 0 8px; }
 .pdp-tab-panel.active { display: block; }
 .pdp-tab-panel p,
 .pdp-tab-panel li {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.5);
   line-height: 1.8;
   letter-spacing: 0.3px;
 }
@@ -271,8 +271,8 @@ ul, ol { list-style: none; }
   display: none;
   margin: 12px 0 4px;
   padding: 16px;
-  border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
 }
 .pdp-size-guide-panel.open { display: block; }
 .pdp-size-guide-panel table { width: 100%; border-collapse: collapse; }
@@ -282,14 +282,14 @@ ul, ol { list-style: none; }
   text-align: left;
   font-size: 12px;
   letter-spacing: 0.5px;
-  border: 1px solid var(--border);
-  color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
 }
 .pdp-size-guide-panel th {
   font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 @keyframes marquee-scroll {
