@@ -76,6 +76,7 @@
     /* Breadcrumb */
     .pdp-crumb {
       padding: 16px 64px;
+      background: #f7f7f7;
       border-bottom: 1px solid var(--border);
       font-size: 10px;
       letter-spacing: 2px;
@@ -533,10 +534,10 @@
         </button>
 
         <!-- Bundle & Save -->
-        <div class="pdp-bundle">
+        <div class="pdp-bundle" id="pdpBundle">
           <p class="pdp-bundle__label">Bundle &amp; Save</p>
-          <p class="pdp-bundle__text">Add the War&trade; Zip and pay <strong>£200</strong> for both, usually £230.</p>
-          <button class="pdp-bundle__cta" onclick="openSizePicker(this,'war-zip',['S','M','L'],'bundle-war-zip')">
+          <p class="pdp-bundle__text" id="pdpBundleText">Add the War&trade; Zip and pay <strong>£200</strong> for both, usually £230.</p>
+          <button class="pdp-bundle__cta" onclick="pdpBundleAdd(this,'war-zip',['S','M','L'],'bundle-war-zip')">
             <img class="pdp-bundle__thumb" src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="War&trade; Zip" />
             <span class="pdp-bundle__cta-info">
               <span class="pdp-bundle__cta-name">War&trade; Zip</span>
@@ -983,7 +984,38 @@
       }
       const fullName = name + ' — ' + selected.dataset.size;
       addToCart(id + '-' + selected.dataset.size.toLowerCase(), fullName, price, img, qty);
+      if (typeof refreshBundleState === 'function') refreshBundleState();
     }
+
+    // Bundle & Save is only unlocked once the War™ Joggers themselves are in
+    // the bag — otherwise "adding the bundle" doesn't actually get you the
+    // bundle price.
+    const PDP_OWN_PRODUCT = { id: 'war-joggers', label: 'War™ Joggers' };
+    function pdpBundleUnlocked() {
+      return typeof getCart === 'function' && typeof cartProductId === 'function'
+        && getCart().some(i => cartProductId(i.id) === PDP_OWN_PRODUCT.id);
+    }
+    function refreshBundleState() {
+      const wrap = document.getElementById('pdpBundle');
+      const textEl = document.getElementById('pdpBundleText');
+      if (!wrap) return;
+      const unlocked = pdpBundleUnlocked();
+      wrap.classList.toggle('pdp-bundle--locked', !unlocked);
+      if (textEl) {
+        textEl.innerHTML = unlocked
+          ? 'Add the War&trade; Zip and pay <strong>£200</strong> for both, usually £230.'
+          : 'Add these <strong>War&trade; Joggers</strong> to your bag first to unlock the bundle price.';
+      }
+    }
+    function pdpBundleAdd(btn, pickerId, sizeList, domId) {
+      if (!pdpBundleUnlocked()) {
+        if (typeof showToast === 'function') showToast('Add the ' + PDP_OWN_PRODUCT.label + ' to your bag first to unlock the bundle price.');
+        return;
+      }
+      openSizePicker(btn, pickerId, sizeList, domId);
+    }
+    document.addEventListener('DOMContentLoaded', refreshBundleState);
+    if (document.readyState !== 'loading') refreshBundleState();
     function buyNowFromPage(id, name, price, img) {
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {

@@ -2682,6 +2682,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   bottom: auto;
   top: calc(100% + 8px);
 }
+/* Locked until the shopper has added this page's own product to the bag —
+   otherwise "adding the bundle" wouldn't actually get them the bundle price. */
+.pdp-bundle--locked .pdp-bundle__cta { opacity: 0.4; }
+.pdp-bundle--locked .pdp-bundle__cta:hover { border-color: rgba(0, 0, 0, 0.15); }
+.pdp-bundle--locked .pdp-bundle__cta-add { color: rgba(0, 0, 0, 0.3); }
 
 /* ============================================
    YOU MAY ALSO LIKE — "XTC Clothing" recs header
