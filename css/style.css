@@ -1034,7 +1034,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px 16px;
+  gap: 40px 16px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 56px;
@@ -1204,6 +1204,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   font-weight: 200;
   letter-spacing: 1px;
   color: #000000;
+  margin-top: 4px;
 }
 .fp-card__atc {
   font-size: 11px;
@@ -2475,6 +2476,20 @@ a[aria-label="Cart"].cart-active .cart-count {
   margin-bottom: var(--sp-5);
   opacity: 0.9;
   filter: brightness(0);
+}
+
+/* Desktop footer felt cramped — the "Footer main" block above tightens
+   .footer-top/.footer-links-grid/.footer-bottom for mobile, but nothing
+   loosened them back up again above the mobile breakpoint. */
+@media (min-width: 901px) {
+  .footer-top {
+    gap: var(--sp-10);
+    padding: var(--sp-10) 0;
+  }
+  .footer-links-grid { gap: var(--sp-10); }
+  .footer-links ul { gap: var(--sp-4); }
+  .footer-links__heading { margin-bottom: var(--sp-4); }
+  .footer-bottom { padding: var(--sp-6) 0 0; }
 }
 
 /* Nav active state */
