@@ -2558,22 +2558,17 @@ a[aria-label="Cart"].cart-active .cart-count {
   grid-template-columns: repeat(3, 1fr) !important;
 }
 /* Three-up cards are narrower than the two-up layout the info bar was sized
-   for, so the name/price/button row runs out of space and crowds together.
-   Let it wrap onto two lines (name+sub on top, price+button below) and trim
-   the button/price down a notch to match. */
+   for, so name/price/Add to Bag are trimmed down a notch to keep them on
+   one row, in line with the name — same layout as the two-up cards, just
+   smaller to fit. */
 .fp-grid--3 .fp-card__info {
-  flex-wrap: wrap;
-  padding: 20px;
-  gap: 6px;
+  padding: 18px 20px;
+  gap: 10px;
 }
-.fp-grid--3 .fp-card__info-right {
-  width: 100%;
-  justify-content: flex-start;
-  gap: 14px;
-}
-.fp-grid--3 .fp-card__name { font-size: 14px; }
-.fp-grid--3 .fp-card__price { font-size: 13px; }
-.fp-grid--3 .fp-card__atc { padding: 10px 16px; font-size: 10px; }
+.fp-grid--3 .fp-card__info-right { gap: 10px; }
+.fp-grid--3 .fp-card__name { font-size: 13px; }
+.fp-grid--3 .fp-card__price { font-size: 12px; }
+.fp-grid--3 .fp-card__atc { padding: 9px 14px; font-size: 9.5px; }
 
 /* ── War™ / Drop 02 — blood red branding ── */
 /* Override --accent variable for War™ product pages */
