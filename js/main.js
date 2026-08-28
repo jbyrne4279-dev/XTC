@@ -42,14 +42,24 @@ function updateCartCount() {
   });
 }
 
+// Cart line ids are "polo-black-s", "polo-white-l", etc. — split off the
+// trailing size to look up real stock. Caps at 10 as a sane hard ceiling,
+// but never above what's actually in stock for that size.
+function getMaxQtyForCartId(id) {
+  if (typeof getSizeStock !== 'function') return 10;
+  const parts = id.split('-');
+  const size = parts[parts.length - 1].toUpperCase();
+  const productId = parts.slice(0, -1).join('-');
+  return Math.min(10, getSizeStock(productId, size));
+}
+
 function addToCart(id, name, price, img, quantity = 1) {
-  // Stock guard — id format is "polo-black-s", "polo-white-l", etc.
+  // Stock guard — cap at whatever is actually in stock for this size, not a
+  // flat number, so the cart can never hold more units than are sellable.
+  let maxQty = 10;
   if (typeof getSizeStock === 'function') {
-    const parts = id.split('-');
-    const size = parts[parts.length - 1].toUpperCase();
-    const productId = parts.slice(0, -1).join('-');
-    const inStock = getSizeStock(productId, size);
-    if (inStock <= 0) {
+    maxQty = getMaxQtyForCartId(id);
+    if (maxQty <= 0) {
       showToast('Sorry, ' + name + ' is out of stock.');
       return;
     }
@@ -58,9 +68,13 @@ function addToCart(id, name, price, img, quantity = 1) {
   const cart = getCart();
   const existing = cart.find(item => item.id === id);
   if (existing) {
-    existing.qty = Math.min(10, existing.qty + quantity);
+    if (existing.qty >= maxQty) {
+      showToast('Only ' + maxQty + ' left in stock — that\'s already in your bag.');
+      return;
+    }
+    existing.qty = Math.min(maxQty, existing.qty + quantity);
   } else {
-    cart.push({ id, name, price, img, qty: quantity });
+    cart.push({ id, name, price, img, qty: Math.min(maxQty, quantity) });
   }
   saveCart(cart);
   updateCartCount();
@@ -516,7 +530,12 @@ function cdUpdateQty(index, delta) {
   const item = cart[index];
   if (!item) return;
   if (item.qty + delta < 1) { cdRemoveItem(index); return; }
-  item.qty = Math.min(10, item.qty + delta);
+  const maxQty = getMaxQtyForCartId(item.id);
+  if (delta > 0 && item.qty >= maxQty) {
+    showToast('Only ' + maxQty + ' left in stock.');
+    return;
+  }
+  item.qty = Math.min(maxQty, item.qty + delta);
   saveCart(cart);
   updateCartCount();
   renderCartDrawer();
@@ -561,11 +580,13 @@ function cdChangeSize(index, newSize) {
   // instead of creating a duplicate line.
   const existingIdx = cart.findIndex((c, i) => i !== index && c.id === newId);
   if (existingIdx !== -1) {
-    cart[existingIdx].qty = Math.min(10, cart[existingIdx].qty + item.qty);
+    const maxQty = getMaxQtyForCartId(newId);
+    cart[existingIdx].qty = Math.min(maxQty, cart[existingIdx].qty + item.qty);
     cart.splice(index, 1);
   } else {
     item.id = newId;
     item.name = displayName + ' — ' + newSize;
+    item.qty = Math.min(getMaxQtyForCartId(newId), item.qty);
   }
 
   saveCart(cart);

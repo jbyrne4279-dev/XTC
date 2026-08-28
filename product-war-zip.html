@@ -983,9 +983,11 @@
       }
       const fullName = name + ' — ' + size;
       const cart = getCart();
-      const existing = cart.find(item => item.id === fullId);
-      if (existing) { existing.qty = Math.min(10, existing.qty + 1); } else { cart.push({ id: fullId, name: fullName, price, img, qty: 1 }); }
-      saveCart(cart);
+      const before = cart.find(item => item.id === fullId);
+      const beforeQty = before ? before.qty : 0;
+      addToCart(fullId, fullName, price, img, 1);
+      const after = getCart().find(item => item.id === fullId);
+      if (!after || after.qty === beforeQty) return; // addToCart blocked it (out of stock / at limit)
       window.location.href = '/checkout';
     }
   </script>
