@@ -536,7 +536,7 @@
         <div class="pdp-bundle">
           <p class="pdp-bundle__label">Bundle &amp; Save</p>
           <p class="pdp-bundle__text">Add the War&trade; Joggers and pay <strong>£200</strong> for both, usually £230.</p>
-          <button class="pdp-bundle__cta" onclick="openSizePicker(this,'war-joggers',['S','M','L'])">
+          <button class="pdp-bundle__cta" onclick="openSizePicker(this,'war-joggers',['S','M','L'],'bundle-war-joggers')">
             <img class="pdp-bundle__thumb" src="images/JOGGERS-XTC.webp" alt="War&trade; Joggers" />
             <span class="pdp-bundle__cta-info">
               <span class="pdp-bundle__cta-name">War&trade; Joggers</span>
@@ -544,9 +544,9 @@
             </span>
             <span class="pdp-bundle__cta-add">Add</span>
           </button>
-          <div class="fp-size-picker" id="picker-war-joggers">
+          <div class="fp-size-picker" id="picker-bundle-war-joggers">
             <p class="fp-size-picker__label">Select Size</p>
-            <div class="fp-size-picker__sizes" id="picker-war-joggers-sizes"></div>
+            <div class="fp-size-picker__sizes" id="picker-bundle-war-joggers-sizes"></div>
           </div>
         </div>
 
@@ -1029,21 +1029,23 @@
       'uniform-t': { productId: 'uniform-t', name: 'UNIFORM T', price: '£40.00', img: 'images/T-SHIRT-XTC.webp' }
     };
 
-    window.openSizePicker = function (btn, pickerId, sizeList) {
-      const picker = document.getElementById('picker-' + pickerId);
-      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+    window.openSizePicker = function (btn, pickerId, sizeList, domId) {
+      const elId = domId || pickerId;
+      const picker = document.getElementById('picker-' + elId);
+      const sizesEl = document.getElementById('picker-' + elId + '-sizes');
       if (!picker || !sizesEl) return;
 
       if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
       sizesEl.dataset.sizeList = JSON.stringify(sizeList || SIZES);
-      renderPickerSizes(pickerId);
+      renderPickerSizes(pickerId, elId);
       picker.classList.add('open');
     };
 
-    function renderPickerSizes(pickerId) {
-      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+    function renderPickerSizes(pickerId, domId) {
+      const elId = domId || pickerId;
+      const sizesEl = document.getElementById('picker-' + elId + '-sizes');
       if (!sizesEl) return;
       const sizeList = JSON.parse(sizesEl.dataset.sizeList || '[]');
       const product = POLO_PRODUCTS[pickerId];
@@ -1061,7 +1063,7 @@
     }
 
     document.addEventListener('click', function (e) {
-      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
+      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc') && !e.target.closest('.pdp-bundle__cta')) {
         document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
       }
     });

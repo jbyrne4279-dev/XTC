@@ -1159,21 +1159,23 @@
       'uniform-t': { productId: 'uniform-t', name: 'UNIFORM T', price: '£40.00', img: 'images/T-SHIRT-XTC.webp' }
     };
 
-    window.openSizePicker = function (btn, pickerId, sizeList) {
-      const picker = document.getElementById('picker-' + pickerId);
-      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+    window.openSizePicker = function (btn, pickerId, sizeList, domId) {
+      const elId = domId || pickerId;
+      const picker = document.getElementById('picker-' + elId);
+      const sizesEl = document.getElementById('picker-' + elId + '-sizes');
       if (!picker || !sizesEl) return;
 
       if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
       document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
 
       sizesEl.dataset.sizeList = JSON.stringify(sizeList || SIZES);
-      renderPickerSizes(pickerId);
+      renderPickerSizes(pickerId, elId);
       picker.classList.add('open');
     };
 
-    function renderPickerSizes(pickerId) {
-      const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
+    function renderPickerSizes(pickerId, domId) {
+      const elId = domId || pickerId;
+      const sizesEl = document.getElementById('picker-' + elId + '-sizes');
       if (!sizesEl) return;
       const sizeList = JSON.parse(sizesEl.dataset.sizeList || '[]');
       const product = POLO_PRODUCTS[pickerId];
@@ -1191,7 +1193,7 @@
     }
 
     document.addEventListener('click', function (e) {
-      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc')) {
+      if (!e.target.closest('.fp-size-picker') && !e.target.closest('.fp-card__atc') && !e.target.closest('.pdp-bundle__cta')) {
         document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
       }
     });
