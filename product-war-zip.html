@@ -162,6 +162,9 @@
       color: rgba(255, 255, 255, 0.6);
       margin-bottom: 16px;
     }
+    @keyframes pdp-brand-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .pdp-info__brand--fade { animation: pdp-brand-fade 2.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .pdp-info__brand--fade { animation: none; } }
     .pdp-info__title {
       font-size: clamp(28px, 3vw, 44px);
       font-weight: 200;
@@ -495,7 +498,7 @@
 
       <!-- Info -->
       <div class="pdp-info">
-        <p class="pdp-info__brand">NEW RELEASE</p>
+        <p class="pdp-info__brand pdp-info__brand--fade">NEW RELEASE</p>
         <h1 class="pdp-info__title">War™ Zip</h1>
         <div class="pdp-info__price-row">
           <span class="pdp-info__price">£120</span>
