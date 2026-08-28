@@ -292,7 +292,7 @@ ul, ol { list-style: none; }
    ============================================ */
 .site-header {
   position: sticky;
-  top: 41px;
+  top: 0;
   z-index: 100;
   background: rgba(245, 245, 245, 0.85);
   backdrop-filter: blur(20px);
