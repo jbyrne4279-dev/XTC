@@ -419,6 +419,12 @@
       border-top: 1px solid rgba(255, 255, 255, 0.15);
     }
     .co-total-row--discount { color: rgba(34,197,94,0.9); }
+    .co-shipping-note {
+      font-size: 10.5px;
+      letter-spacing: 0.3px;
+      color: rgba(255, 255, 255, 0.35);
+      margin: -6px 0 12px;
+    }
 
     /* Promo code input */
     .co-promo {
@@ -707,6 +713,7 @@
         <span>Shipping</span>
         <span id="coShipping">—</span>
       </div>
+      <p class="co-shipping-note" id="coShippingNote"></p>
       <div class="co-total-row co-total-row--grand">
         <span>Total</span>
         <span id="coTotal">—</span>
@@ -842,10 +849,13 @@
     updateTotals(subtotal);
   }
 
+  const UK_SHIPPING = 2.99;
+  const UK_FREE_SHIPPING_THRESHOLD = 80;
+
   function getShipping(subtotal) {
     const country = (document.getElementById('coCountry') && document.getElementById('coCountry').value) || 'GB';
     if (country && country !== 'GB') return 9.99;
-    return 0;
+    return subtotal >= UK_FREE_SHIPPING_THRESHOLD ? 0 : UK_SHIPPING;
   }
 
   function updateTotals(subtotal) {
@@ -868,6 +878,19 @@
     document.getElementById('coSubtotal').textContent = '£' + subtotal.toFixed(2);
     document.getElementById('coShipping').textContent = shipping === 0 ? 'Free' : '£' + shipping.toFixed(2);
     document.getElementById('coTotal').textContent = '£' + total.toFixed(2);
+
+    const country = (document.getElementById('coCountry') && document.getElementById('coCountry').value) || 'GB';
+    const noteEl = document.getElementById('coShippingNote');
+    if (country === 'GB') {
+      if (shipping === 0) {
+        noteEl.textContent = 'Free UK shipping applied.';
+      } else {
+        const remaining = UK_FREE_SHIPPING_THRESHOLD - subtotal;
+        noteEl.textContent = 'Free UK shipping on orders over £' + UK_FREE_SHIPPING_THRESHOLD + ' — add £' + remaining.toFixed(2) + ' more to qualify.';
+      }
+    } else {
+      noteEl.textContent = '';
+    }
 
     const discountRow = document.getElementById('coDiscountRow');
     if (_promo && discountAmount > 0) {
