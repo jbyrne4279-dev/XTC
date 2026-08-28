@@ -2564,12 +2564,12 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-grid--3 .fp-card__info {
   flex-wrap: wrap;
   padding: 20px;
-  gap: 10px;
+  gap: 6px;
 }
 .fp-grid--3 .fp-card__info-right {
   width: 100%;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 14px;
 }
 .fp-grid--3 .fp-card__name { font-size: 14px; }
 .fp-grid--3 .fp-card__price { font-size: 13px; }
