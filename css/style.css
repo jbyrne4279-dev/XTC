@@ -3194,6 +3194,9 @@ textarea {
   .fp-card__name { font-size: 13px; }
   .fp-card__price { font-size: 17px; }
   .fp-card__atc  { padding: 10px 16px; font-size: 10px; }
+  /* Match the New Releases page's grey on mobile */
+  .featured-products { background: #e8e8e8; }
+  .fp-bg-overlay { background: rgba(232, 232, 232, 0.92); }
 
   /* ── Gallery strip ── */
   .hgs-header { padding: 0 20px 20px; }
