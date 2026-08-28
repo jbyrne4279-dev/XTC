@@ -2599,6 +2599,21 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 /* ============================================
+   YOU MAY ALSO LIKE — "XTC Clothing" recs header
+   Shared by Track Order and every product page.
+   ============================================ */
+.ymal-section { border-top: 1px solid rgba(0, 0, 0, 0.06); padding-bottom: 80px; }
+.ymal-head { text-align: center; padding: 64px 20px 48px; }
+.ymal-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.7); margin-bottom: 12px;
+}
+.ymal-title {
+  font-size: clamp(22px, 3vw, 32px); letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 300; color: #000000;
+}
+
+/* ============================================
    COMING SOON SECTION
    ============================================ */
 .coming-soon-section {
