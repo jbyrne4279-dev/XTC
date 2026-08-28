@@ -80,34 +80,54 @@ function calcBundleDiscount(cart) {
   return { totalDiscount, applied };
 }
 
+// Per-product order cap (across every size combined), on top of raw stock.
+// A "limited drop" item can have 10 units in stock per size (30 total) and
+// still shouldn't let one shopper take a third of the whole run in one cart.
+const MAX_QTY_PER_PRODUCT = 5;
+
+function getCartQtyForProduct(cart, productId, excludeId) {
+  return cart
+    .filter(i => cartProductId(i.id) === productId && i.id !== excludeId)
+    .reduce((s, i) => s + i.qty, 0);
+}
+
 // Cart line ids are "polo-black-s", "polo-white-l", etc. — split off the
-// trailing size to look up real stock. Caps at 10 as a sane hard ceiling,
-// but never above what's actually in stock for that size.
-function getMaxQtyForCartId(id) {
-  if (typeof getSizeStock !== 'function') return 10;
-  const parts = id.split('-');
-  const size = parts[parts.length - 1].toUpperCase();
-  const productId = parts.slice(0, -1).join('-');
-  return Math.min(10, getSizeStock(productId, size));
+// trailing size to look up real stock. The returned number is the max this
+// *line* (this product+size) can hold — capped by whatever's actually in
+// stock for that size, and by MAX_QTY_PER_PRODUCT once every other size of
+// the same product already in the cart is counted.
+function getMaxQtyForCartId(id, cart) {
+  const c = cart || getCart();
+  const productId = cartProductId(id);
+  const size = id.slice(productId.length + 1).toUpperCase();
+  const stockCap = (typeof getSizeStock === 'function') ? Math.min(10, getSizeStock(productId, size)) : 10;
+  const otherLinesQty = getCartQtyForProduct(c, productId, id);
+  const productCapRemaining = Math.max(0, MAX_QTY_PER_PRODUCT - otherLinesQty);
+  return Math.min(stockCap, productCapRemaining);
 }
 
 function addToCart(id, name, price, img, quantity = 1) {
-  // Stock guard — cap at whatever is actually in stock for this size, not a
-  // flat number, so the cart can never hold more units than are sellable.
-  let maxQty = 10;
-  if (typeof getSizeStock === 'function') {
-    maxQty = getMaxQtyForCartId(id);
-    if (maxQty <= 0) {
+  const cart = getCart();
+
+  // Stock + per-product order cap guard — never let the cart hold more
+  // units of one size than are in stock, or more of one product (any size
+  // mix) than MAX_QTY_PER_PRODUCT.
+  const maxQty = getMaxQtyForCartId(id, cart);
+  if (maxQty <= 0) {
+    const productId = cartProductId(id);
+    const otherLinesQty = getCartQtyForProduct(cart, productId, id);
+    if (otherLinesQty >= MAX_QTY_PER_PRODUCT) {
+      showToast('You can add up to ' + MAX_QTY_PER_PRODUCT + ' of this product per order.');
+    } else {
       showToast('Sorry, ' + name + ' is out of stock.');
-      return;
     }
+    return;
   }
 
-  const cart = getCart();
   const existing = cart.find(item => item.id === id);
   if (existing) {
     if (existing.qty >= maxQty) {
-      showToast('Only ' + maxQty + ' left in stock — that\'s already in your bag.');
+      showToast('Only ' + maxQty + ' more of this line can be added.');
       return;
     }
     existing.qty = Math.min(maxQty, existing.qty + quantity);
@@ -585,9 +605,13 @@ function cdUpdateQty(index, delta) {
   const item = cart[index];
   if (!item) return;
   if (item.qty + delta < 1) { cdRemoveItem(index); return; }
-  const maxQty = getMaxQtyForCartId(item.id);
+  const maxQty = getMaxQtyForCartId(item.id, cart);
   if (delta > 0 && item.qty >= maxQty) {
-    showToast('Only ' + maxQty + ' left in stock.');
+    const productId = cartProductId(item.id);
+    const otherLinesQty = getCartQtyForProduct(cart, productId, item.id);
+    showToast(otherLinesQty + item.qty >= MAX_QTY_PER_PRODUCT
+      ? 'You can add up to ' + MAX_QTY_PER_PRODUCT + ' of this product per order.'
+      : 'No more left in stock for this size.');
     return;
   }
   item.qty = Math.min(maxQty, item.qty + delta);
@@ -631,17 +655,22 @@ function cdChangeSize(index, newSize) {
   const dashIdx = item.name.lastIndexOf(' — ');
   const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
 
+  // Exclude this line from the cap calc — it's being moved/merged, not
+  // adding new demand for the product.
+  const cartWithoutThisLine = cart.filter((c, i) => i !== index);
+
   // If another line already has this product/size, merge quantities into it
   // instead of creating a duplicate line.
   const existingIdx = cart.findIndex((c, i) => i !== index && c.id === newId);
   if (existingIdx !== -1) {
-    const maxQty = getMaxQtyForCartId(newId);
+    const maxQty = getMaxQtyForCartId(newId, cartWithoutThisLine);
     cart[existingIdx].qty = Math.min(maxQty, cart[existingIdx].qty + item.qty);
     cart.splice(index, 1);
   } else {
+    const maxQty = getMaxQtyForCartId(newId, cartWithoutThisLine);
     item.id = newId;
     item.name = displayName + ' — ' + newSize;
-    item.qty = Math.min(getMaxQtyForCartId(newId), item.qty);
+    item.qty = Math.min(maxQty, item.qty);
   }
 
   saveCart(cart);
