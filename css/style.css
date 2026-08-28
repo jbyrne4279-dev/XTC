@@ -2740,7 +2740,7 @@ a[aria-label="Cart"].cart-active .cart-count {
    YOU MAY ALSO LIKE — "XTC Clothing" recs header
    Shared by Track Order and every product page.
    ============================================ */
-.ymal-section { border-top: 1px solid rgba(0, 0, 0, 0.06); padding-bottom: 80px; }
+.ymal-section { background: #e8e8e8; border-top: 1px solid rgba(0, 0, 0, 0.06); padding-bottom: 80px; }
 .ymal-head { text-align: center; padding: 64px 20px 48px; }
 .ymal-eyebrow {
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
