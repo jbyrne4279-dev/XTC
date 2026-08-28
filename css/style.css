@@ -991,11 +991,14 @@ a[aria-label="Cart"].cart-active .cart-count {
    FEATURED PRODUCTS — HOMEPAGE
    ============================================ */
 .featured-products {
-  background: var(--bg);
+  background: #000000;
   padding: 44px 0 100px;
   position: relative;
   overflow: hidden;
 }
+.featured-products .fp-eyebrow { color: rgba(255, 255, 255, 0.6); }
+.featured-products .fp-title { color: #ffffff; }
+.featured-products .fp-note { color: rgba(255, 255, 255, 0.3); }
 /* Home: when two product sections stack (Original Members + War), integrate
    them into one even-flowing block instead of a large doubled gap. */
 .featured-products:has(+ .featured-products) { padding-bottom: 64px; }
@@ -1024,7 +1027,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(245, 245, 245, 0.88);
+  background: rgba(0, 0, 0, 0.8);
   pointer-events: none;
 }
 .fp-header,
@@ -3201,9 +3204,6 @@ textarea {
   .fp-card__name { font-size: 13px; }
   .fp-card__price { font-size: 17px; }
   .fp-card__atc  { padding: 10px 16px; font-size: 10px; }
-  /* Match the New Releases page's grey on mobile */
-  .featured-products { background: #e8e8e8; }
-  .fp-bg-overlay { background: rgba(232, 232, 232, 0.92); }
 
   /* ── Gallery strip ── */
   .hgs-header { padding: 0 20px 20px; }
