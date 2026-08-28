@@ -529,48 +529,71 @@
         </div>
       </article>
 
-      <!-- War™ Zip / Joggers / Uniform T -->
-      <article class="product-card product-card--war">
-        <a href="/product-war-zip" class="product-card__media">
-          <img src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="WAR&trade; ZIP" loading="lazy" />
-          <img class="product-card__media-alt" src="images/ZIP-HOODIE-BLACK-BACK.webp" alt="WAR&trade; ZIP alt" loading="lazy" />
-          <span class="product-card__badge">Pre-Order</span>
+      <!-- Product: War™ Zip -->
+      <article class="fp-card">
+        <a href="/product-war-zip" class="fp-card__media">
+          <img src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="XTC War™ Zip — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/ZIP-HOODIE-BLACK-BACK.webp" alt="XTC War™ Zip — alt" loading="lazy" />
         </a>
-        <div class="product-card__info">
-          <a href="/product-war-zip" class="product-card__name">WAR&trade; ZIP</a>
-          <p class="product-card__price">£90.00 GBP</p>
-          <div class="product-card__actions">
-            <a href="/product-war-zip" class="btn btn--primary btn--sm">View</a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-war-zip" class="fp-card__name">War&trade; Zip</a>
+            <p class="fp-card__sub">400gsm French Terry Cotton</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£90</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-zip','war-zip',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-zip">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-zip-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
 
-      <article class="product-card product-card--war">
-        <a href="/product-war-joggers" class="product-card__media">
-          <img src="images/JOGGERS-XTC.webp" alt="WAR&trade; JOGGERS" loading="lazy" />
-          <img class="product-card__media-alt" src="images/JOGGERS-XTC-back.webp" alt="WAR&trade; JOGGERS alt" loading="lazy" />
-          <span class="product-card__badge">Pre-Order</span>
+      <!-- Product: War™ Joggers -->
+      <article class="fp-card">
+        <a href="/product-war-joggers" class="fp-card__media">
+          <img src="images/JOGGERS-XTC.webp" alt="XTC War™ Joggers — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/JOGGERS-XTC-back.webp" alt="XTC War™ Joggers — alt" loading="lazy" />
         </a>
-        <div class="product-card__info">
-          <a href="/product-war-joggers" class="product-card__name">WAR&trade; JOGGERS</a>
-          <p class="product-card__price">£110.00 GBP</p>
-          <div class="product-card__actions">
-            <a href="/product-war-joggers" class="btn btn--primary btn--sm">View</a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-war-joggers" class="fp-card__name">War&trade; Joggers</a>
+            <p class="fp-card__sub">400gsm French Terry Cotton</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£110</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'war-joggers','war-joggers',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-war-joggers">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-war-joggers-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
 
-      <article class="product-card product-card--war">
-        <a href="/product-uniform-t" class="product-card__media">
-          <img src="images/T-SHIRT-XTC.webp" alt="UNIFORM T" loading="lazy" />
-          <img class="product-card__media-alt" src="images/T-SHIRT-XTC.webp" alt="UNIFORM T alt" loading="lazy" />
-          <span class="product-card__badge">Pre-Order</span>
+      <!-- Product: Uniform T -->
+      <article class="fp-card">
+        <a href="/product-uniform-t" class="fp-card__media">
+          <img src="images/T-SHIRT-XTC.webp" alt="XTC Uniform T — front" loading="lazy" />
+          <img class="fp-card__alt" src="images/T-SHIRT-XTC.webp" alt="XTC Uniform T — alt" loading="lazy" />
         </a>
-        <div class="product-card__info">
-          <a href="/product-uniform-t" class="product-card__name">UNIFORM T</a>
-          <p class="product-card__price">£30.00 GBP</p>
-          <div class="product-card__actions">
-            <a href="/product-uniform-t" class="btn btn--primary btn--sm">View</a>
+        <span class="fp-card__badge">Pre-Order</span>
+        <div class="fp-card__info">
+          <div class="fp-card__info-left">
+            <a href="/product-uniform-t" class="fp-card__name">Uniform T</a>
+            <p class="fp-card__sub">100% Cotton</p>
+          </div>
+          <div class="fp-card__info-right">
+            <p class="fp-card__price">£30</p>
+            <button class="fp-card__atc fp-card__atc--highlight" onclick="openSizePicker(this,'uniform-t','uniform-t',['S','M','L'])">Add to Bag</button>
+            <div class="fp-size-picker" id="picker-uniform-t">
+              <p class="fp-size-picker__label">Select Size</p>
+              <div class="fp-size-picker__sizes" id="picker-uniform-t-sizes"></div>
+            </div>
           </div>
         </div>
       </article>
@@ -913,6 +936,24 @@
       url: '/original-members-polo?color=white'
     }
   };
+
+  // The War™ Zip/Joggers/Uniform T cards each sell a single product (no
+  // color switcher), so they're keyed by their own pickerId here — same
+  // lookup shape as HOME_POLO_COLORS above, just one entry per card.
+  const WAR_PRODUCTS = {
+    'war-zip': {
+      productId: 'war-zip', name: 'WAR™ ZIP', price: '£90.00',
+      img: 'images/ZIP-HOODIE-XTC-FRONT.webp', url: '/product-war-zip'
+    },
+    'war-joggers': {
+      productId: 'war-joggers', name: 'WAR™ JOGGERS', price: '£110.00',
+      img: 'images/JOGGERS-XTC.webp', url: '/product-war-joggers'
+    },
+    'uniform-t': {
+      productId: 'uniform-t', name: 'UNIFORM T', price: '£30.00',
+      img: 'images/T-SHIRT-XTC.webp', url: '/product-uniform-t'
+    }
+  };
   function openSizePicker(btn, pickerId, colorKey, sizeList) {
     const picker = document.getElementById('picker-' + pickerId);
     const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
@@ -938,7 +979,8 @@
     const sizesEl = document.getElementById('picker-' + pickerId + '-sizes');
     if (!sizesEl) return;
     const sizeList = JSON.parse(sizesEl.dataset.sizeList || '[]');
-    const color = HOME_POLO_COLORS[colorKey];
+    const color = HOME_POLO_COLORS[colorKey] || WAR_PRODUCTS[colorKey];
+    if (!color) return;
     const stock = (typeof getStockForProduct === 'function') ? getStockForProduct(color.productId) : {};
     sizesEl.innerHTML = sizeList.map(s => {
       const qty = stock[s] || 0;
