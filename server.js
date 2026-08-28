@@ -38,6 +38,31 @@ app.use(express.json());
 // Serve /.well-known (e.g. Apple Pay domain-association file for Stripe Apple Pay).
 // express.static ignores dotfiles by default, so mount it explicitly.
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { dotfiles: 'allow' }));
+
+// ── Site lock ─────────────────────────────────────────────────────────────
+// The whole site is gated behind the /password (early-access) page while
+// we're pre-launch. Only the gate page itself, the handful of assets it
+// needs, and its signup endpoints stay reachable — everything else 302s to
+// /password. Flip SITE_LOCKED to false (or unset it) to open the site back up.
+const SITE_LOCKED = process.env.SITE_LOCKED !== 'false';
+const SITE_LOCK_ALLOWLIST = new Set([
+  '/password', '/password.html',
+  '/manifest.json',
+  '/images/icon-192.png', '/images/icon-512.png',
+  '/images/water-bg.mp4',
+  '/images/skull-emblem-icon.webp',
+  '/drop.ics',
+  '/js/omnisend-config.js',
+  '/subscribe',
+  '/favicon.ico',
+]);
+app.use((req, res, next) => {
+  if (!SITE_LOCKED) return next();
+  const p = req.path;
+  if (SITE_LOCK_ALLOWLIST.has(p) || p.startsWith('/.well-known')) return next();
+  return res.redirect(302, '/password');
+});
+
 app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 const PRODUCTS = {
