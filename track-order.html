@@ -295,22 +295,37 @@
     }
     .to-route__line {
       position: relative;
-      height: 2px;
+      height: 3px;
       flex: 1 1 auto;
       min-width: 24px;
-      background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0 6px, transparent 6px 13px);
+      border-radius: 2px;
+      background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 5px, transparent 5px 11px);
+    }
+    /* The solid portion behind the marker reads as "distance already
+       covered" — the line runs straight into the marker instead of the
+       marker sitting on top of it like a separate sticker. */
+    .to-route__line-fill {
+      position: absolute;
+      top: 0; left: 0; height: 100%;
+      background: #000000;
+      border-radius: 2px;
+      transition: width 0.6s ease;
     }
     .to-route__marker {
       position: absolute;
       top: 50%; left: 6%;
       transform: translate(-50%, -50%);
-      width: 22px; height: 22px;
+      width: 24px; height: 24px;
       border-radius: 50%;
       background: #000000;
       color: #ffffff;
       display: flex; align-items: center; justify-content: center;
       transition: left 0.6s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      /* Ring cut-out matches the card background so the line reads as
+         passing behind the marker rather than the marker floating above
+         a separate, disconnected line. */
+      box-shadow: 0 0 0 4px #ebebeb, 0 2px 6px rgba(0, 0, 0, 0.25);
+      z-index: 2;
     }
     @media (max-width: 400px) {
       .to-route { padding: 14px 10px; gap: 8px; }
@@ -1242,7 +1257,7 @@
         <p class="to-route__label">From</p>
         <p class="to-route__value">XTC Warehouse</p>
       </div>
-      <div class="to-route__line"><span class="to-route__marker" style="left:${pct}%">${TRACK_TRUCK_ICON}</span></div>
+      <div class="to-route__line"><span class="to-route__line-fill" style="width:${pct}%"></span><span class="to-route__marker" style="left:${pct}%">${TRACK_TRUCK_ICON}</span></div>
       <div class="to-route__point to-route__point--to">
         <p class="to-route__label">To</p>
         <p class="to-route__value">${escTO(destLabel || 'Your Address')}</p>
