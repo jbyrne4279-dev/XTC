@@ -30,6 +30,23 @@ app.get(['/product-polo-white', '/product-polo-white.html'], (req, res) =>
 app.get(['/collections', '/collections.html'], (req, res) =>
   res.redirect(301, '/new-releases'));
 
+// ── Baseline security headers ───────────────────────────────────────────────
+// Not a full CSP (this site loads Stripe.js, the Meta pixel, Omnisend, and a
+// couple of CDN fonts/scripts from several different origins — a CSP allowlist
+// for all of them needs to be built and tested deliberately, not guessed here
+// and risk silently breaking checkout). These three are safe defaults with no
+// such risk: nosniff stops browsers guessing content-types in a way that can
+// turn an upload into executable script; DENY stops the site being framed for
+// clickjacking (e.g. an invisible iframe over the checkout button); the
+// referrer policy keeps full URLs (which can carry query params) off other
+// sites when a link is clicked.
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());

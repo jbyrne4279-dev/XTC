@@ -805,7 +805,7 @@
             <p class="settings-row__label">Admin API Token</p>
             <p class="settings-row__sub">Bearer token for /admin/* API routes — must exactly match the <code style="color:var(--accent);font-family:monospace;">ADMIN_TOKEN</code> env var on your server. If orders won't load, set this to that value.</p>
           </div>
-          <input type="text" id="adminTokenDisplay" placeholder="XTC4279" />
+          <input type="text" id="adminTokenDisplay" placeholder="Paste your server's ADMIN_TOKEN" />
         </div>
         <div class="settings-save">
           <button class="btn-sm" onclick="saveAdminToken()">Save Token</button>
@@ -917,18 +917,36 @@ const STOCK_GRIDS = {
   'war-joggers':  { grid: 'warJoggersStockGrid', total: 'warJoggersTotal', sizes: ['S','M','L'],    label: 'War Joggers' },
   'uniform-t':    { grid: 'uniformTStockGrid',   total: 'uniformTTotal',   sizes: ['S','M','L'],    label: 'Uniform T' },
 };
-const DEFAULT_PASS = 'xtcadmin2026';
-const DEFAULT_TOKEN = 'XTC4279';
-
 /* ─────────── AUTH ─────────── */
-function getAdminPass() { return localStorage.getItem('xtc-admin-pass') || DEFAULT_PASS; }
+// No hardcoded default password/token here on purpose — a fallback credential
+// shipped in this file would be visible to anyone who views this page's
+// source, which would hand out real access to /admin/* (orders, refunds,
+// stock) to whoever finds the URL. Instead: the first successful login on a
+// given browser sets that browser's password (bootstraps its own secret,
+// stored only in localStorage, never in the repo); every login after that
+// must match it exactly.
+function getAdminPass() { return localStorage.getItem('xtc-admin-pass'); } // null until set
 // Bearer token for /admin/* API routes — must match the server's ADMIN_TOKEN env var.
 // Kept separate from the dashboard login password so the two can't silently drift apart.
-function getAdminToken() { return localStorage.getItem('xtc-admin-token') || DEFAULT_TOKEN; }
+// No default: an unset token just means the /admin/* calls come back 401 until
+// the real value is pasted into Settings, same as the settings copy already says.
+function getAdminToken() { return localStorage.getItem('xtc-admin-token') || ''; }
 
 function doLogin() {
   const pass = document.getElementById('loginPass').value;
-  if (pass === getAdminPass()) {
+  const configured = getAdminPass();
+  if (configured === null) {
+    // First login on this browser — whatever is entered here becomes the
+    // password going forward. Must be done once by the site owner.
+    if (!pass) { document.getElementById('loginError').style.display = 'block'; return; }
+    localStorage.setItem('xtc-admin-pass', pass);
+    sessionStorage.setItem('xtc-admin-auth', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appShell').style.display = 'grid';
+    initApp();
+    return;
+  }
+  if (pass === configured) {
     sessionStorage.setItem('xtc-admin-auth', '1');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appShell').style.display = 'grid';
