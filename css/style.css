@@ -1099,6 +1099,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   background: #f0f0f0;
   border: 1px solid rgba(0, 0, 0, 0.06);
   position: relative;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14), 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.25s ease;
 }
 .fp-card::before,
 .fp-card::after {
@@ -1136,7 +1138,10 @@ a[aria-label="Cart"].cart-active .cart-count {
   opacity: 0;
   transition: opacity 0.4s ease;
 }
-.fp-card:hover { border-color: rgba(0, 0, 0, 0.2); }
+.fp-card:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.2), 0 6px 14px rgba(0, 0, 0, 0.1);
+}
 .fp-card:hover::before { opacity: 0; }
 .fp-card:hover::after  { opacity: 1; }
 
