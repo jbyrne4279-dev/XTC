@@ -58,7 +58,7 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
       display: flex;
       justify-content: center;
     }
@@ -72,11 +72,14 @@
     }
     .to-box {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
       background: #f2f2f2;
       border: 1px solid rgba(0, 0, 0, 0.15);
       padding: 48px 48px 52px;
       position: relative;
+    }
+    @media (max-width: 480px) {
+      .to-box { padding: 32px 18px 36px; }
     }
     .to-box::before {
       content: '';
@@ -179,43 +182,142 @@
       display: none;
     }
     .to-result.show { display: block; }
-    .to-result__status {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
+    .to-result__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 30px;
     }
+    .to-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: rgba(217, 119, 6, 0.1);
+      color: #b45309;
+      border: 1px solid rgba(217, 119, 6, 0.28);
+      white-space: nowrap;
+    }
+    .to-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .to-badge--shipped { background: rgba(37, 99, 235, 0.1); color: #1d4ed8; border-color: rgba(37, 99, 235, 0.28); }
+    .to-badge--delivered { background: rgba(22, 163, 74, 0.12); color: #15803d; border-color: rgba(22, 163, 74, 0.32); }
+    .to-badge--cancelled { background: rgba(220, 38, 38, 0.1); color: #b91c1c; border-color: rgba(220, 38, 38, 0.28); }
     .to-result__order {
       font-size: 13px;
       color: rgba(0, 0, 0, 0.4);
       letter-spacing: 1px;
-      margin-bottom: 32px;
+      margin: 0;
     }
-    .to-step {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 20px;
-      align-items: flex-start;
+
+    /* ── Progress rail — horizontal, icon-based journey ── */
+    .to-rail { margin-bottom: 30px; }
+    .to-rail__track {
+      position: relative;
+      height: 3px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      margin: 0 13px 14px;
     }
-    .to-step__dot {
-      width: 8px;
-      height: 8px;
+    .to-rail__fill {
+      position: absolute;
+      top: 0; left: 0; height: 100%;
+      background: #000000;
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+    .to-rail__steps { display: flex; justify-content: space-between; gap: 3px; }
+    .to-rail__step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .to-rail__dot {
+      width: 26px; height: 26px;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.15);
-      margin-top: 4px;
-      flex-shrink: 0;
-    }
-    .to-step--done .to-step__dot { background: #f2f2f2; }
-    .to-step--active .to-step__dot { background: var(--accent); color: #ffffff; box-shadow: 0 0 8px var(--accent); }
-    .to-step__label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
       color: rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
     }
-    .to-step--done .to-step__label,
-    .to-step--active .to-step__label { color: #000000; }
+    .to-rail__step--done .to-rail__dot { background: #000000; border-color: #000000; }
+    .to-rail__step--active .to-rail__dot { border-color: #000000; box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1); }
+    .to-rail__step--active .to-rail__dot::after {
+      content: ''; width: 8px; height: 8px; border-radius: 50%; background: #000000;
+    }
+    .to-rail__label {
+      font-size: 8.5px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 58px;
+      line-height: 1.3;
+    }
+    .to-rail__step--done .to-rail__label,
+    .to-rail__step--active .to-rail__label { color: #000000; }
+    .to-rail__cancelled {
+      padding: 14px 16px;
+      background: rgba(220, 38, 38, 0.06);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      color: #b91c1c;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ── Route — stylised origin → destination shipping map ── */
+    .to-route {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 14px;
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 6px;
+      margin-bottom: 30px;
+    }
+    .to-route__point { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 0 1 auto; }
+    .to-route__point--to { align-items: flex-end; text-align: right; }
+    .to-route__label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba(0, 0, 0, 0.32); white-space: nowrap; }
+    .to-route__value {
+      font-size: 11px;
+      color: #000000;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    .to-route__line {
+      position: relative;
+      height: 2px;
+      flex: 1 1 auto;
+      min-width: 24px;
+      background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0 6px, transparent 6px 13px);
+    }
+    .to-route__marker {
+      position: absolute;
+      top: 50%; left: 6%;
+      transform: translate(-50%, -50%);
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #000000;
+      color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      transition: left 0.6s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    @media (max-width: 400px) {
+      .to-route { padding: 14px 10px; gap: 8px; }
+      .to-route__value { max-width: 98px; font-size: 10px; }
+      .to-rail__label { font-size: 7.5px; max-width: 48px; letter-spacing: 0.2px; }
+      .to-rail__dot { width: 22px; height: 22px; }
+    }
 
     /* Order receipt (products, total, customer + shipping) */
     .to-receipt { margin-top: 32px; padding-top: 26px; border-top: 1px solid rgba(0, 0, 0, 0.08); display: none; }
@@ -564,9 +666,12 @@
         </form>
 
         <div class="to-result" id="trackResult">
-          <p class="to-result__status" id="resultStatus">In Transit</p>
-          <p class="to-result__order" id="resultOrder"></p>
-          <div id="resultSteps"></div>
+          <div class="to-result__head">
+            <span class="to-badge" id="resultBadge">Processing</span>
+            <p class="to-result__order" id="resultOrder"></p>
+          </div>
+          <div class="to-rail" id="resultRail"></div>
+          <div class="to-route" id="resultRoute"></div>
           <div class="to-receipt" id="resultReceipt"></div>
         </div>
       </div>
@@ -1087,14 +1192,79 @@
     }
   }
 
-  function showServerResult(order) {
-    const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
-    const status = order.status || 'Processing';
-    let active = 1;
-    if (status === 'Shipped') active = 2;
-    else if (status === 'Delivered') active = 4;
+  // ── Shared result rendering — status badge, horizontal progress rail, and
+  //    a stylised origin → destination route (real live courier GPS isn't
+  //    available here, so this shows a clean "journey" visual instead of a
+  //    literal map, positioned the same way a real map pin would move). ──
+  const TRACK_STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+  const TRACK_ROUTE_PCT = [6, 28, 52, 76, 94];
+  const TRACK_TRUCK_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6.5" cy="19.5" r="1.8"/><circle cx="17.5" cy="19.5" r="1.8"/></svg>';
+  const TRACK_CHECK_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
-    document.getElementById('resultStatus').textContent = status;
+  function renderTrackBadge(status) {
+    const el = document.getElementById('resultBadge');
+    if (!el) return;
+    const label = status || 'Processing';
+    const key = label.toLowerCase().replace(/\s+/g, '-');
+    const known = ['processing', 'shipped', 'delivered', 'cancelled'];
+    el.textContent = label;
+    el.className = 'to-badge' + (known.includes(key) ? ' to-badge--' + key : '');
+  }
+
+  // active: -1 = cancelled, 0-4 = index into TRACK_STEPS (currently reached step)
+  function renderTrackRail(active) {
+    const railEl = document.getElementById('resultRail');
+    if (!railEl) return;
+    if (active < 0) {
+      railEl.innerHTML = '<div class="to-rail__cancelled">This order was cancelled</div>';
+      return;
+    }
+    const pct = TRACK_ROUTE_PCT[Math.max(0, Math.min(active, TRACK_ROUTE_PCT.length - 1))];
+    const isFinal = active >= TRACK_STEPS.length - 1; // Delivered — the whole journey is complete, nothing left "in progress"
+    const steps = TRACK_STEPS.map((label, i) => {
+      const state = i < active || (i === active && isFinal) ? 'done' : i === active ? 'active' : 'pending';
+      const dot = state === 'done' ? TRACK_CHECK_ICON : '';
+      return `<div class="to-rail__step to-rail__step--${state}"><span class="to-rail__dot">${dot}</span><span class="to-rail__label">${label}</span></div>`;
+    }).join('');
+    railEl.innerHTML = `
+      <div class="to-rail__track"><div class="to-rail__fill" style="width:${pct}%"></div></div>
+      <div class="to-rail__steps">${steps}</div>`;
+  }
+
+  function renderTrackRoute(active, destLabel) {
+    const routeEl = document.getElementById('resultRoute');
+    if (!routeEl) return;
+    if (active < 0) { routeEl.innerHTML = ''; routeEl.style.display = 'none'; return; }
+    routeEl.style.display = '';
+    const pct = TRACK_ROUTE_PCT[Math.max(0, Math.min(active, TRACK_ROUTE_PCT.length - 1))];
+    routeEl.innerHTML = `
+      <div class="to-route__point">
+        <p class="to-route__label">From</p>
+        <p class="to-route__value">XTC Warehouse</p>
+      </div>
+      <div class="to-route__line"><span class="to-route__marker" style="left:${pct}%">${TRACK_TRUCK_ICON}</span></div>
+      <div class="to-route__point to-route__point--to">
+        <p class="to-route__label">To</p>
+        <p class="to-route__value">${escTO(destLabel || 'Your Address')}</p>
+      </div>`;
+  }
+
+  // Maps a real order status string to a rail/route position. Only
+  // Processing/Shipped/Delivered/Cancelled are ever actually set (by the
+  // admin dashboard) — "Order Placed" and "Out for Delivery" are implied
+  // journey steps either side of Shipped, not real statuses of their own.
+  function statusToActive(status) {
+    if (status === 'Cancelled') return -1;
+    if (status === 'Delivered') return 4;
+    if (status === 'Shipped') return 2;
+    return 1; // Processing (default)
+  }
+
+  function showServerResult(order) {
+    const status = order.status || 'Processing';
+    const active = statusToActive(status);
+
+    renderTrackBadge(status);
     let orderLine = 'Order ' + order.id;
     if (order.tracking_number) {
       const tUrl = trackingUrlTO(order.carrier, order.tracking_number);
@@ -1105,47 +1275,39 @@
     }
     document.getElementById('resultOrder').innerHTML = orderLine;
 
-    const stepsEl = document.getElementById('resultSteps');
-    if (status === 'Cancelled') {
-      stepsEl.innerHTML = '<div class="to-step to-step--active"><span class="to-step__dot"></span><span class="to-step__label">Order Cancelled</span></div>';
-    } else {
-      stepsEl.innerHTML = STEPS.map((s, i) => {
-        const cls = i < active ? 'to-step to-step--done' : i === active ? 'to-step to-step--active' : 'to-step';
-        return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
-      }).join('');
-    }
+    const destLabel = [order.city, order.country].filter(Boolean).join(', ') || order.postcode || '';
+    renderTrackRail(active);
+    renderTrackRoute(active, destLabel);
+
     buildReceipt(order);
     document.getElementById('trackResult').classList.add('show');
   }
 
   function showResult(data, orderNum) {
-    const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
     const statusMap = { transit: 2, pickup: 2, delivered: 4, exception: 2, expired: 2, pending: 0 };
     const raw    = (data.tag || 'pending').toLowerCase();
     const active = statusMap[raw] ?? 1;
 
-    document.getElementById('resultStatus').textContent = data.tag_description || 'In Transit';
-    document.getElementById('resultOrder').textContent  = 'Order ' + orderNum;
-
-    const stepsEl = document.getElementById('resultSteps');
-    stepsEl.innerHTML = STEPS.map((s, i) => {
-      const cls = i < active ? 'to-step to-step--done' : i === active ? 'to-step to-step--active' : 'to-step';
-      return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
-    }).join('');
+    renderTrackBadge(data.tag_description || 'In Transit');
+    document.getElementById('resultOrder').textContent = 'Order ' + orderNum;
+    renderTrackRail(active);
+    renderTrackRoute(active, '');
 
     const rc = document.getElementById('resultReceipt'); if (rc) { rc.innerHTML = ''; rc.classList.remove('show'); }
     document.getElementById('trackResult').classList.add('show');
   }
 
   function showLocalResult(order) {
-    document.getElementById('resultStatus').textContent = order.status || 'Processing';
-    document.getElementById('resultOrder').textContent  = 'Order ' + (order.id || order.number || '');
-    const stepsEl = document.getElementById('resultSteps');
-    const STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
-    stepsEl.innerHTML = STEPS.map((s, i) => {
-      const cls = i === 0 ? 'to-step to-step--done' : i === 1 ? 'to-step to-step--active' : 'to-step';
-      return `<div class="${cls}"><span class="to-step__dot"></span><span class="to-step__label">${s}</span></div>`;
-    }).join('');
+    const status = order.status || 'Processing';
+    const active = statusToActive(status);
+
+    renderTrackBadge(status);
+    document.getElementById('resultOrder').textContent = 'Order ' + (order.id || order.number || '');
+
+    const destLabel = [order.city, order.country].filter(Boolean).join(', ') || order.postcode || '';
+    renderTrackRail(active);
+    renderTrackRoute(active, destLabel);
+
     buildReceipt(order);
     document.getElementById('trackResult').classList.add('show');
   }
