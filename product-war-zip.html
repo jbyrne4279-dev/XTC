@@ -1009,12 +1009,12 @@
       if (textEl) {
         textEl.innerHTML = unlocked
           ? 'Add the War&trade; Joggers and pay <strong>£200</strong> for both, usually £230.'
-          : 'Add this <strong>War&trade; Zip</strong> to your bag first to unlock the bundle price.';
+          : 'Add this <strong>War&trade; Zip</strong> to your order first to unlock the bundle price.';
       }
     }
     function pdpBundleAdd(btn, pickerId, sizeList, domId) {
       if (!pdpBundleUnlocked()) {
-        if (typeof showToast === 'function') showToast('Add the ' + PDP_OWN_PRODUCT.label + ' to your bag first.');
+        if (typeof showToast === 'function') showToast('Add the ' + PDP_OWN_PRODUCT.label + ' to your order first.');
         return;
       }
       openSizePicker(btn, pickerId, sizeList, domId);
