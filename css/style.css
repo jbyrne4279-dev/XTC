@@ -62,7 +62,12 @@
 }
 
 /* ---- Base ---- */
-html { font-size: 16px; scroll-behavior: smooth; overflow-x: clip; }
+/* touch-action: manipulation removes the double-tap-to-zoom gesture (the
+   cause of the site randomly "jumping in" when someone taps twice in quick
+   succession — e.g. two quick taps on a product card or an Add to Bag
+   button) without disabling pinch-to-zoom, which stays available for
+   accessibility. */
+html { font-size: 16px; scroll-behavior: smooth; overflow-x: clip; touch-action: manipulation; }
 
 /* iOS Safari only: the overscroll/rubber-band area above the sticky nav
    (behind the status bar, when the page bounces past the top) shows the
