@@ -539,7 +539,8 @@
 
         <!-- Bundle & Save -->
         <div class="pdp-bundle" id="pdpBundle">
-          <p class="pdp-bundle__label">Bundle &amp; Save</p>
+          <p class="pdp-bundle__label pdp-bundle__label--fade">Bundle &amp; Save</p>
+          <p class="pdp-bundle__timer">Offer ends in <strong id="pdpBundleTimer">--:--:--</strong></p>
           <p class="pdp-bundle__text" id="pdpBundleText">Add the War&trade; Joggers and pay <strong>£200</strong> for both, usually £230.</p>
           <div class="pdp-bundle__cta-wrap">
             <button class="pdp-bundle__cta" onclick="pdpBundleAdd(this,'war-joggers',['S','M','L'],'bundle-war-joggers')">
@@ -1020,6 +1021,41 @@
     }
     document.addEventListener('DOMContentLoaded', refreshBundleState);
     if (document.readyState !== 'loading') refreshBundleState();
+
+    // Bundle & Save countdown — a "limited time" timer that runs forever:
+    // picks a random duration between 2–3 hours, counts down, and the moment
+    // it hits zero it just rolls straight into a fresh random 2–3hr window.
+    // Persisted in localStorage (shared with the Joggers page, same offer)
+    // so it doesn't reset on every page load/navigation.
+    function initBundleTimer() {
+      const el = document.getElementById('pdpBundleTimer');
+      if (!el) return;
+      const KEY = 'xtc-bundle-timer-deadline';
+      const MIN_MS = 2 * 60 * 60 * 1000;
+      const MAX_MS = 3 * 60 * 60 * 1000;
+      const randomDuration = () => MIN_MS + Math.random() * (MAX_MS - MIN_MS);
+      let deadline = parseInt(localStorage.getItem(KEY), 10);
+      if (!deadline || isNaN(deadline) || deadline <= Date.now()) {
+        deadline = Date.now() + randomDuration();
+        localStorage.setItem(KEY, String(deadline));
+      }
+      function tick() {
+        let remaining = deadline - Date.now();
+        if (remaining <= 0) {
+          deadline = Date.now() + randomDuration();
+          localStorage.setItem(KEY, String(deadline));
+          remaining = deadline - Date.now();
+        }
+        const h = Math.floor(remaining / 3600000);
+        const m = Math.floor((remaining % 3600000) / 60000);
+        const s = Math.floor((remaining % 60000) / 1000);
+        el.textContent = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+    document.addEventListener('DOMContentLoaded', initBundleTimer);
+    if (document.readyState !== 'loading') initBundleTimer();
     function buyNowFromPage(id, name, price, img) {
       const selected = document.querySelector('.pdp-size-btn.selected');
       if (!selected) {

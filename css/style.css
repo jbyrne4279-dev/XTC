@@ -2652,6 +2652,18 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 10px;
 }
+@keyframes pdp-bundle-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.pdp-bundle__label--fade { animation: pdp-bundle-fade 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pdp-bundle__label--fade { animation: none; } }
+.pdp-bundle__timer {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: rgba(220, 38, 38, 0.85);
+  margin: -4px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.pdp-bundle__timer strong { color: rgba(239, 68, 68, 1); font-weight: 600; letter-spacing: 1px; }
+.pdp-bundle--locked .pdp-bundle__timer { opacity: 0.5; }
 .pdp-bundle__text {
   font-size: 12px;
   font-weight: 300;
