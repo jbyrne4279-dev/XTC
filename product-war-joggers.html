@@ -1025,26 +1025,24 @@
     if (document.readyState !== 'loading') refreshBundleState();
 
     // Bundle & Save countdown — a "limited time" timer that runs forever:
-    // picks a random duration between 2–3 hours, counts down, and the moment
-    // it hits zero it just rolls straight into a fresh random 2–3hr window.
+    // starts at a fixed 1h 23m 14s, counts down, and the moment it hits
+    // zero it just rolls straight into a fresh 1h 23m 14s window.
     // Persisted in localStorage (shared with the Zip page, same offer) so
     // it doesn't reset on every page load/navigation.
     function initBundleTimer() {
       const el = document.getElementById('pdpBundleTimer');
       if (!el) return;
-      const KEY = 'xtc-bundle-timer-deadline';
-      const MIN_MS = 2 * 60 * 60 * 1000;
-      const MAX_MS = 3 * 60 * 60 * 1000;
-      const randomDuration = () => MIN_MS + Math.random() * (MAX_MS - MIN_MS);
+      const KEY = 'xtc-bundle-timer-deadline-v2';
+      const DURATION_MS = ((1 * 60 * 60) + (23 * 60) + 14) * 1000;
       let deadline = parseInt(localStorage.getItem(KEY), 10);
       if (!deadline || isNaN(deadline) || deadline <= Date.now()) {
-        deadline = Date.now() + randomDuration();
+        deadline = Date.now() + DURATION_MS;
         localStorage.setItem(KEY, String(deadline));
       }
       function tick() {
         let remaining = deadline - Date.now();
         if (remaining <= 0) {
-          deadline = Date.now() + randomDuration();
+          deadline = Date.now() + DURATION_MS;
           localStorage.setItem(KEY, String(deadline));
           remaining = deadline - Date.now();
         }
