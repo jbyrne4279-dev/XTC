@@ -3746,9 +3746,12 @@ textarea {
 .cd-item {
   display: flex;
   gap: 16px;
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 16px;
+  border-radius: 4px;
 }
+.cd-item + .cd-item { margin-top: 8px; }
+.cd-item:nth-child(odd)  { background: rgba(255, 255, 255, 0.04); }
+.cd-item:nth-child(even) { background: rgba(255, 255, 255, 0.09); }
 .cd-item__img {
   width: 76px;
   height: 76px;
