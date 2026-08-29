@@ -2200,6 +2200,10 @@ a[aria-label="Cart"].cart-active .cart-count {
   white-space: nowrap;
   backdrop-filter: blur(10px);
 }
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 @media (max-width: 560px) {
   .toast {
     left: 16px;
@@ -2214,11 +2218,11 @@ a[aria-label="Cart"].cart-active .cart-count {
     padding: 11px 18px;
     line-height: 1.5;
   }
+  /* Declared after the unconditional .toast.show above so this wins on
+     mobile — that rule's translateX(-50%) assumes the desktop centered
+     layout and would fly the toast off-screen now that left/right:16px
+     makes it as wide as the viewport instead of a fixed narrow pill. */
   .toast.show { transform: translateY(0); }
-}
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* ============================================
