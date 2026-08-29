@@ -1023,15 +1023,15 @@
     if (document.readyState !== 'loading') refreshBundleState();
 
     // Bundle & Save countdown — a "limited time" timer that runs forever:
-    // starts at a fixed 1h 23m 14s, counts down, and the moment it hits
-    // zero it just rolls straight into a fresh 1h 23m 14s window.
+    // starts at a fixed 1h 7m 23s, counts down, and the moment it hits
+    // zero it just rolls straight into a fresh 1h 7m 23s window.
     // Persisted in localStorage (shared with the Joggers page, same offer)
     // so it doesn't reset on every page load/navigation.
     function initBundleTimer() {
       const el = document.getElementById('pdpBundleTimer');
       if (!el) return;
       const KEY = 'xtc-bundle-timer-deadline-v2';
-      const DURATION_MS = ((1 * 60 * 60) + (23 * 60) + 14) * 1000;
+      const DURATION_MS = ((1 * 60 * 60) + (7 * 60) + 23) * 1000;
       let deadline = parseInt(localStorage.getItem(KEY), 10);
       if (!deadline || isNaN(deadline) || deadline <= Date.now()) {
         deadline = Date.now() + DURATION_MS;
