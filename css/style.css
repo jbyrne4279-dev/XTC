@@ -3697,12 +3697,25 @@ textarea {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
 }
+.cd-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
 .cd-header__title {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: #ffffff;
+  white-space: nowrap;
+}
+.cd-header__logo {
+  height: 14px;
+  width: auto;
+  opacity: 0.9;
+  flex-shrink: 0;
 }
 .cd-close {
   width: 32px; height: 32px;
