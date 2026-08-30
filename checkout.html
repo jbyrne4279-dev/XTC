@@ -324,13 +324,16 @@
       pointer-events: none;
       animation: co-summary-spin 4s linear infinite;
     }
+    @keyframes co-summary-title-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .co-summary-title {
       font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.5);
       margin-bottom: 32px;
+      animation: co-summary-title-fade 2.4s ease-in-out infinite;
     }
+    @media (prefers-reduced-motion: reduce) { .co-summary-title { animation: none; } }
     .co-item {
       display: flex;
       gap: 16px;
