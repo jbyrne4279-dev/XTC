@@ -4044,8 +4044,22 @@ textarea {
   margin-top: 2px;
 }
 @media (max-width: 480px) {
-  .cd-panel { width: 88%; max-width: 360px; }
-  .cd-header { padding: 20px 20px; }
-  .cd-body { padding: 8px 20px; }
-  .cd-footer { padding: 18px 20px 22px; }
+  .cd-panel { width: 50%; max-width: 360px; min-width: 200px; }
+  .cd-header { padding: 20px 14px; }
+  .cd-header__title { font-size: 10px; letter-spacing: 2px; }
+  .cd-body { padding: 8px 14px; }
+  .cd-footer { padding: 18px 14px 22px; }
+
+  /* Narrower panel means the item row's usual side-by-side layout (image +
+     name/price + qty/size/remove all on one line) no longer fits — stack
+     each piece instead of letting it clip or force horizontal scroll. */
+  .cd-item { padding: 14px 10px; gap: 10px; }
+  .cd-item__img { width: 44px; height: 44px; }
+  .cd-item__top { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .cd-item__name { font-size: 10px; }
+  .cd-item__price { font-size: 11px; }
+  .cd-item__bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cd-qty-wrap { width: 100%; }
+  .cd-size-row { flex-wrap: wrap; row-gap: 6px; }
+  .cd-item__remove { align-self: flex-start; }
 }
