@@ -462,39 +462,29 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 .nav-drawer.open .nav-drawer__panel { transform: translateX(0); }
 
-/* Header bar — same shape as the cart drawer's: bordered strip, close
-   control on the right, nothing competing with it for attention. */
+/* Close button — plain X in a bordered box, same shape as the cart
+   drawer's close control. */
 .nav-drawer__close {
-  background: none; border: none; cursor: pointer;
-  color: rgba(255, 255, 255, 0.55);
-  display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-2);
-  font-size: var(--fs-xs); text-transform: uppercase;
-  letter-spacing: 1.5px; transition: color var(--dur) var(--ease);
-  padding: 24px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  width: 100%;
+  width: 44px; height: 44px;
   flex-shrink: 0;
-}
-.nav-drawer__close:hover { color: #ffffff; }
-@keyframes nav-close-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-.nav-drawer__close-logo {
-  height: 20px;
-  width: auto;
+  display: flex; align-items: center; justify-content: center;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: border-color 0.2s, color var(--dur) var(--ease);
+  margin: var(--sp-6) var(--sp-6) 0 auto;
   animation: nav-close-fade 4.5s ease-in-out infinite;
 }
-.nav-drawer__close-fallback {
-  width: 20px;
-  height: 20px;
-  color: inherit;
-  animation: nav-close-fade 4.5s ease-in-out infinite;
-}
-.nav-drawer__close:hover .nav-drawer__close-logo,
-.nav-drawer__close:hover .nav-drawer__close-fallback {
+.nav-drawer__close:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
   animation-play-state: paused;
   opacity: 1;
 }
+@keyframes nav-close-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 @media (prefers-reduced-motion: reduce) {
-  .nav-drawer__close-logo, .nav-drawer__close-fallback { animation: none; }
+  .nav-drawer__close { animation: none; }
 }
 
 /* Links as shaded rows (alternating tint, same as the cart drawer's item
@@ -536,7 +526,6 @@ a[aria-label="Cart"].cart-active .cart-count {
 
 @media (max-width: 480px) {
   .nav-drawer__panel { width: 55%; min-width: 220px; max-width: 320px; }
-  .nav-drawer__close { padding: 20px 16px; }
   .nav-drawer__links { padding: 16px 12px; }
 }
 
@@ -3787,13 +3776,6 @@ textarea {
   animation: cd-close-fade 3.5s ease-in-out infinite;
 }
 .cd-close:hover { border-color: rgba(255, 255, 255, 0.4); animation-play-state: paused; opacity: 1; }
-.cd-header__logo {
-  height: 19.5px;
-  width: auto;
-}
-.cd-close__fallback {
-  color: rgba(255, 255, 255, 0.7);
-}
 @media (prefers-reduced-motion: reduce) { .cd-close { animation: none; } }
 .cd-body {
   flex: 1;
