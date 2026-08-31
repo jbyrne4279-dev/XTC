@@ -466,7 +466,7 @@ function cdGetDrawer() {
         <p class="cd-header__title">Your Order (<span id="cdCount">0</span>)</p>
         <button class="cd-close" id="cdClose" aria-label="Close bag">
           <img class="cd-header__logo" src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="Close" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
-          <svg class="cd-close__fallback" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg class="cd-close__fallback" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="cd-body" id="cdBody"></div>

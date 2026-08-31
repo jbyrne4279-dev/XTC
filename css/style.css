@@ -3720,18 +3720,18 @@ textarea {
 }
 @keyframes cd-close-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .cd-close {
-  width: 40px; height: 32px;
+  width: 60px; height: 48px;
   display: flex; align-items: center; justify-content: center;
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   transition: border-color 0.2s;
-  animation: cd-close-fade 2s ease-in-out infinite;
+  animation: cd-close-fade 3.5s ease-in-out infinite;
 }
 .cd-close:hover { border-color: rgba(255, 255, 255, 0.4); animation-play-state: paused; opacity: 1; }
 .cd-header__logo {
-  height: 13px;
+  height: 19.5px;
   width: auto;
 }
 .cd-close__fallback {
