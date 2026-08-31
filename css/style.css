@@ -264,6 +264,12 @@ ul, ol { list-style: none; }
 .pdp-tab-panel ul { padding-left: 16px; list-style: disc; }
 .pdp-tab-panel ul + p,
 .pdp-tab-panel p + p { margin-top: 12px; }
+.pdp-tab-panel a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pdp-tab-panel a:hover { color: rgba(255, 255, 255, 0.7); }
 
 /* Size guide inline panel (toggled from the Size label) */
 .pdp-size-guide-panel {
