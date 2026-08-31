@@ -449,10 +449,11 @@ a[aria-label="Cart"].cart-active .cart-count {
 .nav-drawer__panel {
   position: absolute;
   top: 0; right: 0;
-  width: 280px;
+  width: 320px;
+  max-width: 78vw;
   height: 100%;
-  background: var(--bg-2);
-  border-left: 1px solid var(--border);
+  background: #000000;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
   padding: var(--sp-8) var(--sp-6);
   transform: translateX(100%);
   transition: transform 320ms var(--ease);
@@ -462,7 +463,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 
 .nav-drawer__close {
   background: none; border: none; cursor: pointer;
-  color: var(--text-muted); margin-bottom: var(--sp-10);
+  color: rgba(255, 255, 255, 0.55); margin-bottom: var(--sp-10);
   display: flex; align-items: center; gap: var(--sp-2);
   font-size: var(--fs-xs); text-transform: uppercase;
   letter-spacing: 1.5px; transition: color var(--dur) var(--ease);
@@ -470,12 +471,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   margin-left: auto;
   width: fit-content;
 }
-.nav-drawer__close:hover { color: var(--text-primary); }
+.nav-drawer__close:hover { color: #ffffff; }
 @keyframes nav-close-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .nav-drawer__close-logo {
   height: 24px;
   width: auto;
-  filter: brightness(0);
   animation: nav-close-fade 4.5s ease-in-out infinite;
 }
 .nav-drawer__close-fallback {
@@ -496,17 +496,21 @@ a[aria-label="Cart"].cart-active .cart-count {
 .nav-drawer__links { display: flex; flex-direction: column; gap: var(--sp-5); text-align: right; }
 
 .nav-drawer__links a {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   font-size: var(--fs-sm);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: var(--sp-4);
   transition: color var(--dur) var(--ease);
 }
-.nav-drawer__links a:hover { color: var(--text-primary); }
-.nav-drawer__links a.nav-primary { color: var(--accent); }
-.nav-drawer__links a.nav-primary:hover { color: #2a2a2a; }
+.nav-drawer__links a:hover { color: #ffffff; }
+.nav-drawer__links a.nav-primary { color: #ffffff; font-weight: 600; }
+.nav-drawer__links a.nav-primary:hover { color: rgba(255, 255, 255, 0.7); }
+
+@media (max-width: 480px) {
+  .nav-drawer__panel { width: 55%; min-width: 220px; max-width: 320px; padding: var(--sp-6) var(--sp-5); }
+}
 
 /* ============================================
    HERO — FULL BLEED EDITORIAL
