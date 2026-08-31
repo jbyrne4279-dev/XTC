@@ -2063,7 +2063,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   grid-template-columns: 1fr 2fr;
   gap: var(--sp-12);
   padding-bottom: var(--sp-12);
-  border-bottom: 1px solid var(--border);
   margin-bottom: var(--sp-8);
 }
 
@@ -2225,7 +2224,6 @@ a[aria-label="Cart"].cart-active .cart-count {
     transparent 100%
   );
 }
-.site-footer .footer-top { border-bottom-color: rgba(255, 255, 255, 0.12); }
 
 /* 3D engraved-stone look: light grey type with a dark drop shadow (depth)
    plus a faint bright highlight on the opposite edge (bevel), so every word
