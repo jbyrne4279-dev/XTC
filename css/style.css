@@ -503,6 +503,7 @@ a[aria-label="Cart"].cart-active .cart-count {
    nav type, which is what was reading as clunky. */
 .nav-drawer__links { display: flex; flex-direction: column; gap: 8px; padding: 20px 16px; }
 
+@keyframes nav-link-wave { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
 .nav-drawer__links a {
   color: rgba(255, 255, 255, 0.55);
   font-size: 11px;
@@ -513,12 +514,25 @@ a[aria-label="Cart"].cart-active .cart-count {
   border-radius: 4px;
   text-align: right;
   transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  animation: nav-link-wave 3s ease-in-out infinite;
 }
 .nav-drawer__links a:nth-child(odd)  { background: rgba(255, 255, 255, 0.04); }
 .nav-drawer__links a:nth-child(even) { background: rgba(255, 255, 255, 0.09); }
-.nav-drawer__links a:hover { color: #ffffff; }
+.nav-drawer__links a:hover { color: #ffffff; animation-play-state: paused; opacity: 1; }
 .nav-drawer__links a.nav-primary { color: #ffffff; }
 .nav-drawer__links a.nav-primary:hover { color: rgba(255, 255, 255, 0.7); }
+/* Stagger each link's delay so the fade sweeps down the list, one at a
+   time, then loops forever instead of every link pulsing in sync. */
+.nav-drawer__links a:nth-child(1) { animation-delay: 0s; }
+.nav-drawer__links a:nth-child(2) { animation-delay: 0.15s; }
+.nav-drawer__links a:nth-child(3) { animation-delay: 0.3s; }
+.nav-drawer__links a:nth-child(4) { animation-delay: 0.45s; }
+.nav-drawer__links a:nth-child(5) { animation-delay: 0.6s; }
+.nav-drawer__links a:nth-child(6) { animation-delay: 0.75s; }
+.nav-drawer__links a:nth-child(7) { animation-delay: 0.9s; }
+@media (prefers-reduced-motion: reduce) {
+  .nav-drawer__links a { animation: none; }
+}
 
 @media (max-width: 480px) {
   .nav-drawer__panel { width: 55%; min-width: 220px; max-width: 320px; }
