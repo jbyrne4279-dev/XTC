@@ -2620,10 +2620,12 @@ a[aria-label="Cart"].cart-active .cart-count {
   right: 0;
   background: #eeeeee;
   border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 16px;
+  padding: 12px 14px;
   z-index: 50;
   display: none;
-  min-width: 200px;
+  min-width: 140px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
   box-shadow: 0 8px 32px rgba(0,0,0,0.7);
 }
 .fp-size-picker.open { display: block; }
@@ -2632,7 +2634,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.3);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 .fp-size-picker__sizes {
   display: flex;
