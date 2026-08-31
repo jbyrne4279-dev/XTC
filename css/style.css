@@ -473,14 +473,14 @@ a[aria-label="Cart"].cart-active .cart-count {
 .nav-drawer__close:hover { color: var(--text-primary); }
 @keyframes nav-close-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .nav-drawer__close-logo {
-  height: 32px;
+  height: 24px;
   width: auto;
   filter: brightness(0);
   animation: nav-close-fade 4.5s ease-in-out infinite;
 }
 .nav-drawer__close-fallback {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   color: inherit;
   animation: nav-close-fade 4.5s ease-in-out infinite;
 }
@@ -493,7 +493,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   .nav-drawer__close-logo, .nav-drawer__close-fallback { animation: none; }
 }
 
-.nav-drawer__links { display: flex; flex-direction: column; gap: var(--sp-5); }
+.nav-drawer__links { display: flex; flex-direction: column; gap: var(--sp-5); text-align: right; }
 
 .nav-drawer__links a {
   color: var(--text-secondary);
@@ -3250,6 +3250,7 @@ textarea {
     min-height: 44px;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
   }
 
   /* ── Hero — tighten on small screens ── */
