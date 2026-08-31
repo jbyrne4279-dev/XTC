@@ -2544,7 +2544,15 @@ a[aria-label="Cart"].cart-active .cart-count {
   .footer-links-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 540px) {
-  .footer-links-grid { grid-template-columns: 1fr; }
+  /* Shop / Account / Help side by side instead of stacked — left / centre /
+     right aligned so each column reads as its own block at a glance. */
+  .footer-links-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: start; }
+  .footer-links:nth-of-type(1) { text-align: left; }
+  .footer-links:nth-of-type(2) { text-align: center; }
+  .footer-links:nth-of-type(3) { text-align: right; }
+  .footer-links__heading { font-size: 8px; letter-spacing: 1.5px; margin-bottom: 10px; }
+  .footer-links ul { gap: 9px; }
+  .footer-links a { font-size: 9px; letter-spacing: 0.3px; line-height: 1.3; }
 }
 
 .footer-brand__logo img {
@@ -2629,13 +2637,16 @@ a[aria-label="Cart"].cart-active .cart-count {
   box-shadow: 0 8px 32px rgba(0,0,0,0.7);
 }
 .fp-size-picker.open { display: block; }
+@keyframes fp-label-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .fp-size-picker__label {
   font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.3);
   margin-bottom: 8px;
+  animation: fp-label-fade 2s ease-in-out infinite;
 }
+@media (prefers-reduced-motion: reduce) { .fp-size-picker__label { animation: none; } }
 .fp-size-picker__sizes {
   display: flex;
   gap: 6px;
