@@ -467,6 +467,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   font-size: var(--fs-xs); text-transform: uppercase;
   letter-spacing: 1.5px; transition: color var(--dur) var(--ease);
   padding: 4px;
+  margin-left: auto;
+  width: fit-content;
 }
 .nav-drawer__close:hover { color: var(--text-primary); }
 .nav-drawer__close-logo {
