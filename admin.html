@@ -721,6 +721,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="range-tabs" id="analyticsRangeTabs">
+            <button class="filter-tab" data-days="1" onclick="setAnalyticsRange(1)">24H</button>
             <button class="filter-tab" data-days="7" onclick="setAnalyticsRange(7)">7D</button>
             <button class="filter-tab active" data-days="30" onclick="setAnalyticsRange(30)">30D</button>
             <button class="filter-tab" data-days="90" onclick="setAnalyticsRange(90)">90D</button>
@@ -1655,16 +1656,17 @@ async function renderAnalytics() {
     return;
   }
 
-  document.getElementById('analyticsSub').textContent = 'Real visitor tracking, server-side — last ' + _analyticsRangeDays + ' days';
+  const rangeLabel = _analyticsRangeDays === 1 ? 'last 24 hours' : 'last ' + _analyticsRangeDays + ' days';
+  document.getElementById('analyticsSub').textContent = 'Real visitor tracking, server-side — ' + rangeLabel;
 
   const t = data.totals;
   document.getElementById('analyticsStats').innerHTML =
-    statCard('Sessions', t.sessions.toLocaleString(), 'Last ' + _analyticsRangeDays + ' days') +
+    statCard('Sessions', t.sessions.toLocaleString(), rangeLabel.charAt(0).toUpperCase() + rangeLabel.slice(1)) +
     statCard('Bounce Rate', t.bounceRate + '%', 'Single page, no engagement') +
     statCard('Avg. Session Time', formatDuration(t.avgDuration), 'Time on site') +
     statCard('Abandoned Checkouts', t.abandonedCheckouts.toLocaleString(), 'Started, never finished') +
     statCard('Conversion Rate', t.conversionRate + '%', 'Sessions → Purchases') +
-    statCard('Revenue', '£' + t.revenue.toFixed(2), 'Last ' + _analyticsRangeDays + ' days');
+    statCard('Revenue', '£' + t.revenue.toFixed(2), rangeLabel.charAt(0).toUpperCase() + rangeLabel.slice(1));
 
   const labels = data.series.map(r => r.date.slice(5));
   drawLineChart('sessionsChart', labels, data.series.map(r => r.sessions), '#141414');
