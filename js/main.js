@@ -823,6 +823,35 @@ window.csToggleSwitch = csToggleSwitch;
 window.csSaveCookieSettings = csSaveCookieSettings;
 window.toggleFooterAccordion = toggleFooterAccordion;
 
+// ---- Scroll reveal (fade in + slide up) ----
+// Applies to any element already marked .reveal in markup, plus a curated
+// list of shared, cross-page sections — so the effect is consistent
+// site-wide without needing to hand-edit every page's HTML.
+
+function initScrollReveal() {
+  const autoSelectors = '.early-access-bar, .recs-section, .brand-statement, .feature-strip, .footer-inner';
+  document.querySelectorAll(autoSelectors).forEach(el => el.classList.add('reveal'));
+
+  const targets = document.querySelectorAll('.reveal');
+  if (!targets.length) return;
+
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  targets.forEach(el => io.observe(el));
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -831,6 +860,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHero();
   initEarlyAccessSlideshow();
   initCartDrawer();
+  initScrollReveal();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') xtcCloseCookieSettings();
