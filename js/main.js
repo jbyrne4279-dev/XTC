@@ -516,7 +516,7 @@ function renderCartDrawer() {
     body.innerHTML = `
       <div class="cd-empty">
         <p class="cd-empty__text">Your bag is empty</p>
-        <button class="cd-empty__btn" onclick="closeCartDrawer()">Continue Shopping</button>
+        <button class="cd-empty__btn" onclick="closeCartDrawer()">Continue</button>
       </div>`;
     footer.style.display = 'none';
     return;
