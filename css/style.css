@@ -2524,6 +2524,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.18);
+  animation: footer-accordion-fade 4s ease-in-out infinite;
 }
 /* Small brand mark sitting next to the copyright line */
 .footer-bottom { justify-content: center; }
@@ -2533,6 +2534,10 @@ a[aria-label="Cart"].cart-active .cart-count {
   filter: brightness(0);
   opacity: 0.55;
   flex-shrink: 0;
+  animation: footer-accordion-fade 4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-copyright, .footer-copy-logo { animation: none; }
 }
 .footer-socials {
   display: flex;
