@@ -4086,7 +4086,7 @@ textarea {
   margin-top: 2px;
 }
 @media (max-width: 480px) {
-  .cd-panel { width: 50%; max-width: 360px; min-width: 200px; }
+  .cd-panel { width: 60%; max-width: 360px; min-width: 200px; }
   .cd-header { padding: 20px 14px; }
   .cd-header__title { font-size: 10px; letter-spacing: 2px; }
   .cd-body { padding: 8px 14px; }
