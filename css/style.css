@@ -1235,7 +1235,10 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 .fp-card:hover .fp-card__media img { transform: scale(1.04); }
 
-.fp-card__alt {
+/* Overlay images stacked on top of the base <img> — swiping (touch) or
+   hovering (mouse) cycles through all of a product's images, one active
+   at a time via .fp-card__img--active. */
+.fp-card__img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1243,10 +1246,28 @@ a[aria-label="Cart"].cart-active .cart-count {
   object-fit: cover !important;
   padding: 0;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.4s ease;
 }
-.fp-card:hover .fp-card__alt,
-.fp-card--swiped .fp-card__alt { opacity: 1; }
+.fp-card__img--active { opacity: 1; }
+
+.fp-card__dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 2;
+}
+.fp-card__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 2px rgba(0,0,0,0.4);
+  transition: background 0.2s, transform 0.2s;
+}
+.fp-card__dot--active { background: #ffffff; transform: scale(1.3); }
 
 .fp-card__badge {
   position: absolute;

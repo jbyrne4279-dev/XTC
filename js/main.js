@@ -852,6 +852,48 @@ function initScrollReveal() {
   targets.forEach(el => io.observe(el));
 }
 
+// ---- Product card image swipe ----
+// Each .fp-card__media holds a base <img> (index 0) plus any number of
+// overlay .fp-card__img elements (index 1, 2, 3, ...). Touch swipe cycles
+// through all of them with wraparound; mouse hover previews the second
+// image only, same as before. Dots (if present) track the active index.
+
+function initProductCardSwipe() {
+  document.querySelectorAll('.fp-card__media').forEach(function (media) {
+    const overlays = Array.from(media.querySelectorAll('.fp-card__img'));
+    const dots = Array.from(media.querySelectorAll('.fp-card__dot'));
+    const total = overlays.length + 1;
+    if (total <= 1) return;
+
+    let index = 0;
+    function show(i) {
+      index = ((i % total) + total) % total;
+      overlays.forEach((img, idx) => img.classList.toggle('fp-card__img--active', idx + 1 === index));
+      dots.forEach((d, idx) => d.classList.toggle('fp-card__dot--active', idx === index));
+    }
+
+    media.addEventListener('mouseenter', () => show(1));
+    media.addEventListener('mouseleave', () => show(0));
+
+    let startX = 0, startY = 0, moved = false;
+    media.addEventListener('touchstart', function (e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      moved = false;
+    }, { passive: true });
+    media.addEventListener('touchmove', function (e) {
+      if (Math.abs(e.touches[0].clientX - startX) > 8) moved = true;
+    }, { passive: true });
+    media.addEventListener('touchend', function (e) {
+      if (!moved) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 30 || Math.abs(dy) > Math.abs(dx)) return;
+      show(dx < 0 ? index + 1 : index - 1);
+    }, { passive: true });
+  });
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -861,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEarlyAccessSlideshow();
   initCartDrawer();
   initScrollReveal();
+  initProductCardSwipe();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') xtcCloseCookieSettings();
