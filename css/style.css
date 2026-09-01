@@ -2104,66 +2104,59 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: var(--text-secondary);
 }
 
-.footer-links-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-8);
-}
-
-.footer-links__heading {
-  font-size: var(--fs-micro);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  margin-bottom: var(--sp-5);
-  animation: footer-logo-pulse 6s ease-in-out infinite;
-  animation-delay: 1.2s;
-}
-
-/* "Legal" footer column — the heading is a button that expands/collapses
-   its link list instead of always showing it, since it holds more links
-   than the other columns. */
-.footer-legal__toggle {
+/* Full-width accordion footer nav (Shop / Account / Help / Legal) — each
+   section is a row that expands independently, matching a stacked
+   mobile-style footer rather than side-by-side columns. */
+.footer-accordion { border-top: 1px solid rgba(255, 255, 255, 0.15); }
+.footer-accordion__item { border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+.footer-accordion__toggle {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 12px;
   background: none;
   border: none;
-  padding: 0;
   cursor: pointer;
+  padding: 20px 2px;
   font-family: inherit;
-  text-align: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-align: left;
 }
-.footer-legal__arrow {
-  font-size: 8px;
-  transition: transform var(--dur) var(--ease);
-  display: inline-block;
+.footer-accordion__icon {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
 }
-.footer-legal__toggle[aria-expanded="true"] .footer-legal__arrow { transform: rotate(180deg); }
-.footer-legal__panel {
+.footer-accordion__icon::before,
+.footer-accordion__icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+.footer-accordion__icon::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+.footer-accordion__icon::after { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); transition: transform 0.25s ease; }
+.footer-accordion__toggle[aria-expanded="true"] .footer-accordion__icon::after { transform: translateX(-50%) scaleY(0); }
+.footer-accordion__panel {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
-.footer-legal__panel.open { max-height: 260px; }
-
-.footer-links ul { display: flex; flex-direction: column; gap: var(--sp-3); }
-
-.footer-links a {
+.footer-accordion__panel.open { max-height: 280px; }
+.footer-accordion__panel ul { display: flex; flex-direction: column; gap: var(--sp-3); padding: 2px 2px 20px; }
+.footer-accordion__panel a {
   font-size: var(--fs-xs);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-secondary);
   transition: color var(--dur) var(--ease);
-  animation: footer-logo-fade 4s ease-in-out infinite;
 }
-.footer-links a:hover,
-.footer-links a:active {
-  color: #141414;
-  animation: none;
-  text-shadow: none;
-  opacity: 1;
-}
+.footer-accordion__panel a:hover { color: #141414; }
 
 .footer-bottom {
   display: flex;
@@ -2259,17 +2252,17 @@ a[aria-label="Cart"].cart-active .cart-count {
    plus a faint bright highlight on the opposite edge (bevel), so every word
    and icon reads clearly against the textured background. */
 .site-footer .footer-brand__logo,
-.site-footer .footer-links__heading,
+.site-footer .footer-accordion__toggle,
 .site-footer .footer-brand__tagline,
 .site-footer .tagline-drop,
 .site-footer .tagline-never,
-.site-footer .footer-links a,
+.site-footer .footer-accordion__panel a,
 .site-footer .footer-copyright {
   color: #cfcfcf;
   text-shadow: -1px -1px 0 rgba(255,255,255,0.12), 1px 1px 1px rgba(0,0,0,0.9), 2px 2px 3px rgba(0,0,0,0.5);
 }
-.site-footer .footer-links a:hover,
-.site-footer .footer-links a:active {
+.site-footer .footer-accordion__panel a:hover,
+.site-footer .footer-accordion__panel a:active {
   color: #ffffff;
 }
 .site-footer .footer-copy-logo {
@@ -2381,7 +2374,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   .contact-layout { grid-template-columns: 1fr; }
   .cart-grid { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; }
-  .footer-links-grid { grid-template-columns: 1fr 1fr; }
   .product-grid--2 { grid-template-columns: repeat(2, 1fr); }
   .header-inner { padding: 0 var(--sp-6); }
 }
@@ -2396,7 +2388,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   .product-grid--2 { grid-template-columns: 1fr; gap: 12px; }
   .form-row { grid-template-columns: 1fr; }
   .cart-grid { grid-template-columns: 1fr; }
-  .footer-links-grid { grid-template-columns: 1fr; }
   .feature-strip { grid-template-columns: repeat(2, 1fr); }
   .brand-statement { padding: var(--sp-16) var(--sp-6); }
 }
@@ -2520,7 +2511,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   margin-bottom: 0;
 }
 /* Link columns on top, brand block (logo / tagline / socials) at the bottom. */
-.footer-top .footer-links-grid { order: 1; }
+.footer-top .footer-accordion { order: 1; }
 .footer-top .footer-brand {
   order: 2;
   display: flex;
@@ -2543,28 +2534,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   max-width: 200px;
   margin-bottom: var(--sp-6);
 }
-.footer-links-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-6);
-}
-.footer-links__heading {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  margin-bottom: var(--sp-3);
-}
-.footer-links ul { display: flex; flex-direction: column; gap: 10px; }
-.footer-links a {
-  font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  transition: color 0.2s;
-}
-.footer-links a:hover { color: #141414; }
-
 /* ── Footer base ── */
 .footer-bottom {
   display: flex;
@@ -2620,18 +2589,10 @@ a[aria-label="Cart"].cart-active .cart-count {
 @media (max-width: 900px) {
   .footer-club__inner { grid-template-columns: 1fr; gap: 40px; }
   .footer-top { grid-template-columns: 1fr; gap: 28px; padding: 16px 0 24px; }
-  .footer-links-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 540px) {
-  /* Shop / Account / Help / Legal, two per row — alternating left / right
-     alignment so each column reads as its own block at a glance. */
-  .footer-links-grid { grid-template-columns: repeat(2, 1fr); gap: 20px 10px; align-items: start; }
-  .footer-links:nth-of-type(odd)  { text-align: left; }
-  .footer-links:nth-of-type(even) { text-align: right; }
-  .footer-links__heading { font-size: 8px; letter-spacing: 1.5px; margin-bottom: 10px; }
-  .footer-links ul { gap: 9px; }
-  .footer-links a { font-size: 9px; letter-spacing: 0.3px; line-height: 1.3; }
-  .footer-links:nth-of-type(even) .footer-legal__toggle { margin-left: auto; }
+  .footer-accordion__toggle { font-size: 12px; letter-spacing: 1.5px; padding: 16px 2px; }
+  .footer-accordion__panel a { font-size: 11px; letter-spacing: 0.5px; }
 }
 
 .footer-brand__logo img {
@@ -2644,16 +2605,13 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 /* Desktop footer felt cramped — the "Footer main" block above tightens
-   .footer-top/.footer-links-grid/.footer-bottom for mobile, but nothing
+   .footer-top/.footer-accordion/.footer-bottom for mobile, but nothing
    loosened them back up again above the mobile breakpoint. */
 @media (min-width: 901px) {
   .footer-top {
     gap: var(--sp-10);
     padding: var(--sp-10) 0;
   }
-  .footer-links-grid { gap: var(--sp-10); }
-  .footer-links ul { gap: var(--sp-4); }
-  .footer-links__heading { margin-bottom: var(--sp-4); }
   .footer-bottom { padding: var(--sp-6) 0 0; }
 }
 

@@ -553,33 +553,46 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-top">
-        <div class="footer-links-grid">
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Shop</h3>
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/original-members-polo">Original Members</a></li>
-              <li><a href="/new-releases">New Releases</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Account</h3>
-            <ul>              <li><a href="/track-order">Track Order</a></li>
-              <li><a href="/checkout">Checkout</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h3 class="footer-links__heading">Help</h3>
-            <ul>
-              <li><a href="/contact">Contact Us</a></li>
-              <li><a href="/shipping">Shipping</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <button type="button" class="footer-links__heading footer-legal__toggle" aria-expanded="false" data-target="footerLegalPanel" onclick="toggleFooterLegal(this)">
-              Legal <span class="footer-legal__arrow">▾</span>
+        <div class="footer-accordion">
+          <div class="footer-accordion__item">
+            <button type="button" class="footer-accordion__toggle" aria-expanded="false" data-target="faccShop" onclick="toggleFooterAccordion(this)">
+              Shop <span class="footer-accordion__icon"></span>
             </button>
-            <div class="footer-legal__panel" id="footerLegalPanel">
+            <div class="footer-accordion__panel" id="faccShop">
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/original-members-polo">Original Members</a></li>
+                <li><a href="/new-releases">New Releases</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-accordion__item">
+            <button type="button" class="footer-accordion__toggle" aria-expanded="false" data-target="faccAccount" onclick="toggleFooterAccordion(this)">
+              Account <span class="footer-accordion__icon"></span>
+            </button>
+            <div class="footer-accordion__panel" id="faccAccount">
+              <ul>
+                <li><a href="/track-order">Track Order</a></li>
+                <li><a href="/checkout">Checkout</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-accordion__item">
+            <button type="button" class="footer-accordion__toggle" aria-expanded="false" data-target="faccHelp" onclick="toggleFooterAccordion(this)">
+              Help <span class="footer-accordion__icon"></span>
+            </button>
+            <div class="footer-accordion__panel" id="faccHelp">
+              <ul>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/shipping">Shipping</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-accordion__item">
+            <button type="button" class="footer-accordion__toggle" aria-expanded="false" data-target="faccLegal" onclick="toggleFooterAccordion(this)">
+              Legal <span class="footer-accordion__icon"></span>
+            </button>
+            <div class="footer-accordion__panel" id="faccLegal">
               <ul>
                 <li><a href="/cookie-policy">Cookie Policy</a></li>
                 <li><a href="/privacy">Privacy Policy</a></li>

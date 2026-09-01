@@ -716,9 +716,9 @@ function initCartDrawer() {
   });
 }
 
-// ---- Footer "Legal" dropdown ----
+// ---- Footer accordion (Shop / Account / Help / Legal) ----
 
-function toggleFooterLegal(btn) {
+function toggleFooterAccordion(btn) {
   const panel = document.getElementById(btn.getAttribute('data-target'));
   const open = btn.getAttribute('aria-expanded') === 'true';
   btn.setAttribute('aria-expanded', String(!open));
@@ -821,7 +821,7 @@ window.xtcOpenCookieSettings = xtcOpenCookieSettings;
 window.xtcCloseCookieSettings = xtcCloseCookieSettings;
 window.csToggleSwitch = csToggleSwitch;
 window.csSaveCookieSettings = csSaveCookieSettings;
-window.toggleFooterLegal = toggleFooterLegal;
+window.toggleFooterAccordion = toggleFooterAccordion;
 
 // ---- Init ----
 
