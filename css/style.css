@@ -2266,7 +2266,6 @@ a[aria-label="Cart"].cart-active .cart-count {
    plus a faint bright highlight on the opposite edge (bevel), so every word
    and icon reads clearly against the textured background. */
 .site-footer .footer-brand__logo,
-.site-footer .footer-accordion__toggle,
 .site-footer .footer-brand__tagline,
 .site-footer .tagline-drop,
 .site-footer .tagline-never,
@@ -2279,6 +2278,11 @@ a[aria-label="Cart"].cart-active .cart-count {
 .site-footer .footer-accordion__panel a:active {
   color: #ffffff;
 }
+/* Section headings (Shop/Account/Help/Legal) and their divider lines —
+   a plain medium-light grey instead of the engraved-stone treatment. */
+.site-footer .footer-accordion__toggle { color: #999999; text-shadow: none; }
+.site-footer .footer-accordion { border-top-color: rgba(153, 153, 153, 0.35); }
+.site-footer .footer-accordion__item { border-bottom-color: rgba(153, 153, 153, 0.35); }
 .site-footer .footer-copy-logo {
   filter: brightness(0) invert(0.82) drop-shadow(-1px -1px 0 rgba(255,255,255,0.1)) drop-shadow(1px 1px 1px rgba(0,0,0,0.9));
 }
