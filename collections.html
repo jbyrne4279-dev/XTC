@@ -486,8 +486,8 @@
             <h3 class="footer-links__heading">Shop</h3>
             <ul>
               <li><a href="/">Home</a></li>
-              <li><a href="/collections">New Releases</a></li>
-              <li><a href="/original-members-polo">Original Members Polo</a></li>
+              <li><a href="/original-members-polo">Original Members</a></li>
+              <li><a href="/new-releases">New Releases</a></li>
             </ul>
           </div>
           <div class="footer-links">
@@ -501,10 +501,22 @@
             <ul>
               <li><a href="/contact">Contact Us</a></li>
               <li><a href="/shipping">Shipping</a></li>
-              <li><a href="/returns">Returns</a></li>
-              <li><a href="/privacy">Privacy</a></li>
-              <li><a href="/terms">Terms</a></li>
             </ul>
+          </div>
+          <div class="footer-links">
+            <button type="button" class="footer-links__heading footer-legal__toggle" aria-expanded="false" data-target="footerLegalPanel" onclick="toggleFooterLegal(this)">
+              Legal <span class="footer-legal__arrow">▾</span>
+            </button>
+            <div class="footer-legal__panel" id="footerLegalPanel">
+              <ul>
+                <li><a href="/cookie-policy">Cookie Policy</a></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="#" onclick="event.preventDefault(); xtcOpenCookieSettings();">Cookie Settings</a></li>
+                <li><a href="/returns">Return Policy</a></li>
+                <li><a href="/terms">Terms &amp; Conditions of Sale</a></li>
+                <li><a href="/terms-of-use">Terms &amp; Conditions of Use</a></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

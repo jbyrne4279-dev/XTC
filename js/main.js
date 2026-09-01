@@ -716,6 +716,113 @@ function initCartDrawer() {
   });
 }
 
+// ---- Footer "Legal" dropdown ----
+
+function toggleFooterLegal(btn) {
+  const panel = document.getElementById(btn.getAttribute('data-target'));
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!open));
+  if (panel) panel.classList.toggle('open', !open);
+}
+
+// ---- Cookie Settings modal ----
+// Preferences are stored client-side only (localStorage) and read by
+// js/analytics.js to decide whether to fire the Meta Pixel / internal
+// analytics events. Essential cookies are never optional.
+
+function getCookieConsent() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('xtc-cookie-consent') || 'null');
+    if (stored && typeof stored === 'object') return { analytics: !!stored.analytics, marketing: !!stored.marketing };
+  } catch (e) {}
+  return { analytics: false, marketing: false };
+}
+
+function csGetModal() {
+  let el = document.getElementById('cookieSettingsModal');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'cookieSettingsModal';
+  el.innerHTML = `
+    <div class="cs-backdrop" onclick="xtcCloseCookieSettings()"></div>
+    <div class="cs-panel" role="dialog" aria-modal="true" aria-label="Cookie settings">
+      <div class="cs-header">
+        <p class="cs-header__title">Cookie Settings</p>
+        <button class="cs-close" id="csClose" aria-label="Close" onclick="xtcCloseCookieSettings()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="cs-body">
+        <p class="cs-intro">We use cookies to run the site, understand how it's used, and — if you allow it — personalise marketing. See our <a href="/cookie-policy" style="color:inherit;">Cookie Policy</a> for details.</p>
+        <div class="cs-row">
+          <div>
+            <p class="cs-row__label">Essential</p>
+            <p class="cs-row__desc">Required for the site to work. Always on.</p>
+          </div>
+          <button class="cs-switch on" disabled aria-label="Essential cookies (always on)"></button>
+        </div>
+        <div class="cs-row">
+          <div>
+            <p class="cs-row__label">Analytics</p>
+            <p class="cs-row__desc">Helps us understand site usage and improve it.</p>
+          </div>
+          <button class="cs-switch" id="csAnalyticsSwitch" onclick="csToggleSwitch(this)" aria-label="Toggle analytics cookies"></button>
+        </div>
+        <div class="cs-row">
+          <div>
+            <p class="cs-row__label">Marketing</p>
+            <p class="cs-row__desc">Used to personalise ads and campaigns.</p>
+          </div>
+          <button class="cs-switch" id="csMarketingSwitch" onclick="csToggleSwitch(this)" aria-label="Toggle marketing cookies"></button>
+        </div>
+      </div>
+      <div class="cs-footer">
+        <button class="cs-btn" onclick="xtcCloseCookieSettings()">Cancel</button>
+        <button class="cs-btn cs-btn--primary" onclick="csSaveCookieSettings()">Save Preferences</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+  return el;
+}
+
+function csToggleSwitch(btn) {
+  btn.classList.toggle('on');
+}
+
+function csSaveCookieSettings() {
+  const consent = {
+    analytics: document.getElementById('csAnalyticsSwitch').classList.contains('on'),
+    marketing: document.getElementById('csMarketingSwitch').classList.contains('on'),
+  };
+  localStorage.setItem('xtc-cookie-consent', JSON.stringify(consent));
+  xtcCloseCookieSettings();
+  if (typeof showToast === 'function') showToast('Cookie preferences saved');
+}
+
+function xtcOpenCookieSettings() {
+  const modal = csGetModal();
+  const consent = getCookieConsent();
+  document.getElementById('csAnalyticsSwitch').classList.toggle('on', consent.analytics);
+  document.getElementById('csMarketingSwitch').classList.toggle('on', consent.marketing);
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function xtcCloseCookieSettings() {
+  const modal = document.getElementById('cookieSettingsModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+window.getCookieConsent = getCookieConsent;
+window.xtcOpenCookieSettings = xtcOpenCookieSettings;
+window.xtcCloseCookieSettings = xtcCloseCookieSettings;
+window.csToggleSwitch = csToggleSwitch;
+window.csSaveCookieSettings = csSaveCookieSettings;
+window.toggleFooterLegal = toggleFooterLegal;
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -725,4 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEarlyAccessSlideshow();
   initCartDrawer();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') xtcCloseCookieSettings();
+  });
 });

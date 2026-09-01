@@ -11,6 +11,9 @@ var META_PIXEL_ID = '2539030076613054'; // Meta Pixel ID
 
 (function initMetaPixel() {
   if (!META_PIXEL_ID || window.fbq) return;
+  // Marketing cookie — only fires once the visitor has opted in via
+  // Cookie Settings (footer → Legal → Cookie Settings).
+  if (typeof getCookieConsent === 'function' && !getCookieConsent().marketing) return;
   !function (f, b, e, v, n, t, s) {
     if (f.fbq) return; n = f.fbq = function () { n.callMethod ?
       n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
