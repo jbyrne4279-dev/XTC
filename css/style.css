@@ -2256,7 +2256,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 /* ── Dark grey footer theme — overrides the light-theme defaults above so
    footer text/icons stay readable on a dark background. ── */
 .site-footer {
-  background-color: #201f1d;
+  background-color: #000000;
   background-image:
     radial-gradient(ellipse 60% 50% at 15% 20%, rgba(255,255,255,0.05), transparent 60%),
     radial-gradient(ellipse 50% 60% at 85% 15%, rgba(255,255,255,0.035), transparent 55%),
