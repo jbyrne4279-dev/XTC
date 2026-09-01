@@ -2144,6 +2144,7 @@ a[aria-label="Cart"].cart-active .cart-count {
    mobile-style footer rather than side-by-side columns. */
 .footer-accordion { border-top: 1px solid rgba(255, 255, 255, 0.15); }
 .footer-accordion__item { border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+@keyframes footer-accordion-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .footer-accordion__toggle {
   width: 100%;
   display: flex;
@@ -2161,6 +2162,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-transform: uppercase;
   color: var(--text-primary);
   text-align: left;
+  animation: footer-accordion-fade 4s ease-in-out infinite;
+}
+.footer-accordion__toggle:hover { animation-play-state: paused; opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .footer-accordion__toggle { animation: none; }
 }
 .footer-accordion__icon {
   position: relative;
