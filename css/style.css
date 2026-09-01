@@ -2597,7 +2597,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   .footer-copyright { animation: none; }
 }
 /* Small brand mark sitting next to the copyright line */
-.footer-bottom { justify-content: flex-start; }
+.footer-bottom { justify-content: center; }
 .footer-copy-logo {
   height: 18px;
   width: auto;
