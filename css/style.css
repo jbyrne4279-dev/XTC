@@ -160,7 +160,6 @@ ul, ol { list-style: none; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ea-shine 8s linear infinite;
   text-shadow: none;
   filter: none;
 }
@@ -1087,37 +1086,9 @@ a[aria-label="Cart"].cart-active .cart-count {
   margin: 0 auto;
   padding: 0 56px 48px;
 }
-/* ============================================
-   FADE-IN-UP — shared page/section load-in
-   Apply .fade-in-up directly, or let the
-   heading pairs below (.fp-eyebrow/.fp-title
-   etc.) carry it automatically.
-   ============================================ */
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-in-up { animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.fade-in-up--delay-1 { animation-delay: 0.12s; }
-.fade-in-up--delay-2 { animation-delay: 0.24s; }
-@media (prefers-reduced-motion: reduce) {
-  .fade-in-up, .fade-in-up--delay-1, .fade-in-up--delay-2 { animation: none; }
-}
-
-/* ============================================
-   SCROLL REVEAL — fade in as content enters the
-   viewport. js/main.js's initScrollReveal() adds
-   .reveal to shared sections sitewide and toggles
-   .is-visible via IntersectionObserver on first view.
-   ============================================ */
-.reveal {
-  opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.is-visible { opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transition: none; }
-}
+/* Content used to fade/slide in on page load and on scroll (.fade-in-up,
+   .reveal + initScrollReveal()) — removed so assets render immediately;
+   animation is now reserved for drawers and buttons only. */
 
 .fp-eyebrow {
   font-size: 11px;
@@ -1125,7 +1096,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 10px;
-  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .fp-title {
   font-size: clamp(28px, 3.5vw, 48px);
@@ -1133,11 +1103,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #000000;
-  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.12s;
-}
-@media (prefers-reduced-motion: reduce) {
-  .fp-eyebrow, .fp-title { animation: none; }
 }
 .fp-note {
   font-size: 12px;
@@ -1162,9 +1127,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   syntax: '<angle>';
   initial-value: 0deg;
   inherits: false;
-}
-@keyframes circuit-run {
-  to { --circuit-a: 360deg; }
 }
 .fp-card {
   display: flex;
@@ -1191,7 +1153,6 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 .fp-card::before {
   --circuit-a: 0deg;
-  animation: circuit-run 7s linear infinite;
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 60%,
     rgba(0, 0, 0, 0.6) 72%, rgba(20, 20, 20, 1) 80%, rgba(42, 42, 42, 1) 85%,
@@ -1202,7 +1163,6 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 .fp-card::after {
   --circuit-a: 0deg;
-  animation: circuit-run 1.6s linear infinite;
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 50%,
     rgba(0, 0, 0, 0.7) 65%, rgba(20, 20, 20, 1) 75%, rgba(68, 68, 68, 1) 82%,
@@ -1553,10 +1513,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: var(--text-muted);
 }
 
-@keyframes purple-shine-move {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
 .no-restock-shine,
 .purple-shine {
   background: linear-gradient(90deg,
@@ -1570,7 +1526,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: purple-shine-move 7s linear infinite;
 }
 
 .collection-body {
@@ -2114,15 +2069,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-shadow: none;
 }
 
-@keyframes footer-logo-pulse {
-  0%, 100% { opacity: 0.55; }
-  50%       { opacity: 1; }
-}
-
-.footer-brand__logo img {
-  animation: footer-logo-pulse 4s ease-in-out infinite;
-}
-
 .footer-brand__tagline {
   font-size: var(--fs-micro);
   letter-spacing: 1.5px;
@@ -2130,8 +2076,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   line-height: 2;
   color: var(--text-secondary);
   max-width: 220px;
-  animation: footer-logo-pulse 6s ease-in-out infinite;
-  animation-delay: 0.8s;
 }
 
 .tagline-drop,
@@ -2214,13 +2158,8 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: rgba(0, 0, 0, 0.12);
 }
 
-@keyframes copy-flash {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 1; }
-}
 .footer-copy-sym {
   color: #cc0000;
-  animation: copy-flash 3s ease-in-out infinite;
 }
 
 .product-card--war .product-card__badge {
@@ -2580,19 +2519,11 @@ a[aria-label="Cart"].cart-active .cart-count {
   flex-wrap: wrap;
   gap: var(--sp-4);
 }
-@keyframes footer-logo-fade {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.75; }
-}
 .footer-copyright {
   font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.18);
-  animation: footer-logo-fade 4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .footer-copyright { animation: none; }
 }
 /* Small brand mark sitting next to the copyright line */
 .footer-bottom { justify-content: center; }
@@ -2602,10 +2533,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   filter: brightness(0);
   opacity: 0.55;
   flex-shrink: 0;
-  animation: footer-logo-fade 4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .footer-copy-logo { animation: none; }
 }
 .footer-socials {
   display: flex;
@@ -2711,16 +2638,13 @@ a[aria-label="Cart"].cart-active .cart-count {
   box-shadow: 0 8px 32px rgba(0,0,0,0.7);
 }
 .fp-size-picker.open { display: block; }
-@keyframes fp-label-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .fp-size-picker__label {
   font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.3);
   margin-bottom: 8px;
-  animation: fp-label-fade 2s ease-in-out infinite;
 }
-@media (prefers-reduced-motion: reduce) { .fp-size-picker__label { animation: none; } }
 .fp-size-picker__sizes {
   display: flex;
   gap: 6px;
@@ -2772,9 +2696,6 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 10px;
 }
-@keyframes pdp-bundle-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.pdp-bundle__label--fade { animation: pdp-bundle-fade 2.4s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .pdp-bundle__label--fade { animation: none; } }
 .pdp-bundle__timer {
   font-size: 10px;
   letter-spacing: 0.5px;
@@ -3498,13 +3419,8 @@ textarea {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ea-shine 8s linear infinite;
   text-shadow: none;
   filter: none;
-}
-@keyframes ea-shine {
-  0%   { background-position: 200% center; }
-  100% { background-position: -100% center; }
 }
 .early-access-bar__heading {
   font-size: 18px;

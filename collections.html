@@ -37,10 +37,6 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
-    @keyframes col-never-shine {
-      0%   { background-position: 200% center; }
-      100% { background-position: -200% center; }
-    }
     .col-hero__never {
       background: linear-gradient(90deg,
         rgba(0, 0, 0, 0.9) 0%,
@@ -53,7 +49,6 @@
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: col-never-shine 4s linear infinite;
     }
 
     .col-grid-wrap {
@@ -75,7 +70,6 @@
       initial-value: 0deg;
       inherits: false;
     }
-    @keyframes nr-spin { to { --nr-a: 360deg; } }
 
     .nr-card {
       display: flex;
@@ -99,7 +93,6 @@
       z-index: 1;
     }
     .nr-card::before {
-      animation: nr-spin 3.5s linear infinite;
       background: conic-gradient(from var(--nr-a),
         transparent 0%, transparent 60%,
         rgba(0, 0, 0, 0.6) 72%, rgba(20, 20, 20, 1) 80%, rgba(42, 42, 42, 1) 85%,
@@ -109,7 +102,6 @@
       transition: opacity 0.4s ease;
     }
     .nr-card::after {
-      animation: nr-spin 0.8s linear infinite;
       background: conic-gradient(from var(--nr-a),
         transparent 0%, transparent 50%,
         rgba(0, 0, 0, 0.7) 65%, rgba(20, 20, 20, 1) 75%, rgba(68, 68, 68, 1) 82%,

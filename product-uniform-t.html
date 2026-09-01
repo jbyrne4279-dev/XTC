@@ -88,9 +88,7 @@
     .pdp-crumb span { color: rgba(0, 0, 0, 0.05); }
     /* Higher specificity than `.pdp-crumb span` (the separators) so this colour
        actually applies — matches the Home / New Releases link opacity. */
-    .pdp-crumb span.pdp-crumb__current { color: rgba(0, 0, 0, 0.2); animation: crumb-attention 2.6s ease-in-out infinite; }
-    @keyframes crumb-attention { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
-    @media (prefers-reduced-motion: reduce) { .pdp-crumb span.pdp-crumb__current { animation: none; } }
+    .pdp-crumb span.pdp-crumb__current { color: rgba(0, 0, 0, 0.2); }
 
     /* Layout */
     .pdp {
@@ -159,9 +157,6 @@
       color: rgba(255, 255, 255, 0.6);
       margin-bottom: 16px;
     }
-    @keyframes pdp-brand-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .pdp-info__brand--fade { animation: pdp-brand-fade 2.4s ease-in-out infinite; }
-    @media (prefers-reduced-motion: reduce) { .pdp-info__brand--fade { animation: none; } }
     .pdp-info__title {
       font-size: clamp(28px, 3vw, 44px);
       font-weight: 200;
@@ -170,14 +165,7 @@
       color: #ffffff;
       line-height: 1.1;
       margin-bottom: 24px;
-      animation: col-hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-      animation-delay: 0.1s;
     }
-    @keyframes col-hero-fade-in {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) { .pdp-info__title { animation: none; } }
     .pdp-info__price-row {
       display: flex;
       align-items: center;

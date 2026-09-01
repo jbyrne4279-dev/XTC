@@ -37,9 +37,7 @@
     .pdp-crumb span { color: rgba(0, 0, 0, 0.05); }
     /* Higher specificity than `.pdp-crumb span` (the separators) so this colour
        actually applies — matches the Home / New Releases link opacity. */
-    .pdp-crumb span.pdp-crumb__current { color: rgba(0, 0, 0, 0.2); animation: crumb-attention 2.6s ease-in-out infinite; }
-    @keyframes crumb-attention { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
-    @media (prefers-reduced-motion: reduce) { .pdp-crumb span.pdp-crumb__current { animation: none; } }
+    .pdp-crumb span.pdp-crumb__current { color: rgba(0, 0, 0, 0.2); }
 
     .pdp {
       display: grid;
