@@ -30,6 +30,35 @@ app.get(['/product-polo-white', '/product-polo-white.html'], (req, res) =>
 app.get(['/collections', '/collections.html'], (req, res) =>
   res.redirect(301, '/new-releases'));
 
+// This domain previously ran on Shopify. Google still has old Shopify URLs
+// indexed/crawled (Search Console: /products/original-members-polo-black,
+// /products/original-members-polo-white, /pages/contact, /pages/home) —
+// 301 the ones with real replacement pages so their search equity carries
+// over instead of just 404ing. Shopify-internal endpoints with no equivalent
+// here (/cart/change, /services/login_with_shop/*, /cdn/shop/*) are left to
+// 404 and age out of the index naturally; there's nothing to redirect them to.
+app.get(['/products/original-members-polo-black', '/products/original-members-polo-black.html'], (req, res) =>
+  res.redirect(301, '/original-members-polo?color=black'));
+app.get(['/products/original-members-polo-white', '/products/original-members-polo-white.html'], (req, res) =>
+  res.redirect(301, '/original-members-polo?color=white'));
+app.get(['/pages/contact', '/pages/contact.html'], (req, res) =>
+  res.redirect(301, '/contact'));
+app.get(['/pages/home', '/pages/home.html'], (req, res) =>
+  res.redirect(301, '/'));
+
+// Canonicalize on the bare apex domain — Search Console shows both
+// https://www.xtcclothing.com/ and http://www.xtcclothing.com/ being
+// crawled, which splits ranking signal from the canonical https://xtcclothing.com.
+// Redirect any www. host straight to the apex over https, preserving the
+// path and query string.
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  if (host.startsWith('www.')) {
+    return res.redirect(301, `https://${host.slice(4)}${req.originalUrl}`);
+  }
+  next();
+});
+
 // ── Baseline security headers ───────────────────────────────────────────────
 // Not a full CSP (this site loads Stripe.js, the Meta pixel, Omnisend, and a
 // couple of CDN fonts/scripts from several different origins — a CSP allowlist
