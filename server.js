@@ -463,18 +463,10 @@ function buildOrderConfirmationHtml(order) {
   const shippingBlock = addressLines.length ? `
     <tr>
       <td style="padding:32px 44px 0;">
-        <table role="presentation" width="100%" style="border-collapse:collapse;">
-          <tr>
-            <td width="50%" style="vertical-align:top;padding-right:12px;">
-              <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Shipping To</p>
-              <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${addressLines.join('<br>')}</p>
-            </td>
-            <td width="50%" style="vertical-align:top;padding-left:12px;border-left:1px solid rgba(0,0,0,0.08);">
-              <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Estimated Delivery</p>
-              <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${escapeHtml(deliveryWindow)}</p>
-            </td>
-          </tr>
-        </table>
+        <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Shipping To</p>
+        <p style="font-size:13px;color:#000000;margin:0 0 24px;line-height:1.7;">${addressLines.join('<br>')}</p>
+        <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Estimated Delivery</p>
+        <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${escapeHtml(deliveryWindow)}</p>
       </td>
     </tr>
   ` : '';
