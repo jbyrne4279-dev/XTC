@@ -539,7 +539,7 @@ function buildOrderConfirmationHtml(order) {
               <tr>
                 <td style="padding:28px 32px;text-align:center;">
                   <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Win A Free T-Shirt</p>
-                  <p style="font-size:14px;color:#000000;margin:0 0 20px;line-height:1.6;">Share your order to your Instagram Story and tag <strong>@xtc.rip</strong> for a chance to win a free tee.</p>
+                  <p style="font-size:14px;color:#000000;margin:0 0 20px;line-height:1.6;">Share your order / xtc fit to your Instagram Story and tag <strong>@xtc.rip</strong> for a chance to win a free tee.</p>
                   <a href="https://www.instagram.com/xtc.rip/" style="display:inline-block;background:#ffffff;color:#000000;text-decoration:none;padding:14px 36px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #000000;">Share To Instagram Story</a>
                 </td>
               </tr>
