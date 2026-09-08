@@ -1127,6 +1127,11 @@
       buttonType: { applePay: 'buy', googlePay: 'buy' },
       buttonTheme: { applePay: 'black', googlePay: 'white' },
       buttonHeight: 48,
+      // Without this, Google Pay/Apple Pay can complete a payment without ever
+      // handing back a billing email — completeOrder() then posts /orders with
+      // an empty email, the save is silently rejected, and no confirmation
+      // email (Resend or Omnisend) ever fires even though the charge went through.
+      emailRequired: true,
     });
     expressCheckout.mount('#express-checkout-element');
     expressCheckout.on('ready', ({ availablePaymentMethods }) => {
