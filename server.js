@@ -524,7 +524,13 @@ function buildOrderConfirmationHtml(order) {
         </tr>
         <tr>
           <td style="padding:36px 44px 0;">
-            <table role="presentation" width="100%" style="border-collapse:collapse;border:1px solid rgba(0,0,0,0.1);">
+            <style>
+              /* Progressive enhancement only — clients that strip <style>
+                 (Gmail webmail, Outlook) just show this block fully visible. */
+              @keyframes xtcWinFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+              .xtc-win-fade { animation: xtcWinFade 3.5s ease-in-out infinite; }
+            </style>
+            <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(0,0,0,0.1);">
               <tr>
                 <td style="padding:28px 32px;text-align:center;">
                   <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Win A Free T-Shirt</p>
