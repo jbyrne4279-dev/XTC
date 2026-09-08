@@ -1,0 +1,92 @@
+<!--
+  XTC — Drop reminder email ("set a reminder for the SS26 drop").
+  Standalone marketing HTML (table-based, inline styles only) — not wired
+  into server.js. Paste into Resend Broadcasts / Audience campaign, or send
+  via resendSend() from a one-off script. Same visual system as
+  emails/war-drop-announcement.html: solid black background, white
+  text/borders, black-on-white-border CTA buttons, left-aligned body text.
+
+  IMPORTANT — what this actually does: no email, on any platform, can
+  reach into a phone's native Clock/Alarm app and set an alarm. That is
+  not exposed to web pages or emails on iOS or Android. The real
+  equivalent — and what the "Set Reminder" button below does — is add a
+  calendar event with a VALARM (an alert), which pops a notification at
+  the exact time. It uses the site's existing /drop.ics endpoint
+  (server.js ~line 1567), already configured for 18:00 UK on 1 Oct 2026
+  (17:00 UTC, i.e. BST). If you need a different date/time, that .ics
+  generation needs updating — this template just links to it.
+-->
+<div style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
+
+    <!-- Hero — skull emblem stacked above title block, centered -->
+    <tr>
+      <td style="background:#000000;padding:48px 40px 36px;text-align:center;">
+        <img src="https://xtcclothing.com/images/email-skull-emblem.png" alt="" width="120" style="width:120px;height:auto;display:block;margin:0 auto 24px;">
+        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Save The Date</p>
+        <h1 style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">Drop 02</h1>
+        <p style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0 0 14px;">War. World. Chaos.</p>
+        <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;opacity:0.75;margin:0;">6PM — 1st October</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0;">
+        <img src="https://xtcclothing.com/images/email-ZIP-HOODIE-XTC-FRONT.jpg" width="600" alt="XTC War Zip" style="width:100%;max-width:600px;height:auto;display:block;">
+      </td>
+    </tr>
+
+    <!-- Intro copy -->
+    <tr>
+      <td style="background:#111111;padding:44px 44px 8px;text-align:left;">
+        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 14px;">Don't Miss It</p>
+        <p style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">The War&trade; Collection goes live at 6PM on October 1st. Limited units, never restocked — set a reminder now so you're not left behind.</p>
+      </td>
+    </tr>
+
+    <!-- Reminder CTA -->
+    <tr>
+      <td style="background:#111111;padding:36px 44px 8px;text-align:left;border-top:1px solid rgba(255,255,255,0.15);margin-top:24px;">
+        <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 16px;">
+          Adds a calendar alert for the drop — the closest a phone lets any website or email get to setting a native alarm.
+        </p>
+        <a href="https://xtcclothing.com/drop.ics" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Set Reminder</a>
+      </td>
+    </tr>
+
+    <!-- Secondary CTA -->
+    <tr>
+      <td style="background:#111111;padding:36px 44px 8px;text-align:left;">
+        <a href="https://xtcclothing.com/new-releases" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Preview The Drop</a>
+      </td>
+    </tr>
+
+    <!-- Footer — small X logo alongside the closing line -->
+    <tr>
+      <td style="background:#111111;padding:28px 44px 36px;text-align:left;">
+        <table role="presentation" style="border-collapse:collapse;">
+          <tr>
+            <td style="padding-right:10px;vertical-align:middle;">
+              <img src="https://xtcclothing.com/images/icon-512.png" alt="XTC" width="16" style="width:16px;height:auto;display:block;">
+            </td>
+            <td style="vertical-align:middle;">
+              <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing — Limited units. Never restocked.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Unsubscribe — {{{RESEND_UNSUBSCRIBE_URL}}} is Resend's built-in merge
+         tag; it's auto-filled per recipient when sent as an Audience
+         Broadcast, no manual setup needed. Required for CAN-SPAM/GDPR. -->
+    <tr>
+      <td style="background:#111111;padding:0 44px 40px;text-align:left;">
+        <p style="font-size:10px;letter-spacing:0.5px;color:rgba(255,255,255,0.3);margin:0;">
+          You're receiving this because you subscribed to XTC Clothing updates.
+          <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Unsubscribe</a>
+        </p>
+      </td>
+    </tr>
+
+  </table>
+</div>
