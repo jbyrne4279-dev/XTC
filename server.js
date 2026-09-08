@@ -481,11 +481,6 @@ function buildOrderConfirmationHtml(order) {
         </tr>
         <tr>
           <td style="padding:48px 44px 0;text-align:center;">
-            <table role="presentation" align="center" style="margin:0 auto 18px;border-collapse:collapse;">
-              <tr>
-                <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;border-radius:50%;background:#000000;color:#ffffff;font-size:18px;line-height:40px;text-align:center;">&#10003;</td>
-              </tr>
-            </table>
             <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 14px;">Order Confirmed</p>
             <p style="font-size:15px;color:#000000;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
           </td>
