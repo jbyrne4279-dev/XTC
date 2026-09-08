@@ -5,16 +5,13 @@
   via resendSend() from a one-off script. Design matches new-releases.html:
   black hero, "Drop 02 — War™" eyebrow/title treatment, product cards with
   New Release badges, black CTA buttons, hairline borders.
-  Hero (logo + title bands) is pure black; body sections (intro, product
-  rows, CTA, footer) sit on a carbon-fiber/liquid-metal textured background
-  image (images/email-carbon-bg.jpg, generated), with #1a1a1a as the solid
-  fallback color for clients that don't render background-image (Outlook
-  desktop notably). White text/borders, black-on-white-border Shop buttons.
-  All text left-aligned. Skull emblem (transparent PNG, site's existing
-  skull-emblem-icon.webp asset) in the hero next to the logo.
+  Entire email is solid black background throughout, white text/borders,
+  black-on-white-border Shop buttons. All text left-aligned. Skull emblem
+  (transparent PNG, site's existing skull-emblem-icon.webp asset) alone at
+  the top; a small X logo sits next to the closing footer line.
 -->
-<div style="background:#1a1a1a;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#1a1a1a;">
+<div style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
 
     <!-- Logo band — just the skull emblem, no box -->
     <tr>
@@ -42,7 +39,7 @@
 
     <!-- Intro copy -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:44px 44px 8px;text-align:left;">
+      <td style="background:#000000;padding:44px 44px 8px;text-align:left;">
         <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 14px;">Just Landed</p>
         <p style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">The War&trade; Collection is live. Heavyweight French Terry cotton, built for winter — once it's gone, it's gone for good.</p>
       </td>
@@ -50,7 +47,7 @@
 
     <!-- Product: War Zip -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:32px 44px 0;">
+      <td style="background:#000000;padding:32px 44px 0;">
         <table role="presentation" width="100%" style="border-collapse:collapse;border-top:1px solid rgba(255,255,255,0.15);padding-top:24px;">
           <tr>
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
@@ -70,7 +67,7 @@
 
     <!-- Product: War Joggers -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:0 44px 0;">
+      <td style="background:#000000;padding:0 44px 0;">
         <table role="presentation" width="100%" style="border-collapse:collapse;border-top:1px solid rgba(255,255,255,0.15);">
           <tr>
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
@@ -90,7 +87,7 @@
 
     <!-- Product: Uniform T -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:0 44px 0;">
+      <td style="background:#000000;padding:0 44px 0;">
         <table role="presentation" width="100%" style="border-collapse:collapse;border-top:1px solid rgba(255,255,255,0.15);">
           <tr>
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
@@ -110,14 +107,14 @@
 
     <!-- Primary CTA -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:44px 44px 8px;text-align:left;border-top:1px solid rgba(255,255,255,0.15);margin-top:24px;">
+      <td style="background:#000000;padding:44px 44px 8px;text-align:left;border-top:1px solid rgba(255,255,255,0.15);margin-top:24px;">
         <a href="https://xtcclothing.com/new-releases" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop The Full Drop</a>
       </td>
     </tr>
 
     <!-- Footer — small X logo alongside the closing line -->
     <tr>
-      <td style="background:#1a1a1a url('https://xtcclothing.com/images/email-carbon-bg.jpg') center/cover no-repeat;padding:28px 44px 36px;text-align:left;">
+      <td style="background:#000000;padding:28px 44px 36px;text-align:left;">
         <table role="presentation" style="border-collapse:collapse;">
           <tr>
             <td style="padding-right:10px;vertical-align:middle;">
