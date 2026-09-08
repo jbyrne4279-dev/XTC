@@ -806,13 +806,36 @@
       error.classList.remove('show');
 
       const firstName = document.getElementById('firstName').value.trim();
-      const email = document.getElementById('email').value.trim();
+      const lastName  = document.getElementById('lastName').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const subject   = document.getElementById('subject').value;
+      const message   = document.getElementById('message').value.trim();
+      const submitBtn = this.querySelector('.cf-btn');
+      const form = this;
+
+      submitBtn.disabled = true;
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, subject, message }),
+      })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function () { showContactSent(); })
+        .catch(function () {
+          submitBtn.disabled = false;
+          error.textContent = "Something went wrong — please email us directly.";
+          error.classList.add('show');
+        });
+
       if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'contact-form');
-      this.reset();
+
+      function showContactSent() {
+      form.reset();
+      submitBtn.disabled = false;
 
       // Transition: collapse form out, show success state
       const label = document.getElementById('ctFormLabel');
-      const form  = document.getElementById('contactForm');
       const sent  = document.getElementById('cfSent');
 
       label.classList.add('cf-out');
@@ -826,6 +849,7 @@
         sent.classList.add('cf-sent--visible');
         cfParticleBurst();
       }, 360);
+      }
     });
 
     function cfParticleBurst() {

@@ -314,6 +314,104 @@ async function sendOmnisendOrderConfirmation(order, cartItems) {
   }
 }
 
+// ── Resend (contact form emails + a remarketing audience) ────────────────────
+// Runs alongside Omnisend, not instead of it — Omnisend keeps handling sign-up
+// capture and order confirmation as before. Resend covers the contact form
+// (which previously went nowhere — the message was just discarded) and adds
+// every subscriber/purchaser to a Resend Audience so broadcasts/remarketing
+// can be sent from the Resend dashboard.
+// Set RESEND_API_KEY in the Railway environment variables. Optionally also
+// set RESEND_FROM_EMAIL (defaults to Resend's shared test sender, which
+// works without verifying a domain but should be swapped for a verified
+// address like "XTC Clothing <hello@xtcclothing.com>" once one exists) and
+// CONTACT_TO_EMAIL (defaults to the site owner's inbox).
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'XTC Clothing <onboarding@resend.dev>';
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'jbyrne4279@gmail.com';
+const RESEND_AUDIENCE_NAME = 'XTC Remarketing';
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+async function resendSend({ to, subject, html, replyTo }) {
+  if (!RESEND_API_KEY) return { ok: false, error: 'Resend not configured' };
+  try {
+    const payload = { from: RESEND_FROM_EMAIL, to: [to], subject, html };
+    if (replyTo) payload.reply_to = replyTo;
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      console.error('Resend send error:', res.status, body);
+      return { ok: false, error: body };
+    }
+    return { ok: true };
+  } catch (e) {
+    console.error('Resend send exception:', e.message);
+    return { ok: false, error: e.message };
+  }
+}
+
+// The remarketing audience is looked up by name once per server run and
+// cached in memory — created automatically the first time it's needed so
+// there's no extra dashboard step beyond setting RESEND_API_KEY.
+let _resendAudienceId = null;
+async function getResendAudienceId() {
+  if (_resendAudienceId) return _resendAudienceId;
+  if (!RESEND_API_KEY) return null;
+  try {
+    const listRes = await fetch('https://api.resend.com/audiences', {
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}` },
+    });
+    if (listRes.ok) {
+      const list = await listRes.json();
+      const existing = (list.data || []).find(a => a.name === RESEND_AUDIENCE_NAME);
+      if (existing) { _resendAudienceId = existing.id; return _resendAudienceId; }
+    }
+    const createRes = await fetch('https://api.resend.com/audiences', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: RESEND_AUDIENCE_NAME }),
+    });
+    if (createRes.ok) {
+      const created = await createRes.json();
+      _resendAudienceId = created.id;
+      return _resendAudienceId;
+    }
+    console.error('Resend audience create error:', createRes.status, await createRes.text().catch(() => ''));
+  } catch (e) {
+    console.error('Resend audience exception:', e.message);
+  }
+  return null;
+}
+
+// Fire-and-forget — adds/updates a contact in the remarketing audience.
+// Never throws, never blocks the caller (sign-up, checkout, etc).
+async function resendAddContact(email, opts) {
+  opts = opts || {};
+  if (!RESEND_API_KEY || !email) return;
+  try {
+    const audienceId = await getResendAudienceId();
+    if (!audienceId) return;
+    await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: String(email).trim().toLowerCase(),
+        first_name: opts.firstName || undefined,
+        last_name: opts.lastName || undefined,
+        unsubscribed: false,
+      }),
+    });
+  } catch (e) {
+    console.error('Resend contact exception:', e.message);
+  }
+}
+
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
   'https://mugifniadilfwfgrsvie.supabase.co',
@@ -598,6 +696,7 @@ app.post('/webhook', async (req, res) => {
           { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend },
           cartItems
         );
+        resendAddContact(emailForOmnisend); // purchasers into the remarketing audience
       }
     } catch (err) {
       console.error('Webhook Omnisend error:', err.message);
@@ -764,6 +863,7 @@ app.post('/subscribe', async (req, res) => {
   const safePhone = toE164(phone);
   if (!hasEmail && !safePhone) return res.status(400).json({ error: 'Invalid email or phone' });
   const safeSource = String(source || 'website').replace(/[^a-z0-9_-]/gi, '').slice(0, 64);
+  if (hasEmail) resendAddContact(String(email).trim().toLowerCase().slice(0, 254)); // fire-and-forget, alongside Omnisend below
   if (!OMNISEND_API_KEY) return res.json({ ok: true });
   const now2 = new Date().toISOString();
   try {
@@ -792,6 +892,57 @@ app.post('/subscribe', async (req, res) => {
       });
     }
   } catch (e) { /* best-effort */ }
+  res.json({ ok: true });
+});
+
+// Contact form → email, via Resend. Previously the form only subscribed the
+// sender's email to Omnisend and threw the actual message away. Rate-limited
+// like /subscribe (one submission per IP per 10s).
+const _contactCooldown = new Map();
+const CONTACT_TOPIC_LABELS = {
+  order: 'Order Enquiry',
+  sizing: 'Sizing & Fit',
+  returns: 'Returns & Exchanges',
+  wholesale: 'Wholesale',
+  press: 'Press & Media',
+  other: 'Other',
+};
+app.post('/api/contact', async (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const now = Date.now();
+  if (_contactCooldown.has(ip) && now - _contactCooldown.get(ip) < 10000) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
+  _contactCooldown.set(ip, now);
+
+  const { firstName, lastName, email, subject, message } = req.body || {};
+  if (!firstName || !lastName || !email || !subject || !message || !String(email).includes('@')) {
+    return res.status(400).json({ error: 'Missing or invalid fields' });
+  }
+  if (!RESEND_API_KEY) return res.status(503).json({ error: 'Email not configured' });
+
+  const safeFirst = String(firstName).trim().slice(0, 100);
+  const safeLast = String(lastName).trim().slice(0, 100);
+  const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
+  const safeTopic = CONTACT_TOPIC_LABELS[String(subject).trim()] || String(subject).trim().slice(0, 100);
+  const safeMessage = String(message).trim().slice(0, 5000);
+
+  const html = `
+    <p><strong>${escapeHtml(safeFirst)} ${escapeHtml(safeLast)}</strong> (${escapeHtml(safeEmail)})</p>
+    <p><strong>Topic:</strong> ${escapeHtml(safeTopic)}</p>
+    <p><strong>Message:</strong></p>
+    <p>${escapeHtml(safeMessage).replace(/\n/g, '<br>')}</p>
+  `;
+
+  const result = await resendSend({
+    to: CONTACT_TO_EMAIL,
+    subject: `[XTC Contact] ${safeTopic} — ${safeFirst} ${safeLast}`,
+    html,
+    replyTo: safeEmail,
+  });
+
+  if (!result.ok) return res.status(502).json({ error: 'Could not send message' });
+  resendAddContact(safeEmail, { firstName: safeFirst, lastName: safeLast }); // same marketing consent the page already implies via omnisendSubscribe
   res.json({ ok: true });
 });
 
@@ -853,6 +1004,7 @@ app.post('/orders', async (req, res) => {
 
   // Send Omnisend order confirmation email (triggers the automation in Omnisend).
   sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
+  resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
   // is [{ productId, size, qty }]. The webhook does the same as a fallback.
