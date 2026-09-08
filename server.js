@@ -114,6 +114,10 @@ const SITE_LOCK_ALLOWLIST = new Set([
   // days later, possibly on a device that never unlocked the site, would
   // otherwise get bounced to /password instead of their order.
   '/track-order',
+  // BIMI logo — fetched unauthenticated by mail providers (Gmail, Yahoo,
+  // Apple Mail) to render as the inbox avatar; must be reachable without
+  // the unlock cookie.
+  '/images/bimi-logo.svg',
 ]);
 // Bypass: visit any URL with ?preview=<SITE_PREVIEW_KEY> once to drop a
 // cookie that skips the lock for that browser going forward (90 days).
