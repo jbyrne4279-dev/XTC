@@ -443,7 +443,10 @@ async function resendAddContact(email, opts) {
 // not instead of it. `order.items` is [{ name, qty, price }] with price already
 // formatted (e.g. "£40.00"), matching the shape both call sites already build
 // for Omnisend. Fire-and-forget: logs on failure, never throws into the caller.
-const BRAND_LOGO_URL = 'https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png';
+// Self-hosted, not the Shopify CDN wordmark used elsewhere on the site — that
+// URL now 403s (dead/blocked), which is why the email header logo (and
+// likely the site's own nav logo, using the same URL) stopped rendering.
+const BRAND_LOGO_URL = `${BASE_URL}/images/icon-512.png`;
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
