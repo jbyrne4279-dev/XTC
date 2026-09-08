@@ -469,10 +469,14 @@ function buildOrderConfirmationHtml(order) {
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
   const orderUrl = `${BASE_URL}/track-order`;
 
-  // Matches the delivery windows quoted on shipping.html / help.html.
-  const deliveryWindow = !order.country || order.country === 'GB'
+  // Matches the delivery windows quoted on shipping.html / help.html. Must
+  // key off the ISO2 code (countryCode) — order.country is the full display
+  // name ("United Kingdom"), which never equals 'GB'/'US' and silently sent
+  // every order into the "rest of world" bucket regardless of destination.
+  const code = (order.countryCode || '').toUpperCase();
+  const deliveryWindow = !code || code === 'GB'
     ? '1–2 working days'
-    : order.country === 'US'
+    : code === 'US'
       ? '7–14 working days'
       : '5–7 working days';
 
@@ -869,6 +873,7 @@ app.post('/webhook', async (req, res) => {
           city: (shipping.address && shipping.address.city) || '',
           postcode: (shipping.address && shipping.address.postal_code) || '',
           country: (shipping.address && shipping.address.country) || '',
+          countryCode: (shipping.address && shipping.address.country) || '', // Stripe returns ISO2 here already
         };
         sendOmnisendOrderConfirmation(orderForConfirmation, cartItems);
         sendResendOrderConfirmation(orderForConfirmation);
@@ -1160,7 +1165,7 @@ async function saveOrder(order, opts) {
 
 // Save an order placed via the custom checkout (called from checkout.html).
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source, cartItems, phone, country, name, address, city, postcode } = req.body || {};
+  const { id, email, items, total, status, source, cartItems, phone, country, countryCode, name, address, city, postcode } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
   const result = await saveOrder({
     id, email, items, total, status,
@@ -1180,7 +1185,7 @@ app.post('/orders', async (req, res) => {
 
   // Send Omnisend order confirmation email (triggers the automation in Omnisend).
   sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
-  sendResendOrderConfirmation({ id, email, total, items, name, address, city, postcode, country });
+  sendResendOrderConfirmation({ id, email, total, items, name, address, city, postcode, country, countryCode: countryCode || country });
   resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems

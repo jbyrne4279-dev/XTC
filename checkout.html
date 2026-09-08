@@ -1083,6 +1083,10 @@
           id: orderId, email, items: cart, total: totalValue, status: 'Processing', source: 'custom', intentId: piId, cartItems: cartItems,
           phone: document.getElementById('coPhone').value.trim(),
           country: (document.getElementById('coCountry').dataset.name || document.getElementById('coCountry').value).trim(),
+          // ISO2 code, separate from the full display name above — the order
+          // confirmation email's delivery-estimate logic needs this (GB/US/
+          // else) and can't reliably infer it back out of a country name.
+          countryCode: document.getElementById('coCountry').value.trim(),
           name: document.getElementById('coName').value.trim(),
           address: document.getElementById('coAddress').value.trim(),
           city: document.getElementById('coCity').value.trim(),
