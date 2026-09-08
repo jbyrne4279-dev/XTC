@@ -437,7 +437,7 @@ function buildOrderConfirmationHtml(order) {
     </tr>
   `).join('');
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
-  const orderUrl = `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`;
+  const orderUrl = `${BASE_URL}/track-order`;
 
   return `
     <div style="background:#f7f7f7;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
