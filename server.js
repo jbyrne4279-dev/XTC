@@ -412,6 +412,53 @@ async function resendAddContact(email, opts) {
   }
 }
 
+// Order confirmation email via Resend — runs alongside sendOmnisendOrderConfirmation,
+// not instead of it. `order.items` is [{ name, qty, price }] with price already
+// formatted (e.g. "£40.00"), matching the shape both call sites already build
+// for Omnisend. Fire-and-forget: logs on failure, never throws into the caller.
+function buildOrderConfirmationHtml(order) {
+  const rows = (Array.isArray(order.items) ? order.items : []).map(it => `
+    <tr>
+      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#141414;">${escapeHtml(it.name || 'Item')}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#666;text-align:center;">${escapeHtml(String(it.qty || 1))}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#141414;text-align:right;">${escapeHtml(it.price || '')}</td>
+    </tr>
+  `).join('');
+  const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
+  const orderUrl = `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`;
+
+  return `
+    <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#141414;">
+      <h1 style="font-size:20px;letter-spacing:2px;text-transform:uppercase;margin:24px 0 4px;">XTC</h1>
+      <p style="font-size:15px;margin:0 0 24px;">Thanks for your order — it's confirmed.</p>
+      <p style="font-size:12px;color:#666;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;">Order ${escapeHtml(String(order.id || ''))}</p>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Item</th>
+            <th style="text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Qty</th>
+            <th style="text-align:right;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Price</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="text-align:right;font-size:16px;font-weight:600;margin:16px 0 32px;">Total: ${escapeHtml(total)}</p>
+      <a href="${orderUrl}" style="display:inline-block;background:#141414;color:#ffffff;text-decoration:none;padding:14px 28px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Track Your Order</a>
+      <p style="font-size:12px;color:#999;margin-top:40px;">XTC Clothing — questions? Just reply to this email.</p>
+    </div>
+  `;
+}
+
+async function sendResendOrderConfirmation(order) {
+  if (!RESEND_API_KEY || !order.email) return;
+  const result = await resendSend({
+    to: order.email,
+    subject: `Order Confirmed — ${order.id}`,
+    html: buildOrderConfirmationHtml(order),
+  });
+  if (!result.ok) console.error('Resend order confirmation failed for', order.id);
+}
+
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
   'https://mugifniadilfwfgrsvie.supabase.co',
@@ -692,10 +739,9 @@ app.post('/webhook', async (req, res) => {
           const p = PRODUCTS[ci.productId];
           return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '' };
         });
-        sendOmnisendOrderConfirmation(
-          { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend },
-          cartItems
-        );
+        const orderForConfirmation = { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend };
+        sendOmnisendOrderConfirmation(orderForConfirmation, cartItems);
+        sendResendOrderConfirmation(orderForConfirmation);
         resendAddContact(emailForOmnisend); // purchasers into the remarketing audience
       }
     } catch (err) {
@@ -1004,6 +1050,7 @@ app.post('/orders', async (req, res) => {
 
   // Send Omnisend order confirmation email (triggers the automation in Omnisend).
   sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
+  sendResendOrderConfirmation({ id, email, total, items });
   resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
