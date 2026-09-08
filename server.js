@@ -419,32 +419,56 @@ async function resendAddContact(email, opts) {
 function buildOrderConfirmationHtml(order) {
   const rows = (Array.isArray(order.items) ? order.items : []).map(it => `
     <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#141414;">${escapeHtml(it.name || 'Item')}</td>
-      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#666;text-align:center;">${escapeHtml(String(it.qty || 1))}</td>
-      <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#141414;text-align:right;">${escapeHtml(it.price || '')}</td>
+      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;">${escapeHtml(it.name || 'Item')}</td>
+      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:rgba(0,0,0,0.5);text-align:center;">${escapeHtml(String(it.qty || 1))}</td>
+      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;text-align:right;">${escapeHtml(it.price || '')}</td>
     </tr>
   `).join('');
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
   const orderUrl = `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`;
 
   return `
-    <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#141414;">
-      <h1 style="font-size:20px;letter-spacing:2px;text-transform:uppercase;margin:24px 0 4px;">XTC</h1>
-      <p style="font-size:15px;margin:0 0 24px;">Thanks for your order — it's confirmed.</p>
-      <p style="font-size:12px;color:#666;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;">Order ${escapeHtml(String(order.id || ''))}</p>
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th style="text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Item</th>
-            <th style="text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Qty</th>
-            <th style="text-align:right;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding-bottom:8px;border-bottom:1px solid #ddd;">Price</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
+    <div style="background:#f7f7f7;padding:32px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#ffffff;">
+        <tr>
+          <td style="background:#000000;padding:28px 40px;text-align:center;">
+            <span style="font-size:20px;letter-spacing:6px;text-transform:uppercase;color:#ffffff;font-weight:600;">XTC</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px 40px 0;">
+            <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 8px;">Order Confirmed</p>
+            <p style="font-size:15px;color:#000000;margin:0 0 4px;line-height:1.6;">Thanks for your order — it's on its way to being made.</p>
+            <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:24px 0 0;border-top:1px solid rgba(0,0,0,0.08);padding-top:16px;">Order ${escapeHtml(String(order.id || ''))}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 40px 0;">
+            <table role="presentation" width="100%" style="border-collapse:collapse;">
+              <thead>
+                <tr>
+                  <th style="text-align:left;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Item</th>
+                  <th style="text-align:center;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Qty</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Price</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+            <p style="text-align:right;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:20px 0 0;">Total</p>
+            <p style="text-align:right;font-size:22px;font-weight:600;color:#000000;margin:2px 0 32px;">${escapeHtml(total)}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 40px 40px;text-align:center;">
+            <a href="${orderUrl}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 40px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">Track Your Order</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 40px 32px;border-top:1px solid rgba(0,0,0,0.08);text-align:center;">
+            <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.3);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
+          </td>
+        </tr>
       </table>
-      <p style="text-align:right;font-size:16px;font-weight:600;margin:16px 0 32px;">Total: ${escapeHtml(total)}</p>
-      <a href="${orderUrl}" style="display:inline-block;background:#141414;color:#ffffff;text-decoration:none;padding:14px 28px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Track Your Order</a>
-      <p style="font-size:12px;color:#999;margin-top:40px;">XTC Clothing — questions? Just reply to this email.</p>
     </div>
   `;
 }
