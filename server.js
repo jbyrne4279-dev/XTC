@@ -451,6 +451,34 @@ function buildOrderConfirmationHtml(order) {
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
   const orderUrl = `${BASE_URL}/track-order`;
 
+  // Matches the delivery windows quoted on shipping.html / help.html.
+  const deliveryWindow = !order.country || order.country === 'GB'
+    ? '1–2 working days'
+    : order.country === 'US'
+      ? '7–14 working days'
+      : '5–7 working days';
+
+  const addressLines = [order.name, order.address, [order.city, order.postcode].filter(Boolean).join(' '), order.country]
+    .filter(Boolean).map(escapeHtml);
+  const shippingBlock = addressLines.length ? `
+    <tr>
+      <td style="padding:32px 44px 0;">
+        <table role="presentation" width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td width="50%" style="vertical-align:top;padding-right:12px;">
+              <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Shipping To</p>
+              <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${addressLines.join('<br>')}</p>
+            </td>
+            <td width="50%" style="vertical-align:top;padding-left:12px;border-left:1px solid rgba(0,0,0,0.08);">
+              <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Estimated Delivery</p>
+              <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${escapeHtml(deliveryWindow)}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  ` : '';
+
   return `
     <div style="background:#f7f7f7;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
       <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#ffffff;">
@@ -488,6 +516,7 @@ function buildOrderConfirmationHtml(order) {
             </table>
           </td>
         </tr>
+        ${shippingBlock}
         <tr>
           <td style="padding:36px 44px 0;text-align:center;">
             <a href="${orderUrl}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;">Track Your Order</a>
@@ -821,7 +850,15 @@ app.post('/webhook', async (req, res) => {
           const p = PRODUCTS[ci.productId];
           return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '', img: p ? p.img : '' };
         });
-        const orderForConfirmation = { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend };
+        const shipping = pi.shipping || {};
+        const orderForConfirmation = {
+          id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend,
+          name: shipping.name || '',
+          address: (shipping.address && shipping.address.line1) || '',
+          city: (shipping.address && shipping.address.city) || '',
+          postcode: (shipping.address && shipping.address.postal_code) || '',
+          country: (shipping.address && shipping.address.country) || '',
+        };
         sendOmnisendOrderConfirmation(orderForConfirmation, cartItems);
         sendResendOrderConfirmation(orderForConfirmation);
         resendAddContact(emailForOmnisend); // purchasers into the remarketing audience
@@ -1132,7 +1169,7 @@ app.post('/orders', async (req, res) => {
 
   // Send Omnisend order confirmation email (triggers the automation in Omnisend).
   sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
-  sendResendOrderConfirmation({ id, email, total, items });
+  sendResendOrderConfirmation({ id, email, total, items, name, address, city, postcode, country });
   resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
