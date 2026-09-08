@@ -110,6 +110,7 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/images/email-ZIP-HOODIE-XTC-FRONT.jpg',
   '/images/email-polo-black-flat.jpg',
   '/images/email-polo-white-flat.jpg',
+  '/images/email-skull-emblem.png',
   // The order email's "Track Your Order" button — a customer opening this
   // days later, possibly on a device that never unlocked the site, would
   // otherwise get bounced to /password instead of their order.

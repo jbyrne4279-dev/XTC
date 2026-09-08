@@ -7,15 +7,26 @@
   New Release badges, black CTA buttons, hairline borders.
   Hero (logo + title bands) is pure black; body sections (intro, product
   rows, CTA, footer) use a dark grey (#1a1a1a) that pairs with it, with
-  white text/borders and white-on-black Shop buttons.
+  white text/borders and black-on-white-border Shop buttons. All text
+  left-aligned. Skull emblem (transparent PNG, site's existing
+  skull-emblem-icon.webp asset) in the hero next to the logo.
 -->
 <div style="background:#1a1a1a;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#1a1a1a;">
 
     <!-- Logo band -->
     <tr>
-      <td style="background:#000000;padding:32px 40px;text-align:center;">
-        <img src="https://xtcclothing.com/images/icon-512.png" alt="XTC" width="56" style="width:56px;height:auto;display:block;margin:0 auto;">
+      <td style="background:#000000;padding:32px 40px;text-align:left;">
+        <table role="presentation" style="border-collapse:collapse;">
+          <tr>
+            <td style="padding-right:16px;vertical-align:middle;">
+              <img src="https://xtcclothing.com/images/icon-512.png" alt="XTC" width="48" style="width:48px;height:auto;display:block;">
+            </td>
+            <td style="vertical-align:middle;">
+              <img src="https://xtcclothing.com/images/email-skull-emblem.png" alt="" width="48" style="width:48px;height:auto;display:block;">
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
 
@@ -23,7 +34,7 @@
          margins / position:absolute are unreliable in Outlook and other
          email clients, so title and image are stacked, not layered) -->
     <tr>
-      <td style="background:#000000;padding:48px 40px 36px;text-align:center;">
+      <td style="background:#000000;padding:48px 40px 36px;text-align:left;">
         <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Drop 02</p>
         <h1 style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">War&trade;</h1>
         <p style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0 0 14px;">War. World. Chaos.</p>
@@ -38,7 +49,7 @@
 
     <!-- Intro copy -->
     <tr>
-      <td style="background:#1a1a1a;padding:44px 44px 8px;text-align:center;">
+      <td style="background:#1a1a1a;padding:44px 44px 8px;text-align:left;">
         <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 14px;">Just Landed</p>
         <p style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">The War&trade; Collection is live. Heavyweight French Terry cotton, built for winter — once it's gone, it's gone for good.</p>
       </td>
@@ -52,7 +63,7 @@
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
               <img src="https://xtcclothing.com/images/email-ZIP-HOODIE-XTC-FRONT.jpg" width="120" height="120" alt="War Zip" style="width:120px;height:120px;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;">
             </td>
-            <td style="padding:24px 0 0;vertical-align:top;">
+            <td style="padding:24px 0 0;vertical-align:top;text-align:left;">
               <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 6px;">New Release</p>
               <p style="font-size:17px;color:#ffffff;margin:0 0 4px;font-weight:600;">War&trade; Zip</p>
               <p style="font-size:12px;color:rgba(255,255,255,0.55);margin:0 0 10px;">400gsm French Terry Cotton</p>
@@ -72,7 +83,7 @@
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
               <img src="https://xtcclothing.com/images/email-JOGGERS-XTC.jpg" width="120" height="120" alt="War Joggers" style="width:120px;height:120px;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;">
             </td>
-            <td style="padding:24px 0 0;vertical-align:top;">
+            <td style="padding:24px 0 0;vertical-align:top;text-align:left;">
               <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 6px;">New Release</p>
               <p style="font-size:17px;color:#ffffff;margin:0 0 4px;font-weight:600;">War&trade; Joggers</p>
               <p style="font-size:12px;color:rgba(255,255,255,0.55);margin:0 0 10px;">400gsm French Terry Cotton</p>
@@ -92,7 +103,7 @@
             <td width="140" style="padding:24px 20px 0 0;vertical-align:top;">
               <img src="https://xtcclothing.com/images/email-T-SHIRT-XTC.jpg" width="120" height="120" alt="Uniform T" style="width:120px;height:120px;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;">
             </td>
-            <td style="padding:24px 0 0;vertical-align:top;">
+            <td style="padding:24px 0 0;vertical-align:top;text-align:left;">
               <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 6px;">New Release</p>
               <p style="font-size:17px;color:#ffffff;margin:0 0 4px;font-weight:600;">Uniform T</p>
               <p style="font-size:12px;color:rgba(255,255,255,0.55);margin:0 0 10px;">Heavyweight Cotton</p>
@@ -106,14 +117,14 @@
 
     <!-- Primary CTA -->
     <tr>
-      <td style="background:#1a1a1a;padding:44px 44px 8px;text-align:center;border-top:1px solid rgba(255,255,255,0.15);margin-top:24px;">
+      <td style="background:#1a1a1a;padding:44px 44px 8px;text-align:left;border-top:1px solid rgba(255,255,255,0.15);margin-top:24px;">
         <a href="https://xtcclothing.com/new-releases" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop The Full Drop</a>
       </td>
     </tr>
 
     <!-- Footer -->
     <tr>
-      <td style="background:#1a1a1a;padding:28px 44px 36px;text-align:center;">
+      <td style="background:#1a1a1a;padding:28px 44px 36px;text-align:left;">
         <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing — Limited units. Never restocked.</p>
       </td>
     </tr>
