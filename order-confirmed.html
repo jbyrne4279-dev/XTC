@@ -451,8 +451,14 @@
         const price = parseFloat((item.price || '0').replace(/[^0-9.]/g, ''));
         const lineTotal = price * (item.qty || 1);
         total += lineTotal;
-        const meta = 'Size: ' + (item.size || '—') + ' &nbsp;·&nbsp; Qty: ' + (item.qty || 1);
-        return buildItemRow(getProductImage(item.id || item.name), item.name || 'XTC Polo', meta, '£' + lineTotal.toFixed(2));
+        // Cart item names already carry "PRODUCT — SIZE" (see addToCart callers
+        // in checkout.html) and there's no separate item.size field — split it
+        // out so the size shows under the title instead of inline with it.
+        const parts = (item.name || '').split('—');
+        const name = (parts[0] || 'XTC Polo').trim();
+        const size = item.size || (parts[1] ? parts[1].trim() : '');
+        const meta = (size ? 'Size: ' + size + ' &nbsp;·&nbsp; ' : '') + 'Qty: ' + (item.qty || 1);
+        return buildItemRow(getProductImage(item.id || item.name), name, meta, '£' + lineTotal.toFixed(2));
       }).join('');
 
       _orderValue = total;
