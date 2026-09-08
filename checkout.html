@@ -1141,6 +1141,13 @@
     });
     expressCheckout.on('confirm', async (event) => {
       const email = event.billingDetails?.email || document.getElementById('coEmail').value || '';
+      // emailRequired:true above should guarantee this, but never charge a
+      // card without an email to send the order/confirmation to — that order
+      // becomes unrecoverable (no confirmation email, no way to look it up).
+      if (!email) {
+        document.getElementById('payment-errors').textContent = 'An email address is required — please enter one above and try again.';
+        return;
+      }
       const { error } = await stripe.confirmPayment({
         elements: _elements,
         confirmParams: { return_url: window.location.origin + '/checkout' },

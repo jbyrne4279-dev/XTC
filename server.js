@@ -734,8 +734,23 @@ app.post('/webhook', async (req, res) => {
     //    page use, so this reconciles to one row; insertOnly means it never
     //    overwrites their richer data (it only fills in if they never ran).
     //    Saved first so the stock claim below has a row to mark.
+    let webhookEmail = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
+    if (!webhookEmail && pi.latest_charge) {
+      // Wallet payments (Apple Pay/Google Pay) can leave receipt_email and
+      // metadata.email blank — fall back to the charge's billing details so
+      // the order (and its confirmation emails) still isn't lost.
+      try {
+        const charge = await stripe.charges.retrieve(
+          typeof pi.latest_charge === 'string' ? pi.latest_charge : pi.latest_charge.id
+        );
+        webhookEmail = (charge.billing_details && charge.billing_details.email) || charge.receipt_email || '';
+      } catch (e) {
+        console.error('Webhook charge lookup error:', e.message);
+      }
+    }
+
     try {
-      const email = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
+      const email = webhookEmail;
       const items = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
         const p = PRODUCTS[ci.productId];
         const unit = p ? p.amount / 100 : null;
@@ -757,7 +772,7 @@ app.post('/webhook', async (req, res) => {
     // 2) Send Omnisend order confirmation — idempotent (Omnisend deduplicates by
     //    orderID, so re-posting the same order won't send a duplicate email).
     try {
-      const emailForOmnisend = pi.receipt_email || (pi.metadata && pi.metadata.email) || '';
+      const emailForOmnisend = webhookEmail;
       if (emailForOmnisend) {
         const itemsForOmnisend = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
           const p = PRODUCTS[ci.productId];
