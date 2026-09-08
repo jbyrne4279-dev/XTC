@@ -1593,7 +1593,11 @@ app.get('/drop.ics', (req, res) => {
     '',
   ].join('\r\n');
   res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="xtc-ss26-drop.ics"');
+  // inline (not attachment) — Content-Disposition: attachment makes iOS
+  // Safari/Mail just silently save the file to Files instead of showing the
+  // "Add to Calendar" prompt. Inline lets iOS recognize the calendar MIME
+  // type and open the add-event UI directly when the link is tapped.
+  res.setHeader('Content-Disposition', 'inline; filename="xtc-ss26-drop.ics"');
   res.send(ics);
 });
 
