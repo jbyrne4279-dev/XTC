@@ -146,13 +146,22 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 const PRODUCTS = {
-  'polo-black': { name: 'XTC Polo [Black]', amount: 6000, img: 'images/polo-black-flat.webp' },
-  'polo-white': { name: 'XTC Polo [White]', amount: 6000, img: 'images/polo-white-flat.webp' },
+  'polo-black': { name: 'XTC Polo [Black]', amount: 6000, img: 'images/polo-black-flat.webp', emailImg: 'images/email-polo-black-flat.jpg' },
+  'polo-white': { name: 'XTC Polo [White]', amount: 6000, img: 'images/polo-white-flat.webp', emailImg: 'images/email-polo-white-flat.jpg' },
   // SS26 War Collection — pre-order (ships 21 July)
-  'war-zip': { name: 'XTC War™ Zip', amount: 12000, img: 'images/ZIP-HOODIE-XTC-FRONT.webp' },
-  'war-joggers': { name: 'XTC War™ Joggers', amount: 11000, img: 'images/JOGGERS-XTC.webp' },
-  'uniform-t': { name: 'XTC Uniform T', amount: 4000, img: 'images/T-SHIRT-XTC.webp' },
+  'war-zip': { name: 'XTC War™ Zip', amount: 12000, img: 'images/ZIP-HOODIE-XTC-FRONT.webp', emailImg: 'images/email-ZIP-HOODIE-XTC-FRONT.jpg' },
+  'war-joggers': { name: 'XTC War™ Joggers', amount: 11000, img: 'images/JOGGERS-XTC.webp', emailImg: 'images/email-JOGGERS-XTC.jpg' },
+  'uniform-t': { name: 'XTC Uniform T', amount: 4000, img: 'images/T-SHIRT-XTC.webp', emailImg: 'images/email-T-SHIRT-XTC.jpg' },
 };
+
+// WebP source images (the site's default) aren't rendered by several major
+// email clients (Outlook desktop's Word engine has no WebP support at all),
+// so order-confirmation emails need the JPG fallback instead. Maps by the
+// filename part of a product's `img` — matches on the cart item's raw path
+// (relative) sent by the client, which only ever carries the webp original.
+const EMAIL_IMG_BY_FILE = Object.fromEntries(
+  Object.values(PRODUCTS).filter(p => p.img && p.emailImg).map(p => [p.img, p.emailImg])
+);
 
 // Bundle deals — kept in sync with BUNDLES in js/main.js (the client's copy,
 // used only to *display* the discount). This is the source of truth for what
@@ -421,8 +430,11 @@ const BRAND_LOGO_URL = 'https://cdn.shopify.com/s/files/1/0968/4471/0227/files/w
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
     if (!src) return '';
-    if (/^https?:\/\//i.test(src)) return src;
-    return `${BASE_URL}/${String(src).replace(/^\//, '')}`;
+    // Cart items only ever carry the site's webp original — swap in the JPG
+    // fallback (Outlook and other clients don't render webp in emails).
+    const resolved = EMAIL_IMG_BY_FILE[src] || src;
+    if (/^https?:\/\//i.test(resolved)) return resolved;
+    return `${BASE_URL}/${String(resolved).replace(/^\//, '')}`;
   };
   const rows = (Array.isArray(order.items) ? order.items : []).map(it => `
     <tr>
@@ -455,7 +467,7 @@ function buildOrderConfirmationHtml(order) {
         </tr>
         <tr>
           <td style="padding:28px 44px 0;">
-            <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin:0;border-top:1px solid rgba(0,0,0,0.1);padding-top:20px;">Order Reference — ${escapeHtml(String(order.id || ''))}</p>
+            <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin:0;text-align:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:20px;">Order Reference — ${escapeHtml(String(order.id || ''))}</p>
           </td>
         </tr>
         <tr>
