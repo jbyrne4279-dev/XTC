@@ -146,12 +146,12 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 const PRODUCTS = {
-  'polo-black': { name: 'XTC Polo [Black]', amount: 6000 },
-  'polo-white': { name: 'XTC Polo [White]', amount: 6000 },
+  'polo-black': { name: 'XTC Polo [Black]', amount: 6000, img: 'images/polo-black-flat.webp' },
+  'polo-white': { name: 'XTC Polo [White]', amount: 6000, img: 'images/polo-white-flat.webp' },
   // SS26 War Collection — pre-order (ships 21 July)
-  'war-zip': { name: 'XTC War™ Zip', amount: 12000 },
-  'war-joggers': { name: 'XTC War™ Joggers', amount: 11000 },
-  'uniform-t': { name: 'XTC Uniform T', amount: 4000 },
+  'war-zip': { name: 'XTC War™ Zip', amount: 12000, img: 'images/ZIP-HOODIE-XTC-FRONT.webp' },
+  'war-joggers': { name: 'XTC War™ Joggers', amount: 11000, img: 'images/JOGGERS-XTC.webp' },
+  'uniform-t': { name: 'XTC Uniform T', amount: 4000, img: 'images/T-SHIRT-XTC.webp' },
 };
 
 // Bundle deals — kept in sync with BUNDLES in js/main.js (the client's copy,
@@ -417,55 +417,69 @@ async function resendAddContact(email, opts) {
 // formatted (e.g. "£40.00"), matching the shape both call sites already build
 // for Omnisend. Fire-and-forget: logs on failure, never throws into the caller.
 function buildOrderConfirmationHtml(order) {
+  const gold = '#b08d57';
+  const toAbsoluteImg = src => {
+    if (!src) return '';
+    if (/^https?:\/\//i.test(src)) return src;
+    return `${BASE_URL}/${String(src).replace(/^\//, '')}`;
+  };
   const rows = (Array.isArray(order.items) ? order.items : []).map(it => `
     <tr>
-      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;">${escapeHtml(it.name || 'Item')}</td>
-      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:rgba(0,0,0,0.5);text-align:center;">${escapeHtml(String(it.qty || 1))}</td>
-      <td style="padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;text-align:right;">${escapeHtml(it.price || '')}</td>
+      <td style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.08);width:72px;">
+        ${it.img ? `<img src="${toAbsoluteImg(it.img)}" width="64" height="64" alt="${escapeHtml(it.name || 'Item')}" style="width:64px;height:64px;object-fit:cover;background:#f4f2ee;border:1px solid rgba(0,0,0,0.08);display:block;">` : `<div style="width:64px;height:64px;background:#f4f2ee;border:1px solid rgba(0,0,0,0.08);"></div>`}
+      </td>
+      <td style="padding:20px 16px;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;vertical-align:middle;">
+        <div style="font-size:14px;color:#000000;letter-spacing:0.2px;">${escapeHtml(it.name || 'Item')}</div>
+        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin-top:4px;">Qty ${escapeHtml(String(it.qty || 1))}</div>
+      </td>
+      <td style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;text-align:right;vertical-align:middle;white-space:nowrap;">${escapeHtml(it.price || '')}</td>
     </tr>
   `).join('');
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
   const orderUrl = `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`;
 
   return `
-    <div style="background:#f7f7f7;padding:32px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+    <div style="background:#eeece7;padding:40px 16px;font-family:Georgia,'Times New Roman',serif;">
       <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#ffffff;">
         <tr>
-          <td style="background:#000000;padding:28px 40px;text-align:center;">
-            <span style="font-size:20px;letter-spacing:6px;text-transform:uppercase;color:#ffffff;font-weight:600;">XTC</span>
+          <td style="background:#0a0a0a;padding:44px 40px;text-align:center;">
+            <span style="font-family:Georgia,'Times New Roman',serif;font-size:26px;letter-spacing:10px;text-transform:uppercase;color:#ffffff;">XTC</span>
+            <div style="width:36px;height:1px;background:${gold};margin:16px auto 0;"></div>
           </td>
         </tr>
         <tr>
-          <td style="padding:40px 40px 0;">
-            <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 8px;">Order Confirmed</p>
-            <p style="font-size:15px;color:#000000;margin:0 0 4px;line-height:1.6;">Thanks for your order — it's on its way to being made.</p>
-            <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:24px 0 0;border-top:1px solid rgba(0,0,0,0.08);padding-top:16px;">Order ${escapeHtml(String(order.id || ''))}</p>
+          <td style="padding:48px 44px 0;text-align:center;">
+            <p style="font-family:Georgia,'Times New Roman',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:${gold};margin:0 0 14px;">Order Confirmed</p>
+            <p style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#000000;margin:0;line-height:1.7;">Thank you for choosing XTC. Your pieces are being prepared with care.</p>
           </td>
         </tr>
         <tr>
-          <td style="padding:16px 40px 0;">
+          <td style="padding:28px 44px 0;">
+            <p style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin:0;border-top:1px solid rgba(0,0,0,0.1);padding-top:20px;">Order Reference — ${escapeHtml(String(order.id || ''))}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 44px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
             <table role="presentation" width="100%" style="border-collapse:collapse;">
-              <thead>
-                <tr>
-                  <th style="text-align:left;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Item</th>
-                  <th style="text-align:center;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Qty</th>
-                  <th style="text-align:right;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.12);font-weight:600;">Price</th>
-                </tr>
-              </thead>
               <tbody>${rows}</tbody>
             </table>
-            <p style="text-align:right;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:20px 0 0;">Total</p>
-            <p style="text-align:right;font-size:22px;font-weight:600;color:#000000;margin:2px 0 32px;">${escapeHtml(total)}</p>
+            <table role="presentation" width="100%" style="border-collapse:collapse;margin-top:8px;">
+              <tr>
+                <td style="padding-top:20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);">Total</td>
+                <td style="padding-top:20px;text-align:right;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#000000;">${escapeHtml(total)}</td>
+              </tr>
+            </table>
           </td>
         </tr>
         <tr>
-          <td style="padding:0 40px 40px;text-align:center;">
-            <a href="${orderUrl}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 40px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">Track Your Order</a>
+          <td style="padding:36px 44px 44px;text-align:center;">
+            <a href="${orderUrl}" style="display:inline-block;background:#0a0a0a;color:#ffffff;text-decoration:none;padding:16px 44px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;border:1px solid ${gold};">Track Your Order</a>
           </td>
         </tr>
         <tr>
-          <td style="padding:24px 40px 32px;border-top:1px solid rgba(0,0,0,0.08);text-align:center;">
-            <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.3);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
+          <td style="padding:28px 44px 36px;border-top:1px solid rgba(0,0,0,0.08);text-align:center;">
+            <div style="width:36px;height:1px;background:${gold};margin:0 auto 16px;"></div>
+            <p style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
           </td>
         </tr>
       </table>
@@ -776,7 +790,7 @@ app.post('/webhook', async (req, res) => {
       if (emailForOmnisend) {
         const itemsForOmnisend = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
           const p = PRODUCTS[ci.productId];
-          return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '' };
+          return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '', img: p ? p.img : '' };
         });
         const orderForConfirmation = { id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend };
         sendOmnisendOrderConfirmation(orderForConfirmation, cartItems);
