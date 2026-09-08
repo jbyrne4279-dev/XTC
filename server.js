@@ -100,6 +100,20 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/subscribe',
   '/favicon.ico',
   '/unlock',
+  // Order-confirmation email images — fetched by email clients' own image
+  // proxies (Gmail's in particular), which never carry the unlock cookie.
+  // Without these on the allowlist, every product image in the order email
+  // 302s to /password and never renders. Keep in sync with PRODUCTS'
+  // emailImg values below.
+  '/images/email-T-SHIRT-XTC.jpg',
+  '/images/email-JOGGERS-XTC.jpg',
+  '/images/email-ZIP-HOODIE-XTC-FRONT.jpg',
+  '/images/email-polo-black-flat.jpg',
+  '/images/email-polo-white-flat.jpg',
+  // The order email's "Track Your Order" button — a customer opening this
+  // days later, possibly on a device that never unlocked the site, would
+  // otherwise get bounced to /password instead of their order.
+  '/track-order',
 ]);
 // Bypass: visit any URL with ?preview=<SITE_PREVIEW_KEY> once to drop a
 // cookie that skips the lock for that browser going forward (90 days).
