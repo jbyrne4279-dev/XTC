@@ -446,7 +446,10 @@ async function resendAddContact(email, opts) {
 // Self-hosted, not the Shopify CDN wordmark used elsewhere on the site — that
 // URL now 403s (dead/blocked), which is why the email header logo (and
 // likely the site's own nav logo, using the same URL) stopped rendering.
-const BRAND_LOGO_URL = `${BASE_URL}/images/icon-512.png`;
+// Hardcoded (not `${BASE_URL}/...`) because BASE_URL is declared further
+// down the file — referencing it here at module-load time throws
+// "Cannot access 'BASE_URL' before initialization" and crashes the server.
+const BRAND_LOGO_URL = 'https://xtcclothing.com/images/icon-512.png';
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
