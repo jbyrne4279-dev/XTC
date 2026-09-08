@@ -1132,6 +1132,12 @@
       // an empty email, the save is silently rejected, and no confirmation
       // email (Resend or Omnisend) ever fires even though the charge went through.
       emailRequired: true,
+      // Without this, the wallet never prompts for a delivery address at all —
+      // completeOrder() reads shipping fields straight off the manual checkout
+      // form inputs, which stay blank for an express-checkout payment, so the
+      // order saves with no address, no shipping label, nothing to fulfill.
+      shippingAddressRequired: true,
+      phoneNumberRequired: true,
     });
     expressCheckout.mount('#express-checkout-element');
     expressCheckout.on('ready', ({ availablePaymentMethods }) => {
@@ -1141,13 +1147,28 @@
     });
     expressCheckout.on('confirm', async (event) => {
       const email = event.billingDetails?.email || document.getElementById('coEmail').value || '';
-      // emailRequired:true above should guarantee this, but never charge a
-      // card without an email to send the order/confirmation to — that order
-      // becomes unrecoverable (no confirmation email, no way to look it up).
+      const shipping = event.shippingAddress || {};
+      const shippingAddr = shipping.address || {};
+      // emailRequired/shippingAddressRequired above should guarantee these, but
+      // never charge a card without them — that order becomes unrecoverable
+      // (no confirmation email, no address to ship to, no way to look it up).
       if (!email) {
         document.getElementById('payment-errors').textContent = 'An email address is required — please enter one above and try again.';
         return;
       }
+      if (!shippingAddr.line1 || !shippingAddr.city || !shippingAddr.postal_code) {
+        document.getElementById('payment-errors').textContent = 'A delivery address is required — please try again and provide one.';
+        return;
+      }
+      // completeOrder() reads shipping fields straight off these form inputs
+      // (shared with the manual card flow) — fill them from the wallet's data
+      // so the order actually saves with a real address.
+      document.getElementById('coName').value = shipping.name || document.getElementById('coName').value;
+      document.getElementById('coAddress').value = [shippingAddr.line1, shippingAddr.line2].filter(Boolean).join(', ');
+      document.getElementById('coCity').value = shippingAddr.city || '';
+      document.getElementById('coPostcode').value = shippingAddr.postal_code || '';
+      document.getElementById('coCountry').value = shippingAddr.country || '';
+      if (event.billingDetails?.phone) document.getElementById('coPhone').value = event.billingDetails.phone;
       const { error } = await stripe.confirmPayment({
         elements: _elements,
         confirmParams: { return_url: window.location.origin + '/checkout' },
