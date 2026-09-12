@@ -222,7 +222,7 @@ function getShippingPence(afterDiscountPence, country) {
 const META_PIXEL_ID   = process.env.META_PIXEL_ID || '2539030076613054';
 const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || '';
 
-// ── Omnisend (server-side order confirmation email) ──────────────────────────
+// ── Omnisend (email/SMS sign-up capture — see the /subscribe route below) ────
 // Set OMNISEND_API_KEY in the Railway environment variables.
 const OMNISEND_API_KEY = process.env.OMNISEND_API_KEY || '';
 
@@ -281,71 +281,11 @@ async function sendMetaCapiPurchase(order, req, cartItems) {
   }
 }
 
-// Posts an order to Omnisend's Orders API, which triggers the "Order Confirmation"
-// automation and sends the customer a transactional confirmation email.
-// Fire-and-forget — never blocks or breaks the checkout response.
-async function sendOmnisendOrderConfirmation(order, cartItems) {
-  if (!OMNISEND_API_KEY) return;
-  try {
-    const now = new Date().toISOString();
-    const lineItems = (Array.isArray(cartItems) && cartItems.length)
-      ? cartItems.map(ci => {
-          const p = PRODUCTS[ci.productId];
-          const unitPrice = p ? p.amount / 100 : (order.total || 0);
-          return {
-            productID: String(ci.productId || ''),
-            productTitle: p ? p.name : String(ci.productId || ''),
-            variantTitle: ci.size || '',
-            quantity: parseInt(ci.qty, 10) || 1,
-            price: parseFloat(unitPrice.toFixed(2)),
-            currency: 'GBP',
-          };
-        })
-      : (Array.isArray(order.items) ? order.items : []).map((it, idx) => ({
-          productID: String(idx + 1),
-          productTitle: it.name || 'Item',
-          variantTitle: '',
-          quantity: it.qty || 1,
-          price: parseFloat(String(it.price || '0').replace(/[^0-9.]/g, '')) || 0,
-          currency: 'GBP',
-        }));
-
-    const payload = {
-      orderID: String(order.id || ''),
-      email: (order.email || '').toLowerCase().trim(),
-      orderUrl: `${BASE_URL}/track?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent((order.email || '').toLowerCase().trim())}`,
-      currency: 'GBP',
-      orderSum: parseFloat((Number(order.total) || 0).toFixed(2)),
-      paymentStatus: 'paid',
-      fulfillmentStatus: 'inProgress',
-      createdAt: now,
-      updatedAt: now,
-      lineItems,
-    };
-
-    const res = await fetch('https://api.omnisend.com/v3/orders', {
-      method: 'POST',
-      headers: {
-        'X-API-KEY': OMNISEND_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      console.error('Omnisend order confirmation error:', res.status, body);
-    } else {
-      console.log('Omnisend order confirmation sent for', order.id);
-    }
-  } catch (e) {
-    console.error('Omnisend order confirmation exception:', e.message);
-  }
-}
-
-// ── Resend (contact form emails + a remarketing audience) ────────────────────
-// Runs alongside Omnisend, not instead of it — Omnisend keeps handling sign-up
-// capture and order confirmation as before. Resend covers the contact form
+// ── Resend (contact form emails, order confirmations + a remarketing audience) ──
+// Order confirmations are sent via Resend only — Omnisend previously also sent
+// one for every order, but that's been retired in favor of Resend as the
+// single order-confirmation sender. Omnisend below still handles email/SMS
+// sign-up capture. Resend also covers the contact form
 // (which previously went nowhere — the message was just discarded) and adds
 // every subscriber/purchaser to a Resend Audience so broadcasts/remarketing
 // can be sent from the Resend dashboard.
@@ -441,10 +381,9 @@ async function resendAddContact(email, opts) {
   }
 }
 
-// Order confirmation email via Resend — runs alongside sendOmnisendOrderConfirmation,
-// not instead of it. `order.items` is [{ name, qty, price }] with price already
-// formatted (e.g. "£40.00"), matching the shape both call sites already build
-// for Omnisend. Fire-and-forget: logs on failure, never throws into the caller.
+// Order confirmation email via Resend — the sole order-confirmation sender.
+// `order.items` is [{ name, qty, price }] with price already formatted
+// (e.g. "£40.00"). Fire-and-forget: logs on failure, never throws into the caller.
 // Self-hosted, not the Shopify CDN wordmark used elsewhere on the site — that
 // URL now 403s (dead/blocked), which is why the email header logo (and
 // likely the site's own nav logo, using the same URL) stopped rendering.
@@ -864,18 +803,17 @@ app.post('/webhook', async (req, res) => {
       console.error('Webhook order save error:', err.message);
     }
 
-    // 2) Send Omnisend order confirmation — idempotent (Omnisend deduplicates by
-    //    orderID, so re-posting the same order won't send a duplicate email).
+    // 2) Send the Resend order confirmation email.
     try {
-      const emailForOmnisend = webhookEmail;
-      if (emailForOmnisend) {
-        const itemsForOmnisend = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
+      const emailForConfirmation = webhookEmail;
+      if (emailForConfirmation) {
+        const itemsForConfirmation = (Array.isArray(cartItems) ? cartItems : []).map(ci => {
           const p = PRODUCTS[ci.productId];
           return { name: (p ? p.name : ci.productId) + (ci.size ? ' — ' + ci.size : ''), qty: ci.qty || 1, price: p ? '£' + (p.amount / 100).toFixed(2) : '', img: p ? p.img : '' };
         });
         const shipping = pi.shipping || {};
         const orderForConfirmation = {
-          id: ref, email: emailForOmnisend, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForOmnisend,
+          id: ref, email: emailForConfirmation, total: pi.amount != null ? pi.amount / 100 : null, items: itemsForConfirmation,
           name: shipping.name || '',
           address: (shipping.address && shipping.address.line1) || '',
           city: (shipping.address && shipping.address.city) || '',
@@ -883,12 +821,11 @@ app.post('/webhook', async (req, res) => {
           country: (shipping.address && shipping.address.country) || '',
           countryCode: (shipping.address && shipping.address.country) || '', // Stripe returns ISO2 here already
         };
-        sendOmnisendOrderConfirmation(orderForConfirmation, cartItems);
         sendResendOrderConfirmation(orderForConfirmation);
-        resendAddContact(emailForOmnisend); // purchasers into the remarketing audience
+        resendAddContact(emailForConfirmation); // purchasers into the remarketing audience
       }
     } catch (err) {
-      console.error('Webhook Omnisend error:', err.message);
+      console.error('Order confirmation error:', err.message);
     }
 
     // 3) Decrement stock — idempotent fallback. Only runs if this order's stock
@@ -1191,8 +1128,7 @@ app.post('/orders', async (req, res) => {
   // it never delays the order response; deduped with the browser pixel by event_id.
   sendMetaCapiPurchase({ id, email, total }, req, cartItems);
 
-  // Send Omnisend order confirmation email (triggers the automation in Omnisend).
-  sendOmnisendOrderConfirmation({ id, email, total, items }, cartItems);
+  // Send the Resend order confirmation email.
   sendResendOrderConfirmation({ id, email, total, items, name, address, city, postcode, country, countryCode: countryCode || country });
   resendAddContact(email); // purchasers into the remarketing audience
 
