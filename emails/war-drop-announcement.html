@@ -9,31 +9,69 @@
   black-on-white-border Shop buttons. All text left-aligned. Skull emblem
   (transparent PNG, site's existing skull-emblem-icon.webp asset) alone at
   the top; a small X logo sits next to the closing footer line.
+
+  Dark-mode lock: mail clients (Apple Mail, Outlook.com, Gmail app, Windows
+  Mail) will sometimes repaint an email's colors to match the recipient's
+  device dark/light setting, ignoring our inline styles. The <meta> tags
+  below tell clients that honor them to leave this email alone; the <style>
+  block is the actual enforcement — every background/text color is also set
+  via a class, redeclared with !important both at baseline and inside
+  @media (prefers-color-scheme: dark), plus [data-ogsc]/[data-ogsb]
+  (Yahoo/Outlook.com's dark-mode markers) so the email renders identically
+  regardless of the recipient's device theme.
 -->
-<div style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light only; }
+  .xtc-bg-black,
+  [data-ogsc] .xtc-bg-black, [data-ogsb] .xtc-bg-black { background-color: #000000 !important; }
+  .xtc-bg-img,
+  [data-ogsc] .xtc-bg-img, [data-ogsb] .xtc-bg-img { background-color: #262626 !important; }
+  .xtc-c100,
+  [data-ogsc] .xtc-c100, [data-ogsb] .xtc-c100 { color: #ffffff !important; }
+  .xtc-c85,
+  [data-ogsc] .xtc-c85, [data-ogsb] .xtc-c85 { color: rgba(255,255,255,0.85) !important; }
+  .xtc-c50,
+  [data-ogsc] .xtc-c50, [data-ogsb] .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+  .xtc-c40,
+  [data-ogsc] .xtc-c40, [data-ogsb] .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+  .xtc-c30,
+  [data-ogsc] .xtc-c30, [data-ogsb] .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  @media (prefers-color-scheme: dark) {
+    .xtc-bg-black { background-color: #000000 !important; }
+    .xtc-bg-img { background-color: #262626 !important; }
+    .xtc-c100 { color: #ffffff !important; }
+    .xtc-c85 { color: rgba(255,255,255,0.85) !important; }
+    .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+    .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+    .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  }
+</style>
+<div class="xtc-bg-black" style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
 
     <!-- Hero — skull emblem to the left, title block to the right, in one
          row. War Zip photo beneath (no overlay tricks — negative margins /
          position:absolute are unreliable in Outlook and other email
          clients, so title and image are stacked, not layered) -->
     <tr>
-      <td style="background:#000000;padding:48px 40px 36px;text-align:center;">
+      <td class="xtc-bg-black" style="background:#000000;padding:48px 40px 36px;text-align:center;">
         <img src="https://xtcclothing.com/images/email-skull-emblem.png" alt="" width="240" style="width:240px;height:auto;display:block;margin:0 auto 24px;">
-        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Drop 02</p>
-        <h1 style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">War&trade;</h1>
-        <p style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0;">War. World. Chaos.</p>
+        <p class="xtc-c100" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Drop 02</p>
+        <h1 class="xtc-c100" style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">War&trade;</h1>
+        <p class="xtc-c100" style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0;">War. World. Chaos.</p>
       </td>
     </tr>
 
     <!-- Intro copy — boxed -->
     <tr>
-      <td style="background:#000000;padding:44px 44px 8px;text-align:left;">
+      <td class="xtc-bg-black" style="background:#000000;padding:44px 44px 8px;text-align:left;">
         <table role="presentation" width="100%" style="border-collapse:collapse;border:1px solid rgba(255,255,255,0.2);">
           <tr>
             <td style="padding:28px;">
-              <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 14px;">Just Landed</p>
-              <p style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">The War&trade; Collection is live. Heavyweight French Terry cotton, built for winter — once it's gone, it's gone for good.</p>
+              <p class="xtc-c50" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 14px;">Just Landed</p>
+              <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">The War&trade; Collection is live. Heavyweight French Terry cotton, built for winter — once it's gone, it's gone for good.</p>
             </td>
           </tr>
         </table>
@@ -43,16 +81,16 @@
     <!-- Product: War Zip — image is the main focus (full-width, tall), then
          Shop button and details text sit side by side underneath -->
     <tr>
-      <td style="background:#000000;padding:44px 44px 0;">
-        <img src="https://xtcclothing.com/images/email-ZIP-HOODIE-XTC-FRONT.jpg" width="512" alt="War Zip" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
+      <td class="xtc-bg-black" style="background:#000000;padding:44px 44px 0;">
+        <img src="https://xtcclothing.com/images/email-ZIP-HOODIE-XTC-FRONT.jpg" width="512" alt="War Zip" class="xtc-bg-img" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
         <table role="presentation" width="100%" style="border-collapse:collapse;">
           <tr>
             <td style="vertical-align:middle;">
-              <a href="https://xtcclothing.com/product-war-zip" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
+              <a href="https://xtcclothing.com/product-war-zip" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
             </td>
             <td style="vertical-align:middle;padding-left:18px;">
-              <p style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
-              <p style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">War&trade; Zip — 400gsm French Terry Cotton — £120</p>
+              <p class="xtc-c40" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
+              <p class="xtc-c85" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">War&trade; Zip — 400gsm French Terry Cotton — £120</p>
             </td>
           </tr>
         </table>
@@ -62,16 +100,16 @@
 
     <!-- Product: Uniform T -->
     <tr>
-      <td style="background:#000000;padding:0 44px 0;">
-        <img src="https://xtcclothing.com/images/email-T-SHIRT-XTC.jpg" width="512" alt="Uniform T" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
+      <td class="xtc-bg-black" style="background:#000000;padding:0 44px 0;">
+        <img src="https://xtcclothing.com/images/email-T-SHIRT-XTC.jpg" width="512" alt="Uniform T" class="xtc-bg-img" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
         <table role="presentation" width="100%" style="border-collapse:collapse;">
           <tr>
             <td style="vertical-align:middle;">
-              <a href="https://xtcclothing.com/product-uniform-t" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
+              <a href="https://xtcclothing.com/product-uniform-t" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
             </td>
             <td style="vertical-align:middle;padding-left:18px;">
-              <p style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
-              <p style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">Uniform T — Heavyweight Cotton — £40</p>
+              <p class="xtc-c40" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
+              <p class="xtc-c85" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">Uniform T — Heavyweight Cotton — £40</p>
             </td>
           </tr>
         </table>
@@ -81,16 +119,16 @@
 
     <!-- Product: War Joggers -->
     <tr>
-      <td style="background:#000000;padding:0 44px 44px;">
-        <img src="https://xtcclothing.com/images/email-JOGGERS-XTC.jpg" width="512" alt="War Joggers" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
+      <td class="xtc-bg-black" style="background:#000000;padding:0 44px 44px;">
+        <img src="https://xtcclothing.com/images/email-JOGGERS-XTC.jpg" width="512" alt="War Joggers" class="xtc-bg-img" style="width:100%;max-width:512px;height:auto;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;margin:0 0 20px;">
         <table role="presentation" width="100%" style="border-collapse:collapse;">
           <tr>
             <td style="vertical-align:middle;">
-              <a href="https://xtcclothing.com/product-war-joggers" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
+              <a href="https://xtcclothing.com/product-war-joggers" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:13px 32px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Shop</a>
             </td>
             <td style="vertical-align:middle;padding-left:18px;">
-              <p style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
-              <p style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">War&trade; Joggers — 400gsm French Terry Cotton — £110</p>
+              <p class="xtc-c40" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 4px;">New Release</p>
+              <p class="xtc-c85" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;">War&trade; Joggers — 400gsm French Terry Cotton — £110</p>
             </td>
           </tr>
         </table>
@@ -99,14 +137,14 @@
 
     <!-- Footer — small X logo alongside the closing line, centered -->
     <tr>
-      <td style="background:#000000;padding:44px 44px 36px;text-align:center;border-top:1px solid rgba(255,255,255,0.15);">
+      <td class="xtc-bg-black" style="background:#000000;padding:44px 44px 36px;text-align:center;border-top:1px solid rgba(255,255,255,0.15);">
         <table role="presentation" style="border-collapse:collapse;margin:0 auto;">
           <tr>
             <td style="padding-right:10px;vertical-align:middle;">
               <img src="https://xtcclothing.com/images/icon-512.png" alt="XTC" width="16" style="width:16px;height:auto;display:block;">
             </td>
             <td style="vertical-align:middle;">
-              <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing</p>
+              <p class="xtc-c40" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing</p>
             </td>
           </tr>
         </table>
@@ -117,10 +155,10 @@
          tag; it's auto-filled per recipient when sent as an Audience
          Broadcast, no manual setup needed. Required for CAN-SPAM/GDPR. -->
     <tr>
-      <td style="background:#000000;padding:0 44px 40px;text-align:center;">
-        <p style="font-size:10px;letter-spacing:0.5px;color:rgba(255,255,255,0.3);margin:0;">
+      <td class="xtc-bg-black" style="background:#000000;padding:0 44px 40px;text-align:center;">
+        <p class="xtc-c30" style="font-size:10px;letter-spacing:0.5px;color:rgba(255,255,255,0.3);margin:0;">
           You're receiving this because you subscribed to XTC Clothing updates.
-          <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Unsubscribe</a>
+          <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" class="xtc-c50" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Unsubscribe</a>
         </p>
       </td>
     </tr>
