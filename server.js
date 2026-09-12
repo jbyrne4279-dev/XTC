@@ -1109,6 +1109,22 @@ async function saveOrder(order, opts) {
 }
 
 // Save an order placed via the custom checkout (called from checkout.html).
+// The client's cart (and therefore `items`) can be stale — added to localStorage
+// under older code, or otherwise missing/wrong `img` — which silently dropped the
+// product thumbnail from the order-confirmation email (no <img> tag at all, just
+// the empty placeholder div in buildOrderConfirmationHtml). `items` and `cartItems`
+// are built from the same cart array in the same order client-side (see
+// checkout.html), so line them up by index and always trust PRODUCTS' own `img`
+// over whatever the client sent.
+function repairItemImages(items, cartItems) {
+  if (!Array.isArray(items)) return items;
+  return items.map((it, idx) => {
+    const ci = Array.isArray(cartItems) ? cartItems[idx] : null;
+    const p = ci && PRODUCTS[ci.productId];
+    return p ? { ...it, img: p.img } : it;
+  });
+}
+
 app.post('/orders', async (req, res) => {
   const { id, email, items, total, status, source, cartItems, phone, country, countryCode, name, address, city, postcode } = req.body || {};
   if (!id || !email) return res.status(400).json({ error: 'id and email required' });
@@ -1129,7 +1145,8 @@ app.post('/orders', async (req, res) => {
   sendMetaCapiPurchase({ id, email, total }, req, cartItems);
 
   // Send the Resend order confirmation email.
-  sendResendOrderConfirmation({ id, email, total, items, name, address, city, postcode, country, countryCode: countryCode || country });
+  const emailItems = repairItemImages(items, cartItems);
+  sendResendOrderConfirmation({ id, email, total, items: emailItems, name, address, city, postcode, country, countryCode: countryCode || country });
   resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
