@@ -1181,13 +1181,21 @@ app.get('/admin/orders-db', requireAdmin, async (req, res) => {
 const shippingRecords = new Map();
 
 // ── Admin auth middleware ────────────────────────────────────────────────────
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+// .trim() on both sides: a Railway env var value copy-pasted (or an admin-panel
+// token pasted from a "reveal" field) can silently pick up a trailing space or
+// newline, which fails this exact-match check with no visible sign of why.
+const ADMIN_TOKEN = (process.env.ADMIN_TOKEN || '').trim();
 
 function requireAdmin(req, res, next) {
   if (!ADMIN_TOKEN) return res.status(503).json({ error: 'Admin not configured' });
   const auth = req.headers['authorization'] || '';
-  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'Unauthorized' });
+  const token = (auth.startsWith('Bearer ') ? auth.slice(7) : '').trim();
+  if (!token || token !== ADMIN_TOKEN) {
+    // Diagnostic only — lengths and a match/mismatch boolean, never the actual
+    // token values, so this is safe to check in Railway's logs.
+    console.warn('Admin auth failed — received token length:', token.length, 'expected length:', ADMIN_TOKEN.length);
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
   next();
 }
 
