@@ -1548,10 +1548,12 @@ app.get('/cart', (req, res) => {
 // ── Launch reminder calendar file (used by the "Remind Me" button on the
 //    /password launch page). A calendar event is the only web-supported way to
 //    give someone a launch alert — iOS/Safari can't open the Clock/alarm app.
-//    Event + alarm fire at 18:00 UK on 1 Oct 2026 (BST = UTC+1 -> 17:00Z).
+//    Event + alarm fire at 18:00 UK on 1 Nov 2026. UK clocks are back on GMT
+//    (UTC+0) by November (BST ends late October), so 18:00 UK = 18:00Z here —
+//    unlike the old October date, which needed the +1hr BST offset.
 app.get('/drop.ics', (req, res) => {
-  const START = '20261001T170000Z';
-  const END   = '20261001T180000Z';
+  const START = '20261101T180000Z';
+  const END   = '20261101T190000Z';
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
   const ics = [
     'BEGIN:VCALENDAR',
@@ -1560,7 +1562,7 @@ app.get('/drop.ics', (req, res) => {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    'UID:xtc-ss26-drop-20261001@xtcclothing.com',
+    'UID:xtc-ss26-drop-20261101@xtcclothing.com',
     'DTSTAMP:' + stamp,
     'DTSTART:' + START,
     'DTEND:' + END,
