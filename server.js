@@ -384,13 +384,13 @@ async function resendAddContact(email, opts) {
 // Order confirmation email via Resend — the sole order-confirmation sender.
 // `order.items` is [{ name, qty, price }] with price already formatted
 // (e.g. "£40.00"). Fire-and-forget: logs on failure, never throws into the caller.
-// Self-hosted, not the Shopify CDN wordmark used elsewhere on the site — that
-// URL now 403s (dead/blocked), which is why the email header logo (and
-// likely the site's own nav logo, using the same URL) stopped rendering.
+// Skull emblem asset — same one used in emails/war-drop-announcement.html —
+// baked onto an opaque black background (not transparent) so Apple Mail's
+// dark-mode Smart Invert can't flip it to black-on-black and hide it.
 // Hardcoded (not `${BASE_URL}/...`) because BASE_URL is declared further
 // down the file — referencing it here at module-load time throws
 // "Cannot access 'BASE_URL' before initialization" and crashes the server.
-const BRAND_LOGO_URL = 'https://xtcclothing.com/images/icon-512.png';
+const ORDER_EMAIL_SKULL_URL = 'https://xtcclothing.com/images/email-skull-emblem.png';
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
@@ -403,14 +403,14 @@ function buildOrderConfirmationHtml(order) {
   };
   const rows = (Array.isArray(order.items) ? order.items : []).map(it => `
     <tr>
-      <td style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.08);width:72px;">
-        ${it.img ? `<img src="${toAbsoluteImg(it.img)}" width="64" height="64" alt="${escapeHtml(it.name || 'Item')}" style="width:64px;height:64px;object-fit:cover;background:#f7f7f7;border:1px solid rgba(0,0,0,0.08);display:block;">` : `<div style="width:64px;height:64px;background:#f7f7f7;border:1px solid rgba(0,0,0,0.08);"></div>`}
+      <td style="padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.15);width:72px;">
+        ${it.img ? `<img src="${toAbsoluteImg(it.img)}" width="64" height="64" alt="${escapeHtml(it.name || 'Item')}" class="xtc-bg-img" style="width:64px;height:64px;object-fit:cover;background:#262626;border:1px solid rgba(255,255,255,0.15);display:block;">` : `<div class="xtc-bg-img" style="width:64px;height:64px;background:#262626;border:1px solid rgba(255,255,255,0.15);"></div>`}
       </td>
-      <td style="padding:20px 16px;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;vertical-align:middle;">
-        <div style="font-size:14px;color:#000000;letter-spacing:0.2px;">${escapeHtml(it.name || 'Item')}</div>
-        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-top:4px;">Qty ${escapeHtml(String(it.qty || 1))}</div>
+      <td style="padding:20px 16px;border-bottom:1px solid rgba(255,255,255,0.15);font-size:14px;vertical-align:middle;">
+        <div class="xtc-c100" style="font-size:14px;color:#ffffff;letter-spacing:0.2px;">${escapeHtml(it.name || 'Item')}</div>
+        <div class="xtc-c50" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:4px;">Qty ${escapeHtml(String(it.qty || 1))}</div>
       </td>
-      <td style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.08);font-size:14px;color:#000000;text-align:right;vertical-align:middle;white-space:nowrap;">${escapeHtml(it.price || '')}</td>
+      <td class="xtc-c85" style="padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:14px;color:rgba(255,255,255,0.85);text-align:right;vertical-align:middle;white-space:nowrap;">${escapeHtml(it.price || '')}</td>
     </tr>
   `).join('');
   const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
@@ -431,75 +431,99 @@ function buildOrderConfirmationHtml(order) {
     .filter(Boolean).map(escapeHtml);
   const shippingBlock = addressLines.length ? `
     <tr>
-      <td style="padding:32px 44px 0;">
-        <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Shipping To</p>
-        <p style="font-size:13px;color:#000000;margin:0 0 24px;line-height:1.7;">${addressLines.join(', ')}</p>
-        <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Estimated Delivery</p>
-        <p style="font-size:13px;color:#000000;margin:0;line-height:1.7;">${escapeHtml(deliveryWindow)}</p>
+      <td class="xtc-bg-black" style="background:#000000;padding:32px 44px 0;">
+        <p class="xtc-c40" style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 10px;">Shipping To</p>
+        <p class="xtc-c85" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0 0 24px;line-height:1.7;">${addressLines.join(', ')}</p>
+        <p class="xtc-c40" style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 10px;">Estimated Delivery</p>
+        <p class="xtc-c85" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;line-height:1.7;">${escapeHtml(deliveryWindow)}</p>
       </td>
     </tr>
   ` : '';
 
   return `
-    <div style="background:#f7f7f7;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#ffffff;">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light only; }
+  .xtc-bg-black,
+  [data-ogsc] .xtc-bg-black, [data-ogsb] .xtc-bg-black { background-color: #000000 !important; }
+  .xtc-bg-img,
+  [data-ogsc] .xtc-bg-img, [data-ogsb] .xtc-bg-img { background-color: #262626 !important; }
+  .xtc-c100,
+  [data-ogsc] .xtc-c100, [data-ogsb] .xtc-c100 { color: #ffffff !important; }
+  .xtc-c85,
+  [data-ogsc] .xtc-c85, [data-ogsb] .xtc-c85 { color: rgba(255,255,255,0.85) !important; }
+  .xtc-c50,
+  [data-ogsc] .xtc-c50, [data-ogsb] .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+  .xtc-c40,
+  [data-ogsc] .xtc-c40, [data-ogsb] .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+  .xtc-c30,
+  [data-ogsc] .xtc-c30, [data-ogsb] .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  @media (prefers-color-scheme: dark) {
+    .xtc-bg-black { background-color: #000000 !important; }
+    .xtc-bg-img { background-color: #262626 !important; }
+    .xtc-c100 { color: #ffffff !important; }
+    .xtc-c85 { color: rgba(255,255,255,0.85) !important; }
+    .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+    .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+    .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  }
+  @keyframes xtcWinFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .xtc-win-fade { animation: xtcWinFade 3.5s ease-in-out infinite; }
+</style>
+    <div class="xtc-bg-black" style="background:#000000;padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
         <tr>
-          <td style="background:#000000;padding:36px 40px;text-align:center;">
-            <img src="${BRAND_LOGO_URL}" alt="XTC" width="72" style="width:72px;height:auto;display:block;margin:0 auto;">
+          <td class="xtc-bg-black" style="background:#000000;padding:16px 40px 0;text-align:center;">
+            <img src="${ORDER_EMAIL_SKULL_URL}" alt="" width="160" style="width:160px;height:auto;display:block;margin:0 auto;">
           </td>
         </tr>
         <tr>
-          <td style="padding:48px 44px 0;text-align:center;">
-            <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 14px;">Order Confirmed</p>
-            <p style="font-size:15px;color:#000000;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
+          <td class="xtc-bg-black" style="background:#000000;padding:32px 44px 0;text-align:center;">
+            <p class="xtc-c40" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px;">Order Confirmed</p>
+            <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
           </td>
         </tr>
         <tr>
-          <td style="padding:28px 44px 0;">
-            <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin:0;text-align:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:20px;">Order Reference — ${escapeHtml(String(order.id || ''))}</p>
+          <td class="xtc-bg-black" style="background:#000000;padding:28px 44px 0;">
+            <p class="xtc-c30" style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;text-align:center;border-top:1px solid rgba(255,255,255,0.15);padding-top:20px;">Order Reference — ${escapeHtml(String(order.id || ''))}</p>
           </td>
         </tr>
         <tr>
-          <td style="padding:20px 44px 0;">
+          <td class="xtc-bg-black" style="background:#000000;padding:20px 44px 0;">
             <table role="presentation" width="100%" style="border-collapse:collapse;">
               <tbody>${rows}</tbody>
             </table>
             <table role="presentation" width="100%" style="border-collapse:collapse;margin-top:8px;">
               <tr>
-                <td style="padding-top:20px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.4);">Total</td>
-                <td style="padding-top:20px;text-align:right;font-size:20px;font-weight:600;color:#000000;">${escapeHtml(total)}</td>
+                <td class="xtc-c40" style="padding-top:20px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);">Total</td>
+                <td class="xtc-c100" style="padding-top:20px;text-align:right;font-size:20px;font-weight:600;color:#ffffff;">${escapeHtml(total)}</td>
               </tr>
             </table>
           </td>
         </tr>
         ${shippingBlock}
         <tr>
-          <td style="padding:36px 44px 0;text-align:center;">
-            <a href="${orderUrl}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;">Track Your Order</a>
+          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 0;text-align:center;">
+            <a href="${orderUrl}" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 44px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Track Your Order</a>
           </td>
         </tr>
         <tr>
-          <td style="padding:36px 44px 0;">
-            <style>
-              /* Progressive enhancement only — clients that strip <style>
-                 (Gmail webmail, Outlook) just show this block fully visible. */
-              @keyframes xtcWinFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-              .xtc-win-fade { animation: xtcWinFade 3.5s ease-in-out infinite; }
-            </style>
-            <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(0,0,0,0.1);">
+          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 0;">
+            <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(255,255,255,0.15);">
               <tr>
                 <td style="padding:28px 32px;text-align:center;">
-                  <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:0 0 10px;">Win A Free T-Shirt</p>
-                  <p style="font-size:14px;color:#000000;margin:0 0 20px;line-height:1.6;">Share your order / xtc fit to your Instagram Story and tag <strong>@xtc.rip</strong> for a chance to win a free tee.</p>
-                  <a href="https://www.instagram.com/xtc.rip/" style="display:inline-block;background:#ffffff;color:#000000;text-decoration:none;padding:14px 36px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #000000;">Share To Instagram Story</a>
+                  <p class="xtc-c40" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 10px;">Win A Free T-Shirt</p>
+                  <p class="xtc-c100" style="font-size:14px;color:#ffffff;margin:0 0 20px;line-height:1.6;">Share your order / xtc fit to your Instagram Story and tag <strong>@xtc.rip</strong> for a chance to win a free tee.</p>
+                  <a href="https://www.instagram.com/xtc.rip/" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:14px 36px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Share To Instagram Story</a>
                 </td>
               </tr>
             </table>
           </td>
         </tr>
         <tr>
-          <td style="padding:28px 44px 36px;border-top:1px solid rgba(0,0,0,0.08);text-align:center;">
-            <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.3);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
+          <td class="xtc-bg-black" style="background:#000000;padding:28px 44px 36px;border-top:1px solid rgba(255,255,255,0.15);text-align:center;">
+            <p class="xtc-c30" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
           </td>
         </tr>
       </table>
