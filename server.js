@@ -384,6 +384,12 @@ async function resendAddContact(email, opts) {
 // Order confirmation email via Resend — the sole order-confirmation sender.
 // `order.items` is [{ name, qty, price }] with price already formatted
 // (e.g. "£40.00"). Fire-and-forget: logs on failure, never throws into the caller.
+// Site's X logo — a white X baked onto a solid black square (no transparency),
+// so it sits flush against the email's black background with no visible edges.
+// Hardcoded (not `${BASE_URL}/...`) because BASE_URL is declared further
+// down the file — referencing it here at module-load time throws
+// "Cannot access 'BASE_URL' before initialization" and crashes the server.
+const ORDER_EMAIL_X_LOGO_URL = 'https://xtcclothing.com/images/icon-512.png';
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
@@ -467,7 +473,12 @@ function buildOrderConfirmationHtml(order) {
     <div class="xtc-bg-black" style="background:#000000;padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
       <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
         <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:40px 44px 0;text-align:center;">
+          <td class="xtc-bg-black" style="background:#000000;padding:40px 40px 0;text-align:center;">
+            <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto 28px;">
+          </td>
+        </tr>
+        <tr>
+          <td class="xtc-bg-black" style="background:#000000;padding:0 44px 0;text-align:center;">
             <p class="xtc-c40" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px;">Order Confirmed</p>
             <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
           </td>
