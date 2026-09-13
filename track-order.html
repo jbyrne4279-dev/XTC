@@ -383,7 +383,7 @@
     .col-grid-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 20px 90px; }
     .col-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
     @media (max-width: 900px) { .col-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
-    @media (max-width: 560px) { .col-grid { grid-template-columns: 1fr; gap: 14px; } }
+    @media (max-width: 560px) { .col-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 
     @property --nr-a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
     .nr-card {
