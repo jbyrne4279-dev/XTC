@@ -87,7 +87,9 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: clip;
+  /* overflow-x here (even "clip") turns body into a scroll/clip container,
+     which breaks position:sticky for the header inside it — html already
+     has overflow-x:clip, which is enough to stop horizontal overflow. */
   text-rendering: optimizeLegibility;
 }
 
