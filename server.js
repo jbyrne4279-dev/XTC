@@ -391,6 +391,9 @@ async function resendAddContact(email, opts) {
 // down the file — referencing it here at module-load time throws
 // "Cannot access 'BASE_URL' before initialization" and crashes the server.
 const ORDER_EMAIL_SKULL_URL = 'https://xtcclothing.com/images/email-skull-emblem.png';
+// Site's X logo — a white X baked onto a solid black square (no transparency),
+// so it sits flush against the email's black background with no visible edges.
+const ORDER_EMAIL_X_LOGO_URL = 'https://xtcclothing.com/images/icon-512.png';
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
@@ -473,6 +476,11 @@ function buildOrderConfirmationHtml(order) {
 </style>
     <div class="xtc-bg-black" style="background:#000000;padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
       <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
+        <tr>
+          <td class="xtc-bg-black" style="background:#000000;padding:24px 40px 0;text-align:center;">
+            <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto;">
+          </td>
+        </tr>
         <tr>
           <td class="xtc-bg-black" style="background:#000000;padding:16px 40px 0;text-align:center;">
             <img src="${ORDER_EMAIL_SKULL_URL}" alt="" width="160" style="width:160px;height:auto;display:block;margin:0 auto;">
