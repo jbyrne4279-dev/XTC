@@ -441,20 +441,11 @@
     .pdp-gallery__main { user-select: none; }
     .pdp-gallery__main img { pointer-events: none; }
   
-    /* ── Light-grey info panel, black header/breadcrumb ──
-       Gallery/photo column stays black; only the info column (name,
-       price, size/color pickers, buttons, tabs) flips to a light grey
-       background with dark text. Placed after the rules above so it
-       wins on cascade order (same selectors, later wins) rather than
-       duplicating every declaration inline. */
-    .site-header { background: rgba(0, 0, 0, 0.92) !important; border-bottom-color: rgba(255, 255, 255, 0.1) !important; }
-    .header-nav a { color: rgba(255, 255, 255, 0.6) !important; }
-    .header-nav a:hover { color: #ffffff !important; }
-    .header-logo img { filter: brightness(0) invert(1) !important; }
-    .header-logo-text { color: #ffffff !important; }
-    .header-actions button, .header-actions a { color: rgba(255, 255, 255, 0.6) !important; }
-    .header-actions button:hover, .header-actions a:hover { color: #ffffff !important; }
-
+    /* ── Light-grey page (gallery column + info column), black breadcrumb.
+       Header/nav stays its normal color — not part of this override.
+       Placed after the rules above so it wins on cascade order (same
+       selectors, later wins) rather than duplicating every declaration
+       inline. */
     .pdp-crumb { background: #000000; }
     .pdp-crumb a { color: rgba(255, 255, 255, 0.4); }
     .pdp-crumb a:hover { color: rgba(255, 255, 255, 0.8); }
@@ -490,10 +481,15 @@
     #sizeGuidePanel table td { color: rgba(0, 0, 0, 0.7); }
 
     @media (max-width: 960px) {
-      .pdp-gallery { border-bottom-color: rgba(255, 255, 255, 0.1); }
+      .pdp-gallery { border-bottom-color: rgba(0, 0, 0, 0.1); }
     }
 
-  </style>
+  
+    .pdp { background: #f0f0f0; }
+    .pdp-gallery { border-right-color: rgba(0, 0, 0, 0.1); }
+    .pdp-gallery__thumbs { border-top-color: rgba(0, 0, 0, 0.1); }
+    .pdp-gallery__thumb { border-right-color: rgba(0, 0, 0, 0.1); }
+</style>
 </head>
 <body>
 
