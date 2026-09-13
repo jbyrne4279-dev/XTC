@@ -528,8 +528,15 @@ function renderCartDrawer() {
   let hasOos = false;
   body.innerHTML = cart.map((item, i) => {
     const dashIdx = item.name.lastIndexOf(' — ');
-    const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+    let displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
     const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
+
+    // Product name carries its color as a bracketed suffix, e.g.
+    // "POLO [BLACK]" — pull it out so the bag shows it as its own line
+    // under Size, not baked into the product name.
+    const colorMatch = displayName.match(/\s*\[([^\]]+)\]\s*$/);
+    const color = colorMatch ? colorMatch[1] : '';
+    if (colorMatch) displayName = displayName.slice(0, colorMatch.index);
 
     // id format is "productid-size", e.g. "polo-black-m" — the same convention
     // addToCart() uses for its own stock guard.
@@ -566,6 +573,7 @@ function renderCartDrawer() {
               ${variant ? `
               <div class="cd-size-row">
                 <p class="cd-item__variant">Size: ${variant}</p>
+                ${color ? `<p class="cd-item__variant">Color: ${color}</p>` : ''}
                 ${otherSizes.length ? `
                 <div class="cd-size-change-wrap">
                   <button class="cd-size-change" onclick="cdToggleSizePicker(event,${i})">Change</button>
