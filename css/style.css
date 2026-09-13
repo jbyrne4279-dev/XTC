@@ -2651,7 +2651,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   position: relative;
   margin-top: 28px;
   padding: 20px;
-  background: #111111;
+  background: #6b1414;
 }
 .pdp-bundle__label {
   font-size: 9px;
@@ -2663,11 +2663,11 @@ a[aria-label="Cart"].cart-active .cart-count {
 .pdp-bundle__timer {
   font-size: 10px;
   letter-spacing: 0.5px;
-  color: rgba(220, 38, 38, 0.85);
+  color: rgba(255, 255, 255, 0.7);
   margin: -4px 0 14px;
   font-variant-numeric: tabular-nums;
 }
-.pdp-bundle__timer strong { color: rgba(239, 68, 68, 1); font-weight: 600; letter-spacing: 1px; }
+.pdp-bundle__timer strong { color: #ffffff; font-weight: 600; letter-spacing: 1px; }
 .pdp-bundle--locked .pdp-bundle__timer { opacity: 0.5; }
 .pdp-bundle__text {
   font-size: 12px;
