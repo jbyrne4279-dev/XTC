@@ -530,7 +530,7 @@ function buildOrderConfirmationHtml(order) {
         </tr>
         <tr>
           <td class="xtc-bg-black" style="background:#000000;padding:28px 44px 36px;border-top:1px solid rgba(255,255,255,0.15);text-align:center;">
-            <p class="xtc-c30" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;">XTC Clothing — Questions? Just reply to this email.</p>
+            <p class="xtc-c30" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;">XTC Clothing — Questions? email xtc.rip.contact@gmail.com</p>
           </td>
         </tr>
       </table>
