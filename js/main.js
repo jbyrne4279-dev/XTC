@@ -171,8 +171,12 @@ function initNavDrawer() {
   const close    = document.getElementById('drawerClose');
   if (!toggle || !drawer || !overlay || !close) return;
 
-  function open()  { drawer.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function close_() { drawer.classList.remove('open'); document.body.style.overflow = ''; }
+  // Doesn't lock body scroll (no overflow:hidden) — that breaks the
+  // header's position:sticky the same way body's own overflow-x:clip did
+  // (see css/style.css). Not needed anyway now that this is a small
+  // dropdown popup rather than a full-screen drawer.
+  function open()  { drawer.classList.add('open'); }
+  function close_() { drawer.classList.remove('open'); }
 
   toggle.addEventListener('click', open);
   overlay.addEventListener('click', close_);
