@@ -868,10 +868,16 @@
         ? `<img class="co-item__img" src="${item.img}" alt="${item.name}" onerror="xtcImgFallback(this)" />`
         : `<div class="co-item__img-placeholder"></div>`;
       const dashIdx = item.name.lastIndexOf(' — ');
-      const displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+      let displayName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
       const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : '';
       const variantName = SIZE_NAMES[variant.toUpperCase()] || variant;
-      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">Size: ${variantName}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
+      // Product name carries its color as a bracketed suffix, e.g.
+      // "POLO [BLACK]" — pull it out so the summary shows it as its own
+      // line under Size, not baked into the product name.
+      const colorMatch = displayName.match(/\s*\[([^\]]+)\]\s*$/);
+      const color = colorMatch ? colorMatch[1] : '';
+      if (colorMatch) displayName = displayName.slice(0, colorMatch.index);
+      return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">Size: ${variantName}</p>` : ''}${color ? `<p class="co-item__variant">Color: ${color}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
     updateTotals(subtotal);
   }
