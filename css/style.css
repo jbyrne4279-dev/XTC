@@ -3273,11 +3273,11 @@ textarea {
 
   /* Badge ("New Release"/"Limited Edition") was sized for the old wider
      single-column card — at ~170px card width it covered too much of the
-     product photo. Smaller type/padding and pulled fully onto the image
-     (was straddling the top edge) so it reads as a tag, not a banner. */
+     product photo. Smaller type/padding, back at its original straddling
+     position (top: -11px; left: 20px, same as desktop). */
   .fp-card__badge {
-    top: 8px;
-    left: 8px;
+    top: -11px;
+    left: 20px;
     font-size: 8px;
     letter-spacing: 1px;
     padding: 3px 8px;
