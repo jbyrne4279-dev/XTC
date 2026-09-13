@@ -84,11 +84,13 @@ app.use(express.json());
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { dotfiles: 'allow' }));
 
 // ── Site lock ─────────────────────────────────────────────────────────────
-// The whole site is gated behind the /password (early-access) page while
-// we're pre-launch. Only the gate page itself, the handful of assets it
-// needs, and its signup endpoints stay reachable — everything else 302s to
-// /password. Flip SITE_LOCKED to false (or unset it) to open the site back up.
-const SITE_LOCKED = process.env.SITE_LOCKED !== 'false';
+// The whole site is gated behind the /password (early-access) page. Only the
+// gate page itself, the handful of assets it needs, and its signup endpoints
+// stay reachable — everything else 302s to /password. Hardcoded true (not
+// driven by a Railway env var) so the lock can't be accidentally left off by
+// an env var being unset/misconfigured — flip this line to false in code to
+// open the site back up when ready to launch.
+const SITE_LOCKED = true;
 const SITE_LOCK_ALLOWLIST = new Set([
   '/password', '/password.html',
   '/manifest.json',
