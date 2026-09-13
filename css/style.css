@@ -3217,29 +3217,29 @@ textarea {
      specifically because that modifier's own (higher-specificity) rules
      above would otherwise win over the plain .fp-card__* rules here. ── */
   .fp-header { padding: 0 20px 28px; }
-  .fp-grid   { padding: 0 16px; gap: 16px; }
+  .fp-grid   { padding: 0 16px; gap: 18px; }
   .fp-card__info,
   .fp-grid--3 .fp-card__info {
     flex-direction: column;
     align-items: flex-start;
-    padding: 12px 14px;
-    gap: 8px;
+    padding: 18px 16px;
+    gap: 12px;
   }
   .fp-card__info-right,
   .fp-grid--3 .fp-card__info-right {
     width: 100%;
-    gap: 8px;
+    gap: 10px;
   }
   .fp-card__name,
-  .fp-grid--3 .fp-card__name { font-size: 11px; }
+  .fp-grid--3 .fp-card__name { font-size: 13px; }
   .fp-card__price,
-  .fp-grid--3 .fp-card__price { font-size: 13px; }
+  .fp-grid--3 .fp-card__price { font-size: 14px; }
   .fp-card__atc,
   .fp-grid--3 .fp-card__atc {
     width: 100%;
     text-align: center;
-    padding: 10px 12px;
-    font-size: 9px;
+    padding: 13px 12px;
+    font-size: 10px;
   }
 
   /* Badge ("New Release"/"Limited Edition") was sized for the old wider
