@@ -517,13 +517,12 @@ function buildOrderConfirmationHtml(order) {
           </td>
         </tr>
         <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 0;">
+          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 40px;">
             <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(255,255,255,0.15);">
               <tr>
-                <td style="padding:28px 32px;text-align:center;">
-                  <p class="xtc-c40" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 10px;">Win A Free T-Shirt</p>
-                  <p class="xtc-c100" style="font-size:14px;color:#ffffff;margin:0 0 20px;line-height:1.6;">Share your order / xtc fit to your Instagram Story and tag <strong>@xtc.rip</strong> for a chance to win a free tee.</p>
-                  <a href="https://www.instagram.com/xtc.rip/" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:14px 36px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Share To Instagram Story</a>
+                <td style="padding:24px 32px;text-align:center;">
+                  <p class="xtc-c100" style="font-size:12px;letter-spacing:1px;color:#ffffff;margin:0 0 16px;">Tag <strong>@xtc.rip</strong> to win a free tee.</p>
+                  <a href="https://www.instagram.com/xtc.rip/" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:12px 28px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Share To Instagram</a>
                 </td>
               </tr>
             </table>
