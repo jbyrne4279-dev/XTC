@@ -15,42 +15,77 @@
   (server.js ~line 1567), already configured for 18:00 UK on 1 Oct 2026
   (17:00 UTC, i.e. BST). If you need a different date/time, that .ics
   generation needs updating — this template just links to it.
+
+  Dark-mode lock: mail clients (Apple Mail, Outlook.com, Gmail app, Windows
+  Mail) will sometimes repaint an email's colors to match the recipient's
+  device dark/light setting, ignoring our inline styles. The <meta> tags
+  below tell clients that honor them to leave this email alone; the <style>
+  block is the actual enforcement — every background/text color is also set
+  via a class, redeclared with !important both at baseline and inside
+  @media (prefers-color-scheme: dark), plus [data-ogsc]/[data-ogsb]
+  (Yahoo/Outlook.com's dark-mode markers) so the email renders identically
+  regardless of the recipient's device theme.
 -->
-<div style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light only; }
+  .xtc-bg-black,
+  [data-ogsc] .xtc-bg-black, [data-ogsb] .xtc-bg-black { background-color: #000000 !important; }
+  .xtc-c100,
+  [data-ogsc] .xtc-c100, [data-ogsb] .xtc-c100 { color: #ffffff !important; }
+  .xtc-c75,
+  [data-ogsc] .xtc-c75, [data-ogsb] .xtc-c75 { color: rgba(255,255,255,0.75) !important; }
+  .xtc-c50,
+  [data-ogsc] .xtc-c50, [data-ogsb] .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+  .xtc-c40,
+  [data-ogsc] .xtc-c40, [data-ogsb] .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+  .xtc-c30,
+  [data-ogsc] .xtc-c30, [data-ogsb] .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  @media (prefers-color-scheme: dark) {
+    .xtc-bg-black { background-color: #000000 !important; }
+    .xtc-c100 { color: #ffffff !important; }
+    .xtc-c75 { color: rgba(255,255,255,0.75) !important; }
+    .xtc-c50 { color: rgba(255,255,255,0.5) !important; }
+    .xtc-c40 { color: rgba(255,255,255,0.4) !important; }
+    .xtc-c30 { color: rgba(255,255,255,0.3) !important; }
+  }
+</style>
+<div class="xtc-bg-black" style="background:#000000;padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:600px;margin:0 auto;border-collapse:collapse;background:#000000;">
 
     <!-- Hero — skull emblem stacked above title block, centered -->
     <tr>
-      <td style="background:#000000;padding:48px 40px 36px;text-align:center;">
+      <td class="xtc-bg-black" style="background:#000000;padding:48px 40px 36px;text-align:center;">
         <img src="https://xtcclothing.com/images/email-skull-emblem.png" alt="" width="120" style="width:120px;height:auto;display:block;margin:0 auto 24px;">
-        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Save The Date</p>
-        <h1 style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">Drop 02</h1>
-        <p style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0 0 14px;">War. World. Chaos.</p>
-        <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;opacity:0.75;margin:0;">6PM — 1st October</p>
+        <p class="xtc-c100" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;opacity:0.6;margin:0 0 12px;">Save The Date</p>
+        <h1 class="xtc-c100" style="font-size:40px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 12px;font-weight:600;">Drop 02</h1>
+        <p class="xtc-c100" style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#ffffff;opacity:0.85;margin:0 0 14px;">War. World. Chaos.</p>
+        <p class="xtc-c75" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0;">6PM — 1st October</p>
       </td>
     </tr>
 
     <!-- Reminder CTA — centered, prominent, right below the hero so it's the
          first thing a reader can act on -->
     <tr>
-      <td style="background:#000000;padding:40px 44px;text-align:center;">
-        <a href="https://xtcclothing.com/drop.ics" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:18px 52px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Set Reminder</a>
-        <p style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:16px 0 0;">
+      <td class="xtc-bg-black" style="background:#000000;padding:16px 44px 40px;text-align:center;">
+        <a href="https://xtcclothing.com/drop.ics" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:18px 52px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Set Reminder</a>
+        <p class="xtc-c40" style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:16px 0 0;">
           Adds a calendar alert for the drop
         </p>
       </td>
     </tr>
 
-    <!-- Footer — small X logo alongside the closing line -->
+    <!-- Footer — small X logo alongside the closing line, centered -->
     <tr>
-      <td style="background:#000000;padding:28px 44px 36px;text-align:left;border-top:1px solid rgba(255,255,255,0.15);">
-        <table role="presentation" style="border-collapse:collapse;">
+      <td class="xtc-bg-black" style="background:#000000;padding:28px 44px 36px;text-align:center;border-top:1px solid rgba(255,255,255,0.15);">
+        <table role="presentation" style="border-collapse:collapse;margin:0 auto;">
           <tr>
             <td style="padding-right:10px;vertical-align:middle;">
               <img src="https://xtcclothing.com/images/icon-512.png" alt="XTC" width="16" style="width:16px;height:auto;display:block;">
             </td>
             <td style="vertical-align:middle;">
-              <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing — Limited units. Never restocked.</p>
+              <p class="xtc-c40" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0;">XTC Clothing — Limited units. Never restocked.</p>
             </td>
           </tr>
         </table>
@@ -61,10 +96,10 @@
          tag; it's auto-filled per recipient when sent as an Audience
          Broadcast, no manual setup needed. Required for CAN-SPAM/GDPR. -->
     <tr>
-      <td style="background:#000000;padding:0 44px 40px;text-align:left;">
-        <p style="font-size:10px;letter-spacing:0.5px;color:rgba(255,255,255,0.3);margin:0;">
+      <td class="xtc-bg-black" style="background:#000000;padding:0 44px 40px;text-align:center;">
+        <p class="xtc-c30" style="font-size:10px;letter-spacing:0.5px;color:rgba(255,255,255,0.3);margin:0;">
           You're receiving this because you subscribed to XTC Clothing updates.
-          <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Unsubscribe</a>
+          <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" class="xtc-c50" style="color:rgba(255,255,255,0.5);text-decoration:underline;">Unsubscribe</a>
         </p>
       </td>
     </tr>
