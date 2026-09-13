@@ -3271,6 +3271,18 @@ textarea {
     font-size: 9px;
   }
 
+  /* Badge ("New Release"/"Limited Edition") was sized for the old wider
+     single-column card — at ~170px card width it covered too much of the
+     product photo. Smaller type/padding and pulled fully onto the image
+     (was straddling the top edge) so it reads as a tag, not a banner. */
+  .fp-card__badge {
+    top: 8px;
+    left: 8px;
+    font-size: 8px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+  }
+
   /* ── Gallery strip ── */
   .hgs-header { padding: 0 20px 20px; }
   .hgs-img    { width: 72vw; }
