@@ -2520,7 +2520,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   gap: var(--sp-4);
 }
 .footer-copyright {
-  font-size: 9px;
+  font-size: 18px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.18);
@@ -2529,7 +2529,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 /* Small brand mark sitting next to the copyright line */
 .footer-bottom { justify-content: center; }
 .footer-copy-logo {
-  height: 18px;
+  height: 36px;
   width: auto;
   filter: brightness(0);
   opacity: 0.55;
