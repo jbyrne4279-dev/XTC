@@ -456,7 +456,13 @@ a[aria-label="Cart"].cart-active .cart-count {
 .nav-drawer__panel {
   position: absolute;
   top: var(--header-h);
-  right: var(--sp-8);
+  /* .nav-drawer is a full-viewport fixed overlay, but the header's own
+     content is centered inside a max-width:var(--page-width) container —
+     on screens wider than that, a plain fixed offset from the viewport
+     edge drifts away from the actual hamburger button. This matches the
+     header's own right inset: padding-only on narrow screens, plus the
+     container's centering gap once the viewport exceeds --page-width. */
+  right: max(var(--sp-8), calc((100vw - var(--page-width)) / 2 + var(--sp-8)));
   width: 220px;
   max-width: 78vw;
   height: auto;
