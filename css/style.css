@@ -455,15 +455,17 @@ a[aria-label="Cart"].cart-active .cart-count {
 
 .nav-drawer__panel {
   position: absolute;
-  top: calc(var(--header-h) + 8px);
+  top: var(--header-h);
   right: var(--sp-8);
   width: 220px;
   max-width: 78vw;
   height: auto;
-  max-height: calc(100vh - var(--header-h) - 24px);
+  max-height: calc(100vh - var(--header-h) - 16px);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 12px;
+  /* Square top-right corner so the popup reads as attached to the
+     hamburger button directly above it; rounded everywhere else. */
+  border-radius: 12px 0 12px 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
