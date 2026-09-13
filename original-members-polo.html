@@ -440,6 +440,59 @@
     }
     .pdp-gallery__main { user-select: none; }
     .pdp-gallery__main img { pointer-events: none; }
+  
+    /* ── Light-grey info panel, black header/breadcrumb ──
+       Gallery/photo column stays black; only the info column (name,
+       price, size/color pickers, buttons, tabs) flips to a light grey
+       background with dark text. Placed after the rules above so it
+       wins on cascade order (same selectors, later wins) rather than
+       duplicating every declaration inline. */
+    .site-header { background: rgba(0, 0, 0, 0.92) !important; border-bottom-color: rgba(255, 255, 255, 0.1) !important; }
+    .header-nav a { color: rgba(255, 255, 255, 0.6) !important; }
+    .header-nav a:hover { color: #ffffff !important; }
+    .header-logo img { filter: brightness(0) invert(1) !important; }
+    .header-logo-text { color: #ffffff !important; }
+    .header-actions button, .header-actions a { color: rgba(255, 255, 255, 0.6) !important; }
+    .header-actions button:hover, .header-actions a:hover { color: #ffffff !important; }
+
+    .pdp-crumb { background: #000000; }
+    .pdp-crumb a { color: rgba(255, 255, 255, 0.4); }
+    .pdp-crumb a:hover { color: rgba(255, 255, 255, 0.8); }
+    .pdp-crumb span { color: rgba(255, 255, 255, 0.15); }
+    .pdp-crumb span.pdp-crumb__current { color: rgba(255, 255, 255, 0.5); }
+
+    .pdp-info { background: #f0f0f0; }
+    .pdp-info__brand { color: rgba(0, 0, 0, 0.55); }
+    .pdp-info__title { color: #000000; }
+    .pdp-info__price { color: #000000; }
+    .pdp-info__currency { color: rgba(0, 0, 0, 0.4); }
+    .pdp-divider { background: rgba(0, 0, 0, 0.1); }
+    .pdp-section-label { color: rgba(0, 0, 0, 0.4); }
+    .pdp-size-guide { color: rgba(0, 0, 0, 0.6); border-bottom-color: rgba(0, 0, 0, 0.35); }
+    .pdp-size-guide:hover { color: #000000; border-color: #000000; }
+    .pdp-size-btn { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
+    .pdp-size-btn:hover { border-color: rgba(0, 0, 0, 0.5); color: #000000; }
+    .pdp-stock-note { color: rgba(0, 0, 0, 0.45); }
+    .pdp-color-btn { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
+    .pdp-color-btn:hover { border-color: rgba(0, 0, 0, 0.5); color: #000000; }
+    .pdp-color-btn.selected { color: #000000 !important; }
+    .pdp-color-btn.color-btn--oos:hover { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
+    .pdp-color-swatch { border-color: rgba(0, 0, 0, 0.3); }
+    .pdp-qty { border-color: rgba(0, 0, 0, 0.15); }
+    .pdp-qty__btn { color: rgba(0, 0, 0, 0.5); }
+    .pdp-qty__btn:hover { color: #000000; }
+    .pdp-qty__val { color: #000000; border-left-color: rgba(0, 0, 0, 0.15); border-right-color: rgba(0, 0, 0, 0.15); }
+    .pdp-atc { background: #000000; color: #ffffff; }
+    .pdp-buy-now { border-color: rgba(0, 0, 0, 0.4); color: #000000; }
+    .pdp-buy-now:hover { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.9); }
+    .pdp-trust-item { color: rgba(0, 0, 0, 0.45); }
+    .pdp-trust-item svg { opacity: 0.45; }
+    #sizeGuidePanel table td { color: rgba(0, 0, 0, 0.7); }
+
+    @media (max-width: 960px) {
+      .pdp-gallery { border-bottom-color: rgba(255, 255, 255, 0.1); }
+    }
+
   </style>
 </head>
 <body>
