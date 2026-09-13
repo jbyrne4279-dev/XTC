@@ -2544,7 +2544,7 @@ a[aria-label="Cart"].cart-active .cart-count {
     gap: var(--sp-10);
     padding: var(--sp-10) 0;
   }
-  .footer-bottom { padding: var(--sp-6) 0 0; }
+  .footer-bottom { padding: var(--sp-6) 0 40px; }
 }
 
 /* Nav active state */
@@ -3139,7 +3139,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 .site-footer {
-  padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--sp-10) + env(safe-area-inset-bottom));
 }
 
 /* -webkit-appearance reset (removes iOS default button/input chrome) */
