@@ -463,6 +463,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   max-height: calc(100vh - var(--header-h) - 24px);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -484,11 +485,12 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   padding: 12px 14px;
+  border-radius: 7px;
   text-align: left;
   transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .nav-drawer__links a:hover { color: #000000; background: rgba(0, 0, 0, 0.045); }
-.nav-drawer__links a.nav-primary { color: #000000; font-weight: 500; }
+.nav-drawer__links a.nav-primary { color: #000000; font-weight: 400; }
 .nav-drawer__links a.nav-primary:hover { background: rgba(0, 0, 0, 0.045); }
 
 @media (max-width: 480px) {
