@@ -517,7 +517,7 @@ function buildOrderConfirmationHtml(order) {
           </td>
         </tr>
         <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 40px;">
+          <td class="xtc-bg-black" style="background:#000000;padding:36px 44px 56px;">
             <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(255,255,255,0.15);">
               <tr>
                 <td style="padding:24px 32px;text-align:center;">
