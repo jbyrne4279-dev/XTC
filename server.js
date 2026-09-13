@@ -384,16 +384,6 @@ async function resendAddContact(email, opts) {
 // Order confirmation email via Resend — the sole order-confirmation sender.
 // `order.items` is [{ name, qty, price }] with price already formatted
 // (e.g. "£40.00"). Fire-and-forget: logs on failure, never throws into the caller.
-// Skull emblem asset — same one used in emails/war-drop-announcement.html —
-// baked onto an opaque black background (not transparent) so Apple Mail's
-// dark-mode Smart Invert can't flip it to black-on-black and hide it.
-// Hardcoded (not `${BASE_URL}/...`) because BASE_URL is declared further
-// down the file — referencing it here at module-load time throws
-// "Cannot access 'BASE_URL' before initialization" and crashes the server.
-const ORDER_EMAIL_SKULL_URL = 'https://xtcclothing.com/images/email-skull-emblem.png';
-// Site's X logo — a white X baked onto a solid black square (no transparency),
-// so it sits flush against the email's black background with no visible edges.
-const ORDER_EMAIL_X_LOGO_URL = 'https://xtcclothing.com/images/icon-512.png';
 
 function buildOrderConfirmationHtml(order) {
   const toAbsoluteImg = src => {
@@ -477,17 +467,7 @@ function buildOrderConfirmationHtml(order) {
     <div class="xtc-bg-black" style="background:#000000;padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
       <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
         <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:24px 40px 0;text-align:center;">
-            <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto;">
-          </td>
-        </tr>
-        <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:16px 40px 0;text-align:center;">
-            <img src="${ORDER_EMAIL_SKULL_URL}" alt="" width="160" style="width:160px;height:auto;display:block;margin:0 auto;">
-          </td>
-        </tr>
-        <tr>
-          <td class="xtc-bg-black" style="background:#000000;padding:32px 44px 0;text-align:center;">
+          <td class="xtc-bg-black" style="background:#000000;padding:40px 44px 0;text-align:center;">
             <p class="xtc-c40" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px;">Order Confirmed</p>
             <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
           </td>
@@ -521,7 +501,7 @@ function buildOrderConfirmationHtml(order) {
             <table role="presentation" width="100%" class="xtc-win-fade" style="border-collapse:collapse;border:1px solid rgba(255,255,255,0.15);">
               <tr>
                 <td style="padding:24px 32px;text-align:center;">
-                  <p class="xtc-c100" style="font-size:12px;letter-spacing:1px;color:#ffffff;margin:0 0 16px;">Tag <strong>@xtc.rip</strong> to win a free tee.</p>
+                  <p class="xtc-c100" style="font-size:12px;letter-spacing:1px;color:#ffffff;margin:0 0 16px;">Tag <strong>@xtc.rip</strong> for chance to win free tee.</p>
                   <a href="https://www.instagram.com/xtc.rip/" class="xtc-bg-black xtc-c100" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:12px 28px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:1px solid #ffffff;">Share To Instagram</a>
                 </td>
               </tr>
