@@ -178,10 +178,6 @@ function initNavDrawer() {
   overlay.addEventListener('click', close_);
   close.addEventListener('click', close_);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close_(); });
-  // The header is sticky (stays pinned at the top on scroll) — the dropdown
-  // itself shouldn't follow it around the same way, so close it as soon as
-  // the page scrolls instead of leaving it glued to the top of the screen.
-  window.addEventListener('scroll', () => { if (drawer.classList.contains('open')) close_(); }, { passive: true });
 }
 
 
