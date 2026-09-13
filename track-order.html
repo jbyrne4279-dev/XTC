@@ -1285,21 +1285,12 @@
   }
 
   function renderTrackRoute(active, destLabel) {
+    // From/To route bar (XTC Warehouse -> shipping city) removed per request —
+    // kept as a no-op rather than deleting every call site.
     const routeEl = document.getElementById('resultRoute');
     if (!routeEl) return;
-    if (active < 0) { routeEl.innerHTML = ''; routeEl.style.display = 'none'; return; }
-    routeEl.style.display = '';
-    const pct = TRACK_ROUTE_PCT[Math.max(0, Math.min(active, TRACK_ROUTE_PCT.length - 1))];
-    routeEl.innerHTML = `
-      <div class="to-route__point">
-        <p class="to-route__label">From</p>
-        <p class="to-route__value">XTC Warehouse</p>
-      </div>
-      <div class="to-route__line"><span class="to-route__line-fill" style="width:${pct}%"></span><span class="to-route__marker" style="left:${pct}%">${TRACK_TRUCK_ICON}</span></div>
-      <div class="to-route__point to-route__point--to">
-        <p class="to-route__label">To</p>
-        <p class="to-route__value">${escTO(destLabel || 'Your Address')}</p>
-      </div>`;
+    routeEl.innerHTML = '';
+    routeEl.style.display = 'none';
   }
 
   // Maps a real order status string to a rail/route position. Only
