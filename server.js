@@ -98,6 +98,7 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/images/water-bg.mp4',
   '/images/skull-emblem-icon.webp',
   '/drop.ics',
+  '/webhook',
   '/js/omnisend-config.js',
   '/subscribe',
   '/favicon.ico',
