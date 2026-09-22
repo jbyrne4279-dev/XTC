@@ -56,40 +56,6 @@ const BUNDLES = [
   },
 ];
 
-// Display info for the upsell prompt shown when a shopper has one bundle
-// item but not the other — kept separate from BUNDLES (which only needs
-// prices) so it can carry a name/image/link for the suggestion card.
-const BUNDLE_PRODUCT_INFO = {
-  'war-zip': { name: 'War™ Zip', img: 'images/ZIP-HOODIE-XTC-FRONT.webp', link: '/product-war-zip' },
-  'war-joggers': { name: 'War™ Joggers', img: 'images/JOGGERS-XTC.webp', link: '/product-war-joggers' },
-};
-
-// Returns the first bundle where the cart holds exactly one of the two
-// items, plus which product id is missing — used to prompt "add the other
-// one for the bundle price" in the cart drawer and at checkout.
-function getBundleUpsell(cart) {
-  for (const bundle of BUNDLES) {
-    const productIds = Object.keys(bundle.items);
-    const qtyFor = pid => cart
-      .filter(i => cartProductId(i.id) === pid)
-      .reduce((s, i) => s + i.qty, 0);
-    const present = productIds.filter(pid => qtyFor(pid) > 0);
-    const missing = productIds.filter(pid => qtyFor(pid) === 0);
-    if (present.length === 1 && missing.length === 1) {
-      const normalPrice = Object.values(bundle.items).reduce((a, b) => a + b, 0);
-      return {
-        bundle,
-        missingProductId: missing[0],
-        missingProduct: BUNDLE_PRODUCT_INFO[missing[0]],
-        missingProductPrice: bundle.items[missing[0]],
-        bundlePrice: bundle.bundlePrice,
-        saving: normalPrice - bundle.bundlePrice,
-      };
-    }
-  }
-  return null;
-}
-
 function cartProductId(id) {
   const parts = id.split('-');
   return parts.slice(0, -1).join('-');
@@ -541,80 +507,6 @@ function cdParsePrice(str) {
   return isNaN(n) ? 0 : n;
 }
 
-// "You've got the Zip, add the Joggers for the bundle price" — shown in the
-// cart drawer and at checkout whenever the cart holds exactly one half of a
-// bundle. Clicking "Add" opens an inline size picker (no navigating away)
-// and adding a size adds that product straight into the cart/order.
-function cdBundleUpsellHtml(cart) {
-  if (typeof getBundleUpsell !== 'function') return '';
-  const upsell = getBundleUpsell(cart);
-  if (!upsell || !upsell.missingProduct) return '';
-  const p = upsell.missingProduct;
-  const priceStr = '£' + upsell.missingProductPrice.toFixed(2);
-  return `
-    <div class="cd-bundle-upsell">
-      <img class="cd-bundle-upsell__img" src="${p.img}" alt="${p.name}" />
-      <span class="cd-bundle-upsell__body">
-        <span class="cd-bundle-upsell__title">Complete the set</span>
-        <span class="cd-bundle-upsell__text">Add the ${p.name} and pay £${upsell.bundlePrice.toFixed(2)} for both — save £${upsell.saving.toFixed(2)}.</span>
-      </span>
-      <div class="cd-bundle-upsell__action">
-        <button type="button" class="cd-bundle-upsell__cta" onclick="bundleUpsellToggle(this)"
-          data-product-id="${upsell.missingProductId}" data-name="${p.name}" data-price="${priceStr}" data-img="${p.img}">Add</button>
-        <div class="fp-size-picker" data-role="bundle-upsell-picker">
-          <p class="fp-size-picker__label">Select Size</p>
-          <div class="fp-size-picker__sizes"></div>
-        </div>
-      </div>
-    </div>`;
-}
-
-// Opens/populates the inline size picker anchored to a bundle-upsell "Add"
-// button — mirrors the product-page bundle CTA, but self-contained here so
-// it works wherever the cart drawer or checkout summary render this card.
-function bundleUpsellToggle(btn) {
-  const picker = btn.parentElement.querySelector('[data-role="bundle-upsell-picker"]');
-  if (!picker) return;
-  if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
-  document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
-
-  const productId = btn.dataset.productId;
-  const sizes = (typeof getStockForProduct === 'function' && Object.keys(getStockForProduct(productId)).length)
-    ? Object.keys(getStockForProduct(productId))
-    : ['S', 'M', 'L'];
-  const sizesEl = picker.querySelector('.fp-size-picker__sizes');
-  sizesEl.innerHTML = sizes.map(s => {
-    const qty = (typeof getSizeStock === 'function') ? getSizeStock(productId, s) : 1;
-    const oos = qty === 0;
-    return `<button type="button" class="fp-sp-btn${oos ? ' fp-sp-btn--oos' : ''}"${oos ? ' disabled' : ''} onclick="bundleUpsellPick(this)">${s}</button>`;
-  }).join('');
-  picker.dataset.productId = productId;
-  picker.dataset.name = btn.dataset.name;
-  picker.dataset.price = btn.dataset.price;
-  picker.dataset.img = btn.dataset.img;
-  picker.classList.add('open');
-}
-
-function bundleUpsellPick(sizeBtn) {
-  const picker = sizeBtn.closest('[data-role="bundle-upsell-picker"]');
-  if (!picker) return;
-  const size = sizeBtn.textContent.trim();
-  const productId = picker.dataset.productId;
-  const id = productId + '-' + size.toLowerCase();
-  const fullName = picker.dataset.name + ' — ' + size;
-  addToCart(id, fullName, picker.dataset.price, picker.dataset.img, 1, true);
-  picker.classList.remove('open');
-  if (typeof updateCartCount === 'function') updateCartCount();
-  if (document.getElementById('cartDrawer')) renderCartDrawer();
-  if (typeof renderSummary === 'function') renderSummary();
-  if (typeof showToast === 'function') showToast('Added to your order.');
-}
-
-document.addEventListener('click', function(e) {
-  if (e.target.closest('.cd-bundle-upsell')) return;
-  document.querySelectorAll('[data-role="bundle-upsell-picker"].open').forEach(p => p.classList.remove('open'));
-});
-
 function renderCartDrawer() {
   const drawer = cdGetDrawer();
   const cart = getCart();
@@ -699,7 +591,7 @@ function renderCartDrawer() {
           </div>
         </div>
       </div>`;
-  }).join('') + cdBundleUpsellHtml(cart);
+  }).join('');
 
   const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
