@@ -56,6 +56,39 @@ const BUNDLES = [
   },
 ];
 
+// Display info for the upsell prompt shown when a shopper has one bundle
+// item but not the other — kept separate from BUNDLES (which only needs
+// prices) so it can carry a name/image/link for the suggestion card.
+const BUNDLE_PRODUCT_INFO = {
+  'war-zip': { name: 'War™ Zip', img: 'images/ZIP-HOODIE-XTC-FRONT.webp', link: '/product-war-zip' },
+  'war-joggers': { name: 'War™ Joggers', img: 'images/JOGGERS-XTC.webp', link: '/product-war-joggers' },
+};
+
+// Returns the first bundle where the cart holds exactly one of the two
+// items, plus which product id is missing — used to prompt "add the other
+// one for the bundle price" in the cart drawer and at checkout.
+function getBundleUpsell(cart) {
+  for (const bundle of BUNDLES) {
+    const productIds = Object.keys(bundle.items);
+    const qtyFor = pid => cart
+      .filter(i => cartProductId(i.id) === pid)
+      .reduce((s, i) => s + i.qty, 0);
+    const present = productIds.filter(pid => qtyFor(pid) > 0);
+    const missing = productIds.filter(pid => qtyFor(pid) === 0);
+    if (present.length === 1 && missing.length === 1) {
+      const normalPrice = Object.values(bundle.items).reduce((a, b) => a + b, 0);
+      return {
+        bundle,
+        missingProductId: missing[0],
+        missingProduct: BUNDLE_PRODUCT_INFO[missing[0]],
+        bundlePrice: bundle.bundlePrice,
+        saving: normalPrice - bundle.bundlePrice,
+      };
+    }
+  }
+  return null;
+}
+
 function cartProductId(id) {
   const parts = id.split('-');
   return parts.slice(0, -1).join('-');
@@ -507,6 +540,23 @@ function cdParsePrice(str) {
   return isNaN(n) ? 0 : n;
 }
 
+// "You've got the Zip, add the Joggers for the bundle price" — shown in the
+// cart drawer whenever the cart holds exactly one half of a bundle.
+function cdBundleUpsellHtml(cart) {
+  if (typeof getBundleUpsell !== 'function') return '';
+  const upsell = getBundleUpsell(cart);
+  if (!upsell || !upsell.missingProduct) return '';
+  return `
+    <a class="cd-bundle-upsell" href="${upsell.missingProduct.link}">
+      <img class="cd-bundle-upsell__img" src="${upsell.missingProduct.img}" alt="${upsell.missingProduct.name}" />
+      <span class="cd-bundle-upsell__body">
+        <span class="cd-bundle-upsell__title">Complete the bundle</span>
+        <span class="cd-bundle-upsell__text">Add the ${upsell.missingProduct.name} and pay £${upsell.bundlePrice.toFixed(2)} for both — save £${upsell.saving.toFixed(2)}.</span>
+      </span>
+      <span class="cd-bundle-upsell__cta">Shop</span>
+    </a>`;
+}
+
 function renderCartDrawer() {
   const drawer = cdGetDrawer();
   const cart = getCart();
@@ -591,7 +641,7 @@ function renderCartDrawer() {
           </div>
         </div>
       </div>`;
-  }).join('');
+  }).join('') + cdBundleUpsellHtml(cart);
 
   const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
