@@ -891,17 +891,8 @@
       return `<div class="co-item">${img}<div class="co-item__info"><p class="co-item__name">${displayName}</p><p class="co-item__meta"><span>Qty ${item.qty}</span><button class="co-item__remove" onclick="removeFromCheckoutCart(${i})">Remove</button></p>${variant ? `<p class="co-item__variant">Size: ${variantName}</p>` : ''}${color ? `<p class="co-item__variant">Color: ${color}</p>` : ''}</div><p class="co-item__price">£${(price * item.qty).toFixed(2)}</p></div>`;
     }).join('');
     const upsellEl = document.getElementById('coBundleUpsell');
-    if (upsellEl && typeof getBundleUpsell === 'function') {
-      const upsell = getBundleUpsell(cart);
-      upsellEl.innerHTML = (upsell && upsell.missingProduct) ? `
-        <a class="cd-bundle-upsell" href="${upsell.missingProduct.link}">
-          <img class="cd-bundle-upsell__img" src="${upsell.missingProduct.img}" alt="${upsell.missingProduct.name}" />
-          <span class="cd-bundle-upsell__body">
-            <span class="cd-bundle-upsell__title">Complete the bundle</span>
-            <span class="cd-bundle-upsell__text">Add the ${upsell.missingProduct.name} and pay £${upsell.bundlePrice.toFixed(2)} for both — save £${upsell.saving.toFixed(2)}.</span>
-          </span>
-          <span class="cd-bundle-upsell__cta">Shop</span>
-        </a>` : '';
+    if (upsellEl && typeof cdBundleUpsellHtml === 'function') {
+      upsellEl.innerHTML = cdBundleUpsellHtml(cart);
     }
     updateTotals(subtotal);
   }

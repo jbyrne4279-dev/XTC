@@ -81,6 +81,7 @@ function getBundleUpsell(cart) {
         bundle,
         missingProductId: missing[0],
         missingProduct: BUNDLE_PRODUCT_INFO[missing[0]],
+        missingProductPrice: bundle.items[missing[0]],
         bundlePrice: bundle.bundlePrice,
         saving: normalPrice - bundle.bundlePrice,
       };
@@ -139,7 +140,7 @@ function getMaxQtyForCartId(id, cart) {
   return Math.min(stockCap, productCapRemaining);
 }
 
-function addToCart(id, name, price, img, quantity = 1) {
+function addToCart(id, name, price, img, quantity = 1, silent = false) {
   const cart = getCart();
 
   // Stock + per-product order cap guard — never let the cart hold more
@@ -169,7 +170,7 @@ function addToCart(id, name, price, img, quantity = 1) {
   }
   saveCart(cart);
   updateCartCount();
-  openCartDrawer();
+  if (!silent) openCartDrawer();
 }
 
 // ---- Click feedback pulse on Add to Cart / Buy Now (same pop as Size/Color) ----
@@ -541,21 +542,78 @@ function cdParsePrice(str) {
 }
 
 // "You've got the Zip, add the Joggers for the bundle price" — shown in the
-// cart drawer whenever the cart holds exactly one half of a bundle.
+// cart drawer and at checkout whenever the cart holds exactly one half of a
+// bundle. Clicking "Add" opens an inline size picker (no navigating away)
+// and adding a size adds that product straight into the cart/order.
 function cdBundleUpsellHtml(cart) {
   if (typeof getBundleUpsell !== 'function') return '';
   const upsell = getBundleUpsell(cart);
   if (!upsell || !upsell.missingProduct) return '';
+  const p = upsell.missingProduct;
+  const priceStr = '£' + upsell.missingProductPrice.toFixed(2);
   return `
-    <a class="cd-bundle-upsell" href="${upsell.missingProduct.link}">
-      <img class="cd-bundle-upsell__img" src="${upsell.missingProduct.img}" alt="${upsell.missingProduct.name}" />
+    <div class="cd-bundle-upsell">
+      <img class="cd-bundle-upsell__img" src="${p.img}" alt="${p.name}" />
       <span class="cd-bundle-upsell__body">
-        <span class="cd-bundle-upsell__title">Complete the bundle</span>
-        <span class="cd-bundle-upsell__text">Add the ${upsell.missingProduct.name} and pay £${upsell.bundlePrice.toFixed(2)} for both — save £${upsell.saving.toFixed(2)}.</span>
+        <span class="cd-bundle-upsell__title">Complete the set</span>
+        <span class="cd-bundle-upsell__text">Add the ${p.name} and pay £${upsell.bundlePrice.toFixed(2)} for both — save £${upsell.saving.toFixed(2)}.</span>
       </span>
-      <span class="cd-bundle-upsell__cta">Shop</span>
-    </a>`;
+      <div class="cd-bundle-upsell__action">
+        <button type="button" class="cd-bundle-upsell__cta" onclick="bundleUpsellToggle(this)"
+          data-product-id="${upsell.missingProductId}" data-name="${p.name}" data-price="${priceStr}" data-img="${p.img}">Add</button>
+        <div class="fp-size-picker" data-role="bundle-upsell-picker">
+          <p class="fp-size-picker__label">Select Size</p>
+          <div class="fp-size-picker__sizes"></div>
+        </div>
+      </div>
+    </div>`;
 }
+
+// Opens/populates the inline size picker anchored to a bundle-upsell "Add"
+// button — mirrors the product-page bundle CTA, but self-contained here so
+// it works wherever the cart drawer or checkout summary render this card.
+function bundleUpsellToggle(btn) {
+  const picker = btn.parentElement.querySelector('[data-role="bundle-upsell-picker"]');
+  if (!picker) return;
+  if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
+  document.querySelectorAll('.fp-size-picker.open').forEach(p => p.classList.remove('open'));
+
+  const productId = btn.dataset.productId;
+  const sizes = (typeof getStockForProduct === 'function' && Object.keys(getStockForProduct(productId)).length)
+    ? Object.keys(getStockForProduct(productId))
+    : ['S', 'M', 'L'];
+  const sizesEl = picker.querySelector('.fp-size-picker__sizes');
+  sizesEl.innerHTML = sizes.map(s => {
+    const qty = (typeof getSizeStock === 'function') ? getSizeStock(productId, s) : 1;
+    const oos = qty === 0;
+    return `<button type="button" class="fp-sp-btn${oos ? ' fp-sp-btn--oos' : ''}"${oos ? ' disabled' : ''} onclick="bundleUpsellPick(this)">${s}</button>`;
+  }).join('');
+  picker.dataset.productId = productId;
+  picker.dataset.name = btn.dataset.name;
+  picker.dataset.price = btn.dataset.price;
+  picker.dataset.img = btn.dataset.img;
+  picker.classList.add('open');
+}
+
+function bundleUpsellPick(sizeBtn) {
+  const picker = sizeBtn.closest('[data-role="bundle-upsell-picker"]');
+  if (!picker) return;
+  const size = sizeBtn.textContent.trim();
+  const productId = picker.dataset.productId;
+  const id = productId + '-' + size.toLowerCase();
+  const fullName = picker.dataset.name + ' — ' + size;
+  addToCart(id, fullName, picker.dataset.price, picker.dataset.img, 1, true);
+  picker.classList.remove('open');
+  if (typeof updateCartCount === 'function') updateCartCount();
+  if (document.getElementById('cartDrawer')) renderCartDrawer();
+  if (typeof renderSummary === 'function') renderSummary();
+  if (typeof showToast === 'function') showToast('Added to your order.');
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.cd-bundle-upsell')) return;
+  document.querySelectorAll('[data-role="bundle-upsell-picker"].open').forEach(p => p.classList.remove('open'));
+});
 
 function renderCartDrawer() {
   const drawer = cdGetDrawer();

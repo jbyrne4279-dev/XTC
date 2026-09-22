@@ -4010,7 +4010,6 @@ textarea {
   padding: 12px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   background: rgba(0, 0, 0, 0.03);
-  text-decoration: none;
   transition: border-color 0.2s, background 0.2s;
 }
 .cd-bundle-upsell:hover { border-color: rgba(0, 0, 0, 0.4); background: rgba(0, 0, 0, 0.05); }
@@ -4034,6 +4033,7 @@ textarea {
   color: rgba(0, 0, 0, 0.55);
   line-height: 1.4;
 }
+.cd-bundle-upsell__action { position: relative; flex-shrink: 0; }
 .cd-bundle-upsell__cta {
   flex-shrink: 0;
   font-size: 9px;
@@ -4042,7 +4042,11 @@ textarea {
   border: 1px solid rgba(0, 0, 0, 0.6);
   padding: 6px 12px;
   color: rgba(0, 0, 0, 0.85);
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
 }
+.cd-bundle-upsell__action .fp-size-picker { right: 0; left: auto; }
 .cd-item--oos .cd-item__img { opacity: 0.4; }
 .cd-item__oos-label {
   font-size: 9px;
