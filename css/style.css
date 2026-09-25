@@ -5,6 +5,15 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Background videos autoplay muted — hide the native "tap to play" overlay
+   Safari/WebKit shows on <video> before the user has interacted with the
+   page, so it never flashes on top of the background footage. */
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+video::-webkit-media-controls { display: none !important; }
+
 :root {
   /* Core palette */
   --bg:             #ffffff;
