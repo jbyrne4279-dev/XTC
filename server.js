@@ -543,6 +543,39 @@ async function sendResendOrderConfirmation(order) {
   if (!result.ok) console.error('Resend order confirmation failed for', order.id);
 }
 
+// ── Twilio SMS — order confirmation text ──────────────────────────────────────
+// Pay-as-you-go, no subscription (~£0.03–0.06/UK SMS via the REST API
+// directly — no need for the twilio npm package for a single message type).
+// Requires TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER in env;
+// silently no-ops if any are missing so this never blocks a real order.
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || '';
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || '';
+const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER || '';
+
+async function sendOrderConfirmationSms(order) {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_FROM_NUMBER) return;
+  const to = toE164(order.phone);
+  if (!to) return;
+  const total = order.total != null ? `£${Number(order.total).toFixed(2)}` : '';
+  const body = `XTC — order confirmed (${order.id}). Total ${total}. Track: ${BASE_URL}/track-order`;
+  try {
+    const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ To: to, From: TWILIO_FROM_NUMBER, Body: body }),
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error('Twilio SMS failed for', order.id, res.status, errText);
+    }
+  } catch (err) {
+    console.error('Twilio SMS error for', order.id, err.message);
+  }
+}
+
 // ── Supabase client (service role for server-side writes) ─────────────────────
 const sb = createClient(
   'https://mugifniadilfwfgrsvie.supabase.co',
@@ -1170,9 +1203,12 @@ app.post('/orders', async (req, res) => {
   // it never delays the order response; deduped with the browser pixel by event_id.
   sendMetaCapiPurchase({ id, email, total }, req, cartItems);
 
-  // Send the Resend order confirmation email.
+  // Send the Resend order confirmation email, and a Twilio SMS alongside it
+  // when a phone number was given (both fire-and-forget — never block the
+  // order response on an email/SMS provider hiccup).
   const emailItems = repairItemImages(items, cartItems);
   sendResendOrderConfirmation({ id, email, total, items: emailItems, name, address, city, postcode, country, countryCode: countryCode || country });
+  sendOrderConfirmationSms({ id, phone, total });
   resendAddContact(email); // purchasers into the remarketing audience
 
   // Decrement stock once per order (idempotent via the order's flag). cartItems
