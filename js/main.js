@@ -877,6 +877,39 @@ function initProductCardSwipe() {
   });
 }
 
+// ---- Product card "morph up" reveal ----
+// Every .fp-card starts lowered/faded (via --reveal) and rises into place
+// (--revealed) the moment it enters the viewport — on initial load for
+// whatever's already on-screen, and as the shopper scrolls to the rest.
+// Each card gets a small staggered delay based on its position in the grid
+// so a row rises together rather than all cards snapping up at once.
+function initCardReveal() {
+  const cards = document.querySelectorAll('.fp-card');
+  if (!cards.length) return;
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  cards.forEach((card, i) => {
+    card.classList.add('fp-card--reveal');
+    card.style.transitionDelay = (i % 6) * 60 + 'ms';
+  });
+
+  if (!('IntersectionObserver' in window)) {
+    cards.forEach(card => card.classList.add('fp-card--revealed'));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('fp-card--revealed');
+      obs.unobserve(entry.target);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  cards.forEach(card => observer.observe(card));
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -886,6 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEarlyAccessSlideshow();
   initCartDrawer();
   initProductCardSwipe();
+  initCardReveal();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') xtcCloseCookieSettings();
