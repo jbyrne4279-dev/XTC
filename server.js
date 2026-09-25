@@ -175,7 +175,7 @@ const PRODUCTS = {
   // SS26 War Collection — pre-order (ships 21 July)
   'war-zip': { name: 'XTC War™ Zip', amount: 12000, img: 'images/ZIP-HOODIE-XTC-FRONT.webp', emailImg: 'images/email-ZIP-HOODIE-XTC-FRONT.jpg' },
   'war-joggers': { name: 'XTC War™ Joggers', amount: 11000, img: 'images/JOGGERS-XTC.webp', emailImg: 'images/email-JOGGERS-XTC.jpg' },
-  'uniform-t': { name: 'XTC Uniform T', amount: 4000, img: 'images/T-SHIRT-XTC.webp', emailImg: 'images/email-T-SHIRT-XTC.jpg' },
+  'uniform-t': { name: 'XTC Uniform T', amount: 3500, img: 'images/T-SHIRT-XTC.webp', emailImg: 'images/email-T-SHIRT-XTC.jpg' },
 };
 
 // WebP source images (the site's default) aren't rendered by several major
