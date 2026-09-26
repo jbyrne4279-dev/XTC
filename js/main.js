@@ -881,33 +881,54 @@ function initProductCardSwipe() {
 // Every .fp-card starts lowered/faded (via --reveal) and rises into place
 // (--revealed) the moment it enters the viewport — on initial load for
 // whatever's already on-screen, and as the shopper scrolls to the rest.
-// Each card gets a small staggered delay based on its position in the grid
-// so a row rises together rather than all cards snapping up at once.
+// Cards are staggered by the order they arrive in the SAME observer batch
+// (i.e. the same row/screenful), not a fixed global index — so a row eases
+// in together instead of an arbitrary modulo pattern jumping around.
 function initCardReveal() {
   const cards = document.querySelectorAll('.fp-card');
   if (!cards.length) return;
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  cards.forEach((card, i) => {
-    card.classList.add('fp-card--reveal');
-    card.style.transitionDelay = (i % 6) * 60 + 'ms';
-  });
+  // Clears the inline delay once its transition finishes so a staggered
+  // reveal delay never lingers and mutes a later hover/box-shadow transition.
+  function reveal(card, delayMs) {
+    card.style.transitionDelay = delayMs + 'ms';
+    card.classList.add('fp-card--revealed');
+    card.addEventListener('transitionend', function onEnd(e) {
+      if (e.target !== card || e.propertyName !== 'transform') return;
+      card.style.transitionDelay = '';
+      card.removeEventListener('transitionend', onEnd);
+    });
+  }
+
+  cards.forEach(card => card.classList.add('fp-card--reveal'));
 
   if (!('IntersectionObserver' in window)) {
-    cards.forEach(card => card.classList.add('fp-card--revealed'));
+    cards.forEach(card => reveal(card, 0));
     return;
   }
 
   const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('fp-card--revealed');
-      obs.unobserve(entry.target);
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top
+        || a.boundingClientRect.left - b.boundingClientRect.left)
+      .forEach((entry, i) => {
+        reveal(entry.target, i * 90);
+        obs.unobserve(entry.target);
+      });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
 
-  cards.forEach(card => observer.observe(card));
+  // Wait two frames so the browser actually paints the lowered/faded state
+  // before observation can start — otherwise cards already in view on load
+  // reveal on the very next tick with no visible motion (a hard jump-cut
+  // that read as "rushed").
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      cards.forEach(card => observer.observe(card));
+    });
+  });
 }
 
 // ---- Init ----
