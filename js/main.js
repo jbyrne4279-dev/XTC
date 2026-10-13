@@ -931,65 +931,10 @@ function initCardReveal() {
   });
 }
 
-// ---- Dark mode ----
-// The <head> inline script (every page except admin/checkout/password/
-// order-confirmed) already set data-theme before first paint to avoid a
-// flash. This sets up the rest: the pill toggle in the header, saving an
-// explicit choice, and live-following the OS setting for as long as the
-// shopper hasn't made an explicit choice of their own.
-const THEME_KEY = 'xtc-theme';
-
-function xtcApplyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  document.querySelectorAll('.theme-toggle').forEach(btn => {
-    btn.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
-  });
-}
-
-function xtcThemeToggleHtml() {
-  return `
-    <button type="button" class="theme-toggle" role="switch" aria-checked="false" aria-label="Toggle dark mode">
-      <span class="theme-toggle__knob">
-        <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </span>
-    </button>`;
-}
-
-function initTheme() {
-  if (!window.matchMedia) return;
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
-
-  // Mirror whatever the <head> script already applied (or fall back to the
-  // same logic if this page has no such script) so the toggle starts in sync.
-  const stored = (() => { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } })();
-  xtcApplyTheme(stored || (media.matches ? 'dark' : 'light'));
-
-  // No explicit choice saved yet — keep following the OS live.
-  media.addEventListener('change', e => {
-    try { if (localStorage.getItem(THEME_KEY)) return; } catch (err) { return; }
-    xtcApplyTheme(e.matches ? 'dark' : 'light');
-  });
-
-  document.querySelectorAll('.header-actions').forEach(actions => {
-    if (actions.querySelector('.theme-toggle')) return;
-    actions.insertAdjacentHTML('afterbegin', xtcThemeToggleHtml());
-  });
-
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.theme-toggle');
-    if (!btn) return;
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    xtcApplyTheme(next);
-    try { localStorage.setItem(THEME_KEY, next); } catch (err) {}
-  });
-}
-
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCount();
-  initTheme();
   initNavDrawer();
   initHero();
   initEarlyAccessSlideshow();
