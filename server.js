@@ -100,6 +100,8 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/images/skull-emblem-icon.webp',
   '/drop.ics',
   '/webhook',
+  '/sitemap.xml',
+  '/robots.txt',
   '/js/omnisend-config.js',
   '/subscribe',
   '/favicon.ico',
