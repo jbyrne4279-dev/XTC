@@ -16,9 +16,9 @@ video::-webkit-media-controls { display: none !important; }
 
 :root {
   /* Core palette */
-  --bg:             #0a0a0a;
-  --bg-2:           #0d0d0d;
-  --bg-3:           #111111;
+  --bg:             #000000;
+  --bg-2:           #000000;
+  --bg-3:           #000000;
   --surface:        rgba(255,255,255,0.03);
   --surface-2:      rgba(255,255,255,0.05);
 
@@ -321,7 +321,7 @@ ul, ol { list-style: none; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10,10,10,0.85);
+  background: rgba(0,0,0,0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -478,7 +478,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   max-width: 78vw;
   height: auto;
   max-height: calc(100vh - var(--header-h) - 16px);
-  background: #0f0f0f;
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.12);
   /* Square top-right corner so the popup reads as attached to the
      hamburger button directly above it; rounded everywhere else. */
@@ -526,7 +526,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   min-height: 440px;
   max-height: 920px;
   overflow: hidden;
-  background: #000;
+  background: #000000;
   cursor: pointer;
 }
 
@@ -909,7 +909,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--accent);
-  background: rgba(10,10,10,0.9);
+  background: rgba(0,0,0,0.9);
   border: 1px solid rgba(179,102,255,0.3);
   padding: 4px 10px;
   border-radius: 2px;
@@ -991,7 +991,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   min-width: 160px;
   aspect-ratio: 3/4;
   overflow: hidden;
-  background: #111;
+  background: #000000;
   flex-shrink: 0;
   text-decoration: none;
 }
@@ -1112,7 +1112,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-card {
   display: flex;
   flex-direction: column;
-  background: #0f0f0f;
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.06);
   position: relative;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14), 0 3px 8px rgba(0, 0, 0, 0.08);
@@ -1176,7 +1176,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   aspect-ratio: 1 / 1;
   display: block;
   overflow: hidden;
-  background: #000;
+  background: #000000;
 }
 .fp-card__media img {
   width: 100%;
@@ -1219,7 +1219,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   box-shadow: 0 0 2px rgba(0,0,0,0.4);
   transition: background 0.2s, transform 0.2s;
 }
-.fp-card__dot--active { background: #0f0f0f; transform: scale(1.3); }
+.fp-card__dot--active { background: #ffffff; transform: scale(1.3); }
 
 .fp-card__badge {
   position: absolute;
@@ -1231,7 +1231,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   color: var(--accent);
   border: 1px solid rgba(179,102,255,0.35);
   padding: 5px 12px;
-  background: #0c0c0c;
+  background: #000000;
 }
 .fp-card__badge--invert {
   background: #000000;
@@ -1243,7 +1243,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-card__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10,10,10,0.5);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1606,7 +1606,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   align-items: center;
   gap: var(--sp-2);
   color: var(--accent);
-  background: rgba(10,10,10,0.9);
+  background: rgba(0,0,0,0.9);
   border: 1px solid rgba(179,102,255,0.3);
   font-size: var(--fs-micro);
   letter-spacing: 1.5px;
@@ -2008,7 +2008,7 @@ a[aria-label="Cart"].cart-active .cart-count {
    FOOTER
    ============================================ */
 .site-footer {
-  background: #000;
+  background: #000000;
   border-top: none;
   box-shadow: none;
   padding: var(--sp-8) 0 var(--sp-8);
@@ -2260,7 +2260,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   bottom: var(--sp-8);
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(17, 17, 17, 0.96);
+  background: rgba(0,0,0, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.85);
   padding: 13px 28px;
@@ -2384,7 +2384,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 /* Footer loyalty signup section */
 /* ── Footer Club (luxury signup — horizontal) ── */
 .footer-club {
-  background: #070707;
+  background: #000000;
   border-top: 1px solid rgba(255,255,255,0.05);
   border-bottom: 1px solid rgba(255,255,255,0.05);
   padding: 72px 0;
@@ -2624,7 +2624,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   position: absolute;
   bottom: calc(100% + 8px);
   right: 0;
-  background: #111111;
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.25);
   padding: 12px 14px;
   z-index: 50;
@@ -2684,7 +2684,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   position: relative;
   margin-top: 28px;
   padding: 20px;
-  background: #141414;
+  background: #000000;
 }
 .pdp-bundle__label {
   font-size: 9px;
@@ -2716,7 +2716,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   align-items: center;
   gap: 14px;
   width: 100%;
-  background: #0f0f0f;
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.15);
   padding: 10px 14px;
   cursor: pointer;
@@ -2784,7 +2784,7 @@ a[aria-label="Cart"].cart-active .cart-count {
    YOU MAY ALSO LIKE — "XTC Clothing" recs header
    Shared by Track Order and every product page.
    ============================================ */
-.ymal-section { background: #141414; border-top: 1px solid rgba(255,255,255,0.06); padding-bottom: 80px; }
+.ymal-section { background: #000000; border-top: 1px solid rgba(255,255,255,0.06); padding-bottom: 80px; }
 .ymal-head { text-align: center; padding: 64px 20px 48px; }
 .ymal-eyebrow {
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
@@ -2913,7 +2913,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 /* Slightly lighter media background so dark WAR product images are visible */
 .drop-war .fp-card__media,
 .fp-card.drop-war .fp-card__media {
-  background: #181818;
+  background: #000000;
 }
 .drop-war .fp-card__atc::before {
   background: conic-gradient(from var(--cta-a),
@@ -3014,7 +3014,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 .cs-signup {
   padding: 64px 0 80px;
   border-top: 1px solid rgba(255,255,255,0.05);
-  background: #070707;
+  background: #000000;
 }
 .cs-signup__inner {
   max-width: 560px;
@@ -3330,7 +3330,7 @@ textarea {
 /* ── Early Access Bar ── */
 .early-access-bar {
   border-top: none;
-  background: #0f0f0f;
+  background: #000000;
   position: relative;
 }
 .early-access-bar::before,
@@ -3374,7 +3374,7 @@ textarea {
 .early-access-bar__image {
   position: relative;
   overflow: hidden;
-  background: #0a0a0a;
+  background: #000000;
   border-left: 1px solid transparent;
   border-image: linear-gradient(
     180deg,
@@ -3717,7 +3717,7 @@ textarea {
   top: 0; right: 0; bottom: 0;
   width: 440px;
   max-width: 92vw;
-  background: #161616;
+  background: #000000;
   border-left: 1px solid rgba(255,255,255,0.15);
   display: flex;
   flex-direction: column;
@@ -3878,7 +3878,7 @@ textarea {
   position: absolute;
   bottom: calc(100% + 6px);
   left: 0;
-  background: #111111;
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.25);
   box-shadow: 0 8px 32px rgba(0,0,0,0.35);
   padding: 6px;
@@ -4002,8 +4002,9 @@ textarea {
 .cd-checkout-btn {
   width: 100%;
   padding: 16px;
-  background: #0f0f0f;
-  border: none;
+  background: #000000;
+  border: 1px solid rgba(179,102,255,0.6);
+  box-shadow: 0 0 12px rgba(179,102,255,0.2);
   color: #fff;
   font-family: inherit;
   font-size: 11px;
@@ -4080,7 +4081,7 @@ textarea {
   max-width: 100%;
   max-height: 88vh;
   overflow-y: auto;
-  background: #141414;
+  background: #000000;
   border-radius: 8px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.35);
   transform: translateY(16px) scale(0.98);
@@ -4141,7 +4142,7 @@ textarea {
   top: 2px; left: 2px;
   width: 18px; height: 18px;
   border-radius: 50%;
-  background: #0f0f0f;
+  background: #000000;
   transition: transform 0.2s;
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
