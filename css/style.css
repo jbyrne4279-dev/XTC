@@ -478,12 +478,14 @@ a[aria-label="Cart"].cart-active .cart-count {
   max-width: 78vw;
   height: auto;
   max-height: calc(100vh - var(--header-h) - 16px);
-  background: #000000;
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0, 0, 0, 0.82);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(179,102,255,0.25);
   /* Square top-right corner so the popup reads as attached to the
      hamburger button directly above it; rounded everywhere else. */
   border-radius: 12px 0 12px 12px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7), 0 0 24px rgba(179,102,255,0.12);
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -496,21 +498,51 @@ a[aria-label="Cart"].cart-active .cart-count {
 
 .nav-drawer__close { display: none; }
 
-.nav-drawer__links { display: flex; flex-direction: column; padding: 6px; }
+.nav-drawer__links { display: flex; flex-direction: column; padding: 8px; }
 .nav-drawer__links a {
-  color: rgba(255,255,255,0.65);
-  font-size: 12px;
+  position: relative;
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  padding: 12px 14px;
+  letter-spacing: 2.5px;
+  padding: 13px 16px;
   border-radius: 7px;
   text-align: left;
-  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  opacity: 0;
+  transform: translateX(8px);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
+              opacity 260ms var(--ease), transform 260ms var(--ease), padding-left 200ms var(--ease);
 }
-.nav-drawer__links a:hover { color: #ffffff; background: rgba(255,255,255,0.045); }
-.nav-drawer__links a.nav-primary { color: #ffffff; font-weight: 400; }
-.nav-drawer__links a.nav-primary:hover { background: rgba(255,255,255,0.045); }
+.nav-drawer__links a + a { border-top: 1px solid rgba(255,255,255,0.05); }
+/* Purple accent bar that grows in on hover/current page */
+.nav-drawer__links a::before {
+  content: '';
+  position: absolute;
+  left: 4px; top: 50%;
+  width: 2px; height: 0;
+  background: rgba(179,102,255,1);
+  box-shadow: 0 0 8px rgba(179,102,255,0.8);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  transition: height 200ms var(--ease);
+}
+.nav-drawer__links a:hover { color: #ffffff; background: rgba(179,102,255,0.08); padding-left: 22px; }
+.nav-drawer__links a:hover::before { height: 16px; }
+.nav-drawer__links a.nav-primary { color: #ffffff; }
+.nav-drawer__links a.active { color: rgba(179,102,255,1); }
+.nav-drawer__links a.active::before { height: 16px; }
+/* Staggered reveal when the dropdown opens */
+.nav-drawer.open .nav-drawer__links a { opacity: 1; transform: translateX(0); }
+.nav-drawer.open .nav-drawer__links a:nth-child(2) { transition-delay: 0ms, 0ms, 70ms, 70ms, 0ms; }
+.nav-drawer.open .nav-drawer__links a:nth-child(3) { transition-delay: 0ms, 0ms, 110ms, 110ms, 0ms; }
+.nav-drawer.open .nav-drawer__links a:nth-child(4) { transition-delay: 0ms, 0ms, 150ms, 150ms, 0ms; }
+.nav-drawer.open .nav-drawer__links a:nth-child(5) { transition-delay: 0ms, 0ms, 190ms, 190ms, 0ms; }
+.nav-drawer.open .nav-drawer__links a:nth-child(6) { transition-delay: 0ms, 0ms, 230ms, 230ms, 0ms; }
+.nav-drawer.open .nav-drawer__links a:nth-child(1) { transition-delay: 0ms, 0ms, 30ms, 30ms, 0ms; }
+@media (prefers-reduced-motion: reduce) {
+  .nav-drawer__links a { opacity: 1; transform: none; transition: none; }
+}
 
 @media (max-width: 480px) {
   .nav-drawer__panel { right: var(--sp-4); width: 200px; }

@@ -171,6 +171,12 @@ function initNavDrawer() {
   const close    = document.getElementById('drawerClose');
   if (!toggle || !drawer || !overlay || !close) return;
 
+  const here = window.location.pathname.replace(/\.html$/, '').replace(/\/(index)?$/, '') || '/';
+  drawer.querySelectorAll('.nav-drawer__links a').forEach(a => {
+    const p = (a.getAttribute('href') || '').replace(/\.html$/, '').replace(/\/$/, '') || '/';
+    if (p === here) a.classList.add('active');
+  });
+
   // Doesn't lock body scroll (no overflow:hidden) — that breaks the
   // header's position:sticky the same way body's own overflow-x:clip did
   // (see css/style.css). Not needed anyway now that this is a small
