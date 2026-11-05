@@ -2228,6 +2228,10 @@ a[aria-label="Cart"].cart-active .cart-count {
 .site-footer .footer-accordion__panel a:active {
   color: #ffffff;
 }
+/* Sub-links inside each footer dropdown — brand purple. */
+.site-footer .footer-accordion__panel a { color: rgba(179, 102, 255, 1); text-shadow: none; }
+.site-footer .footer-accordion__panel a:hover,
+.site-footer .footer-accordion__panel a:active { color: rgba(220, 170, 255, 1); }
 /* Section headings (Shop/Account/Help/Legal) and their divider lines —
    a plain medium-light grey instead of the engraved-stone treatment. */
 .site-footer .footer-accordion__toggle { color: #999999; text-shadow: none; }
