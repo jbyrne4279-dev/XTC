@@ -3342,17 +3342,17 @@ textarea {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 5%,
-    rgba(255, 255, 255, 0.35) 15%,
-    rgba(255, 255, 255, 0.55) 30%,
-    rgba(255, 255, 255, 0.45) 45%,
-    rgba(255, 255, 255, 0.22) 55%,
-    rgba(255, 255, 255, 0.42) 68%,
-    rgba(255, 255, 255, 0.38) 80%,
-    rgba(255, 255, 255, 0.12) 92%,
+    rgba(179, 102, 255, 0.1) 5%,
+    rgba(179, 102, 255, 0.4) 15%,
+    rgba(200, 140, 255, 0.7) 30%,
+    rgba(179, 102, 255, 0.5) 45%,
+    rgba(179, 102, 255, 0.25) 55%,
+    rgba(200, 140, 255, 0.55) 68%,
+    rgba(179, 102, 255, 0.4) 80%,
+    rgba(179, 102, 255, 0.12) 92%,
     transparent 100%
   );
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 6px rgba(179, 102, 255, 0.35);
   pointer-events: none;
   z-index: 1;
 }
@@ -3494,19 +3494,19 @@ textarea {
 .early-access-bar__input-wrap {
   display: flex;
   align-items: stretch;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(179, 102, 255, 0.3);
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
 }
-.early-access-bar__input-wrap:focus-within { border-color: rgba(255, 255, 255, 0.5); }
+.early-access-bar__input-wrap:focus-within { border-color: rgba(179, 102, 255, 0.7); }
 .early-access-bar__icon-box {
   width: 51px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(179, 102, 255, 0.3);
 }
 .early-access-bar__emblem {
   width: 27px;
@@ -3533,7 +3533,7 @@ textarea {
   width: 100%;
   padding: 16px 24px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(179, 102, 255, 0.4);
   color: #fff;
   font-family: inherit;
   font-size: 13px;
@@ -3544,7 +3544,7 @@ textarea {
   transition: background 0.2s, border-color 0.2s;
   margin-bottom: 10px;
   position: relative;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(255,255,255,0.3);
+  box-shadow: inset 0 1px 0 rgba(179, 102, 255, 0.1), inset 0 -1px 0 rgba(179, 102, 255, 0.3), 0 0 8px rgba(179, 102, 255, 0.3);
 }
 .early-access-bar__btn::before {
   content: '';
@@ -3553,8 +3553,8 @@ textarea {
   padding: 1px;
   background: conic-gradient(from var(--ea-btn-a, 0deg),
     transparent 0%, transparent 55%,
-    rgba(30, 30, 30, 0.8) 68%, rgba(180, 180, 180, 1) 78%, rgba(240, 240, 240, 1) 84%,
-    rgba(160, 160, 160, 0.8) 91%, transparent 100%
+    rgba(100, 30, 200, 0.6) 68%, rgba(179, 102, 255, 1) 78%, rgba(220, 170, 255, 1) 84%,
+    rgba(100, 30, 200, 0.6) 91%, transparent 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -3566,8 +3566,8 @@ textarea {
 @property --ea-btn-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes ea-btn-spin { to { --ea-btn-a: 360deg; } }
 .early-access-bar__btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(179, 102, 255, 0.1);
+  border-color: rgba(179, 102, 255, 0.8);
 }
 .early-access-bar__legal {
   font-size: 9px;
