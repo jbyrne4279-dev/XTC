@@ -445,13 +445,23 @@ function buildOrderConfirmationHtml(order) {
     </tr>
   ` : '';
 
-  return `
+  return `<!DOCTYPE html>
+<html lang="en" style="background:#000000;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light only">
 <style>
   :root { color-scheme: light only; supported-color-schemes: light only; }
+  html, body { margin: 0 !important; padding: 0 !important; background: #000000 !important; }
+  /* A solid-black background IMAGE on top of the black background colour:
+     Gmail (iOS/Android) and Outlook apps force-invert background colours in
+     dark/light mode but leave background images alone, so this keeps the
+     email pitch black in every client regardless of the phone's theme. */
   .xtc-bg-black,
-  [data-ogsc] .xtc-bg-black, [data-ogsb] .xtc-bg-black { background-color: #000000 !important; }
+  [data-ogsc] .xtc-bg-black, [data-ogsb] .xtc-bg-black { background-color: #000000 !important; background-image: linear-gradient(#000000, #000000) !important; }
+  u + .xtc-body .xtc-bg-black { background: #000000 !important; background-image: linear-gradient(#000000, #000000) !important; }
   .xtc-bg-img,
   [data-ogsc] .xtc-bg-img, [data-ogsb] .xtc-bg-img { background-color: #262626 !important; }
   .xtc-c100,
@@ -476,8 +486,10 @@ function buildOrderConfirmationHtml(order) {
   @keyframes xtcWinFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
   .xtc-win-fade { animation: xtcWinFade 3.5s ease-in-out infinite; }
 </style>
-    <div class="xtc-bg-black" style="background:#000000;padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      <table role="presentation" width="100%" class="xtc-bg-black" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
+</head>
+<body class="xtc-body xtc-bg-black" bgcolor="#000000" style="margin:0;padding:0;background:#000000;background-image:linear-gradient(#000000,#000000);">
+    <div class="xtc-bg-black" style="background:#000000;background-image:linear-gradient(#000000,#000000);padding:16px 16px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      <table role="presentation" width="100%" class="xtc-bg-black" bgcolor="#000000" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
         <tr>
           <td class="xtc-bg-black" style="background:#000000;padding:40px 40px 0;text-align:center;">
             <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto 28px;">
@@ -532,6 +544,8 @@ function buildOrderConfirmationHtml(order) {
         </tr>
       </table>
     </div>
+</body>
+</html>
   `;
 }
 
