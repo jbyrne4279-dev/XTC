@@ -8,7 +8,7 @@
   <meta name="description" content="Pre-order XTC Drop 02 in Black. Register your size and be first in line when Drop 02 lands. Limited units — never restocked." />
   <link rel="canonical" href="https://xtcclothing.com/product-drop02-a" />
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#f5f5f5" />
+  <meta name="theme-color" content="#0a0a0a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="XTC Clothing" />
@@ -29,17 +29,17 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.2);
+      color: rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .pdp-crumb a { color: rgba(0, 0, 0, 0.2); transition: color 0.2s; }
-    .pdp-crumb a:hover { color: rgba(0, 0, 0, 0.5); }
-    .pdp-crumb span { color: rgba(0, 0, 0, 0.05); }
+    .pdp-crumb a { color: rgba(255,255,255,0.2); transition: color 0.2s; }
+    .pdp-crumb a:hover { color: rgba(255,255,255,0.5); }
+    .pdp-crumb span { color: rgba(255,255,255,0.05); }
     /* Higher specificity than `.pdp-crumb span` (the separators) so this colour
        actually applies — matches the Home / New Releases link opacity. */
-    .pdp-crumb span.pdp-crumb__current { color: rgba(0, 0, 0, 0.2); }
+    .pdp-crumb span.pdp-crumb__current { color: rgba(255,255,255,0.2); }
 
     /* Layout */
     .pdp {
@@ -56,7 +56,7 @@
       align-self: start;
       border-right: 1px solid var(--border);
       aspect-ratio: 1/1;
-      background: #fafafa;
+      background: #050505;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -86,7 +86,7 @@
       font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.2);
+      color: rgba(255,255,255,0.2);
     }
 
     /* Info panel */
@@ -100,7 +100,7 @@
       font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.25);
+      color: rgba(255,255,255,0.25);
       margin-bottom: 10px;
     }
     .pdp-info__badge {
@@ -120,7 +120,7 @@
       font-weight: 200;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #000000;
+      color: #fff;
       line-height: 1.1;
       margin-bottom: 24px;
     }
@@ -128,7 +128,7 @@
       font-size: 28px;
       font-weight: 300;
       letter-spacing: 0.05em;
-      color: #000000;
+      color: #fff;
       margin-bottom: 36px;
     }
 
@@ -137,7 +137,7 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.3);
+      color: rgba(255,255,255,0.3);
       margin-bottom: 12px;
     }
     .pdp-size-btns {
@@ -149,8 +149,8 @@
       width: 52px;
       height: 52px;
       background: none;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      color: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.5);
       font-family: inherit;
       font-size: 11px;
       letter-spacing: 1.5px;
@@ -159,8 +159,8 @@
       transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .pdp-size-btn:hover {
-      border-color: rgba(0, 0, 0, 0.3);
-      color: #000000;
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
     }
     .pdp-size-btn.selected {
       border-color: #cc0000;
@@ -181,7 +181,7 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.3);
+      color: rgba(255,255,255,0.3);
       margin-top: 28px;
       margin-bottom: 12px;
       display: block;
@@ -190,8 +190,8 @@
       width: 100%;
       box-sizing: border-box;
       background: none;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      color: #000000;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
       font-family: inherit;
       font-size: 13px;
       letter-spacing: 0.5px;
@@ -199,7 +199,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .pdp-email-input::placeholder { color: rgba(0, 0, 0, 0.2); }
+    .pdp-email-input::placeholder { color: rgba(255,255,255,0.2); }
     .pdp-email-input:focus { border-color: rgba(204,0,0,0.5); }
     .pdp-email-error {
       font-size: 11px;
@@ -216,7 +216,7 @@
       width: 100%;
       background: #cc0000;
       border: none;
-      color: #ffffff;
+      color: #fff;
       font-family: inherit;
       font-size: 11px;
       font-weight: 600;
@@ -226,7 +226,7 @@
       cursor: pointer;
       transition: background 0.2s, opacity 0.2s;
     }
-    .pdp-preorder-btn:hover { background: #2a2a2a; }
+    .pdp-preorder-btn:hover { background: #c47fff; }
     .pdp-preorder-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Success message */
@@ -255,24 +255,24 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.25);
+      color: rgba(255,255,255,0.25);
       margin-top: 36px;
       transition: color 0.2s;
       text-decoration: none;
     }
-    .pdp-back:hover { color: rgba(0, 0, 0, 0.6); }
+    .pdp-back:hover { color: rgba(255,255,255,0.6); }
 
     /* Divider */
     .pdp-divider {
       height: 1px;
-      background: rgba(0, 0, 0, 0.06);
+      background: rgba(255,255,255,0.06);
       margin: 32px 0;
     }
 
     /* Note */
     .pdp-note {
       font-size: 11px;
-      color: rgba(0, 0, 0, 0.2);
+      color: rgba(255,255,255,0.2);
       letter-spacing: 0.4px;
       line-height: 1.7;
     }
@@ -287,57 +287,9 @@
       .pdp-crumb { padding: 10px 16px; font-size: 9px; }
       .pdp-info { padding: 28px 16px; }
     }
-  
-    /* ── Light-grey page (gallery column + info column), black breadcrumb.
-       Header/nav stays its normal color — not part of this override.
-       Placed after the rules above so it wins on cascade order (same
-       selectors, later wins) rather than duplicating every declaration
-       inline. */
-    .pdp-crumb { background: #000000; }
-    .pdp-crumb a { color: rgba(255, 255, 255, 0.4); }
-    .pdp-crumb a:hover { color: rgba(255, 255, 255, 0.8); }
-    .pdp-crumb span { color: rgba(255, 255, 255, 0.15); }
-    .pdp-crumb span.pdp-crumb__current { color: rgba(255, 255, 255, 0.5); }
-
-    .pdp-info { background: #f0f0f0; }
-    .pdp-info__brand { color: rgba(0, 0, 0, 0.55); }
-    .pdp-info__title { color: #000000; }
-    .pdp-info__price { color: #000000; }
-    .pdp-info__currency { color: rgba(0, 0, 0, 0.4); }
-    .pdp-divider { background: rgba(0, 0, 0, 0.1); }
-    .pdp-section-label { color: rgba(0, 0, 0, 0.4); }
-    .pdp-size-guide { color: rgba(0, 0, 0, 0.6); border-bottom-color: rgba(0, 0, 0, 0.35); }
-    .pdp-size-guide:hover { color: #000000; border-color: #000000; }
-    .pdp-size-btn { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
-    .pdp-size-btn:hover { border-color: rgba(0, 0, 0, 0.5); color: #000000; }
-    .pdp-stock-note { color: rgba(0, 0, 0, 0.45); }
-    .pdp-stock-note--low { color: rgba(220, 38, 38, 0.85); }
-    .pdp-stock-note--ok  { color: rgba(22, 163, 74, 0.85); }
-    .pdp-color-btn { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
-    .pdp-color-btn:hover { border-color: rgba(0, 0, 0, 0.5); color: #000000; }
-    .pdp-color-btn.selected { color: #000000 !important; }
-    .pdp-color-btn.color-btn--oos:hover { border-color: rgba(0, 0, 0, 0.15); color: rgba(0, 0, 0, 0.55); }
-    .pdp-color-swatch { border-color: rgba(0, 0, 0, 0.3); }
-    .pdp-qty { border-color: rgba(0, 0, 0, 0.15); }
-    .pdp-qty__btn { color: rgba(0, 0, 0, 0.5); }
-    .pdp-qty__btn:hover { color: #000000; }
-    .pdp-qty__val { color: #000000; border-left-color: rgba(0, 0, 0, 0.15); border-right-color: rgba(0, 0, 0, 0.15); }
-    .pdp-atc { background: #000000; color: #ffffff; }
-    .pdp-buy-now { border-color: rgba(0, 0, 0, 0.4); color: #000000; }
-    .pdp-buy-now:hover { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.9); }
-    .pdp-trust-item { color: rgba(0, 0, 0, 0.45); }
-    .pdp-trust-item svg { opacity: 0.45; }
-    #sizeGuidePanel table td { color: rgba(0, 0, 0, 0.7); }
-
-    @media (max-width: 960px) {
-      .pdp-gallery { border-bottom-color: rgba(0, 0, 0, 0.1); }
-    }
-
-  
-    .pdp { background: #f0f0f0; }
-    .pdp-gallery { border-right-color: rgba(0, 0, 0, 0.1); }
-    .pdp-gallery__thumbs { border-top-color: rgba(0, 0, 0, 0.1); }
-    .pdp-gallery__thumb { border-right-color: rgba(0, 0, 0, 0.1); }
+    /* Stock note colour-coding: green = plenty left, red = low. */
+    .pdp-stock-note--low { color: rgba(239, 68, 68, 0.9); }
+    .pdp-stock-note--ok  { color: rgba(34, 197, 94, 0.85); }
 </style>
   <script type="application/ld+json">
 [
@@ -385,7 +337,7 @@
   <header class="site-header">
     <div class="header-inner">
       <a href="/" class="header-logo">
-        <img style="filter:brightness(0)" src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <img src="https://cdn.shopify.com/s/files/1/0968/4471/0227/files/whitelogo.png" alt="XTC Clothing" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
         <span class="header-logo-text" style="display:none">XTC</span>
       </a>
       <nav class="header-nav">
@@ -401,8 +353,8 @@
         </a>
         <button class="header-menu-toggle" aria-label="Open menu" id="menuToggle">
           <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-            <line x1="0" y1="4" x2="22" y2="4" stroke="#111111" stroke-width="2"/>
-            <line x1="0" y1="12" x2="22" y2="12" stroke="#111111" stroke-width="2"/>
+            <line x1="0" y1="4" x2="22" y2="4" stroke="white" stroke-width="2"/>
+            <line x1="0" y1="12" x2="22" y2="12" stroke="white" stroke-width="2"/>
           </svg>
         </button>
       </div>
@@ -443,7 +395,7 @@
       <div class="pdp-placeholder">
         <img class="pdp-placeholder__img" src="images/polo-black-flat.webp" alt="" />
         <div class="pdp-placeholder__lock">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(0, 0, 0, 0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4"/>
           </svg>
@@ -579,7 +531,7 @@
     canvas.width  = canvas.offsetWidth  || 400;
     canvas.height = canvas.offsetHeight || 300;
     var W = canvas.width, H = canvas.height;
-    var colors = ['#cc0000','#990000','#cc4444','#000000','#880000'];
+    var colors = ['#cc0000','#990000','#cc4444','#ffffff','#880000'];
     var particles = Array.from({length: 60}, function() {
       var angle = Math.random() * Math.PI * 2;
       var speed = 2.5 + Math.random() * 4;
