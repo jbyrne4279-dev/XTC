@@ -637,13 +637,14 @@ a[aria-label="Cart"].cart-active .cart-count {
   display: inline-block;
   position: relative;
   padding: 18px 40px;
-  background: transparent;
+  background: #000000;
   color: #fff;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 4px;
   text-transform: uppercase;
   border: 1px solid rgba(179,102,255,0.4);
+  box-shadow: 0 0 14px rgba(179,102,255,0.25);
   transition: background 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
@@ -665,7 +666,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   pointer-events: none;
 }
 .hero-bar__cta:hover {
-  background: rgba(179,102,255,0.1);
+  background: #0d0814;
   border-color: rgba(179,102,255,0.7);
 }
 
