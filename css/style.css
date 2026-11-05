@@ -3357,8 +3357,8 @@ textarea {
   pointer-events: none;
   z-index: 1;
 }
-.early-access-bar::before { top: 0; }
-.early-access-bar::after  { bottom: 0; }
+.early-access-bar::before,
+.early-access-bar::after { display: none; }
 .early-access-bar__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
