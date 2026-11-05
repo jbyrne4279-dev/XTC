@@ -2151,21 +2151,21 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 .footer-copy-sym {
-  color: #cc0000;
+  color: #b366ff;
 }
 
 .product-card--war .product-card__badge {
-  color: #cc0000;
-  border-color: rgba(153,0,0,0.35);
+  color: #b366ff;
+  border-color: rgba(179, 102, 255,0.35);
 }
 .product-card--war .product-card__name { color: rgba(255,255,255,0.9); }
 .product-card--war .btn--primary {
-  color: #cc0000;
-  border-color: rgba(153,0,0,0.4);
+  color: #b366ff;
+  border-color: rgba(179, 102, 255,0.4);
 }
 .product-card--war .btn--primary:hover {
-  background: rgba(153,0,0,0.15);
-  border-color: rgba(204,0,0,0.6);
+  background: rgba(179, 102, 255,0.15);
+  border-color: rgba(200, 140, 255,0.6);
   color: #ff3333;
 }
 
@@ -2696,11 +2696,11 @@ a[aria-label="Cart"].cart-active .cart-count {
 .pdp-bundle__timer {
   font-size: 10px;
   letter-spacing: 0.5px;
-  color: rgba(220, 38, 38, 0.85);
+  color: rgba(179, 102, 255, 0.85);
   margin: -4px 0 14px;
   font-variant-numeric: tabular-nums;
 }
-.pdp-bundle__timer strong { color: rgba(200, 30, 30, 1); font-weight: 600; letter-spacing: 1px; }
+.pdp-bundle__timer strong { color: rgba(200, 140, 255, 1); font-weight: 600; letter-spacing: 1px; }
 .pdp-bundle--locked .pdp-bundle__timer { opacity: 0.5; }
 .pdp-bundle__text {
   font-size: 12px;
@@ -2851,11 +2851,11 @@ a[aria-label="Cart"].cart-active .cart-count {
 
 /* ── War™ / Drop 02 ── */
 :root {
-  --war-red:        #990000;
-  --war-red-light:  #cc0000;
-  --war-red-dim:    rgba(153, 0, 0, 0.7);
-  --war-red-border: rgba(153, 0, 0, 0.4);
-  --war-red-bg:     rgba(153, 0, 0, 0.12);
+  --war-red:        #9c3fe8;
+  --war-red-light:  #b366ff;
+  --war-red-dim:    rgba(179, 102, 255, 0.7);
+  --war-red-border: rgba(179, 102, 255, 0.4);
+  --war-red-bg:     rgba(179, 102, 255, 0.12);
 }
 
 .drop-war .fp-eyebrow,
@@ -2876,7 +2876,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 
 .drop-war .fp-card__atc--highlight:hover {
-  background: rgba(153, 0, 0, 0.25);
+  background: rgba(179, 102, 255, 0.25);
   border-color: var(--war-red-light);
 }
 
@@ -2897,16 +2897,16 @@ a[aria-label="Cart"].cart-active .cart-count {
 .fp-card.drop-war::before {
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 60%,
-    rgba(100,0,0,0.6) 72%, rgba(204,0,0,1) 80%, rgba(255,100,100,0.8) 85%,
-    rgba(204,0,0,0.6) 92%, transparent 100%
+    rgba(100, 30, 200,0.6) 72%, rgba(200, 140, 255,1) 80%, rgba(255,100,100,0.8) 85%,
+    rgba(200, 140, 255,0.6) 92%, transparent 100%
   );
 }
 .drop-war .fp-card::after,
 .fp-card.drop-war::after {
   background: conic-gradient(from var(--circuit-a),
     transparent 0%, transparent 50%,
-    rgba(100,0,0,0.7) 65%, rgba(204,0,0,1) 75%, rgba(255,120,120,0.8) 82%,
-    rgba(204,0,0,0.6) 90%, transparent 100%
+    rgba(100, 30, 200,0.7) 65%, rgba(200, 140, 255,1) 75%, rgba(255,120,120,0.8) 82%,
+    rgba(200, 140, 255,0.6) 90%, transparent 100%
   );
 }
 
@@ -2918,28 +2918,28 @@ a[aria-label="Cart"].cart-active .cart-count {
 .drop-war .fp-card__atc::before {
   background: conic-gradient(from var(--cta-a),
     transparent 0%, transparent 55%,
-    rgba(100,0,0,0.6) 68%, rgba(204,0,0,1) 78%, rgba(255,100,100,0.7) 84%,
-    rgba(204,0,0,0.5) 91%, transparent 100%
+    rgba(100, 30, 200,0.6) 68%, rgba(200, 140, 255,1) 78%, rgba(255,100,100,0.7) 84%,
+    rgba(200, 140, 255,0.5) 91%, transparent 100%
   );
 }
 .drop-war .fp-card__atc:hover {
-  background: rgba(153,0,0,0.2);
-  border-color: rgba(204,0,0,0.7);
+  background: rgba(179, 102, 255,0.2);
+  border-color: rgba(200, 140, 255,0.7);
 }
 .drop-war .fp-card__overlay-btn:hover {
-  background: rgba(153,0,0,0.2);
-  border-color: rgba(204,0,0,0.6);
+  background: rgba(179, 102, 255,0.2);
+  border-color: rgba(200, 140, 255,0.6);
 }
 .drop-war .fp-card__cta { color: var(--war-red-light); }
 .drop-war .fp-card__cta:hover { color: #ff4444; }
 
 .drop-war .fp-note .purple-shine {
   background: linear-gradient(90deg,
-    rgba(100,0,0,0.8)  0%,
-    rgba(204,0,0,1)   35%,
-    rgba(80,0,0,1)    50%,
-    rgba(204,0,0,1)   65%,
-    rgba(100,0,0,0.8) 100%
+    rgba(100, 30, 200,0.8)  0%,
+    rgba(200, 140, 255,1)   35%,
+    rgba(76, 29, 149,1)    50%,
+    rgba(200, 140, 255,1)   65%,
+    rgba(100, 30, 200,0.8) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
