@@ -484,7 +484,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   border: 1px solid rgba(179,102,255,0.25);
   /* Square top-right corner so the popup reads as attached to the
      hamburger button directly above it; rounded everywhere else. */
-  border-radius: 12px 0 12px 12px;
+  border-radius: 0;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7), 0 0 24px rgba(179,102,255,0.12);
   display: flex;
   flex-direction: column;
@@ -507,7 +507,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   text-transform: uppercase;
   letter-spacing: 2.5px;
   padding: 13px 16px;
-  border-radius: 7px;
+  border-radius: 0;
   text-align: left;
   opacity: 0;
   transform: translateX(8px);
@@ -523,7 +523,7 @@ a[aria-label="Cart"].cart-active .cart-count {
   width: 2px; height: 0;
   background: rgba(179,102,255,1);
   box-shadow: 0 0 8px rgba(179,102,255,0.8);
-  border-radius: 2px;
+  border-radius: 0;
   transform: translateY(-50%);
   transition: height 200ms var(--ease);
 }
