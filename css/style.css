@@ -1165,7 +1165,7 @@ a[aria-label="Cart"].cart-active .cart-count {
 }
 .fp-card:hover {
   border-color: rgba(179,102,255,0.2);
-  box-shadow: 0 20px 44px rgba(179,102,255,0.2), 0 6px 14px rgba(255,255,255,0.1);
+  box-shadow: 0 12px 28px rgba(179,102,255,0.07), 0 4px 10px rgba(0,0,0,0.4);
 }
 .fp-card:hover::before { opacity: 0; }
 .fp-card:hover::after  { opacity: 1; }
