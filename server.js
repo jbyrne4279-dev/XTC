@@ -729,6 +729,79 @@ const BASE_URL = process.env.BASE_URL || 'https://xtcclothing.com';
 
 // ── Promo codes ──────────────────────────────────────────────────────────────
 // Add new codes here. type: 'percent' or 'fixed' (pence). active: false to disable.
+// ── Welcome 10% code (sign-up popup) ────────────────────────────────────────
+// Each popup sign-up gets its own code, derived from their email with an
+// HMAC — e.g. XTC10-7K2QMA — so no table is needed. It only works at
+// checkout with that same email, and only if that email has never ordered.
+const WELCOME_CODE_RE = /^XTC10-[A-Z0-9]{6}$/;
+const WELCOME_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function welcomeCodeFor(email) {
+  const secret = process.env.PROMO_SECRET || process.env.STRIPE_SECRET_KEY || 'xtc-welcome';
+  const h = crypto.createHmac('sha256', secret).update(String(email || '').trim().toLowerCase()).digest();
+  let out = '';
+  for (let i = 0; i < 6; i++) out += WELCOME_ALPHABET[h[i] % WELCOME_ALPHABET.length];
+  return 'XTC10-' + out;
+}
+async function emailHasOrdered(email) {
+  try {
+    const { data, error } = await sb.from('orders').select('id').ilike('email', String(email).trim()).limit(1);
+    if (error) return false;
+    return Array.isArray(data) && data.length > 0;
+  } catch (e) { return false; }
+}
+// Resolves a promo code (fixed table or personal welcome code) to
+// { promo } or { error }. `email` is the checkout email.
+async function resolvePromo(code, email) {
+  const c = String(code || '').trim().toUpperCase();
+  if (!c) return { error: 'Enter a discount code.' };
+  if (WELCOME_CODE_RE.test(c)) {
+    const em = String(email || '').trim().toLowerCase();
+    if (!em || !em.includes('@')) return { error: 'Enter your email in the delivery form first — this code is tied to the email it was sent to.' };
+    if (c !== welcomeCodeFor(em)) return { error: "This code doesn't match the email entered." };
+    if (await emailHasOrdered(em)) return { error: 'This code is only valid on your first order.' };
+    return { promo: { type: 'percent', value: 10, active: true, description: '10% off your first order' } };
+  }
+  const promo = PROMO_CODES[c];
+  if (!promo || !promo.active) return { error: 'Invalid or expired code' };
+  return { promo };
+}
+function buildWelcomeCodeEmail(code) {
+  return `<!DOCTYPE html>
+<html lang="en" style="background:#000000;"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only">
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light only; }
+  html, body { margin: 0 !important; padding: 0 !important; background: #000000 !important; }
+  .xb, [data-ogsc] .xb, [data-ogsb] .xb { background-color: #000000 !important; background-image: linear-gradient(#000000,#000000) !important; }
+  .xw, [data-ogsc] .xw { color: #ffffff !important; }
+  .xg, [data-ogsc] .xg { color: rgba(255,255,255,0.55) !important; }
+  .xp, [data-ogsc] .xp { color: #b366ff !important; }
+  @media (prefers-color-scheme: dark) { .xb { background-color: #000000 !important; } .xw { color: #ffffff !important; } .xg { color: rgba(255,255,255,0.55) !important; } .xp { color: #b366ff !important; } }
+</style></head>
+<body class="xb" bgcolor="#000000" style="margin:0;padding:0;background:#000000;background-image:linear-gradient(#000000,#000000);">
+<div class="xb" style="background:#000000;background-image:linear-gradient(#000000,#000000);padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" class="xb" bgcolor="#000000" style="max-width:520px;margin:0 auto;border-collapse:collapse;background:#000000;">
+  <tr><td class="xb" style="background:#000000;padding:32px 32px 8px;text-align:center;">
+    <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto 28px;">
+    <p class="xp" style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#b366ff;margin:0 0 14px;">Members Only</p>
+    <h1 class="xw" style="font-size:26px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#ffffff;margin:0 0 14px;">You're In</h1>
+    <p class="xg" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.55);margin:0 0 28px;">Here's 10% off your first order. Use it at checkout with this email address.</p>
+  </td></tr>
+  <tr><td class="xb" style="background:#000000;padding:0 32px;text-align:center;">
+    <div class="xb" style="display:inline-block;background:#000000;border:1px solid #b366ff;padding:18px 28px;">
+      <p class="xg" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin:0 0 8px;">Your code</p>
+      <p class="xw" style="font-size:24px;letter-spacing:4px;font-weight:600;color:#ffffff;margin:0;font-family:'SFMono-Regular',Menlo,Consolas,monospace;">${code}</p>
+    </div>
+  </td></tr>
+  <tr><td class="xb" style="background:#000000;padding:30px 32px 8px;text-align:center;">
+    <a href="${BASE_URL}/new-releases" class="xw" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 40px;font-size:12px;letter-spacing:2px;font-weight:600;text-transform:uppercase;border:1px solid rgba(179,102,255,0.6);">Shop Now</a>
+  </td></tr>
+  <tr><td class="xb" style="background:#000000;padding:28px 32px 8px;text-align:center;border-top:1px solid rgba(255,255,255,0.1);">
+    <p class="xg" style="font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.35);margin:0;">One use, first order only, with the email this was sent to. XTC Clothing.</p>
+  </td></tr>
+</table></div></body></html>`;
+}
+
 const PROMO_CODES = {
   'WELCOME10':  { type: 'percent', value: 10,   active: true,  description: '10% off' },
   'JBYRNE2005': { type: 'percent', value: 100,  active: true,  description: '100% off' },
@@ -736,15 +809,14 @@ const PROMO_CODES = {
   'FREESHIP':   { type: 'fixed',   value: 499,  active: true,  description: 'Free shipping' },
 };
 
-app.post('/validate-promo', (req, res) => {
-  const code = (req.body.code || '').trim().toUpperCase();
-  const promo = PROMO_CODES[code];
-  if (!promo || !promo.active) return res.status(400).json({ error: 'Invalid or expired code' });
+app.post('/validate-promo', async (req, res) => {
+  const { promo, error } = await resolvePromo(req.body && req.body.code, req.body && req.body.email);
+  if (!promo) return res.status(400).json({ error });
   res.json({ valid: true, type: promo.type, value: promo.value, description: promo.description });
 });
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { promoCode, cartSummary, cartItems, country } = req.body;
+  const { promoCode, cartSummary, cartItems, country, email } = req.body;
 
   if (!Array.isArray(cartItems) || !cartItems.length) {
     return res.status(400).json({ error: 'Your bag is empty.' });
@@ -784,8 +856,8 @@ app.post('/create-payment-intent', async (req, res) => {
 
   let promoDiscount = 0;
   if (promoCode) {
-    const promo = PROMO_CODES[(promoCode || '').trim().toUpperCase()];
-    if (promo && promo.active) {
+    const { promo } = await resolvePromo(promoCode, email);
+    if (promo) {
       if (promo.type === 'percent') {
         promoDiscount = Math.round(afterBundle * (promo.value / 100));
       } else if (promo.type === 'fixed') {
@@ -1094,6 +1166,14 @@ app.post('/subscribe', async (req, res) => {
       });
     }
   } catch (e) { /* best-effort */ }
+  // Sign-up popup: email them their personal 10%-off first-order code.
+  if (safeSource === 'site-popup' && hasEmail && RESEND_API_KEY) {
+    const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
+    if (!(await emailHasOrdered(safeEmail))) {
+      resendSend({ to: safeEmail, subject: 'Your 10% off code — XTC Clothing', html: buildWelcomeCodeEmail(welcomeCodeFor(safeEmail)) })
+        .catch(() => {});
+    }
+  }
   res.json({ ok: true });
 });
 

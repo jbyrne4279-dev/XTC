@@ -1040,18 +1040,21 @@ function openSignupPopup() {
         <div class="su-pop__body">
           <form class="su-pop__form" novalidate>
             <p class="su-pop__eyebrow">Members Only</p>
-            <h2 class="su-pop__title" id="suPopTitle">Get Early Access</h2>
-            <p class="su-pop__sub">Be first in line for the next drop. Limited units, never restocked — members get the link before anyone else.</p>
+            <h2 class="su-pop__title" id="suPopTitle">10% Off Your First Order</h2>
+            <p class="su-pop__sub">Join for early access to every drop — limited units, never restocked — and we'll email you a 10% off code for your first order.</p>
             <div class="su-pop__field">
-              <input class="su-pop__input" type="text" inputmode="email" autocomplete="tel email" placeholder="Phone number or email" aria-label="Phone number or email" />
+              <input class="su-pop__input su-pop__input--email" type="email" inputmode="email" autocomplete="email" placeholder="Email address" aria-label="Email address" />
+            </div>
+            <div class="su-pop__field">
+              <input class="su-pop__input su-pop__input--phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Phone number (optional, for text alerts)" aria-label="Phone number (optional)" />
             </div>
             <p class="su-pop__err" aria-live="polite"></p>
-            <button type="submit" class="su-pop__btn">Join</button>
+            <button type="submit" class="su-pop__btn">Get My 10% Code</button>
             <p class="su-pop__legal">By joining you agree to receive marketing texts or emails from XTC Clothing. Msg &amp; data rates may apply. Unsubscribe anytime.</p>
           </form>
           <div class="su-pop__done" aria-live="polite">
-            <p class="su-pop__done-title">You're In</p>
-            <p class="su-pop__done-body">Watch out — early access is on its way.</p>
+            <p class="su-pop__done-title">Check Your Inbox</p>
+            <p class="su-pop__done-body">Your 10% off code is on its way — use it at checkout with this email.</p>
           </div>
         </div>
       </div>`;
@@ -1065,24 +1068,24 @@ function openSignupPopup() {
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('open')) close(); });
 
     const form = el.querySelector('.su-pop__form');
-    const input = el.querySelector('.su-pop__input');
+    const emailIn = el.querySelector('.su-pop__input--email');
+    const phoneIn = el.querySelector('.su-pop__input--phone');
     const err = el.querySelector('.su-pop__err');
     form.addEventListener('submit', e => {
       e.preventDefault();
       err.textContent = '';
-      const raw = (input.value || '').trim();
-      const isEmail = raw.includes('@');
-      const digits = raw.replace(/\D/g, '');
-      if (isEmail ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw) : (digits.length < 7 || digits.length > 15)) {
-        err.textContent = 'Please enter a valid phone number or email.';
-        return;
-      }
-      const payload = isEmail ? { email: raw, source: 'site-popup' } : { phone: raw, source: 'site-popup' };
+      const email = (emailIn.value || '').trim();
+      const phone = (phoneIn.value || '').trim();
+      const digits = phone.replace(/\D/g, '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email so we can send your code.'; return; }
+      if (phone && (digits.length < 7 || digits.length > 15)) { err.textContent = 'That phone number doesn\'t look right — or leave it blank.'; return; }
+      const payload = { email, source: 'site-popup' };
+      if (phone) payload.phone = phone;
       fetch('/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {});
-      if (window.omnisend) { try { omnisend.push(['identifyContact', isEmail ? { email: raw } : { phone: raw }]); } catch (e2) {} }
+      if (window.omnisend) { try { omnisend.push(['identifyContact', phone ? { email, phone } : { email }]); } catch (e2) {} }
       suStore(false, SU_KEY_DONE, '1');
       el.classList.add('su-pop--done');
-      setTimeout(() => el.classList.remove('open'), 3500);
+      setTimeout(() => el.classList.remove('open'), 4500);
     });
   }
   void el.offsetWidth; // let the closed state paint so the open transition runs

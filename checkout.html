@@ -948,6 +948,17 @@
     }
   }
 
+  // Personal welcome codes (XTC10-XXXXXX) are tied to the email they were
+  // sent to — if the email changes after applying one, re-price so the
+  // server re-checks it against the new address.
+  (function () {
+    const em = document.getElementById('coEmail');
+    if (!em) return;
+    em.addEventListener('change', function () {
+      if (_promo && /^XTC10-/.test(_promo.code || '')) reinitPayment();
+    });
+  })();
+
   window.applyPromo = async function() {
     const code = document.getElementById('promoInput').value.trim();
     const msgEl = document.getElementById('promoMsg');
@@ -962,7 +973,7 @@
       const res = await fetch('/validate-promo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, email: (document.getElementById('coEmail') || {}).value || '' }),
       });
       const data = await res.json();
       if (!res.ok || !data.valid) {
@@ -1018,7 +1029,7 @@
       const res = await fetch('/validate-promo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, email: (document.getElementById('coEmail') || {}).value || '' }),
       });
       const data = await res.json();
       if (!res.ok || !data.valid) {
@@ -1286,7 +1297,7 @@
     const res = await fetch('/create-payment-intent', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({ promoCode: _promo ? _promo.code : '', cartSummary, cartItems, country }),
+      body: JSON.stringify({ promoCode: _promo ? _promo.code : '', cartSummary, cartItems, country, email: (document.getElementById('coEmail') || {}).value || '' }),
     });
     const data = await res.json();
     if (!res.ok) {
