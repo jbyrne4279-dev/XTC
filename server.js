@@ -97,6 +97,7 @@ const SITE_LOCK_ALLOWLIST = new Set([
   '/images/icon-192.png', '/images/icon-512.png',
   '/images/googlefaviconxtc.png',
   '/images/water-bg.mp4',
+  '/images/waves-bg-final.mp4', '/images/waves-bg-final-poster.webp',
   '/images/skull-emblem-icon.webp',
   '/drop.ics',
   '/webhook',
