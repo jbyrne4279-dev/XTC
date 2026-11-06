@@ -885,7 +885,7 @@
     e.preventDefault();
     const email = e.target.querySelector('input[type=email]').value;
     const msg = document.getElementById('loyaltyMsg');
-    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
+    msg.textContent = '✓ You\'re in. Check your inbox for your 10% off code.';
     msg.style.display = 'block';
     e.target.reset();
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');

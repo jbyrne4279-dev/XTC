@@ -450,7 +450,7 @@
         <p class="fp-eyebrow">XTC Clothing</p>
         <h1 class="fp-title">Get In Touch</h1>
       </div>
-      <p class="ct-header__reply">We reply within 24 hours<br>Monday — Friday</p>
+      <p class="ct-header__reply">We reply within 24 hours<br>Monday to Friday</p>
     </div>
 
     <!-- Two-column grid — matches fp-grid -->
@@ -521,7 +521,7 @@
       <div class="ct-info-card">
         <div>
           <p class="ct-info-card__label">How Can We Help</p>
-          <p class="ct-info-card__body">Whether it's an order question, sizing advice, a return, or something else — we're here and we reply fast.</p>
+          <p class="ct-info-card__body">Whether it's an order question, sizing advice, a return, or something else, we're here and we reply fast.</p>
           <div class="ct-links">
             <div class="ct-link-item">
               <button type="button" class="ct-link" aria-expanded="false" data-target="ctPanelTrack" onclick="toggleCtLink(this)">
@@ -533,7 +533,7 @@
               </button>
               <div class="ct-link__panel" id="ctPanelTrack">
                 <div class="ct-link__panel-inner">
-                  <p>Enter your order number and email on the Track Order page for real-time delivery status — or check your confirmation email for the carrier's tracking link.</p>
+                  <p>Enter your order number and email on the Track Order page for real-time delivery status, or check your confirmation email for the carrier's tracking link.</p>
                   <a href="/track-order" class="ct-link__panel-cta">Go to Track Order →</a>
                 </div>
               </div>
@@ -786,7 +786,7 @@
     e.preventDefault();
     const email = e.target.querySelector('input[type=email]').value;
     const msg = document.getElementById('loyaltyMsg');
-    msg.textContent = '✓ You\'re in — check your inbox for your 10% off code.';
+    msg.textContent = '✓ You\'re in. Check your inbox for your 10% off code.';
     msg.style.display = 'block';
     e.target.reset();
     if (typeof omnisendSubscribe === 'function') omnisendSubscribe(email, 'loyalty-form');
@@ -833,7 +833,7 @@
         .then(function () { showContactSent(); })
         .catch(function () {
           submitBtn.disabled = false;
-          error.textContent = "Something went wrong — please email us directly.";
+          error.textContent = "Something went wrong. Please email us directly.";
           error.classList.add('show');
         });
 

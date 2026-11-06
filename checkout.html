@@ -924,7 +924,7 @@
         noteEl.textContent = 'Free UK shipping applied.';
       } else {
         const remaining = UK_FREE_SHIPPING_THRESHOLD - afterDiscount;
-        noteEl.textContent = 'Free UK shipping on orders over £' + UK_FREE_SHIPPING_THRESHOLD + ' — add £' + remaining.toFixed(2) + ' more to qualify.';
+        noteEl.textContent = 'Free UK shipping on orders over £' + UK_FREE_SHIPPING_THRESHOLD + '. Add £' + remaining.toFixed(2) + ' more to qualify.';
       }
     } else {
       noteEl.textContent = '';
@@ -968,7 +968,7 @@
     try { saved = localStorage.getItem('xtc-promo') || ''; } catch (e) {}
     if (!/^XTC10-[A-Z0-9]{6}$/.test(saved)) return;
     ['promoInput', 'promoInputMobile'].forEach(id => { const i = document.getElementById(id); if (i && !i.value) i.value = saved; });
-    ['promoMsg', 'promoMsgMobile'].forEach(id => { const m = document.getElementById(id); if (m) { m.textContent = 'Your 10% code is ready — enter your email above and it\'ll apply.'; m.className = 'co-promo-msg co-promo-msg--ok'; } });
+    ['promoMsg', 'promoMsgMobile'].forEach(id => { const m = document.getElementById(id); if (m) { m.textContent = 'Your 10% code is ready. Enter your email above and it\'ll apply.'; m.className = 'co-promo-msg co-promo-msg--ok'; } });
     const em = document.getElementById('coEmail');
     let lastTried = '';
     const tryApply = () => {
@@ -1195,11 +1195,11 @@
       // never charge a card without them — that order becomes unrecoverable
       // (no confirmation email, no address to ship to, no way to look it up).
       if (!email) {
-        document.getElementById('payment-errors').textContent = 'An email address is required — please enter one above and try again.';
+        document.getElementById('payment-errors').textContent = 'An email address is required. Please enter one above and try again.';
         return;
       }
       if (!shippingAddr.line1 || !shippingAddr.city || !shippingAddr.postal_code) {
-        document.getElementById('payment-errors').textContent = 'A delivery address is required — please try again and provide one.';
+        document.getElementById('payment-errors').textContent = 'A delivery address is required. Please add one and try again.';
         return;
       }
       // completeOrder() reads shipping fields straight off these form inputs

@@ -869,7 +869,7 @@ function csGetModal() {
         </button>
       </div>
       <div class="cs-body">
-        <p class="cs-intro">We use cookies to run the site, understand how it's used, and — if you allow it — personalise marketing. See our <a href="/cookie-policy" style="color:inherit;">Cookie Policy</a> for details.</p>
+        <p class="cs-intro">We use cookies to run the site, understand how it's used, and, if you allow it, personalise marketing. See our <a href="/cookie-policy" style="color:inherit;">Cookie Policy</a> for details.</p>
         <div class="cs-row">
           <div>
             <p class="cs-row__label">Essential</p>
@@ -1077,7 +1077,7 @@ function openSignupPopup() {
           <form class="su-pop__form" novalidate>
             <p class="su-pop__eyebrow">Members Only</p>
             <h2 class="su-pop__title" id="suPopTitle">10% Off Your First Order</h2>
-            <p class="su-pop__sub">Join for early access to every drop — limited units, never restocked — and we'll email you a 10% off code for your first order.</p>
+            <p class="su-pop__sub">Join for early access to every drop (limited units, never restocked) and we'll email you a 10% off code for your first order.</p>
             <div class="su-pop__field">
               <input class="su-pop__input su-pop__input--email" type="email" inputmode="email" autocomplete="email" placeholder="Email address" aria-label="Email address" />
             </div>
@@ -1090,7 +1090,7 @@ function openSignupPopup() {
           </form>
           <div class="su-pop__done" aria-live="polite">
             <p class="su-pop__done-title">Check Your Inbox</p>
-            <p class="su-pop__done-body">Your 10% off code is on its way — use it at checkout with this email.</p>
+            <p class="su-pop__done-body">Your 10% off code is on its way. Use it at checkout with this email.</p>
           </div>
         </div>
       </div>`;
@@ -1114,7 +1114,7 @@ function openSignupPopup() {
       const phone = (phoneIn.value || '').trim();
       const digits = phone.replace(/\D/g, '');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email so we can send your code.'; return; }
-      if (phone && (digits.length < 7 || digits.length > 15)) { err.textContent = 'That phone number doesn\'t look right — or leave it blank.'; return; }
+      if (phone && (digits.length < 7 || digits.length > 15)) { err.textContent = 'That phone number doesn\'t look right. Check it or leave it blank.'; return; }
       const payload = { email, source: 'site-popup' };
       if (phone) payload.phone = phone;
       fetch('/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {});

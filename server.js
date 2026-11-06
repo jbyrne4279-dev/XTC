@@ -31,7 +31,7 @@ function makeLimiter(windowMs, max) {
   return limited;
 }
 const ipOf = (req) => req.ip || (req.socket && req.socket.remoteAddress) || '';
-const tooMany = (res) => res.status(429).json({ error: 'Too many requests — please wait a moment and try again.' });
+const tooMany = (res) => res.status(429).json({ error: 'Too many requests. Please wait a moment and try again.' });
 
 // Drop 02 Grey was never produced — no such variant exists.
 const HIDDEN_PRODUCTS = new Set([]);
@@ -603,7 +603,7 @@ function buildOrderConfirmationHtml(order) {
         <tr>
           <td class="xtc-bg-black" style="background:#000000;padding:0 44px 0;text-align:center;">
             <p class="xtc-c40" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px;">Order Confirmed</p>
-            <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">Thanks for your order — it's being prepared now.</p>
+            <p class="xtc-c100" style="font-size:15px;color:#ffffff;margin:0;line-height:1.7;">Thanks for your order. It's being prepared now.</p>
           </td>
         </tr>
         <tr>
@@ -644,7 +644,7 @@ function buildOrderConfirmationHtml(order) {
         </tr>
         <tr>
           <td class="xtc-bg-black" style="background:#000000;padding:28px 44px 36px;border-top:1px solid rgba(255,255,255,0.15);text-align:center;">
-            <p class="xtc-c30" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;">XTC Clothing — Questions? email xtc.rip.contact@gmail.com</p>
+            <p class="xtc-c30" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0;">XTC Clothing. Questions? Email xtc.rip.contact@gmail.com</p>
           </td>
         </tr>
       </table>
@@ -861,7 +861,7 @@ async function resolvePromo(code, email) {
   if (!c) return { error: 'Enter a discount code.' };
   if (WELCOME_CODE_RE.test(c)) {
     const em = String(email || '').trim().toLowerCase();
-    if (!em || !em.includes('@')) return { error: 'Enter your email in the delivery form first — this code is tied to the email it was sent to.' };
+    if (!em || !em.includes('@')) return { error: 'Enter your email in the delivery form first. This code is tied to the email it was sent to.' };
     if (c !== welcomeCodeFor(em)) return { error: "This code doesn't match the email entered." };
     if (await emailHasOrdered(em)) return { error: 'This code is only valid on your first order.' };
     return { promo: { type: 'percent', value: 10, active: true, description: '10% off your first order' } };
@@ -931,7 +931,7 @@ app.post('/create-payment-intent', async (req, res) => {
   }
   const cartItems = cleanCartItems(req.body.cartItems);
   if (!cartItems) {
-    return res.status(400).json({ error: 'Something in your bag looks wrong — please remove it and add it again.', outOfStock: true });
+    return res.status(400).json({ error: 'Something in your bag looks wrong. Please remove it and add it again.', outOfStock: true });
   }
 
   // War™ Collection is hidden for now — reject even if an item somehow made
@@ -997,7 +997,7 @@ app.post('/create-payment-intent', async (req, res) => {
     res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
   } catch (err) {
     console.error('create-payment-intent error:', err.message);
-    res.status(500).json({ error: 'Could not start payment — please try again.' });
+    res.status(500).json({ error: 'Could not start payment. Please try again.' });
   }
 });
 
@@ -1134,7 +1134,7 @@ app.post('/update-payment-intent', async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     console.error('update-payment-intent error:', err.message);
-    res.status(500).json({ error: 'Could not save your details — please try again.' });
+    res.status(500).json({ error: 'Could not save your details. Please try again.' });
   }
 });
 
@@ -1169,7 +1169,7 @@ app.post('/create-checkout-session', async (req, res) => {
     res.json({ url: session.url });
   } catch (err) {
     console.error('create-checkout-session error:', err.message);
-    res.status(500).json({ error: 'Could not start checkout — please try again.' });
+    res.status(500).json({ error: 'Could not start checkout. Please try again.' });
   }
 });
 
