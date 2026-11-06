@@ -1093,6 +1093,90 @@ function openSignupPopup() {
   suStore(false, SU_KEY_SHOWN, '1');
 }
 
+// ---- Clean motion ----
+// Gentle fade-up for section-level blocks as they scroll into view, a quick
+// fade-out on internal navigation, and a header shadow once scrolled. Each
+// revealed element has its classes removed afterwards so no transform is left
+// behind (that would break sticky panels and fixed pop-ups inside them).
+const MOTION_REVEAL_SELECTORS = [
+  '.fp-header', '.nr-drop-head', '.ymal-head', '.early-access-bar__inner',
+  '.info-header', '.info-section', '.info-cta-card',
+  '.ct-header', '.ct-form-card', '.ct-info-card',
+  '.gallery-header', '.to-box',
+  '.pdp-gallery', '.pdp-info > *', '.faq-item',
+  '.footer-top', '.footer-bottom',
+].join(',');
+
+function initMotion() {
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Header shadow once the page is scrolled.
+  const header = document.querySelector('.site-header');
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (reduce) return;
+
+  // Fade the page out on internal link clicks, then navigate.
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || /^(mailto|tel|javascript):/i.test(href)) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin) return;
+    if (url.pathname === location.pathname && url.hash) return;
+    e.preventDefault();
+    document.body.classList.add('is-leaving');
+    setTimeout(() => { location.href = url.href; }, 170);
+  });
+  // Coming back via the back button restores the page from cache — undo the fade.
+  window.addEventListener('pageshow', () => document.body.classList.remove('is-leaving'));
+
+  if (!('IntersectionObserver' in window)) return;
+  const els = Array.from(document.querySelectorAll(MOTION_REVEAL_SELECTORS))
+    .filter(el => !el.closest('.fp-card') && !el.closest('#cartDrawer'))
+    // Only animate things visible right now — an element hidden on load
+    // (an error message, a filtered-out item) would otherwise stay invisible
+    // when it's shown later.
+    .filter(el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden');
+  if (!els.length) return;
+  els.forEach(el => el.classList.add('rv'));
+
+  // Clean up once the reveal has played (transitionend, with a timed
+  // fallback in case the browser never fires it).
+  const done = el => {
+    let finished = false;
+    const finish = () => {
+      if (finished) return; finished = true;
+      el.classList.remove('rv', 'rv--in');
+      el.style.transitionDelay = '';
+    };
+    el.addEventListener('transitionend', function onEnd(ev) {
+      if (ev.target !== el || ev.propertyName !== 'transform') return;
+      el.removeEventListener('transitionend', onEnd);
+      finish();
+    });
+    setTimeout(finish, 1400);
+  };
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.filter(en => en.isIntersecting)
+      .sort((x, y) => x.boundingClientRect.top - y.boundingClientRect.top || x.boundingClientRect.left - y.boundingClientRect.left)
+      .forEach((en, i) => {
+        const el = en.target;
+        el.style.transitionDelay = Math.min(i, 6) * 70 + 'ms';
+        el.classList.add('rv--in');
+        done(el);
+        obs.unobserve(el);
+      });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  requestAnimationFrame(() => requestAnimationFrame(() => els.forEach(el => io.observe(el))));
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1103,6 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCartDrawer();
   initProductCardSwipe();
   initCardReveal();
+  initMotion();
   initSignupPopup();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {

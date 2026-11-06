@@ -4544,3 +4544,31 @@ textarea {
     .oc-btn-shop, .oc-btn-save, .cs-btn, .ct-link__panel-cta, .btn--primary
   ) { font-size: 11px !important; }
 }
+
+/* ============================================
+   CLEAN MOTION — page fade-in, scroll reveals,
+   page-exit fade, header shadow on scroll.
+   Driven by initMotion() in main.js; all of it
+   is off under prefers-reduced-motion.
+   ============================================ */
+@keyframes xtc-page-in { from { opacity: 0; } to { opacity: 1; } }
+body { animation: xtc-page-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
+
+.rv {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.rv.rv--in { opacity: 1; transform: none; }
+
+.site-header { transition: box-shadow 0.3s ease, border-color 0.3s ease; }
+.site-header.is-scrolled {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(179, 102, 255, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
+  body.is-leaving { opacity: 1; }
+  .rv { opacity: 1; transform: none; transition: none; }
+}
