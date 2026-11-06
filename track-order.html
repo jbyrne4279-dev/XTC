@@ -1209,9 +1209,8 @@
     // 2) Live courier tracking (Track123) — only if we didn't find our own record
     if (!found) {
       try {
-        const res = await fetch(`https://www.track123.com/api/v3/trackings/${encodeURIComponent(orderNum)}`, {
-          headers: { 'tracking-token': '37fec19310a9468b9b4d02108d26ffab' }
-        });
+        // Proxied through our server so the Track123 key never reaches the browser.
+        const res = await fetch('/track-courier?number=' + encodeURIComponent(orderNum));
         if (res.ok) {
           const data = await res.json();
           if (data && data.data) { found = true; showResult(data.data, orderNum); }

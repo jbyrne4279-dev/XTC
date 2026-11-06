@@ -6,6 +6,32 @@ const { createClient } = require('@supabase/supabase-js');
 const ws = require('ws');
 
 const app = express();
+// Railway sits one proxy hop in front of the app — trust exactly that hop so
+// req.ip is the real visitor (a client-sent X-Forwarded-For can't spoof it)
+// and req.secure reflects https.
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+// Small in-memory rate limiter: limiter(key) → true when over the limit.
+// Old entries are swept every minute so the map can't grow without bound.
+function makeLimiter(windowMs, max) {
+  const hits = new Map();
+  setInterval(() => {
+    const now = Date.now();
+    for (const [k, v] of hits) if (now - v.start > windowMs) hits.delete(k);
+  }, 60000).unref();
+  const limited = function (key) {
+    const now = Date.now();
+    const e = hits.get(key);
+    if (!e || now - e.start > windowMs) { hits.set(key, { start: now, count: 1 }); return false; }
+    e.count++;
+    return e.count > max;
+  };
+  limited.over = (key) => { const e = hits.get(key); return !!e && Date.now() - e.start <= windowMs && e.count >= max; };
+  return limited;
+}
+const ipOf = (req) => req.ip || (req.socket && req.socket.remoteAddress) || '';
+const tooMany = (res) => res.status(429).json({ error: 'Too many requests — please wait a moment and try again.' });
 
 // Drop 02 Grey was never produced — no such variant exists.
 const HIDDEN_PRODUCTS = new Set([]);
@@ -73,12 +99,31 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+  // Only directives that can't break third-party scripts: no framing, no
+  // <base> hijacking, no plugins.
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'none'; base-uri 'self'; object-src 'none'");
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   next();
 });
 
 // Raw body parser for Stripe webhook signature verification (must come before express.json)
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+// ── Never serve source / config / database files ────────────────────────────
+// express.static below serves the project folder, so without this anyone
+// could download /server.js (pricing, promo codes, logic), package.json,
+// the SQL schema, the Next.js leftovers in src/ etc.
+const PRIVATE_PATH_RE = /^\/(server\.js|package(-lock)?\.json|railway\.json|tsconfig\.json|components\.json|next-env\.d\.ts|[^/]+\.config\.(js|cjs|mjs|ts)|db|emails|src|public|node_modules|\.git|\.claude|\.env)(\/|$)/i;
+const PRIVATE_EXT_RE = /\.(md|sql|ts|tsx|map|env|log|sh|lock|ya?ml|bak|orig)$/i;
+app.use((req, res, next) => {
+  let p = req.path;
+  try { p = decodeURIComponent(p); } catch (e) { return res.status(400).end(); }
+  if (PRIVATE_PATH_RE.test(p) || PRIVATE_EXT_RE.test(p)) return res.status(404).send('Not found');
+  next();
+});
+
 // Serve /.well-known (e.g. Apple Pay domain-association file for Stripe Apple Pay).
 // express.static ignores dotfiles by default, so mount it explicitly.
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { dotfiles: 'allow' }));
@@ -145,13 +190,20 @@ function timingSafeEqualStr(a, b) {
   if (bufA.length !== bufB.length) return false;
   return crypto.timingSafeEqual(bufA, bufB);
 }
+// The unlock cookie holds an HMAC of the password, never the password itself.
+const UNLOCK_TOKEN = SITE_PASSWORD
+  ? crypto.createHmac('sha256', SITE_PASSWORD).update('xtc-site-unlock-v1').digest('hex')
+  : '';
+const unlockLimited = makeLimiter(15 * 60 * 1000, 10); // 10 guesses / 15 min / IP
 app.post('/unlock', express.urlencoded({ extended: false }), (req, res) => {
+  if (unlockLimited(ipOf(req))) return res.redirect(303, '/password?error=1');
   const submitted = (req.body && req.body.password) || '';
   if (SITE_PASSWORD && timingSafeEqualStr(submitted, SITE_PASSWORD)) {
-    res.cookie(UNLOCK_COOKIE, SITE_PASSWORD, {
+    res.cookie(UNLOCK_COOKIE, UNLOCK_TOKEN, {
       maxAge: 90 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: 'lax',
+      secure: req.secure,
     });
     return res.redirect(303, '/');
   }
@@ -164,11 +216,12 @@ app.use((req, res, next) => {
       maxAge: 90 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: 'lax',
+      secure: req.secure,
     });
     return next();
   }
-  if (SITE_PREVIEW_KEY && readCookie(req, PREVIEW_COOKIE) === SITE_PREVIEW_KEY) return next();
-  if (SITE_PASSWORD && readCookie(req, UNLOCK_COOKIE) === SITE_PASSWORD) return next();
+  if (SITE_PREVIEW_KEY && timingSafeEqualStr(readCookie(req, PREVIEW_COOKIE) || '', SITE_PREVIEW_KEY)) return next();
+  if (UNLOCK_TOKEN && timingSafeEqualStr(readCookie(req, UNLOCK_COOKIE) || '', UNLOCK_TOKEN)) return next();
   const p = req.path;
   if (SITE_LOCK_ALLOWLIST.has(p) || p.startsWith('/.well-known')) return next();
   return res.redirect(302, '/password');
@@ -216,6 +269,39 @@ function calcBundleDiscountPence(cartItems) {
   return totalDiscount;
 }
 
+// Validate a client cart: real product, sane size, whole-number qty 1–20.
+// Returns a clean [{ productId, size, qty }] or null if anything is off —
+// a negative or fractional qty must never reach pricing or stock.
+const MAX_CART_LINES = 20;
+function cleanCartItems(items) {
+  if (!Array.isArray(items) || !items.length || items.length > MAX_CART_LINES) return null;
+  const out = [];
+  for (const i of items) {
+    if (!i || typeof i !== 'object') return null;
+    const productId = String(i.productId || '');
+    const size = String(i.size || '').trim().toUpperCase();
+    const qty = Number(i.qty == null ? 1 : i.qty);
+    if (!PRODUCTS[productId]) return null;
+    if (!/^[A-Z0-9]{1,6}$/.test(size)) return null;
+    if (!Number.isInteger(qty) || qty < 1 || qty > 20) return null;
+    out.push({ productId, size, qty });
+  }
+  return out;
+}
+// Compact form for Stripe metadata (500-char limit per value):
+// [["polo-black","M",1],...]. parseCartMeta reads both this and the
+// older [{productId,size,qty}] form.
+const packCartMeta = (items) => JSON.stringify(items.map(i => [i.productId, i.size, i.qty]));
+function parseCartMeta(str) {
+  let raw;
+  try { raw = JSON.parse(str || '[]'); } catch (e) { return []; }
+  if (!Array.isArray(raw)) return [];
+  const asObjs = raw.map(r => Array.isArray(r) ? { productId: r[0], size: r[1], qty: r[2] } : r);
+  return cleanCartItems(asObjs) || [];
+}
+const refFromIntent = (id) => 'XTC' + String(id).replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+const clip = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+
 // Shipping — kept in sync with checkout.html's UK_SHIPPING / UK_FREE_SHIPPING_THRESHOLD.
 const UK_SHIPPING_PENCE = 299;
 const UK_FREE_SHIPPING_THRESHOLD_PENCE = 8000;
@@ -244,7 +330,8 @@ function sha256(v) {
 function readCookie(req, name) {
   const c = req.headers.cookie || '';
   const m = c.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
-  return m ? decodeURIComponent(m[1]) : undefined;
+  if (!m) return undefined;
+  try { return decodeURIComponent(m[1]); } catch (e) { return undefined; }
 }
 
 async function sendMetaCapiPurchase(order, req, cartItems) {
@@ -748,7 +835,8 @@ function welcomeCodeFor(email) {
 }
 async function emailHasOrdered(email) {
   try {
-    const { data, error } = await sb.from('orders').select('id').ilike('email', String(email).trim()).limit(1);
+    const safe = String(email).trim().replace(/[\\%_]/g, '\\$&'); // ilike wildcards are literal here
+    const { data, error } = await sb.from('orders').select('id').ilike('email', safe).limit(1);
     if (error) return false;
     return Array.isArray(data) && data.length > 0;
   } catch (e) { return false; }
@@ -820,11 +908,17 @@ app.post('/validate-promo', async (req, res) => {
   res.json({ valid: true, type: promo.type, value: promo.value, description: promo.description });
 });
 
+const paymentLimited = makeLimiter(60 * 1000, 30);
 app.post('/create-payment-intent', async (req, res) => {
-  const { promoCode, cartSummary, cartItems, country, email } = req.body;
+  if (paymentLimited(ipOf(req))) return tooMany(res);
+  const { promoCode, cartSummary, country, email } = req.body || {};
 
-  if (!Array.isArray(cartItems) || !cartItems.length) {
+  if (!Array.isArray(req.body && req.body.cartItems) || !req.body.cartItems.length) {
     return res.status(400).json({ error: 'Your bag is empty.' });
+  }
+  const cartItems = cleanCartItems(req.body.cartItems);
+  if (!cartItems) {
+    return res.status(400).json({ error: 'Something in your bag looks wrong — please remove it and add it again.', outOfStock: true });
   }
 
   // War™ Collection is hidden for now — reject even if an item somehow made
@@ -880,17 +974,17 @@ app.post('/create-payment-intent', async (req, res) => {
       amount: finalAmount,
       currency: 'gbp',
       automatic_payment_methods: { enabled: true },
-      description: cartSummary || '',
+      description: clip(cartSummary, 500),
       metadata: {
-        promoCode: promoCode || '',
-        cartSummary: (cartSummary || '').slice(0, 500),
-        cartItems: JSON.stringify(cartItems || []).slice(0, 500),
+        promoCode: clip(promoCode, 40),
+        cartSummary: clip(cartSummary, 500),
+        cartItems: packCartMeta(cartItems),
       },
     });
     res.json({ clientSecret: intent.client_secret, intentId: intent.id, finalAmount });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error('create-payment-intent error:', err.message);
+    res.status(500).json({ error: 'Could not start payment — please try again.' });
   }
 });
 
@@ -912,8 +1006,7 @@ app.post('/webhook', async (req, res) => {
 
   if (event.type === 'payment_intent.succeeded') {
     const pi = event.data.object;
-    let cartItems = [];
-    try { cartItems = JSON.parse((pi.metadata && pi.metadata.cartItems) || '[]'); } catch (e) { cartItems = []; }
+    const cartItems = parseCartMeta(pi.metadata && pi.metadata.cartItems);
     const ref = 'XTC' + pi.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
 
     // 1) Persist the order as a safety net. The id is the SAME XTC ref derived
@@ -1001,35 +1094,46 @@ app.post('/webhook', async (req, res) => {
 
 // Attach shipping/customer details to payment intent before confirmation
 app.post('/update-payment-intent', async (req, res) => {
-  const { intentId, name, email, phone, address, city, postcode, country, cartSummary } = req.body;
-  if (!intentId) return res.status(400).json({ error: 'intentId required' });
+  if (paymentLimited(ipOf(req))) return tooMany(res);
+  const { intentId, name, email, phone, address, city, postcode, country, cartSummary } = req.body || {};
+  if (!/^pi_[A-Za-z0-9_]+$/.test(String(intentId || ''))) return res.status(400).json({ error: 'intentId required' });
+  const em = clip(email, 254).toLowerCase();
   try {
+    // Only an unpaid intent can have its customer details changed.
+    const current = await stripe.paymentIntents.retrieve(intentId);
+    if (!['requires_payment_method', 'requires_confirmation', 'requires_action'].includes(current.status)) {
+      return res.status(409).json({ error: 'This payment can no longer be changed.' });
+    }
     await stripe.paymentIntents.update(intentId, {
-      receipt_email: email || undefined,
+      receipt_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em) ? em : undefined,
       shipping: {
-        name: name || '',
-        phone: phone || '',
+        name: clip(name, 200),
+        phone: clip(phone, 40),
         address: {
-          line1: address || '',
-          city: city || '',
-          postal_code: postcode || '',
-          country: country || 'GB',
+          line1: clip(address, 200),
+          city: clip(city, 100),
+          postal_code: clip(postcode, 20),
+          country: /^[A-Z]{2}$/.test(String(country || '')) ? country : 'GB',
         },
       },
-      metadata: { name: name || '', email: email || '', country: country || '', cartSummary: cartSummary || '' },
+      metadata: { name: clip(name, 200), email: em, country: clip(country, 2), cartSummary: clip(cartSummary, 500) },
     });
     res.json({ ok: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error('update-payment-intent error:', err.message);
+    res.status(500).json({ error: 'Could not save your details — please try again.' });
   }
 });
 
 app.post('/create-checkout-session', async (req, res) => {
-  const { productId, size, quantity = 1 } = req.body;
+  if (paymentLimited(ipOf(req))) return tooMany(res);
+  const { productId, size, quantity = 1 } = req.body || {};
   const product = PRODUCTS[productId];
 
-  if (!product) return res.status(400).json({ error: 'Unknown product' });
+  if (!product || HIDDEN_PRODUCTS.has(productId)) return res.status(400).json({ error: 'Unknown product' });
+  const qty = Number(quantity);
+  if (!Number.isInteger(qty) || qty < 1 || qty > 20) return res.status(400).json({ error: 'Invalid quantity' });
+  const sizeLabel = /^[A-Za-z0-9]{1,6}$/.test(String(size || '')) ? String(size).toUpperCase() : '';
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -1039,10 +1143,10 @@ app.post('/create-checkout-session', async (req, res) => {
           currency: 'gbp',
           unit_amount: product.amount,
           product_data: {
-            name: `${product.name}${size ? ' — ' + size : ''}`,
+            name: `${product.name}${sizeLabel ? ' — ' + sizeLabel : ''}`,
           },
         },
-        quantity,
+        quantity: qty,
       }],
       success_url: `${BASE_URL}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${BASE_URL}/cart`,
@@ -1051,8 +1155,8 @@ app.post('/create-checkout-session', async (req, res) => {
 
     res.json({ url: session.url });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error('create-checkout-session error:', err.message);
+    res.status(500).json({ error: 'Could not start checkout — please try again.' });
   }
 });
 
@@ -1090,9 +1194,8 @@ app.get('/order/:sessionId', async (req, res) => {
       email,
       items: items.map(li => ({ name: li.name, qty: li.qty, price: '£' + (li.amount / 100 / (li.qty || 1)).toFixed(2) })),
       total: session.amount_total != null ? session.amount_total / 100 : null,
-      status: 'Processing',
       source: 'stripe',
-    });
+    }, { keepStatus: true });
 
     res.json({
       ok: true,
@@ -1113,7 +1216,6 @@ app.get('/order/:sessionId', async (req, res) => {
 
 // Email / phone subscribe proxy — keeps the Omnisend API key server-side only.
 // Accepts an email, a phone, or both. Rate-limited to one call per IP per 10s.
-const _subscribeCooldown = new Map();
 
 // Normalise a phone number to E.164 for Omnisend (SMS requires it). UK-first:
 // a leading 0 is treated as a UK local number (+44); otherwise we keep an
@@ -1130,15 +1232,13 @@ function toE164(input) {
   return e164.length >= 9 && e164.length <= 16 ? e164 : '';
 }
 
+const subscribeLimited = makeLimiter(10 * 1000, 1);
+const welcomeSentLimited = makeLimiter(24 * 60 * 60 * 1000, 1); // one welcome email per address per day
+const EMAIL_RE = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/;
 app.post('/subscribe', async (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-  const now = Date.now();
-  if (_subscribeCooldown.has(ip) && now - _subscribeCooldown.get(ip) < 10000) {
-    return res.status(429).json({ error: 'Too many requests' });
-  }
-  _subscribeCooldown.set(ip, now);
+  if (subscribeLimited(ipOf(req))) return tooMany(res);
   const { email, phone, source } = req.body || {};
-  const hasEmail = email && String(email).includes('@');
+  const hasEmail = !!email && EMAIL_RE.test(String(email).trim()) && String(email).length <= 254;
   const safePhone = toE164(phone);
   if (!hasEmail && !safePhone) return res.status(400).json({ error: 'Invalid email or phone' });
   const safeSource = String(source || 'website').replace(/[^a-z0-9_-]/gi, '').slice(0, 64);
@@ -1174,7 +1274,7 @@ app.post('/subscribe', async (req, res) => {
   // Sign-up popup: email them their personal 10%-off first-order code.
   if (safeSource === 'site-popup' && hasEmail && RESEND_API_KEY) {
     const safeEmail = String(email).trim().toLowerCase().slice(0, 254);
-    if (!(await emailHasOrdered(safeEmail))) {
+    if (!welcomeSentLimited(safeEmail) && !(await emailHasOrdered(safeEmail))) {
       resendSend({ to: safeEmail, subject: 'Your 10% off code — XTC Clothing', html: buildWelcomeCodeEmail(welcomeCodeFor(safeEmail)) })
         .catch(() => {});
     }
@@ -1185,7 +1285,6 @@ app.post('/subscribe', async (req, res) => {
 // Contact form → email, via Resend. Previously the form only subscribed the
 // sender's email to Omnisend and threw the actual message away. Rate-limited
 // like /subscribe (one submission per IP per 10s).
-const _contactCooldown = new Map();
 const CONTACT_TOPIC_LABELS = {
   order: 'Order Enquiry',
   sizing: 'Sizing & Fit',
@@ -1194,16 +1293,12 @@ const CONTACT_TOPIC_LABELS = {
   press: 'Press & Media',
   other: 'Other',
 };
+const contactLimited = makeLimiter(10 * 60 * 1000, 5); // 5 messages / 10 min / IP
 app.post('/api/contact', async (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-  const now = Date.now();
-  if (_contactCooldown.has(ip) && now - _contactCooldown.get(ip) < 10000) {
-    return res.status(429).json({ error: 'Too many requests' });
-  }
-  _contactCooldown.set(ip, now);
+  if (contactLimited(ipOf(req))) return tooMany(res);
 
   const { firstName, lastName, email, subject, message } = req.body || {};
-  if (!firstName || !lastName || !email || !subject || !message || !String(email).includes('@')) {
+  if (!firstName || !lastName || !email || !subject || !message || !EMAIL_RE.test(String(email).trim())) {
     return res.status(400).json({ error: 'Missing or invalid fields' });
   }
   if (!RESEND_API_KEY) return res.status(503).json({ error: 'Email not configured' });
@@ -1255,10 +1350,14 @@ async function saveOrder(order, opts) {
     if (order.city)     row.city     = String(order.city);
     if (order.postcode) row.postcode = String(order.postcode);
     if (!row.id || !row.email) return { ok: false, error: 'id and email required' };
+    // keepStatus: never overwrite a status the admin has already moved on
+    // (e.g. Shipped) — new rows still get the table default, 'Processing'.
+    if (opts.keepStatus) delete row.status;
     let { error } = await sb.from('orders').upsert(row, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly });
     // Graceful fallback: if columns don't exist yet, retry without the new fields
     if (error && /column|schema cache/i.test(error.message || '')) {
-      const baseRow = { id: row.id, email: row.email, items: row.items, total: row.total, status: row.status, source: row.source };
+      const baseRow = { id: row.id, email: row.email, items: row.items, total: row.total, source: row.source };
+      if (row.status) baseRow.status = row.status;
       ({ error } = await sb.from('orders').upsert(baseRow, { onConflict: 'id', ignoreDuplicates: !!opts.insertOnly }));
     }
     if (error) { console.error('saveOrder error:', error.message); return { ok: false, error: error.message }; }
@@ -1286,42 +1385,60 @@ function repairItemImages(items, cartItems) {
   });
 }
 
+// Called by checkout.html once Stripe confirms the payment. Nothing the
+// browser sends is trusted for the order itself: the PaymentIntent is fetched
+// from Stripe and must be paid; the order id, email, total and items all come
+// from it (items from the cart the server priced). The browser only supplies
+// delivery details, and emails / SMS / stock only run the first time.
+const ordersLimited = makeLimiter(60 * 1000, 20);
 app.post('/orders', async (req, res) => {
-  const { id, email, items, total, status, source, cartItems, phone, country, countryCode, name, address, city, postcode } = req.body || {};
-  if (!id || !email) return res.status(400).json({ error: 'id and email required' });
-  const result = await saveOrder({
-    id, email, items, total, status,
-    source: source || 'custom',
-    phone: phone || '',
-    country: country || '',
-    name: name || '',
-    address: address || '',
-    city: city || '',
-    postcode: postcode || '',
+  if (ordersLimited(ipOf(req))) return tooMany(res);
+  const b = req.body || {};
+  const intentId = String(b.intentId || '');
+  if (!/^pi_[A-Za-z0-9_]+$/.test(intentId)) return res.status(400).json({ error: 'Payment reference required' });
+
+  let pi;
+  try { pi = await stripe.paymentIntents.retrieve(intentId); }
+  catch (e) { return res.status(404).json({ error: 'Payment not found' }); }
+  if (!['succeeded', 'processing'].includes(pi.status)) return res.status(402).json({ error: 'Payment not completed' });
+
+  const id = refFromIntent(pi.id);
+  const clientEmail = clip(b.email, 254).toLowerCase();
+  const email = (pi.receipt_email || (pi.metadata && pi.metadata.email) || (EMAIL_RE.test(clientEmail) ? clientEmail : '')).toLowerCase();
+  if (!email) return res.status(400).json({ error: 'Email required' });
+  const total = pi.amount != null ? pi.amount / 100 : null;
+  const cartItems = parseCartMeta(pi.metadata && pi.metadata.cartItems);
+  const items = cartItems.map(ci => {
+    const p = PRODUCTS[ci.productId];
+    return { name: p.name + ' — ' + ci.size, qty: ci.qty, price: '£' + (p.amount / 100).toFixed(2), img: p.img };
   });
-  if (!result.ok) return res.status(500).json({ error: result.error });
+  const details = {
+    phone: clip(b.phone, 40),
+    country: clip(b.country, 80),
+    name: clip(b.name, 200),
+    address: clip(b.address, 200),
+    city: clip(b.city, 100),
+    postcode: clip(b.postcode, 20),
+  };
+  const countryCode = /^[A-Z]{2}$/.test(String(b.countryCode || '')) ? b.countryCode : '';
 
-  // Fire the server-side Purchase to Meta (Conversions API). Fire-and-forget so
-  // it never delays the order response; deduped with the browser pixel by event_id.
-  sendMetaCapiPurchase({ id, email, total }, req, cartItems);
+  const result = await saveOrder(Object.assign({ id, email, items, total, source: 'custom' }, details), { keepStatus: true });
+  if (!result.ok) return res.status(500).json({ error: 'Could not save order' });
 
-  // Send the Resend order confirmation email, and a Twilio SMS alongside it
-  // when a phone number was given (both fire-and-forget — never block the
-  // order response on an email/SMS provider hiccup).
-  const emailItems = repairItemImages(items, cartItems);
-  sendResendOrderConfirmation({ id, email, total, items: emailItems, name, address, city, postcode, country, countryCode: countryCode || country });
-  sendOrderConfirmationSms({ id, phone, total });
-  resendAddContact(email); // purchasers into the remarketing audience
-
-  // Decrement stock once per order (idempotent via the order's flag). cartItems
-  // is [{ productId, size, qty }]. The webhook does the same as a fallback.
-  if (Array.isArray(cartItems) && cartItems.length) {
-    try {
-      const claimed = await claimStockDecrement(id);
-      if (claimed !== false) await doStockDecrement(cartItems);
-    } catch (e) { console.error('Order stock decrement error:', e.message); }
+  // First time only (the claim flips once per order), so replaying this
+  // request can't resend emails/SMS or touch stock again.
+  let claimed = null;
+  try { claimed = await claimStockDecrement(id); } catch (e) { claimed = null; }
+  if (claimed !== false) {
+    sendMetaCapiPurchase({ id, email, total }, req, cartItems);
+    sendResendOrderConfirmation(Object.assign({ id, email, total, items, countryCode: countryCode || details.country }, details));
+    sendOrderConfirmationSms({ id, phone: details.phone, total });
+    resendAddContact(email);
+    if (cartItems.length) {
+      try { await doStockDecrement(cartItems); } catch (e) { console.error('Order stock decrement error:', e.message); }
+    }
   }
-  res.json({ ok: true });
+  res.json({ ok: true, id });
 });
 
 // Admin/debug: inspect the persisted orders table. Confirms the table exists and
@@ -1350,14 +1467,16 @@ const shippingRecords = new Map();
 // newline, which fails this exact-match check with no visible sign of why.
 const ADMIN_TOKEN = (process.env.ADMIN_TOKEN || '').trim();
 
+const adminFailLimited = makeLimiter(15 * 60 * 1000, 10);
 function requireAdmin(req, res, next) {
   if (!ADMIN_TOKEN) return res.status(503).json({ error: 'Admin not configured' });
   const auth = req.headers['authorization'] || '';
   const token = (auth.startsWith('Bearer ') ? auth.slice(7) : '').trim();
-  if (!token || token !== ADMIN_TOKEN) {
-    // Diagnostic only — lengths and a match/mismatch boolean, never the actual
-    // token values, so this is safe to check in Railway's logs.
-    console.warn('Admin auth failed — received token length:', token.length, 'expected length:', ADMIN_TOKEN.length);
+  const ip = ipOf(req);
+  if (adminFailLimited.over(ip)) return tooMany(res);
+  if (!token || !timingSafeEqualStr(token, ADMIN_TOKEN)) {
+    adminFailLimited(ip); // count failures only — 10 wrong tokens / 15 min locks that IP out
+    console.warn('Admin auth failed from', ip);
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
@@ -1384,8 +1503,7 @@ function analyticsRateLimited(ip) {
 app.post('/analytics/event', async (req, res) => {
   res.status(204).end(); // always respond immediately — analytics must never slow the page down
   try {
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-    if (analyticsRateLimited(ip)) return;
+    if (analyticsRateLimited(ipOf(req))) return;
     const { session_id, event_type, path, referrer, meta } = req.body || {};
     if (!session_id || !event_type || !ANALYTICS_EVENT_TYPES.has(event_type)) return;
     await sb.from('analytics_events').insert({
@@ -1607,22 +1725,47 @@ app.patch('/admin/orders/:id', requireAdmin, async (req, res) => {
 });
 
 // Public: track an order by ref + email (email must match — prevents enumeration).
+const trackLimited = makeLimiter(10 * 60 * 1000, 30);
 app.get('/track', async (req, res) => {
-  const id = (req.query.id || '').toString().trim();
-  const email = (req.query.email || '').toString().trim().toLowerCase();
+  if (trackLimited(ipOf(req))) return tooMany(res);
+  const id = (req.query.id || '').toString().trim().slice(0, 40);
+  const email = (req.query.email || '').toString().trim().toLowerCase().slice(0, 254);
   if (!id || !email) return res.status(400).json({ error: 'Order ID and email are required' });
   try {
     const { data, error } = await sb.from('orders')
       .select('id, email, status, carrier, tracking_number, items, total, created_at, name, phone, country, address, city, postcode')
       .eq('id', id)
       .maybeSingle();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('track error:', error.message); return res.status(500).json({ error: 'Tracking is unavailable right now.' }); }
     if (!data || (data.email || '').toLowerCase() !== email) {
       return res.status(404).json({ error: 'No order found for that ID and email.' });
     }
     res.json({ order: data });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error('track exception:', e.message);
+    res.status(500).json({ error: 'Tracking is unavailable right now.' });
+  }
+});
+
+// Courier tracking lookup via Track123 — the API token stays server-side
+// (set TRACK123_TOKEN in Railway). Returns Track123's `data` object.
+app.get('/track-courier', async (req, res) => {
+  if (trackLimited(ipOf(req))) return tooMany(res);
+  const token = process.env.TRACK123_TOKEN || '';
+  const number = (req.query.number || '').toString().trim();
+  if (!token) return res.status(503).json({ error: 'Courier tracking not configured' });
+  if (!/^[A-Za-z0-9-]{6,40}$/.test(number)) return res.status(400).json({ error: 'Invalid tracking number' });
+  try {
+    const r = await fetch('https://www.track123.com/api/v3/trackings/' + encodeURIComponent(number), {
+      headers: { 'tracking-token': token },
+    });
+    if (!r.ok) return res.status(404).json({ error: 'Not found' });
+    const d = await r.json();
+    if (!d || !d.data) return res.status(404).json({ error: 'Not found' });
+    res.json({ data: d.data });
+  } catch (e) {
+    console.error('track-courier error:', e.message);
+    res.status(502).json({ error: 'Courier tracking unavailable' });
   }
 });
 

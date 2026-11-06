@@ -1142,7 +1142,7 @@ async function renderOrders() {
     tbody.innerHTML = filtered.map(function(o) {
       const date = new Date(o.created * 1000).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
       const amount = '£' + (o.amount / 100).toFixed(2);
-      const email = o.receipt_email || (o.metadata && o.metadata.email) || '—';
+      const email = String(o.receipt_email || (o.metadata && o.metadata.email) || '—');
       const shortId = o.id.slice(0, 16) + '…';
       const f = fulfil(o);
       const ref = refFromPiId(o.id);
@@ -1159,7 +1159,7 @@ async function renderOrders() {
         ? '<span class="badge badge--warn">Processing</span>'
         : o.status === 'requires_payment_method'
         ? '<span class="badge badge--oos">Failed</span>'
-        : '<span class="badge badge--grey">' + o.status + '</span>';
+        : '<span class="badge badge--grey">' + escapeHtml(o.status) + '</span>';
 
       const fstatus = f ? (f.status || 'Processing') : '';
       // Inline status dropdown — writes straight to the customer-facing order.
@@ -1176,7 +1176,7 @@ async function renderOrders() {
           : '<span class="badge badge--grey">—</span>';
       }
 
-      const safeEmail = email.replace(/'/g, "\\'");
+      const safeEmail = escapeHtml(email.replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
       const trackBtn = f
         ? '<button class="btn-sm" onclick="openShippingModal(\'' + ref + '\',\'' + safeEmail + '\')">' + (f.tracking_number ? 'Edit Tracking' : 'Add Tracking') + '</button>'
         : '';
@@ -1210,8 +1210,8 @@ async function renderOrders() {
         return '<tr>' +
         '<td style="font-family:monospace;font-size:11px;" title="' + o.id + '">' + (f ? ref : shortId) + '</td>' +
         '<td style="white-space:nowrap;">' + date + '</td>' +
-        '<td style="color:var(--muted);font-size:12px;">' + (shipName !== '—' ? shipName + '<br><span style="font-size:11px;">' + shipEmail + '</span>' : shipEmail) + '</td>' +
-        '<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + cartSummary + '</td>' +
+        '<td style="color:var(--muted);font-size:12px;">' + (shipName !== '—' ? escapeHtml(shipName) + '<br><span style="font-size:11px;">' + escapeHtml(shipEmail) + '</span>' : escapeHtml(shipEmail)) + '</td>' +
+        '<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(cartSummary) + '</td>' +
         '<td style="white-space:nowrap;">' + amount + '</td>' +
         '<td>' + payBadge + '</td>' +
         '<td>' + fulfilCell + '</td>' +
@@ -1220,14 +1220,14 @@ async function renderOrders() {
         '<tr id="' + rowId + '" style="display:none;">' +
         '<td colspan="8" style="background:rgba(255,255,255,0.03);padding:16px 24px;border-bottom:1px solid var(--border);">' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + dbName + '</div><div style="font-size:12px;color:var(--muted);">' + shipEmail + '</div>' + (dbPhone && dbPhone !== '—' ? '<div style="font-size:12px;color:var(--muted);">' + dbPhone + '</div>' : '') + '</div>' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + dbAddrFull + '</div></div>' +
-        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + cartSummary + '</div></div>' +
-        (tracking ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + tracking + '</div></div>' : '') +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">CUSTOMER</div><div style="font-size:13px;">' + escapeHtml(dbName) + '</div><div style="font-size:12px;color:var(--muted);">' + escapeHtml(shipEmail) + '</div>' + (dbPhone && dbPhone !== '—' ? '<div style="font-size:12px;color:var(--muted);">' + escapeHtml(dbPhone) + '</div>' : '') + '</div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">SHIP TO</div><div style="font-size:13px;">' + escapeHtml(dbAddrFull) + '</div></div>' +
+        '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">ITEMS</div><div style="font-size:13px;">' + escapeHtml(cartSummary) + '</div></div>' +
+        (tracking ? '<div><div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;">TRACKING</div><div style="font-size:13px;">' + escapeHtml(tracking) + '</div></div>' : '') +
         '</div></td></tr>';
     }).join('');
   } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:40px;">' + escapeHtml(e.message) + '</td></tr>';
   }
 }
 
@@ -1345,13 +1345,13 @@ async function renderShippingPage() {
         ? '<button class="btn-sm btn-sm--success" onclick="markDelivered(\'' + s.id + '\')">Mark Delivered</button>'
         : '<span style="color:var(--muted);font-size:11px;">Done</span>';
       const trackCell = s.tracking_number
-        ? '<a href="' + url + '" target="_blank" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px;">' + s.tracking_number + '</a>'
+        ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px;">' + escapeHtml(s.tracking_number) + '</a>'
         : '—';
 
       return '<tr>' +
-        '<td style="font-family:monospace;font-size:11px;">' + s.id + '</td>' +
-        '<td style="color:var(--muted);font-size:12px;">' + email + '</td>' +
-        '<td>' + (s.carrier || '—') + '</td>' +
+        '<td style="font-family:monospace;font-size:11px;">' + escapeHtml(s.id) + '</td>' +
+        '<td style="color:var(--muted);font-size:12px;">' + escapeHtml(email) + '</td>' +
+        '<td>' + escapeHtml(s.carrier || '—') + '</td>' +
         '<td>' + trackCell + '</td>' +
         '<td>' + shippedDate + '</td>' +
         '<td>' + statusBadge + '</td>' +
@@ -1359,7 +1359,7 @@ async function renderShippingPage() {
         '</tr>';
     }).join('');
   } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + escapeHtml(e.message) + '</td></tr>';
   }
 }
 
@@ -1425,7 +1425,7 @@ async function renderPromo() {
         '</tr>';
     }).join('');
   } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + e.message + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:40px;">' + escapeHtml(e.message) + '</td></tr>';
   }
 }
 
@@ -1470,7 +1470,7 @@ function renderCustomers() {
   tbody.innerHTML = customers.map(function(c) {
     const lastDate = c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
     return '<tr>' +
-      '<td>' + c.email + '</td>' +
+      '<td>' + escapeHtml(c.email) + '</td>' +
       '<td>' + c.orders + '</td>' +
       '<td>£' + c.totalSpent.toFixed(2) + '</td>' +
       '<td style="color:var(--muted);">' + lastDate + '</td>' +
@@ -1748,7 +1748,7 @@ function renderDashboard() {
       tbody.innerHTML = recent2.length ? recent2.map(function(o) {
         const items = (o.items||[]).map(i => i.name + 'x' + i.qty).join(', ');
         const value = (o.items||[]).reduce((s,i)=>s+parseFloat((i.price||'0').replace(/[^0-9.]/g,''))*i.qty,0);
-        return '<tr><td style="font-family:monospace;">' + o.id + '</td><td>' + new Date(o.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + '</td><td style="font-size:12px;">' + (items||'—') + '</td><td>£' + value.toFixed(2) + '</td><td><span class="badge badge--purple">' + (o.status||'Processing') + '</span></td></tr>';
+        return '<tr><td style="font-family:monospace;">' + escapeHtml(o.id) + '</td><td>' + new Date(o.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + '</td><td style="font-size:12px;">' + escapeHtml(items||'—') + '</td><td>£' + value.toFixed(2) + '</td><td><span class="badge badge--purple">' + escapeHtml(o.status||'Processing') + '</span></td></tr>';
       }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">No orders yet</td></tr>';
     }
   });
