@@ -938,23 +938,22 @@ function initCardReveal() {
 }
 
 // ---- Sign-up popup ----
-// Appears 20s after landing on a shopping page and asks for a phone number
-// or email (one field — whichever the shopper types). Closing it snoozes it
-// for 7 days; signing up hides it for good. Never shown on checkout/admin.
+// Appears 20s after a visitor first lands on the homepage and asks for a
+// phone number or email (one field — whichever they type). Shown once ever.
 const SU_SHOW_AFTER_MS = 20000;
 const SU_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 const SU_KEY_DONE = 'xtc-signup-done';
 const SU_KEY_SNOOZE = 'xtc-signup-snooze-until';
+const SU_KEY_SHOWN = 'xtc-signup-shown';
 
 function suStore(get, key, val) {
   try { return get ? localStorage.getItem(key) : localStorage.setItem(key, val); } catch (e) { return null; }
 }
 
 function initSignupPopup() {
-  if (/^\/(checkout|order-confirmed|admin|password)/.test(window.location.pathname)) return;
-  if (suStore(true, SU_KEY_DONE)) return;
-  const snooze = parseInt(suStore(true, SU_KEY_SNOOZE), 10);
-  if (snooze && Date.now() < snooze) return;
+  // Homepage only, and only ever once per visitor.
+  if (!/^\/(index(\.html)?)?$/.test(window.location.pathname)) return;
+  if (suStore(true, SU_KEY_DONE) || suStore(true, SU_KEY_SHOWN)) return;
   setTimeout(openSignupPopup, SU_SHOW_AFTER_MS);
 }
 
@@ -1026,6 +1025,7 @@ function openSignupPopup() {
   }
   void el.offsetWidth; // let the closed state paint so the open transition runs
   el.classList.add('open');
+  suStore(false, SU_KEY_SHOWN, '1');
 }
 
 // ---- Init ----
