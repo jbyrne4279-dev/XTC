@@ -4533,7 +4533,9 @@ textarea {
   background: rgba(179,102,255,0.12) !important;
   border-color: rgba(179,102,255,0.7) !important;
 }
-:is(html body) :is(.cd-upsell__add) { font-size: 10px !important; letter-spacing: 1.5px !important; }
+/* The shared :is() list contains #promoBtn, so it carries id-level
+   specificity — this override needs an id too. */
+html body #cdBody .cd-upsell__add { font-size: 10px !important; letter-spacing: 1.5px !important; padding: 8px 0 !important; }
 @media (max-width: 768px) {
   :is(html body) :is(
     .pdp-atc, .pdp-buy-now, .pdp-preorder-btn,
@@ -4614,3 +4616,45 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
 /* "Secured by Stripe" line — shield + embossed globe + X */
 .co-secure__logo { height: 14px; width: auto; display: inline-block; vertical-align: middle; }
 .co-secure__logo--x { height: 11px; }
+
+/* ---- Cart drawer motion (cdAnimate in main.js) ---- */
+@keyframes cd-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes cd-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes cd-new {
+  0%   { opacity: 0; transform: translateX(40px) scale(0.98); box-shadow: 0 0 0 1px rgba(179,102,255,0); }
+  55%  { opacity: 1; transform: none; box-shadow: 0 0 0 1px rgba(179,102,255,0.9), 0 0 22px rgba(179,102,255,0.35); }
+  100% { opacity: 1; transform: none; box-shadow: 0 0 0 1px rgba(179,102,255,0), 0 0 0 rgba(179,102,255,0); }
+}
+@keyframes cd-bump {
+  0% { transform: scale(1); } 40% { transform: scale(1.35); color: rgba(220,170,255,1); } 100% { transform: scale(1); }
+}
+.cd-item--enter { animation: cd-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.cd-item--new { animation: cd-new 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.cd-upsell__card--enter { animation: cd-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.cd-footer--enter { animation: cd-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.cd-qty__val--bump { display: inline-block; animation: cd-bump 0.4s ease; }
+.cd-item { transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease, transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin 0.32s ease, padding 0.32s ease; }
+.cd-item--leaving {
+  height: 0 !important;
+  opacity: 0;
+  transform: translateX(60px);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+}
+/* Empty bag: message up top, suggestions underneath */
+.cd-body--empty { display: flex; flex-direction: column; }
+.cd-body--empty .cd-empty { height: auto; flex: 0 0 auto; padding: 48px 0 28px; }
+.cd-body--empty .cd-upsell { border-top: 1px solid rgba(255,255,255,0.08); }
+@media (prefers-reduced-motion: reduce) {
+  .cd-item--enter, .cd-item--new, .cd-upsell__card--enter, .cd-footer--enter, .cd-qty__val--bump { animation: none; }
+  .cd-item { transition: none; }
+}

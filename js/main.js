@@ -531,7 +531,7 @@ function cdUpsellSizes(productId) {
   return sizes.map(sz => ({ sz, oos: typeof getSizeStock === 'function' && Object.keys(stock).length ? getSizeStock(productId, sz) <= 0 : false }));
 }
 
-function cdUpsellHtml(cart) {
+function cdUpsellHtml(cart, title) {
   const inBag = new Set(cart.map(i => CD_GROUP_OF[cartProductId(i.id)]).filter(Boolean));
   const seen = new Set();
   const picks = CD_UPSELL.filter(p => {
@@ -542,7 +542,7 @@ function cdUpsellHtml(cart) {
   const bundleWith = inBag.has('zip') ? 'jog' : inBag.has('jog') ? 'zip' : null;
   return `
     <div class="cd-upsell">
-      <p class="cd-upsell__title">Complete the look</p>
+      <p class="cd-upsell__title">${title || 'Complete the look'}</p>
       <div class="cd-upsell__row">
         ${picks.map(p => `
         <div class="cd-upsell__card" data-id="${p.id}">
@@ -575,6 +575,29 @@ function cdUpsellAdd(productId, size) {
   if (typeof showToast === 'function') showToast(p.label + ' (' + size + ') added to your bag');
 }
 
+// ---- Cart drawer motion ----
+// Items and suggestions glide in when the bag opens, a newly added line
+// slides in with a purple flash, quantity changes pulse, removed lines
+// collapse away. Tracks the last render so ordinary re-renders stay still.
+let cdJustOpened = false;
+let cdPrevQty = null;
+function cdReduceMotion() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+function cdAnimate(drawer, cart) {
+  const prev = cdPrevQty;
+  cdPrevQty = new Map(cart.map(i => [i.id, i.qty]));
+  const opened = cdJustOpened; cdJustOpened = false;
+  if (cdReduceMotion()) return;
+  const rows = drawer.querySelectorAll('#cdBody .cd-item');
+  rows.forEach((row, i) => {
+    const item = cart[i]; if (!item) return;
+    if (opened) { row.style.animationDelay = (60 + i * 60) + 'ms'; row.classList.add('cd-item--enter'); }
+    else if (prev && !prev.has(item.id)) row.classList.add('cd-item--new');
+    else if (prev && prev.get(item.id) !== item.qty) { const v = row.querySelector('.cd-qty__val'); if (v) v.classList.add('cd-qty__val--bump'); }
+  });
+  if (opened || !prev) drawer.querySelectorAll('#cdBody .cd-upsell__card').forEach((c, i) => { c.style.animationDelay = (120 + rows.length * 60 + i * 70) + 'ms'; c.classList.add('cd-upsell__card--enter'); });
+  if (opened) { const f = drawer.querySelector('#cdFooter'); if (f) { f.classList.remove('cd-footer--enter'); void f.offsetWidth; f.classList.add('cd-footer--enter'); } }
+}
+
 function renderCartDrawer() {
   const drawer = cdGetDrawer();
   const cart = getCart();
@@ -589,10 +612,13 @@ function renderCartDrawer() {
       <div class="cd-empty">
         <p class="cd-empty__text">Your bag is empty</p>
         <button class="cd-empty__btn" onclick="closeCartDrawer()">Continue</button>
-      </div>`;
+      </div>` + cdUpsellHtml([], 'You might like');
+    body.classList.add('cd-body--empty');
     footer.style.display = 'none';
+    cdAnimate(drawer, cart);
     return;
   }
+  body.classList.remove('cd-body--empty');
 
   const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -691,6 +717,7 @@ function renderCartDrawer() {
   oosWarning.style.display = hasOos ? 'block' : 'none';
   checkoutBtn.classList.toggle('cd-checkout-btn--disabled', hasOos);
   checkoutBtn.setAttribute('aria-disabled', hasOos ? 'true' : 'false');
+  cdAnimate(drawer, cart);
 }
 
 function cdUpdateQty(index, delta) {
@@ -714,11 +741,19 @@ function cdUpdateQty(index, delta) {
 }
 
 function cdRemoveItem(index) {
-  const cart = getCart();
-  cart.splice(index, 1);
-  saveCart(cart);
-  updateCartCount();
-  renderCartDrawer();
+  const row = document.querySelectorAll('#cdBody .cd-item')[index];
+  const commit = () => {
+    const cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    updateCartCount();
+    renderCartDrawer();
+  };
+  if (!row || cdReduceMotion()) return commit();
+  row.style.height = row.offsetHeight + 'px';
+  void row.offsetHeight;
+  row.classList.add('cd-item--leaving');
+  setTimeout(commit, 340);
 }
 
 function cdToggleSizePicker(event, index) {
@@ -772,6 +807,7 @@ function cdChangeSize(index, newSize) {
 }
 
 function openCartDrawer() {
+  cdJustOpened = true;
   renderCartDrawer();
   cdGetDrawer().classList.add('open');
   document.body.style.overflow = 'hidden';
