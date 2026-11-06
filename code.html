@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Your 10% Code — XTC Clothing</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" type="image/png" href="/images/googlefaviconxtc.png" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; background: #000000; }
+    body {
+      min-height: 100dvh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px calc(40px + env(safe-area-inset-bottom));
+      color: #ffffff; text-align: center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { width: 100%; max-width: 420px; }
+    .logo { width: 40px; height: auto; display: block; margin: 0 auto 40px; }
+    .eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: #b366ff; margin-bottom: 18px; }
+    h1 { font-size: 30px; font-weight: 300; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 16px; }
+    .sub { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.55); margin-bottom: 36px; }
+    .code {
+      border: 1px solid #b366ff; padding: 24px 20px; margin-bottom: 16px;
+      font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+      font-size: 26px; font-weight: 600; letter-spacing: 5px;
+      -webkit-user-select: all; user-select: all;
+    }
+    .btn {
+      position: relative; display: block; width: 100%;
+      padding: 16px 20px; margin-bottom: 12px;
+      background: transparent; color: #ffffff; text-decoration: none;
+      border: 1px solid rgba(179,102,255,0.4);
+      font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: background 0.25s, border-color 0.25s;
+    }
+    .btn::before {
+      content: ''; position: absolute; inset: -1px; padding: 1px;
+      background: conic-gradient(from var(--a, 0deg), transparent 0%, transparent 55%,
+        rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%, rgba(179,102,255,0.8) 91%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: spin 3s linear infinite; pointer-events: none;
+    }
+    @property --a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    @keyframes spin { to { --a: 360deg; } }
+    .btn:hover { background: rgba(179,102,255,0.12); border-color: rgba(179,102,255,0.7); }
+    .btn.copied { border-color: rgba(34,197,94,0.8); }
+    .note { font-size: 10px; letter-spacing: 1px; line-height: 1.8; color: rgba(255,255,255,0.35); margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <img class="logo" src="/images/icon-512.png" alt="XTC" />
+    <p class="eyebrow">Members Only</p>
+    <h1>Your Code</h1>
+    <p class="sub">10% off your first order. It's saved — we'll fill it in for you at checkout.</p>
+    <div class="code" id="code">—</div>
+    <button type="button" class="btn" id="copyBtn">Copy Code</button>
+    <a class="btn" href="/new-releases">Shop Now</a>
+    <p class="note">Use it at checkout with the email the code was sent to. First order only.</p>
+  </main>
+  <script>
+  (function () {
+    var m = /[?&]c=([A-Za-z0-9-]{6,20})/.exec(location.search);
+    var code = m ? m[1].toUpperCase() : '';
+    var el = document.getElementById('code'), btn = document.getElementById('copyBtn');
+    if (!/^XTC10-[A-Z0-9]{6}$/.test(code)) { el.textContent = 'Code not found'; btn.style.display = 'none'; return; }
+    el.textContent = code;
+    try { localStorage.setItem('xtc-promo', code); } catch (e) {}
+    btn.addEventListener('click', function () {
+      function done() { btn.textContent = 'Copied ✓'; btn.classList.add('copied'); setTimeout(function () { btn.textContent = 'Copy Code'; btn.classList.remove('copied'); }, 2200); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(done, fallback);
+      } else fallback();
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Long-press the code to copy'; }
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

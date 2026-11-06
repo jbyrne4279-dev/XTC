@@ -959,6 +959,25 @@
     });
   })();
 
+  // A code saved from the /code page (tapped in the 10%-off email) is
+  // pre-filled, and applied automatically once an email has been entered.
+  (function () {
+    let saved = '';
+    try { saved = localStorage.getItem('xtc-promo') || ''; } catch (e) {}
+    if (!/^XTC10-[A-Z0-9]{6}$/.test(saved)) return;
+    ['promoInput', 'promoInputMobile'].forEach(id => { const i = document.getElementById(id); if (i && !i.value) i.value = saved; });
+    ['promoMsg', 'promoMsgMobile'].forEach(id => { const m = document.getElementById(id); if (m) { m.textContent = 'Your 10% code is ready — enter your email above and it\'ll apply.'; m.className = 'co-promo-msg co-promo-msg--ok'; } });
+    const em = document.getElementById('coEmail');
+    let lastTried = '';
+    const tryApply = () => {
+      const v = (em && em.value || '').trim().toLowerCase();
+      if (_promo || !/@.+\./.test(v) || v === lastTried) return;
+      lastTried = v; applyPromo();
+    };
+    if (em) { em.addEventListener('change', tryApply); em.addEventListener('blur', tryApply); }
+    setTimeout(tryApply, 1500); // email may already be autofilled
+  })();
+
   window.applyPromo = async function() {
     const code = document.getElementById('promoInput').value.trim();
     const msgEl = document.getElementById('promoMsg');

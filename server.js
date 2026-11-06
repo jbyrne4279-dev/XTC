@@ -123,6 +123,9 @@ const SITE_LOCK_ALLOWLIST = new Set([
   // otherwise get bounced to /password instead of their order.
   '/track-order',
   '/images/footer-logo.webp',
+  // Welcome-code page linked from the 10%-off email — must open for
+  // visitors who've never unlocked the site.
+  '/code', '/code.html',
   // BIMI logo — fetched unauthenticated by mail providers (Gmail, Yahoo,
   // Apple Mail) to render as the inbox avatar; must be reachable without
   // the unlock cookie.
@@ -779,25 +782,28 @@ function buildWelcomeCodeEmail(code) {
   @media (prefers-color-scheme: dark) { .xb { background-color: #000000 !important; } .xw { color: #ffffff !important; } .xg { color: rgba(255,255,255,0.55) !important; } .xp { color: #b366ff !important; } }
 </style></head>
 <body class="xb" bgcolor="#000000" style="margin:0;padding:0;background:#000000;background-image:linear-gradient(#000000,#000000);">
-<div class="xb" style="background:#000000;background-image:linear-gradient(#000000,#000000);padding:40px 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table role="presentation" width="100%" class="xb" bgcolor="#000000" style="max-width:520px;margin:0 auto;border-collapse:collapse;background:#000000;">
-  <tr><td class="xb" style="background:#000000;padding:32px 32px 8px;text-align:center;">
-    <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="28" style="width:28px;height:auto;display:block;margin:0 auto 28px;">
-    <p class="xp" style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#b366ff;margin:0 0 14px;">Members Only</p>
-    <h1 class="xw" style="font-size:26px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#ffffff;margin:0 0 14px;">You're In</h1>
-    <p class="xg" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.55);margin:0 0 28px;">Here's 10% off your first order. Use it at checkout with this email address.</p>
+<div class="xb" style="background:#000000;background-image:linear-gradient(#000000,#000000);padding:56px 16px 64px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" class="xb" bgcolor="#000000" style="max-width:560px;margin:0 auto;border-collapse:collapse;background:#000000;">
+  <tr><td class="xb" style="background:#000000;padding:48px 36px 0;text-align:center;">
+    <img src="${ORDER_EMAIL_X_LOGO_URL}" alt="XTC" width="40" style="width:40px;height:auto;display:block;margin:0 auto 44px;">
+    <p class="xp" style="font-size:10px;letter-spacing:5px;text-transform:uppercase;color:#b366ff;margin:0 0 20px;">Members Only</p>
+    <h1 class="xw" style="font-size:34px;font-weight:300;letter-spacing:5px;text-transform:uppercase;color:#ffffff;margin:0 0 22px;line-height:1.2;">You're In</h1>
+    <p class="xg" style="font-size:14px;line-height:1.9;color:rgba(255,255,255,0.6);margin:0 auto 44px;max-width:380px;">Here's 10% off your first order. Use it at checkout with this email address.</p>
   </td></tr>
-  <tr><td class="xb" style="background:#000000;padding:0 32px;text-align:center;">
-    <div class="xb" style="display:inline-block;background:#000000;border:1px solid #b366ff;padding:18px 28px;">
-      <p class="xg" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin:0 0 8px;">Your code</p>
-      <p class="xw" style="font-size:24px;letter-spacing:4px;font-weight:600;color:#ffffff;margin:0;font-family:'SFMono-Regular',Menlo,Consolas,monospace;">${code}</p>
+  <tr><td class="xb" style="background:#000000;padding:0 36px;text-align:center;">
+    <a href="${BASE_URL}/code?c=${code}" style="text-decoration:none;display:inline-block;">
+    <div class="xb" style="display:inline-block;background:#000000;border:1px solid #b366ff;padding:26px 28px;">
+      <p class="xg" style="font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin:0 0 14px;">Your code</p>
+      <p class="xw" style="font-size:24px;letter-spacing:3px;font-weight:600;white-space:nowrap;color:#ffffff;margin:0;font-family:'SFMono-Regular',Menlo,Consolas,monospace;-webkit-user-select:all;user-select:all;">${code}</p>
+      <p class="xp" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#b366ff;margin:14px 0 0;">Tap to copy</p>
     </div>
+    </a>
   </td></tr>
-  <tr><td class="xb" style="background:#000000;padding:30px 32px 8px;text-align:center;">
-    <a href="${BASE_URL}/new-releases" class="xw" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:16px 40px;font-size:12px;letter-spacing:2px;font-weight:600;text-transform:uppercase;border:1px solid rgba(179,102,255,0.6);">Shop Now</a>
+  <tr><td class="xb" style="background:#000000;padding:48px 36px 56px;text-align:center;">
+    <a href="${BASE_URL}/code?c=${code}" class="xw" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;padding:18px 52px;font-size:12px;letter-spacing:3px;font-weight:600;text-transform:uppercase;border:1px solid rgba(179,102,255,0.6);">Shop Now</a>
   </td></tr>
-  <tr><td class="xb" style="background:#000000;padding:28px 32px 8px;text-align:center;border-top:1px solid rgba(255,255,255,0.1);">
-    <p class="xg" style="font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.35);margin:0;">One use, first order only, with the email this was sent to. XTC Clothing.</p>
+  <tr><td class="xb" style="background:#000000;padding:36px 36px 12px;text-align:center;border-top:1px solid rgba(255,255,255,0.1);">
+    <p class="xg" style="font-size:10px;letter-spacing:1px;line-height:1.8;color:rgba(255,255,255,0.35);margin:0;">One use, first order only, with the email this was sent to. XTC Clothing.</p>
   </td></tr>
 </table></div></body></html>`;
 }
