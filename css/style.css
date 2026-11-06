@@ -4462,3 +4462,85 @@ textarea {
 }
 .cd-upsell__size:hover { border-color: rgba(179, 102, 255, 0.9); background: rgba(179, 102, 255, 0.12); }
 .cd-upsell__size.is-oos { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; }
+
+/* ============================================
+   UNIFIED BUTTONS — every call-to-action button
+   on the site matches the homepage "Add to Bag"
+   (.fp-card__atc): transparent, thin purple
+   border, spinning purple outline, white type.
+   Written with html-body specificity + !important
+   so it wins over each page's own inline styles.
+   ============================================ */
+:is(html body) :is(
+  .pdp-atc, .pdp-buy-now, .pdp-preorder-btn,
+  .early-access-bar__btn, .su-pop__btn,
+  .hero-bar__cta, .cd-checkout-btn, .cd-empty__btn, .cd-upsell__add,
+  .co-submit, #promoBtn, .cf-btn, .to-btn,
+  .nf__btn, .nr-card__cta, .fp-card__overlay-btn,
+  .oc-btn-shop, .oc-btn-save, .cs-btn, .ct-link__panel-cta, .btn--primary
+) {
+  position: relative !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(179,102,255,0.4) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 0.25s ease !important;
+}
+:is(html body) :is(
+  .pdp-atc, .pdp-buy-now, .pdp-preorder-btn,
+  .early-access-bar__btn, .su-pop__btn,
+  .hero-bar__cta, .cd-checkout-btn, .cd-empty__btn, .cd-upsell__add,
+  .co-submit, #promoBtn, .cf-btn, .to-btn,
+  .nf__btn, .nr-card__cta, .fp-card__overlay-btn,
+  .oc-btn-shop, .oc-btn-save, .cs-btn, .ct-link__panel-cta, .btn--primary
+)::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: -1px !important;
+  padding: 1px !important;
+  border-radius: 0 !important;
+  background: conic-gradient(from var(--cta-a),
+    transparent 0%, transparent 55%,
+    rgba(100,30,200,0.6) 68%, rgba(179,102,255,1) 78%, rgba(220,170,255,1) 84%,
+    rgba(179,102,255,0.8) 91%, transparent 100%
+  ) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  animation: cta-spin 3s linear infinite !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+:is(html body) :is(
+  .pdp-atc, .pdp-buy-now, .pdp-preorder-btn,
+  .early-access-bar__btn, .su-pop__btn,
+  .hero-bar__cta, .cd-checkout-btn, .cd-empty__btn, .cd-upsell__add,
+  .co-submit, #promoBtn, .cf-btn, .to-btn,
+  .nf__btn, .nr-card__cta, .fp-card__overlay-btn,
+  .oc-btn-shop, .oc-btn-save, .cs-btn, .ct-link__panel-cta, .btn--primary
+):hover {
+  background: rgba(179,102,255,0.12) !important;
+  border-color: rgba(179,102,255,0.7) !important;
+}
+:is(html body) :is(.cd-upsell__add) { font-size: 10px !important; letter-spacing: 1.5px !important; }
+@media (max-width: 768px) {
+  :is(html body) :is(
+    .pdp-atc, .pdp-buy-now, .pdp-preorder-btn,
+    .early-access-bar__btn, .su-pop__btn,
+    .hero-bar__cta, .cd-checkout-btn, .cd-empty__btn,
+    .co-submit, #promoBtn, .cf-btn, .to-btn,
+    .nf__btn, .nr-card__cta, .fp-card__overlay-btn,
+    .oc-btn-shop, .oc-btn-save, .cs-btn, .ct-link__panel-cta, .btn--primary
+  ) { font-size: 11px !important; }
+}
