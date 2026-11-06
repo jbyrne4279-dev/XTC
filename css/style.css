@@ -4612,6 +4612,18 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
   pointer-events: none;
 }
 
+/* Their text is blacked out and embossed to match the X.
+   #xtc-emboss-text is a dummy id so this outranks the unified
+   button rule (which carries id specificity via #promoBtn). */
+:is(html body) :is(#xtc-emboss-text, .pdp-buy-now, .pdp-preorder-btn, .co-submit, .cd-checkout-btn),
+:is(html body) :is(#xtc-emboss-text, .pdp-buy-now, .pdp-preorder-btn, .co-submit, .cd-checkout-btn):hover {
+  color: #000000 !important;
+  text-shadow:
+    -1px -1px 0 rgba(255,255,255,0.45),
+    1px 1px 0 rgba(255,255,255,0.08),
+    1px 2px 2px rgba(0,0,0,0.95) !important;
+}
+
 /* "Secured by Stripe" line — shield + embossed globe + X */
 .co-secure__logo { height: 14px; width: auto; display: inline-block; vertical-align: middle; }
 .co-secure__logo--x { height: 11px; }
