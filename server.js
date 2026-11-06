@@ -122,7 +122,7 @@ const SITE_LOCK_ALLOWLIST = new Set([
   // days later, possibly on a device that never unlocked the site, would
   // otherwise get bounced to /password instead of their order.
   '/track-order',
-  '/images/x-logo-transparent.png',
+  '/images/footer-logo.webp',
   // BIMI logo — fetched unauthenticated by mail providers (Gmail, Yahoo,
   // Apple Mail) to render as the inbox avatar; must be reachable without
   // the unlock cookie.
