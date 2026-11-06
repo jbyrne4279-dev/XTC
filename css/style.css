@@ -4572,3 +4572,45 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
   body.is-leaving { opacity: 1; }
   .rv { opacity: 1; transform: none; transition: none; }
 }
+
+/* ============================================
+   BLACK EMBOSSED LOGOS — one shared look for the
+   X and the globe emblem everywhere: solid black
+   shape lifted off the background by a thin light
+   top-left edge and a deep bottom-right shadow.
+   ============================================ */
+.xtc-emboss {
+  filter: brightness(0)
+    drop-shadow(-1px -1px 0 rgba(255,255,255,0.32))
+    drop-shadow(1px 1px 0 rgba(255,255,255,0.06))
+    drop-shadow(2px 3px 3px rgba(0,0,0,0.95))
+    drop-shadow(0 0 10px rgba(179,102,255,0.12));
+}
+
+/* Direct-buy buttons (Buy Now, Pre-Order Now, Checkout, Place Order) get
+   the embossed X to the left of their text. Drawn with ::after so it
+   survives scripts that rewrite the button text (e.g. "Processing…"). */
+:is(html body) :is(.pdp-buy-now, .pdp-preorder-btn, .co-submit, .cd-checkout-btn) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+}
+:is(html body) :is(.pdp-buy-now, .pdp-preorder-btn, .co-submit, .cd-checkout-btn)::after {
+  content: '';
+  order: -1;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 14px;
+  background: url('/images/x-logo-transparent.png') center / contain no-repeat;
+  filter: brightness(0)
+    drop-shadow(-1px -1px 0 rgba(255,255,255,0.45))
+    drop-shadow(1px 1px 0 rgba(255,255,255,0.08))
+    drop-shadow(1px 2px 2px rgba(0,0,0,0.95))
+    drop-shadow(0 0 6px rgba(179,102,255,0.2));
+  pointer-events: none;
+}
+
+/* "Secured by Stripe" line — shield + embossed globe + X */
+.co-secure__logo { height: 14px; width: auto; display: inline-block; vertical-align: middle; }
+.co-secure__logo--x { height: 11px; }
