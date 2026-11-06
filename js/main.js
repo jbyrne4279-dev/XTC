@@ -513,6 +513,68 @@ function cdParsePrice(str) {
   return isNaN(n) ? 0 : n;
 }
 
+// ---- Cart drawer "Complete the look" upsell ----
+// Suggests products not already in the bag, using model shots where we have
+// them. To use a different photo for a product, just change its `photo`.
+const CD_UPSELL = [
+  { group: 'polo', id: 'polo-black',  name: 'POLO [BLACK]',  label: 'Polo',          price: 60,  img: 'images/polo-black-flat.webp',       photo: 'images/polo-black-model-1.webp' },
+  { group: 'zip',  id: 'war-zip',     name: 'WAR™ ZIP',      label: 'War™ Zip',      price: 120, img: 'images/ZIP-HOODIE-XTC-FRONT.webp', photo: 'images/ZIP-HOODIE-XTC-FRONT.webp' },
+  { group: 'jog',  id: 'war-joggers', name: 'WAR™ JOGGERS',  label: 'War™ Joggers',  price: 110, img: 'images/JOGGERS-XTC.webp',         photo: 'images/JOGGERS-XTC.webp' },
+  { group: 'tee',  id: 'uniform-t',   name: 'UNIFORM T',     label: 'Uniform T',     price: 35,  img: 'images/T-SHIRT-XTC.webp',           photo: 'images/T-SHIRT-XTC.webp' },
+  { group: 'polo', id: 'polo-white',  name: 'POLO [WHITE]',  label: 'Polo — White',  price: 60,  img: 'images/polo-white-flat.webp',       photo: 'images/polo-white-model-1.webp' },
+];
+const CD_GROUP_OF = { 'polo-black': 'polo', 'polo-white': 'polo', 'war-zip': 'zip', 'war-joggers': 'jog', 'uniform-t': 'tee' };
+
+function cdUpsellSizes(productId) {
+  const stock = typeof getStockForProduct === 'function' ? getStockForProduct(productId) : {};
+  const sizes = Object.keys(stock).length ? Object.keys(stock) : ['S', 'M', 'L'];
+  return sizes.map(sz => ({ sz, oos: typeof getSizeStock === 'function' && Object.keys(stock).length ? getSizeStock(productId, sz) <= 0 : false }));
+}
+
+function cdUpsellHtml(cart) {
+  const inBag = new Set(cart.map(i => CD_GROUP_OF[cartProductId(i.id)]).filter(Boolean));
+  const seen = new Set();
+  const picks = CD_UPSELL.filter(p => {
+    if (inBag.has(p.group) || seen.has(p.group)) return false;
+    seen.add(p.group); return true;
+  }).filter(p => cdUpsellSizes(p.id).some(s => !s.oos)).slice(0, 4);
+  if (!picks.length) return '';
+  const bundleWith = inBag.has('zip') ? 'jog' : inBag.has('jog') ? 'zip' : null;
+  return `
+    <div class="cd-upsell">
+      <p class="cd-upsell__title">Complete the look</p>
+      <div class="cd-upsell__row">
+        ${picks.map(p => `
+        <div class="cd-upsell__card" data-id="${p.id}">
+          <div class="cd-upsell__media">
+            <img src="${p.photo}" alt="${p.label}" loading="lazy" onerror="xtcImgFallback(this)" />
+            ${p.group === bundleWith ? '<span class="cd-upsell__tag">Bundle · £30 off</span>' : ''}
+          </div>
+          <p class="cd-upsell__name">${p.label}</p>
+          <p class="cd-upsell__price">£${p.price}</p>
+          <button type="button" class="cd-upsell__add" onclick="cdUpsellToggle(this)">Add</button>
+          <div class="cd-upsell__sizes">
+            ${cdUpsellSizes(p.id).map(s => `<button type="button" class="cd-upsell__size${s.oos ? ' is-oos' : ''}" ${s.oos ? 'disabled' : ''} onclick="cdUpsellAdd('${p.id}','${s.sz}')">${s.sz}</button>`).join('')}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function cdUpsellToggle(btn) {
+  const card = btn.closest('.cd-upsell__card');
+  document.querySelectorAll('.cd-upsell__card.picking').forEach(c => { if (c !== card) c.classList.remove('picking'); });
+  card.classList.toggle('picking');
+}
+
+function cdUpsellAdd(productId, size) {
+  const p = CD_UPSELL.find(x => x.id === productId);
+  if (!p) return;
+  addToCart(productId + '-' + size.toLowerCase(), p.name + ' — ' + size, '£' + p.price.toFixed(2), p.img, 1, true);
+  renderCartDrawer();
+  if (typeof showToast === 'function') showToast(p.label + ' (' + size + ') added to your bag');
+}
+
 function renderCartDrawer() {
   const drawer = cdGetDrawer();
   const cart = getCart();
@@ -597,7 +659,7 @@ function renderCartDrawer() {
           </div>
         </div>
       </div>`;
-  }).join('');
+  }).join('') + cdUpsellHtml(cart);
 
   const subtotal = cart.reduce((sum, item) => sum + cdParsePrice(item.price) * item.qty, 0);
   drawer.querySelector('#cdSubtotal').textContent = '£' + subtotal.toFixed(2);
