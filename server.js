@@ -812,8 +812,6 @@ function buildWelcomeCodeEmail(code) {
 const PROMO_CODES = {
   'WELCOME10':  { type: 'percent', value: 10,   active: true,  description: '10% off' },
   'JBYRNE2005': { type: 'percent', value: 100,  active: true,  description: '100% off' },
-  'XTC15':      { type: 'percent', value: 15,   active: true,  description: '15% off' },
-  'FREESHIP':   { type: 'fixed',   value: 499,  active: true,  description: 'Free shipping' },
 };
 
 app.post('/validate-promo', async (req, res) => {
