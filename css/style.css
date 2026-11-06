@@ -4200,3 +4200,186 @@ textarea {
 }
 .cs-btn--primary { background: #000000; color: #ffffff; border-color: #ffffff; }
 .cs-btn:hover { opacity: 0.75; }
+
+/* ============================================
+   SIGN-UP POPUP — appears 20s after landing
+   (initSignupPopup in main.js). Phone or email.
+   ============================================ */
+.su-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  visibility: hidden;
+  pointer-events: none;
+}
+.su-pop.open { visibility: visible; pointer-events: auto; }
+.su-pop__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 300ms var(--ease);
+}
+.su-pop.open .su-pop__backdrop { opacity: 1; }
+.su-pop__card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 720px;
+  background: #000000;
+  border: 1px solid rgba(179, 102, 255, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(179, 102, 255, 0.15);
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  transition: opacity 320ms var(--ease), transform 320ms var(--ease);
+}
+.su-pop.open .su-pop__card { opacity: 1; transform: none; }
+.su-pop__media { position: relative; background: #000000; overflow: hidden; min-height: 100%; }
+.su-pop__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.su-pop__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0) 60%, rgba(0,0,0,0.9) 100%);
+  pointer-events: none;
+}
+.su-pop__tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(179, 102, 255, 1);
+  border: 1px solid rgba(179, 102, 255, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+}
+.su-pop__body {
+  padding: 44px 36px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.su-pop__eyebrow {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(179, 102, 255, 1);
+  margin-bottom: 14px;
+}
+.su-pop__title {
+  font-size: 26px;
+  font-weight: 200;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.su-pop__sub {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 24px;
+}
+.su-pop__field {
+  display: flex;
+  border: 1px solid rgba(179, 102, 255, 0.3);
+  transition: border-color 0.2s;
+  margin-bottom: 10px;
+}
+.su-pop__field:focus-within { border-color: rgba(179, 102, 255, 0.7); }
+.su-pop__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16px; /* >=16px stops iOS zooming in on focus */
+  letter-spacing: 0.5px;
+  padding: 14px 14px;
+}
+.su-pop__input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.su-pop__btn {
+  position: relative;
+  width: 100%;
+  padding: 15px 20px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(179, 102, 255, 0.4);
+  box-shadow: 0 0 10px rgba(179, 102, 255, 0.25);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.su-pop__btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(from var(--ea-btn-a, 0deg),
+    transparent 0%, transparent 55%,
+    rgba(100, 30, 200, 0.6) 68%, rgba(179, 102, 255, 1) 78%, rgba(220, 170, 255, 1) 84%,
+    rgba(100, 30, 200, 0.6) 91%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ea-btn-spin 3s linear infinite;
+  pointer-events: none;
+}
+.su-pop__btn:hover { background: #0d0814; border-color: rgba(179, 102, 255, 0.8); }
+.su-pop__err { min-height: 14px; margin: 2px 0 8px; font-size: 10px; letter-spacing: 0.5px; color: rgba(239, 68, 68, 0.95); }
+.su-pop__legal { font-size: 9px; letter-spacing: 0.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.3); margin-top: 12px; }
+.su-pop__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.su-pop__close:hover { color: #ffffff; }
+.su-pop__done { display: none; text-align: center; }
+.su-pop--done .su-pop__form { display: none; }
+.su-pop--done .su-pop__done { display: block; }
+.su-pop__done-title { font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; margin-bottom: 8px; }
+.su-pop__done-body { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+@media (max-width: 640px) {
+  .su-pop { align-items: flex-end; padding: 0; }
+  .su-pop__card { grid-template-columns: 1fr; max-width: none; transform: translateY(100%); }
+  .su-pop.open .su-pop__card { transform: none; }
+  .su-pop__media { height: 200px; min-height: 0; }
+  .su-pop__media img { object-position: center 15%; }
+  .su-pop__media::after { background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.95) 100%); }
+  .su-pop__body { padding: 20px 22px calc(24px + env(safe-area-inset-bottom)); }
+  .su-pop__title { font-size: 21px; }
+  .su-pop__sub { margin-bottom: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .su-pop__card, .su-pop__backdrop { transition: none; }
+}

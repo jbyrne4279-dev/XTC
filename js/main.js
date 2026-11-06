@@ -937,6 +937,97 @@ function initCardReveal() {
   });
 }
 
+// ---- Sign-up popup ----
+// Appears 20s after landing on a shopping page and asks for a phone number
+// or email (one field — whichever the shopper types). Closing it snoozes it
+// for 7 days; signing up hides it for good. Never shown on checkout/admin.
+const SU_SHOW_AFTER_MS = 20000;
+const SU_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
+const SU_KEY_DONE = 'xtc-signup-done';
+const SU_KEY_SNOOZE = 'xtc-signup-snooze-until';
+
+function suStore(get, key, val) {
+  try { return get ? localStorage.getItem(key) : localStorage.setItem(key, val); } catch (e) { return null; }
+}
+
+function initSignupPopup() {
+  if (/^\/(checkout|order-confirmed|admin|password)/.test(window.location.pathname)) return;
+  if (suStore(true, SU_KEY_DONE)) return;
+  const snooze = parseInt(suStore(true, SU_KEY_SNOOZE), 10);
+  if (snooze && Date.now() < snooze) return;
+  setTimeout(openSignupPopup, SU_SHOW_AFTER_MS);
+}
+
+function openSignupPopup() {
+  // Don't interrupt someone who's mid-way through the bag or menu.
+  if (document.querySelector('#cartDrawer.open, .nav-drawer.open, .su-pop.open')) return;
+  let el = document.getElementById('suPop');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'suPop';
+    el.className = 'su-pop';
+    el.innerHTML = `
+      <div class="su-pop__backdrop"></div>
+      <div class="su-pop__card" role="dialog" aria-modal="true" aria-labelledby="suPopTitle">
+        <button type="button" class="su-pop__close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="su-pop__media">
+          <span class="su-pop__tag">War&trade; Zip</span>
+          <img src="images/ZIP-HOODIE-XTC-FRONT.webp" alt="XTC War™ Zip hoodie" />
+        </div>
+        <div class="su-pop__body">
+          <form class="su-pop__form" novalidate>
+            <p class="su-pop__eyebrow">Members Only</p>
+            <h2 class="su-pop__title" id="suPopTitle">Get Early Access</h2>
+            <p class="su-pop__sub">Be first in line for the next drop. Limited units, never restocked — members get the link before anyone else.</p>
+            <div class="su-pop__field">
+              <input class="su-pop__input" type="text" inputmode="email" autocomplete="tel email" placeholder="Phone number or email" aria-label="Phone number or email" />
+            </div>
+            <p class="su-pop__err" aria-live="polite"></p>
+            <button type="submit" class="su-pop__btn">Join</button>
+            <p class="su-pop__legal">By joining you agree to receive marketing texts or emails from XTC Clothing. Msg &amp; data rates may apply. Unsubscribe anytime.</p>
+          </form>
+          <div class="su-pop__done" aria-live="polite">
+            <p class="su-pop__done-title">You're In</p>
+            <p class="su-pop__done-body">Watch out — early access is on its way.</p>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    const close = () => {
+      el.classList.remove('open');
+      if (!suStore(true, SU_KEY_DONE)) suStore(false, SU_KEY_SNOOZE, String(Date.now() + SU_SNOOZE_MS));
+    };
+    el.querySelector('.su-pop__backdrop').addEventListener('click', close);
+    el.querySelector('.su-pop__close').addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('open')) close(); });
+
+    const form = el.querySelector('.su-pop__form');
+    const input = el.querySelector('.su-pop__input');
+    const err = el.querySelector('.su-pop__err');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      err.textContent = '';
+      const raw = (input.value || '').trim();
+      const isEmail = raw.includes('@');
+      const digits = raw.replace(/\D/g, '');
+      if (isEmail ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw) : (digits.length < 7 || digits.length > 15)) {
+        err.textContent = 'Please enter a valid phone number or email.';
+        return;
+      }
+      const payload = isEmail ? { email: raw, source: 'site-popup' } : { phone: raw, source: 'site-popup' };
+      fetch('/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {});
+      if (window.omnisend) { try { omnisend.push(['identifyContact', isEmail ? { email: raw } : { phone: raw }]); } catch (e2) {} }
+      suStore(false, SU_KEY_DONE, '1');
+      el.classList.add('su-pop--done');
+      setTimeout(() => el.classList.remove('open'), 3500);
+    });
+  }
+  void el.offsetWidth; // let the closed state paint so the open transition runs
+  el.classList.add('open');
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -947,6 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCartDrawer();
   initProductCardSwipe();
   initCardReveal();
+  initSignupPopup();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') xtcCloseCookieSettings();
