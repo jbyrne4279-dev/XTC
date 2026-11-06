@@ -203,82 +203,187 @@
     .to-badge {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 6px 14px;
-      border-radius: 20px;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 0;
       font-size: 9px;
       font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
-      background: rgba(217, 119, 6, 0.1);
-      color: #b45309;
-      border: 1px solid rgba(217, 119, 6, 0.28);
+      background: rgba(179,102,255,0.08);
+      color: #d4b0ff;
+      border: 1px solid rgba(179,102,255,0.35);
       white-space: nowrap;
     }
-    .to-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-    .to-badge--shipped { background: rgba(37, 99, 235, 0.1); color: #1d4ed8; border-color: rgba(37, 99, 235, 0.28); }
-    .to-badge--delivered { background: rgba(22, 163, 74, 0.12); color: #15803d; border-color: rgba(22, 163, 74, 0.32); }
-    .to-badge--cancelled { background: rgba(220, 38, 38, 0.1); color: #b91c1c; border-color: rgba(220, 38, 38, 0.28); }
+    .to-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
+      box-shadow: 0 0 0 0 rgba(179,102,255,0.6);
+      animation: to-live 1.8s ease-out infinite;
+    }
+    @keyframes to-live {
+      0%   { box-shadow: 0 0 0 0 rgba(179,102,255,0.55); }
+      70%  { box-shadow: 0 0 0 7px rgba(179,102,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(179,102,255,0); }
+    }
+    .to-badge--delivered { color: #ffffff; border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); }
+    .to-badge--delivered::before { animation: none; }
+    .to-badge--cancelled { background: rgba(220, 38, 38, 0.08); color: #f87171; border-color: rgba(220, 38, 38, 0.35); }
+    .to-badge--cancelled::before { animation: none; }
     .to-result__order {
-      font-size: 13px;
+      font-size: 11px;
       color: rgba(255,255,255,0.4);
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       margin: 0;
     }
 
-    /* ── Progress rail — horizontal, icon-based journey ── */
-    .to-rail { margin-bottom: 30px; }
+    /* ── Status headline + estimated delivery ── */
+    .to-hero-status { margin-bottom: 30px; }
+    .to-hero-status__title {
+      font-size: 26px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: #fff; margin: 0 0 8px; line-height: 1.15;
+    }
+    .to-hero-status__sub { font-size: 13px; color: rgba(255,255,255,0.55); margin: 0; line-height: 1.6; }
+    .to-eta {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 20px; padding: 14px 16px;
+      border: 1px solid rgba(179,102,255,0.25);
+      background: linear-gradient(90deg, rgba(179,102,255,0.08), rgba(179,102,255,0));
+    }
+    .to-eta svg { width: 20px; height: 20px; flex-shrink: 0; color: #b366ff; }
+    .to-eta__label { display: block; font-size: 8.5px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+    .to-eta__value { display: block; font-size: 14px; color: #fff; letter-spacing: 0.5px; }
+
+    /* ── Progress rail — square icon steps joined by a purple line ── */
+    @property --to-step-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    @keyframes to-step-spin { to { --to-step-a: 360deg; } }
+    .to-rail { margin-bottom: 34px; position: relative; }
     .to-rail__track {
-      position: relative;
-      height: 3px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
-      margin: 0 13px 14px;
+      position: absolute; top: 20px; left: 10%; right: 10%;
+      height: 1px; background: rgba(255,255,255,0.1);
     }
     .to-rail__fill {
-      position: absolute;
-      top: 0; left: 0; height: 100%;
-      background: #000000;
-      border-radius: 2px;
-      transition: width 0.6s ease;
+      position: absolute; top: 0; left: 0; height: 100%; width: 0;
+      background: linear-gradient(90deg, rgba(179,102,255,0.5), #b366ff);
+      box-shadow: 0 0 8px rgba(179,102,255,0.6);
+      transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+      overflow: hidden;
     }
-    .to-rail__steps { display: flex; justify-content: space-between; gap: 3px; }
-    .to-rail__step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .to-rail__fill::after {
+      content: ''; position: absolute; inset: 0; width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+      animation: to-shimmer 2.4s ease-in-out infinite;
+    }
+    @keyframes to-shimmer { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+    .to-rail__steps { position: relative; display: flex; justify-content: space-between; }
+    .to-rail__step {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      flex: 1; min-width: 0;
+      opacity: 0; transform: translateY(6px);
+      animation: to-step-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes to-step-in { to { opacity: 1; transform: none; } }
     .to-rail__dot {
-      width: 26px; height: 26px;
-      border-radius: 50%;
+      position: relative;
+      width: 40px; height: 40px;
       display: flex; align-items: center; justify-content: center;
-      background: #000000;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.25);
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.22);
       flex-shrink: 0;
-      transition: background 0.3s, border-color 0.3s;
+      transition: all 0.3s ease;
     }
-    .to-rail__step--done .to-rail__dot { background: #ffffff; border-color: #ffffff; }
-    .to-rail__step--active .to-rail__dot { border-color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.1); }
+    .to-rail__dot svg { width: 18px; height: 18px; }
+    .to-rail__step--done .to-rail__dot {
+      border-color: rgba(179,102,255,0.55);
+      background: #190e24;
+      color: #fff;
+    }
+    .to-rail__step--active .to-rail__dot {
+      border-color: transparent;
+      background: #241433;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(179,102,255,0.35);
+    }
+    .to-rail__step--active .to-rail__dot::before {
+      content: ''; position: absolute; inset: -1px; padding: 1px;
+      background: conic-gradient(from var(--to-step-a), transparent 0%, transparent 50%, rgba(179,102,255,0.6) 70%, #e0c4ff 85%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: to-step-spin 2.4s linear infinite;
+    }
     .to-rail__step--active .to-rail__dot::after {
-      content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ffffff;
+      content: ''; position: absolute; inset: -1px;
+      border: 1px solid rgba(179,102,255,0.5);
+      animation: to-ping 2s ease-out infinite;
     }
+    @keyframes to-ping { from { opacity: 0.9; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
     .to-rail__label {
-      font-size: 8.5px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      text-align: center;
-      max-width: 58px;
-      line-height: 1.3;
+      font-size: 8.5px; letter-spacing: 1px; text-transform: uppercase;
+      color: rgba(255,255,255,0.28); text-align: center; max-width: 70px; line-height: 1.35;
     }
-    .to-rail__step--done .to-rail__label,
-    .to-rail__step--active .to-rail__label { color: #fff; }
+    .to-rail__step--done .to-rail__label { color: rgba(255,255,255,0.75); }
+    .to-rail__step--active .to-rail__label { color: #fff; font-weight: 600; }
     .to-rail__cancelled {
       padding: 14px 16px;
       background: rgba(220, 38, 38, 0.06);
-      border: 1px solid rgba(220, 38, 38, 0.2);
-      color: #b91c1c;
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      text-align: center;
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      color: #f87171;
+      font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; text-align: center;
+    }
+
+    /* ── Update history — vertical timeline ── */
+    .to-timeline { margin: 0 0 30px; padding: 0; list-style: none; }
+    .to-timeline__head { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin: 0 0 16px; }
+    .to-tl { position: relative; display: flex; gap: 16px; padding-bottom: 20px; }
+    .to-tl:last-child { padding-bottom: 0; }
+    .to-tl::before {
+      content: ''; position: absolute; left: 4px; top: 14px; bottom: -2px; width: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+    .to-tl:last-child::before { display: none; }
+    .to-tl__dot { width: 9px; height: 9px; margin-top: 4px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.25); background: #000; position: relative; z-index: 1; }
+    .to-tl--done .to-tl__dot { background: #b366ff; border-color: #b366ff; }
+    .to-tl--active .to-tl__dot { background: #fff; border-color: #fff; box-shadow: 0 0 0 4px rgba(179,102,255,0.3); }
+    .to-tl--done::before { background: rgba(179,102,255,0.45); }
+    .to-tl__body { min-width: 0; }
+    .to-tl__title { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+    .to-tl--pending .to-tl__title { color: rgba(255,255,255,0.3); }
+    .to-tl__text { display: block; font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; line-height: 1.5; }
+    .to-tl--pending .to-tl__text { color: rgba(255,255,255,0.22); }
+    .to-tl__time { display: block; font-size: 10px; letter-spacing: 1px; color: rgba(179,102,255,0.85); margin-top: 4px; text-transform: uppercase; }
+
+    /* ── Actions — courier link + help ── */
+    .to-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .to-actions a {
+      flex: 1 1 160px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 16px;
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+      color: #fff; border: 1px solid rgba(179,102,255,0.4); background: transparent;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .to-actions a:hover { background: rgba(179,102,255,0.12); border-color: rgba(179,102,255,0.75); }
+    .to-actions a.to-actions__ghost { border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.7); }
+    .to-actions svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .to-copy { background: none; border: 0; padding: 0 0 0 6px; color: rgba(255,255,255,0.45); cursor: pointer; vertical-align: middle; }
+    .to-copy:hover { color: #fff; }
+    .to-copy svg { width: 12px; height: 12px; }
+
+    @media (max-width: 480px) {
+      .to-hero-status__title { font-size: 21px; }
+      .to-rail__dot { width: 34px; height: 34px; }
+      .to-rail__dot svg { width: 15px; height: 15px; }
+      .to-rail__track { top: 17px; }
+      .to-rail__label { font-size: 7.5px; letter-spacing: 0.4px; max-width: 54px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .to-rail__step { animation: none; opacity: 1; transform: none; }
+      .to-rail__fill::after, .to-badge::before,
+      .to-rail__step--active .to-rail__dot::before,
+      .to-rail__step--active .to-rail__dot::after { animation: none; }
     }
 
     /* ── Route — stylised origin → destination shipping map ── */
@@ -341,8 +446,6 @@
     @media (max-width: 400px) {
       .to-route { padding: 14px 10px; gap: 8px; }
       .to-route__value { max-width: 98px; font-size: 10px; }
-      .to-rail__label { font-size: 7.5px; max-width: 48px; letter-spacing: 0.2px; }
-      .to-rail__dot { width: 22px; height: 22px; }
     }
 
     /* Order receipt (products, total, customer + shipping) */
@@ -693,7 +796,10 @@
             <span class="to-badge" id="resultBadge">Processing</span>
             <p class="to-result__order" id="resultOrder"></p>
           </div>
+          <div class="to-hero-status" id="resultHero"></div>
           <div class="to-rail" id="resultRail"></div>
+          <ol class="to-timeline" id="resultTimeline"></ol>
+          <div class="to-actions" id="resultActions"></div>
           <div class="to-route" id="resultRoute"></div>
           <div class="to-receipt" id="resultReceipt"></div>
         </div>
@@ -1268,38 +1374,130 @@
   //    available here, so this shows a clean "journey" visual instead of a
   //    literal map, positioned the same way a real map pin would move). ──
   const TRACK_STEPS = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
-  const TRACK_ROUTE_PCT = [6, 28, 52, 76, 94];
-  const TRACK_TRUCK_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6.5" cy="19.5" r="1.8"/><circle cx="17.5" cy="19.5" r="1.8"/></svg>';
-  const TRACK_CHECK_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const SVG = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const TRACK_ICONS = [
+    SVG('<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>'),                                   // bag — order placed
+    SVG('<path d="M3 7.5 12 3l9 4.5-9 4.5z"/><path d="M3 7.5v9L12 21l9-4.5v-9"/><path d="M12 12v9"/>'),             // box — processing
+    SVG('<rect x="1.5" y="6" width="13" height="10.5"/><path d="M14.5 10h4l3 3.2v3.3h-7z"/><circle cx="6" cy="18.5" r="1.8"/><circle cx="17.5" cy="18.5" r="1.8"/>'), // truck — shipped
+    SVG('<path d="M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>'), // pin — out for delivery
+    SVG('<path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><polyline points="9 14.5 11.3 16.8 15.2 12.8"/>'),  // home + tick — delivered
+  ];
+  const ICON_CAL  = SVG('<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>');
+  const ICON_EXT  = SVG('<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v6H4V6h6"/>');
+  const ICON_HELP = SVG('<path d="M4 5h16v11H9l-5 4z"/>');
+  const ICON_COPY = SVG('<rect x="8" y="8" width="12" height="12"/><path d="M16 8V4H4v12h4"/>');
+
+  const TRACK_COPY = [
+    { title: 'Order Received',   sub: "We've got your order and it's in the queue to be packed." },
+    { title: 'Being Prepared',   sub: 'Your pieces are being checked and packed at XTC HQ.' },
+    { title: 'On Its Way',       sub: 'Your parcel has left us and is with {carrier}.' },
+    { title: 'Out for Delivery', sub: 'Your parcel is with the driver and arriving today.' },
+    { title: 'Delivered',        sub: 'Your order has arrived. Thanks for repping XTC.' },
+  ];
+  const TL_TEXT = [
+    'Payment confirmed and order logged.',
+    'Quality checked and packed for dispatch at XTC HQ.',
+    'Handed over to {carrier}.',
+    'With the local driver for delivery.',
+    'Dropped off at your address.',
+  ];
 
   function renderTrackBadge(status) {
     const el = document.getElementById('resultBadge');
     if (!el) return;
     const label = status || 'Processing';
     const key = label.toLowerCase().replace(/\s+/g, '-');
-    const known = ['processing', 'shipped', 'delivered', 'cancelled'];
     el.textContent = label;
-    el.className = 'to-badge' + (known.includes(key) ? ' to-badge--' + key : '');
+    el.className = 'to-badge' + (['delivered', 'cancelled'].includes(key) ? ' to-badge--' + key : '');
+  }
+
+  // Working-day arithmetic for the delivery estimate (skips Sat/Sun).
+  function addWorkingDays(date, n) {
+    const d = new Date(date);
+    while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() % 6 !== 0) n--; }
+    return d;
+  }
+  const fmtDay = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const fmtStamp = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' · ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  // Same windows as the shipping page: UK 1–2, US 7–14, rest of world 5–7
+  // working days, plus 1–2 working days to pack before dispatch.
+  function deliveryWindow(createdAt, country) {
+    const placed = createdAt ? new Date(createdAt) : null;
+    if (!placed || isNaN(placed)) return null;
+    const c = (country || '').toLowerCase().trim();
+    const uk = !c || /united kingdom|^uk$|^gb$|great britain|england|scotland|wales|northern ireland/.test(c);
+    const us = /united states|^us$|^usa$/.test(c);
+    const [lo, hi] = uk ? [2, 4] : us ? [8, 16] : [6, 9];
+    return { from: addWorkingDays(placed, lo), to: addWorkingDays(placed, hi) };
   }
 
   // active: -1 = cancelled, 0-4 = index into TRACK_STEPS (currently reached step)
-  function renderTrackRail(active) {
+  // ctx: { created_at, carrier, tracking_number, country } — all optional
+  function renderTrackRail(active, ctx) {
+    ctx = ctx || {};
     const railEl = document.getElementById('resultRail');
+    const heroEl = document.getElementById('resultHero');
+    const tlEl   = document.getElementById('resultTimeline');
+    const actEl  = document.getElementById('resultActions');
+    const carrier = ctx.carrier || 'the courier';
+    const fill = (t) => t.replace('{carrier}', escTO(carrier));
+
+    // Actions — courier link (when there's a tracking number) + help
+    if (actEl) {
+      const tUrl = (active >= 0 && ctx.tracking_number) ? trackingUrlTO(ctx.carrier, ctx.tracking_number) : '';
+      actEl.innerHTML =
+        (tUrl && tUrl !== '#' ? `<a href="${tUrl}" target="_blank" rel="noopener">${ICON_EXT}Track with ${escTO(ctx.carrier)}</a>` : '') +
+        `<a href="/contact" class="to-actions__ghost">${ICON_HELP}Need Help?</a>`;
+    }
+
     if (!railEl) return;
     if (active < 0) {
-      railEl.innerHTML = '<div class="to-rail__cancelled">This order was cancelled</div>';
+      if (heroEl) heroEl.innerHTML = '<h2 class="to-hero-status__title">Order Cancelled</h2><p class="to-hero-status__sub">This order has been cancelled. If you weren\'t expecting this, get in touch and we\'ll sort it.</p>';
+      railEl.innerHTML = '';
+      if (tlEl) tlEl.innerHTML = '';
       return;
     }
-    const pct = TRACK_ROUTE_PCT[Math.max(0, Math.min(active, TRACK_ROUTE_PCT.length - 1))];
-    const isFinal = active >= TRACK_STEPS.length - 1; // Delivered — the whole journey is complete, nothing left "in progress"
-    const steps = TRACK_STEPS.map((label, i) => {
-      const state = i < active || (i === active && isFinal) ? 'done' : i === active ? 'active' : 'pending';
-      const dot = state === 'done' ? TRACK_CHECK_ICON : '';
-      return `<div class="to-rail__step to-rail__step--${state}"><span class="to-rail__dot">${dot}</span><span class="to-rail__label">${label}</span></div>`;
-    }).join('');
-    railEl.innerHTML = `
-      <div class="to-rail__track"><div class="to-rail__fill" style="width:${pct}%"></div></div>
-      <div class="to-rail__steps">${steps}</div>`;
+
+    const isFinal = active >= TRACK_STEPS.length - 1;
+    const state = (i) => (i < active || (i === active && isFinal)) ? 'done' : i === active ? 'active' : 'pending';
+
+    // Headline + estimated delivery
+    if (heroEl) {
+      const copy = TRACK_COPY[active];
+      let eta = '';
+      if (!isFinal) {
+        const w = deliveryWindow(ctx.created_at, ctx.country);
+        if (w) {
+          const today = new Date(); today.setHours(0, 0, 0, 0);
+          const value = w.to < today ? 'Arriving soon' : (active === 3 ? 'Today' : fmtDay(w.from) + ' – ' + fmtDay(w.to));
+          eta = `<div class="to-eta">${ICON_CAL}<div><span class="to-eta__label">Estimated Delivery</span><span class="to-eta__value">${value}</span></div></div>`;
+        }
+      }
+      heroEl.innerHTML = `<h2 class="to-hero-status__title">${copy.title}</h2><p class="to-hero-status__sub">${fill(copy.sub)}</p>${eta}`;
+    }
+
+    // Icon rail
+    const steps = TRACK_STEPS.map((label, i) =>
+      `<div class="to-rail__step to-rail__step--${state(i)}" style="animation-delay:${i * 80}ms"><span class="to-rail__dot">${TRACK_ICONS[i]}</span><span class="to-rail__label">${label}</span></div>`
+    ).join('');
+    railEl.innerHTML = `<div class="to-rail__track"><div class="to-rail__fill"></div></div><div class="to-rail__steps">${steps}</div>`;
+    const fillEl = railEl.querySelector('.to-rail__fill');
+    requestAnimationFrame(() => requestAnimationFrame(() => { fillEl.style.width = (active / (TRACK_STEPS.length - 1) * 100) + '%'; }));
+
+    // Update history — newest first, upcoming steps greyed underneath
+    if (tlEl) {
+      const placed = ctx.created_at ? new Date(ctx.created_at) : null;
+      const rows = TRACK_STEPS.map((label, i) => {
+        const st = state(i);
+        const time = (i === 0 && placed && !isNaN(placed)) ? `<span class="to-tl__time">${fmtStamp(placed)}</span>` : '';
+        const text = st === 'pending' ? 'Up next' : fill(TL_TEXT[i]);
+        return `<li class="to-tl to-tl--${st}"><span class="to-tl__dot"></span><div class="to-tl__body"><span class="to-tl__title">${label}</span><span class="to-tl__text">${text}</span>${time}</div></li>`;
+      });
+      const reached = rows.slice(0, active + 1).reverse();
+      const upcoming = rows.slice(active + 1);
+      tlEl.innerHTML = '<p class="to-timeline__head">Updates</p>' + reached.concat(upcoming).join('');
+    }
   }
 
   function renderTrackRoute(active, destLabel) {
@@ -1322,23 +1520,30 @@
     return 1; // Processing (default)
   }
 
+  // "Order XTC123 [copy] · DHL 123456" — tracking number shown plain; the
+  // courier link lives in the actions row.
+  function renderOrderLine(order) {
+    const el = document.getElementById('resultOrder');
+    let html = 'Order ' + escTO(order.id) +
+      `<button type="button" class="to-copy" aria-label="Copy order number" data-copy="${escTO(order.id)}">${ICON_COPY}</button>`;
+    if (order.tracking_number) html += ' · ' + escTO((order.carrier ? order.carrier + ' ' : '') + order.tracking_number);
+    el.innerHTML = html;
+    const btn = el.querySelector('.to-copy');
+    btn.addEventListener('click', () => {
+      const done = () => { btn.style.color = '#b366ff'; setTimeout(() => { btn.style.color = ''; }, 1200); };
+      if (navigator.clipboard) navigator.clipboard.writeText(btn.dataset.copy).then(done, () => {}); else done();
+    });
+  }
+
   function showServerResult(order) {
     const status = order.status || 'Processing';
     const active = statusToActive(status);
 
     renderTrackBadge(status);
-    let orderLine = 'Order ' + order.id;
-    if (order.tracking_number) {
-      const tUrl = trackingUrlTO(order.carrier, order.tracking_number);
-      const label = (order.carrier ? order.carrier + ' ' : '') + order.tracking_number;
-      orderLine += (tUrl && tUrl !== '#')
-        ? ' · <a href="' + tUrl + '" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">' + label + '</a>'
-        : ' · ' + label;
-    }
-    document.getElementById('resultOrder').innerHTML = orderLine;
+    renderOrderLine(order);
 
     const destLabel = [order.city, order.country].filter(Boolean).join(', ') || order.postcode || '';
-    renderTrackRail(active);
+    renderTrackRail(active, order);
     renderTrackRoute(active, destLabel);
 
     buildReceipt(order);
@@ -1352,7 +1557,7 @@
 
     renderTrackBadge(data.tag_description || 'In Transit');
     document.getElementById('resultOrder').textContent = 'Order ' + orderNum;
-    renderTrackRail(active);
+    renderTrackRail(active, { tracking_number: null });
     renderTrackRoute(active, '');
 
     const rc = document.getElementById('resultReceipt'); if (rc) { rc.innerHTML = ''; rc.classList.remove('show'); }
@@ -1364,10 +1569,10 @@
     const active = statusToActive(status);
 
     renderTrackBadge(status);
-    document.getElementById('resultOrder').textContent = 'Order ' + (order.id || order.number || '');
+    renderOrderLine(Object.assign({}, order, { id: order.id || order.number || '' }));
 
     const destLabel = [order.city, order.country].filter(Boolean).join(', ') || order.postcode || '';
-    renderTrackRail(active);
+    renderTrackRail(active, order);
     renderTrackRoute(active, destLabel);
 
     buildReceipt(order);
