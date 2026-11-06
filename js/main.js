@@ -1143,6 +1143,40 @@ const MOTION_REVEAL_SELECTORS = [
   '.footer-top', '.footer-bottom',
 ].join(',');
 
+// Black water video at the very bottom of the footer, under the copyright
+// line. Only loads once the footer is close to the screen, then fades in.
+function initFooterWater() {
+  const footer = document.querySelector('.site-footer');
+  if (!footer || footer.querySelector('.footer-water')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'footer-water';
+  wrap.setAttribute('aria-hidden', 'true');
+  const v = document.createElement('video');
+  v.muted = true; v.loop = true; v.playsInline = true;
+  v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('autoplay', '');
+  v.preload = 'none';
+  v.poster = '/images/waves-bg-final-poster.webp';
+  v.addEventListener('playing', () => v.classList.add('is-ready'), { once: true });
+  wrap.appendChild(v);
+  footer.appendChild(wrap);
+  footer.classList.add('has-water');
+
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const start = () => {
+    if (reduce) { v.classList.add('is-ready'); return; } // poster only, no motion
+    if (!v.src) v.src = '/images/waves-bg-final.mp4';
+    const p = v.play(); if (p && p.catch) p.catch(() => v.classList.add('is-ready'));
+  };
+  if (!('IntersectionObserver' in window)) return start();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) start();
+      else if (v.src && !v.paused) v.pause(); // save battery when scrolled away
+    });
+  }, { rootMargin: '300px 0px' });
+  io.observe(wrap);
+}
+
 function initMotion() {
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1225,6 +1259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCardReveal();
   initMotion();
   initSignupPopup();
+  initFooterWater();
   if (typeof initPhoneCountrySelectors === 'function') initPhoneCountrySelectors();
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') xtcCloseCookieSettings();

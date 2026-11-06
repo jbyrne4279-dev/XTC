@@ -4654,3 +4654,39 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
   .cd-item--enter, .cd-item--new, .cd-upsell__card--enter, .cd-footer--enter, .cd-qty__val--bump { animation: none; }
   .cd-item { transition: none; }
 }
+
+/* ============================================
+   FOOTER WATER — black water video under the
+   "2026 XTC Clothing" line, fading up out of the
+   black footer (same treatment as /password).
+   Injected by initFooterWater() in main.js.
+   ============================================ */
+.site-footer.has-water { padding-bottom: 0 !important; overflow: hidden; }
+.site-footer.has-water .footer-bottom { padding-bottom: 8px; position: relative; z-index: 2; }
+.footer-water {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: clamp(200px, 32vw, 380px);
+  margin-top: -40px;          /* tuck under the copyright line so it rises out of it */
+  pointer-events: none;
+  z-index: 1;
+  background: #000;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 35%, #000 75%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 35%, #000 75%);
+}
+.footer-water video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: invert(1) brightness(0.7) contrast(1.1);
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 2.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer-water video.is-ready { opacity: 1; transform: none; }
+.footer-water video::-webkit-media-controls,
+.footer-water video::-webkit-media-controls-start-playback-button { display: none !important; -webkit-appearance: none; }
+@media (prefers-reduced-motion: reduce) {
+  .footer-water video { transition: opacity 0.4s ease; transform: none; }
+}
