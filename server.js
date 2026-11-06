@@ -167,7 +167,9 @@ const SITE_LOCK_ALLOWLIST = new Set([
   // The order email's "Track Your Order" button — a customer opening this
   // days later, possibly on a device that never unlocked the site, would
   // otherwise get bounced to /password instead of their order.
-  '/track-order',
+  '/track-order', '/track-order.html',
+  // ...and the lookups that page makes (order id + email, rate limited).
+  '/track', '/track-courier',
   '/images/footer-logo.webp',
   // Welcome-code page linked from the 10%-off email — must open for
   // visitors who've never unlocked the site.
@@ -221,9 +223,20 @@ app.use((req, res, next) => {
     return next();
   }
   if (SITE_PREVIEW_KEY && timingSafeEqualStr(readCookie(req, PREVIEW_COOKIE) || '', SITE_PREVIEW_KEY)) return next();
-  if (UNLOCK_TOKEN && timingSafeEqualStr(readCookie(req, UNLOCK_COOKIE) || '', UNLOCK_TOKEN)) return next();
+  const unlockCookie = readCookie(req, UNLOCK_COOKIE) || '';
+  if (UNLOCK_TOKEN && timingSafeEqualStr(unlockCookie, UNLOCK_TOKEN)) return next();
+  // Browsers unlocked before the cookie switched to an HMAC still carry the
+  // raw password — accept it once and swap it for the new token.
+  if (SITE_PASSWORD && timingSafeEqualStr(unlockCookie, SITE_PASSWORD)) {
+    res.cookie(UNLOCK_COOKIE, UNLOCK_TOKEN, { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax', secure: req.secure });
+    return next();
+  }
   const p = req.path;
   if (SITE_LOCK_ALLOWLIST.has(p) || p.startsWith('/.well-known')) return next();
+  // Styles, scripts, images and fonts aren't secret — the lock gates pages.
+  // Without this, allowlisted pages (/track-order, /code) render unstyled
+  // for anyone who hasn't unlocked the site.
+  if (/^\/(css|js|images|fonts)\//.test(p) || /\.(css|js|webp|png|jpe?g|gif|svg|ico|mp4|webm|woff2?|ttf)$/i.test(p)) return next();
   return res.redirect(302, '/password');
 });
 
