@@ -12,6 +12,10 @@ const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
+// Health check for Railway: new deploys only take traffic once this answers,
+// so visitors are never served by a half-started server mid-deploy.
+app.get('/healthz', (req, res) => res.set('Cache-Control', 'no-store').send('ok'));
+
 // Small in-memory rate limiter: limiter(key) → true when over the limit.
 // Old entries are swept every minute so the map can't grow without bound.
 function makeLimiter(windowMs, max) {
@@ -237,10 +241,17 @@ app.use((req, res, next) => {
   // Without this, allowlisted pages (/track-order, /code) render unstyled
   // for anyone who hasn't unlocked the site.
   if (/^\/(css|js|images|fonts)\//.test(p) || /\.(css|js|webp|png|jpe?g|gif|svg|ico|mp4|webm|woff2?|ttf)$/i.test(p)) return next();
+  // no-store: a browser must never cache this redirect for a page or asset.
+  res.set('Cache-Control', 'no-store');
   return res.redirect(302, '/password');
 });
 
-app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname), {
+  extensions: ['html'],
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
 
 const PRODUCTS = {
   'polo-black': { name: 'XTC Polo [Black]', amount: 6000, img: 'images/polo-black-flat.webp', emailImg: 'images/email-polo-black-flat.jpg' },
