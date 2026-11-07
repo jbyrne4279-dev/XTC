@@ -4610,7 +4610,7 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
 }
 
 /* "Secured by Stripe" line — shield + embossed globe + X */
-.co-secure__logo { height: 14px; width: auto; display: inline-block; vertical-align: middle; }
+.co-secure__logo { height: 14px; width: auto; display: inline-block; vertical-align: middle; filter: brightness(0) invert(1); opacity: 0.2; } /* flat white, same tone as the "Secured by Stripe" text */
 .co-secure__logo--x { height: 11px; }
 
 /* ---- Cart drawer motion (cdAnimate in main.js) ---- */
