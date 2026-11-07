@@ -177,13 +177,38 @@ function initNavDrawer() {
     if (p === here) a.classList.add('active');
   });
 
-  // Doesn't lock body scroll (no overflow:hidden) — that breaks the
-  // header's position:sticky the same way body's own overflow-x:clip did
-  // (see css/style.css). Not needed anyway now that this is a small
-  // dropdown popup rather than a full-screen drawer.
-  function open()  { drawer.classList.add('open'); }
-  function close_() { drawer.classList.remove('open'); }
+  // Same drawer as the cart: a header with a title and the square close
+  // button, built here so every page's markup stays as it is.
+  const panel = drawer.querySelector('.nav-drawer__panel');
+  if (panel && !panel.querySelector('.nav-drawer__head')) {
+    const head = document.createElement('div');
+    head.className = 'cd-header nav-drawer__head';
+    head.innerHTML = '<p class="cd-header__title">Menu</p>';
+    close.classList.add('cd-close');
+    close.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    head.appendChild(close);
+    panel.insertBefore(head, panel.firstChild);
+  }
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-modal', 'true');
+  drawer.setAttribute('aria-label', 'Menu');
 
+  // Locks page scroll while open, exactly like openCartDrawer().
+  function open()  {
+    if (typeof closeCartDrawer === 'function') closeCartDrawer();
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    toggle.setAttribute('aria-expanded', 'true');
+  }
+  function close_() {
+    if (!drawer.classList.contains('open')) return;
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  // Tapping a link (incl. the page you're already on) closes the drawer.
+  drawer.querySelectorAll('.nav-drawer__links a').forEach(a => a.addEventListener('click', close_));
   toggle.addEventListener('click', open);
   overlay.addEventListener('click', close_);
   close.addEventListener('click', close_);
