@@ -4745,3 +4745,8 @@ body.is-leaving { opacity: 0; transition: opacity 0.18s ease; }
   .nav-drawer__links { padding: 8px 6px; }
   .nav-drawer__links a { font-size: 11px; letter-spacing: 2px; padding: 16px 12px; }
 }
+
+/* Product page tabs: the open tab's underline is purple */
+.pdp-tab.active {
+  border-bottom-color: #b366ff;
+}
